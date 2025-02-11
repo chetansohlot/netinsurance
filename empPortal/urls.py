@@ -1,0 +1,32 @@
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path("login", views.login_view, name="login"),
+    path('user-and-roles/', views.userAndRoles, name='user-and-roles'),
+    path('', views.dashboard, name='dashboard'),
+    path('dashboard/', views.dashboard, name='dashboard'),
+    path('members/', views.members, name='members'),
+    path('member-view/', views.memberView, name='member-view'),
+    path('billings/', views.billings, name='billings'),
+    path('claim-tracker/', views.claimTracker, name='claim-tracker'),
+    path('checkout/', views.checkout, name='checkout'),
+    path('add-members/', views.addMember, name='add-members'),
+    path('new-role/', views.newRole, name='new-role'),
+    path('insert-role/', views.insertRole, name='insert-role'),
+    path('create-user/', views.createUser, name='create-user'),
+    path('insert-user/', views.insertUser, name='insert-user'),
+    path('role/edit/<str:id>',views.editRole, name='edit-role'),
+    path('users/edit-user/<str:id>',views.editUser, name='edit-user'),
+    path('users/edit-user-status',views.updateUserStatus, name='edit-user-status'),
+    path('update-role/', views.updateRole, name='update-role'),
+    path('update-user/', views.updateUser, name='update-user'),
+    path('policy-mgt/', views.policyMgt, name='policy-mgt'),
+    path('bulk-policy-mgt/', views.bulkPolicyMgt, name='bulk-policy-mgt'),
+    path('browser-policy/', views.browsePolicy, name='browser-policy'),
+    path('bulk-browser-policy/', views.bulkBrowsePolicy, name='bulk-browser-policy'),
+    path('policy-data/', views.policyData, name='policy-data'),
+    path('edit-policy-data/<str:id>', views.editPolicy, name='edit-policy'),
+    path('update-policy/', views.updatePolicy, name='update-policy'),
+    path('bulk-upload-logs',views.bulkUploadLogs,name='bulk-upload-logs')
+]

@@ -1,0 +1,127 @@
+{% extends 'master.html' %}
+
+{% load static %}
+
+{% block title %}
+    Edit Policy
+{% endblock %}
+
+{% block content %}
+
+<body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+    
+        {% include "navbar.html" %}
+        {% include "sidebar.html" %}
+    
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <div class="content-header breadcrump-bg">
+          <div class="container-fluid">
+            <div class="row py-2">
+              <div class="col-sm-6">
+                <div class="d-flex align-items-center">
+                  <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Edit Policy</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /.content-header -->
+    
+        <!-- Main content -->
+        <div class="content">
+          <div class="container-fluid">
+            <div class="row">
+              
+              <div class="col-sm-12">  
+                <div class="card box-shadow-none p-md-5 p-3">
+                  <div class="card-body px-0 pb-0 pt-0">
+                    {% if messages %}
+                      <div class="alert alert-danger">
+                        {% for message in messages %}
+                          <p>{{ message }}</p>
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+
+                    <form autocomplete="off" id="myForm" name="updatePolicy" action="/update-policy/" method="post">
+                        {% csrf_token %}
+                      
+                        <input type="hidden" class="form-control" name="policy_id" id="policy_id" value="{{ policy_data.id }}">
+
+                        <div class="row">
+                            <div class="form-group col-sm-6">
+                                <label for="insurer_name">Insurer Name</label>
+                                <input type="text" class="form-control" name="insurer_name" id="insurer_name" placeholder="Insurer Name" value="{{ policy_data.insurance_provider }}">
+                            </div>
+    
+                            <div class="form-group col-sm-6">
+                                <label for="policy_number">Policy Number</label>
+                                <input type="text" class="form-control" name="policy_number" id="policy_number" placeholder="Policy Number" value="{{ policy_data.policy_number }}">
+                            </div>
+    
+                            <div class="form-group col-sm-6">
+                                <label for="vehicle_reg_no">Vehicle Reg Number</label>
+                                <input type="text" class="form-control" name="vehicle_reg_no" id="vehicle_reg_no" placeholder="Vehicle Reg Number" value="{{ policy_data.vehicle_number }}">
+                            </div>
+    
+                            <div class="form-group col-sm-6">
+                                <label for="policy_holder_name">Policy Holder Name</label>
+                                <input type="text" class="form-control" name="policy_holder_name" id="policy_holder_name" placeholder="Policy Holder Name" value="{{ policy_data.holder_name }}">
+                            </div>
+    
+                            <div class="form-group col-sm-6">
+                                <label for="policy_issue_date">Policy Issue Date</label>
+                                <input type="text" class="form-control" name="policy_issue_date" id="policy_issue_date" placeholder="Policy Issue Date" value="{{ policy_data.policy_issue_date }}">
+                            </div>
+    
+                            <div class="form-group col-sm-6">
+                                <label for="policy_premium">Policy Premium</label>
+                                <input type="text" class="form-control" name="policy_premium" id="policy_premium" placeholder="Policy Premium" value="{{ policy_data.policy_premium }}">
+                            </div>
+    
+                            <div class="form-group col-sm-6">
+                                <label for="policy_total_premium">Policy Total Premium</label>
+                                <input type="text" class="form-control" name="policy_total_premium" id="policy_total_premium" placeholder="Policy Total Premium" value="{{ policy_data.policy_total_premium }}">
+                            </div>
+    
+                            <div class="form-group col-sm-6">
+                                <label for="policy_period">Policy Period</label>
+                                <input type="text" class="form-control" name="policy_period" id="policy_period" placeholder="Policy Period" value="{{ policy_data.policy_period }}">
+                            </div>
+    
+                            <div class="form-group col-sm-6">
+                                <label for="rm_name">RM Name</label>
+                                <input type="text" class="form-control" name="rm_name" id="rm_name" placeholder="Policy Period" value="{{ policy_data.rm_name }}">
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Edit Policy Data</button>
+                    </form>
+                    <div id="loader" class="form-loader" style="display: none;">
+                      <div>
+                        <div class="spinner-border text-primary mx-auto d-block" role="status"></div>
+                        <span class="visually-hidden d-block pt-2">Loading...</span>
+                      </div>  
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>  
+        </div>
+      </div>
+        
+    </div>
+    
+    {% include "footer.html" %}
+    {% include "footer-script.html" %}
+    <script>
+      document.getElementById("myForm").addEventListener("submit", function() {
+          document.getElementById("loader").style.display = "flex";
+      });
+    </script>
+</body>
+{% endblock %}

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{% block title %}{% endblock %}</title>
+  {% include 'head.html' %}
+  {% load static %}
+  <script src="{% static 'dist/js/jquery.min.js' %}"></script>
+  <script src="{% static 'dist/js/custom.js' %}"></script>
+</head>
+
+{% block content %}
+  
+{% endblock %}
+
+</html>

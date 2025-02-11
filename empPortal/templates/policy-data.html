@@ -1,0 +1,123 @@
+{% extends 'master.html' %}
+
+{% block title %}
+Policy Data
+{% endblock %}
+
+{% block content %}
+{% load static %}
+
+<body class="hold-transition sidebar-mini">
+<div class="wrapper">
+  {% include 'navbar.html' %}
+  <!-- /.navbar -->
+
+  <!-- Main Sidebar Container -->
+   {% include 'sidebar.html' %}
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper white-bg">
+    <!-- Content Header (Page header) -->
+    <div class="content-header breadcrump-bg">
+      <div class="container-fluid ">
+        <div class="row py-2">
+          <div class="col-sm-6">
+            <div class="d-flex align-items-center">
+              <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Policy Data </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <div class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-sm-12 col-md-12">
+            <div class="card box-shadow-none">
+              <div class="card-body px-0 pb-0 pt-0">
+                <div class="tab-content" id="nav-tabContent">
+                    <div class="table-responsive table-ht">
+                      {% if messages %}
+                        {% for message in messages %}
+                          <p>{{ message }}</p>
+                        {% endfor %}
+                      {% endif %}
+                      <table class="table table-design table-width-design">
+                        <thead class="table-thead-bg-light table-header-fix">
+                          <tr>
+                            <th class="nowrap">Insurer Name</th>
+                            <th class="nowrap">Registration Number</th>
+                            <th class="nowrap">Policy Holder</th>
+                            <th class="nowrap">Policy Number</th>
+                            <th class="nowrap" width="150">Issue Date</th>
+                            <th class="nowrap" width="150">Expiry Date</th>
+                            <th class="nowrap">Policy Period</th>
+                            <th class="nowrap">Premium</th>
+                            <th class="nowrap">Total Premium</th>
+                            <th class="nowrap" width="150">Coverage Details</th>
+                            <th class="nowrap">RM Name</th>
+                            <th class="nowrap">Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for data in policy_data %}
+                            <tr>
+                                <td>{{ data.insurance_provider }}</td>
+                                <td>{{ data.vehicle_number }}</td>
+                                <td>{{ data.holder_name }}</td>
+                                <td>{{ data.policy_number }}</td>
+                                <td class="nowrap">{{ data.policy_issue_date }}</td>
+                                <td class="nowrap">{{ data.policy_expiry_date }}</td>
+                                <td>{{ data.policy_period }}</td>
+                                <td>{{ data.policy_premium }}</td>
+                                <td>{{ data.policy_total_premium }}</td>
+                                <td class="nowrap">
+                                  <ul>
+                                    {% for benefit in data.coverage_details %}
+                                    <li>{{benefit.benefit}} : {{ benefit.amount }}</li>
+                                  {% endfor %}
+                                </ul>
+                                </td>
+                                
+                                <td>{{ data.rm_name }}</td>
+                                
+                                <td>
+                                    <a href="{{ data.filepath }}" class="tooltip-sec" data-title="Download Policy" target="_blank" download>{{ data.filename }}</a>
+                                    <a href="{% url 'edit-policy' id=data.id %}" class="circle-arrow-link tooltip-sec" data-title="Edit Policy" ><i class="fa-solid fa-chevron-right"></i></a>
+                                </td>
+                                <!-- <td>
+                                    {% if data.extracted_text.choices and data.extracted_text.choices.0.message.content %}
+                                        {{ data.extracted_text.choices.0.message.content|linebreaks }}
+                                    {% else %}
+                                        No content available
+                                    {% endif %}
+                                </td> -->
+                            </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /.content-wrapper -->
+
+<!-- Main Footer -->
+{% include 'footer.html' %}
+
+</div>
+<!-- ./wrapper -->
+
+{% include 'footer-script.html' %}
+</body>
+
+{% endblock %}

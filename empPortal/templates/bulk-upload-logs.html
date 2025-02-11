@@ -1,0 +1,108 @@
+{% extends 'master.html' %}
+
+{% block title %}
+Policy Data
+{% endblock %}
+
+{% block content %}
+{% load static %}
+
+<body class="hold-transition sidebar-mini">
+<div class="wrapper">
+  {% include 'navbar.html' %}
+  <!-- /.navbar -->
+
+  <!-- Main Sidebar Container -->
+   {% include 'sidebar.html' %}
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper white-bg">
+    <!-- Content Header (Page header) -->
+    <div class="content-header breadcrump-bg">
+      <div class="container-fluid ">
+        <div class="row py-2">
+          <div class="col-sm-6">
+            <div class="d-flex align-items-center">
+              <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Policy Data </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <div class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-sm-12 col-md-12">
+            <div class="card box-shadow-none">
+              <div class="card-body px-0 pb-0 pt-0">
+                <div class="tab-content" id="nav-tabContent">
+                    <div class="table-responsive table-ht">
+                      {% if messages %}
+                        {% for message in messages %}
+                          <p>{{ message }}</p>
+                        {% endfor %}
+                      {% endif %}
+                       <!-- Logs Table -->
+                    <table class="table table-design table-width-design">
+                      <thead class="table-thead-bg-light table-header-fix">
+                        <tr>
+                          <th>Campaign Name</th>
+                          <th>File Name</th>
+                          <th>File URL</th>
+                          <th>Total Files</th>
+                          <th>PDF Files</th>
+                          <th>Non-PDF Files</th>
+                          <th>Errors</th>
+                          <th>Uploaded Files</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for log in logs %}
+                          <tr>
+                            <td>{{ log.camp_name }}</td>
+                            <td>{{ log.file_name }}</td>
+                            <td>
+                              <a href="{{ log.file_url }}" target="_blank" class="btn btn-primary btn-sm">Download</a>
+                            </td>
+                            <td>{{ log.count_total_files }}</td>
+                            <td>{{ log.count_pdf_files }}</td>
+                            <td>{{ log.count_not_pdf }}</td>
+                            <td>{{ log.count_error_pdf_files }} / {{ log.count_error_process_pdf_files }}</td>
+                            <td>{{ log.count_uploaded_files }}</td>
+                            <td>
+                              {% if log.status == 1 %}
+                                <span class="badge badge-success">Completed</span>
+                              {% else %}
+                                <span class="badge badge-warning">Pending</span>
+                              {% endif %}
+                            </td>
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                    </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /.content-wrapper -->
+
+<!-- Main Footer -->
+{% include 'footer.html' %}
+
+</div>
+<!-- ./wrapper -->
+
+{% include 'footer-script.html' %}
+</body>
+
+{% endblock %}

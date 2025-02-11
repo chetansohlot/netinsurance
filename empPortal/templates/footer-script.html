@@ -1,0 +1,38 @@
+{% load static %}
+<!-- jQuery -->
+<script src="{% static 'dist/js/jquery.min.js' %}"></script>
+<!-- Bootstrap 4 -->
+<script src="{% static 'dist/js/bootstrap.bundle.js' %}"></script>
+<!-- AdminLTE App -->
+<script src="{% static 'dist/js/adminlte.min.js' %}"></script>
+<!-- Search Filter Show-->
+<script type="text/javascript">
+  $(document).ready(function(){
+    /*$("#search-modal").click(function(){
+      $(".filter-modal").show();
+    })
+    $(".filter-modal-close").click(function(){
+      $(".filter-modal").hide();
+    })*/
+
+    
+    $('nav .dropdown-menu, .shorting-dropdown-menu').on('click', function(event) {
+        event.stopPropagation();
+    });
+
+
+  })
+  // When dropdown is shown (opened)
+    $('.dropdown').on('shown.bs.dropdown', function () {
+        $('.shorting-select').attr('aria-expanded', "true");
+        $('.change-arrow').attr('src', 'dist/img/svg/up-arrow-icon.svg'); // Change to up arrow
+    });
+
+    // When dropdown is hidden (closed)
+    $('.dropdown').on('hidden.bs.dropdown', function () {
+        $('.shorting-select').attr('aria-expanded', "false");
+        $('.change-arrow').attr('src', 'dist/img/svg/down-arrow-icon.svg'); // Change back to down arrow
+    });
+
+  
+</script>
