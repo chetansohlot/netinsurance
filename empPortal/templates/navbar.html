@@ -88,12 +88,15 @@
                 <div class="row">
                   <div class="col-sm-6 border-right">
                     <div class="description-block">
-                      <a href="#" class="description-text">Profile</a>
+                      <a href="{% url 'change-password' %}" class="description-text">Change Password</a>
                     </div>
                   </div>
                   <div class="col-sm-6">
                     <div class="description-block">
-                      <a href="#" class="description-text">Sign out</a>
+                      <form action="{% url 'logout' %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Sign out</button>
+                      </form>
                     </div>
                   </div>
                 </div>

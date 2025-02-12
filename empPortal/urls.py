@@ -28,5 +28,8 @@ urlpatterns = [
     path('policy-data/', views.policyData, name='policy-data'),
     path('edit-policy-data/<str:id>', views.editPolicy, name='edit-policy'),
     path('update-policy/', views.updatePolicy, name='update-policy'),
-    path('bulk-upload-logs',views.bulkUploadLogs,name='bulk-upload-logs')
+    path('bulk-upload-logs/',views.bulkUploadLogs,name='bulk-upload-logs'),
+    path('change-password/',views.changePassword,name='change-password'),
+    path('update-password',views.updatePassword,name='update-password'),
+    path("logout/", views.userLogout, name="logout"),
 ]
