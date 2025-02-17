@@ -1,10 +1,7 @@
 from django.urls import path
-<<<<<<< HEAD
 from . import views,export
-=======
 from . import views
 from . import authenticationView
->>>>>>> d7174715b955f0a96d436b9f113b29b62d294497
 
 urlpatterns = [
     path("login", authenticationView.login_view, name="login"),

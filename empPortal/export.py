@@ -24,7 +24,7 @@ from .models import PolicyDocument
 
 def exportPolicies(request):
     # Query the PolicyDocument model for all policy records
-    policies = PolicyDocument.objects.all()
+    policies = PolicyDocument.objects.all().order_by('-id')
 
     # Prepare the data for export
     policy_data = []
@@ -40,7 +40,6 @@ def exportPolicies(request):
             policy.policy_premium,
             policy.policy_total_premium
         ])
-    
     # Create a DataFrame
     columns = [
         'Insurer Name', 'Vehicle Number', 'Holder Name', 'Policy Number', 
