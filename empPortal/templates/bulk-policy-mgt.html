@@ -64,6 +64,14 @@ Policy Management
                                     <span class="text-danger">{{ form.camp_name.errors.0 }}</span>
                                 {% endif %}
                             </div>
+                            <div class="form-group col-sm-6">
+                                <label for="rm_name">RM Name</label>
+                                <input type="text" class="form-control" name="rm_name" id="rm_name" placeholder="RM Name" value="{{request.user.full_name}}">
+                                <span class="error rm_name_err"></span>
+                                {% if form.rm_name.errors %}
+                                    <span class="text-danger">{{ form.camp_name.errors.0 }}</span>
+                                {% endif %}
+                            </div>
                         </div>
                         <button type="submit" class="btn btn-primary">Upload ZIP</button>
                     </form>

@@ -5,8 +5,9 @@ from . import authenticationView
 
 urlpatterns = [
     path("login", authenticationView.login_view, name="login"),
-
     path("register", authenticationView.register_view, name="register"),
+    path("verify-otp", authenticationView.verify_otp_view, name="verify-otp"),
+    path("resend-otp", authenticationView.verify_otp_view, name="resend-otp"),
     
     path('user-and-roles/', views.userAndRoles, name='user-and-roles'),
     path('', views.dashboard, name='dashboard'),

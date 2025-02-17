@@ -19,6 +19,7 @@ import os
 import zipfile
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.core.cache import cache
 
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 
@@ -156,17 +157,62 @@ def register_view(request):
             status=1,
             is_superuser=0,
             is_staff= 0 ,
-            is_active=1
+            is_active=0
         )
         user.save()
 
         # Automatically log in the user after registration
-        # user = authenticate(request, username=email, password=password)
+        user = authenticate(request, username=email, password=password)
         if user:
-            # login(request, user)
-            return redirect('login')
+            login(request, user)
+            messages.success(request, 'Registration successful! You can now log in.')
+            return redirect('verify-otp')
 
         # messages.error(request, 'Failed to create an account.')
         # return redirect(request.META.get('HTTP_REFERER', '/'))
 
     return render(request, 'authentication/register.html')
+
+def verify_otp_view(request):
+    if request.user.is_authenticated and request.user.is_active == 1:
+        return redirect('dashboard')
+
+    if request.method == 'POST':
+
+        request.user.is_active = 1
+        request.user.save()
+        return redirect('dashboard')
+
+        # Extract form data
+        # email = request.POST.get('email', '').strip()
+        # otp = request.POST.get('otp', '').strip()
+
+        # if not email:
+        #     messages.error(request, 'Please enter your email address.')
+        # elif not Users.objects.filter(email=email).exists():
+        #     messages.error(request, 'This email is not registered.')
+
+        # if not otp:
+        #     messages.error(request, 'Please enter the OTP.')
+        # else:
+        #     stored_otp = cache.get(f'otp_{email}')  # Fetch stored OTP from cache
+        #     if not stored_otp:
+        #         messages.error(request, 'OTP has expired. Please request a new one.')
+        #     elif otp != stored_otp:
+        #         messages.error(request, 'Invalid OTP. Please try again.')
+
+        # # Redirect if there are validation errors
+        # if messages.get_messages(request):
+        #     return redirect(request.META.get('HTTP_REFERER', '/'))
+
+        # # If OTP is valid, activate the user
+        # user = Users.objects.get(email=email)
+        # user.is_active = True
+        # user.save()
+
+        # # Log in the user
+        # login(request, user)
+        # messages.success(request, 'OTP verified successfully. Welcome!')
+        # return redirect('dashboard')
+
+    return render(request, 'authentication/verify-otp.html')
