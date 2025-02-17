@@ -48,57 +48,81 @@ Policy Data
                       <table class="table table-design table-width-design">
                         <thead class="table-thead-bg-light table-header-fix">
                           <tr>
-                            <th class="nowrap">Insurer Name</th>
-                            <th class="nowrap">Registration Number</th>
-                            <th class="nowrap">Policy Holder</th>
-                            <th class="nowrap">Policy Number</th>
-                            <th class="nowrap" width="150">Issue Date</th>
-                            <th class="nowrap" width="150">Expiry Date</th>
-                            <th class="nowrap">Policy Period</th>
+                            <th class="nowrap">Insurance Co.</th>
+                            <th class="nowrap">Reg. No.</th>
+                            <th class="nowrap">Holder</th>
+                            <th class="nowrap">Policy</th>
                             <th class="nowrap">Premium</th>
-                            <th class="nowrap">Total Premium</th>
-                            <!-- <th class="nowrap" width="150">Coverage Details</th> -->
-                            <th class="nowrap">RM Name</th>
+                            <th class="nowrap">RM</th>
+                            <th class="nowrap">Payment</th>
+                            <th class="nowrap">Vehicle Details</th>
+                            <th class="nowrap">Manufacture Year</th>
                             <th class="nowrap">Action</th>
                           </tr>
                         </thead>
                         <tbody>
                           {% for data in policy_data %}
                             <tr>
-                                <td>{{ data.insurance_provider }}</td>
-                                <td>{{ data.vehicle_number }}</td>
-                                <td>{{ data.holder_name }}</td>
-                                <td>{{ data.policy_number }}</td>
-                                <td class="nowrap">{{ data.policy_issue_date }}</td>
-                                <td class="nowrap">{{ data.policy_expiry_date }}</td>
-                                <td>{{ data.policy_period }}</td>
-                                <td>{{ data.policy_premium }}</td>
-                                <td>{{ data.policy_total_premium }}</td>
-                                <!-- <td class="nowrap">
-                                  <ul>
-                                    {% for benefit in data.coverage_details %}
-                                    <li>{{benefit.benefit}} : {{ benefit.amount }}</li>
-                                  {% endfor %}
-                                </ul>
-                                </td> -->
-                                
-                                <td>{{ data.rm_name }}</td>
-                                
-                                <td>
-                                    <a href="{{ data.filepath }}" class="tooltip-sec" data-title="Download Policy" target="_blank" download>{{ data.filename }}</a>
-                                    <a href="{% url 'edit-policy' id=data.id %}" class="circle-arrow-link tooltip-sec" data-title="Edit Policy" ><i class="fa-solid fa-chevron-right"></i></a>
-                                </td>
-                                <!-- <td>
-                                    {% if data.extracted_text.choices and data.extracted_text.choices.0.message.content %}
-                                        {{ data.extracted_text.choices.0.message.content|linebreaks }}
-                                    {% else %}
-                                        No content available
-                                    {% endif %}
-                                </td> -->
+                              <!-- Insurance Co. -->
+                              <td>{{ data.insurance_provider }}</td>
+                      
+                              <!-- Registration Number -->
+                              <td>{{ data.vehicle_number }}</td>
+                      
+                              <!-- Holder Name -->
+                              <td>{{ data.holder_name }}</td>
+                      
+                              <!-- Policy -->
+                              <td>
+                                <span class="text-muted fw-bold">Policy Number</span>{{ data.policy_number|default:"-" }} <br>
+                                <span class="text-muted fw-bold">Policy Type</span>{{ data.policy_type|default:"-" }} <br>
+                                <span class="text-muted fw-bold">Issue Date</span>{{ data.policy_issue_date|default:"-" }} <br>
+                                <span class="text-muted fw-bold">Start Date</span>{{ data.start_date|default:"-" }} <br>
+                                <span class="text-muted fw-bold">Expriy Date</span>{{ data.policy_expiry_date|default:"-" }}
+                              </td>
+                      
+                              <!-- Premium (Gross and Net) -->
+                              <td>
+                                <span class="text-muted fw-bold"> Gross Premium: </span> {{ data.policy_premium }} <br>
+                                <span class="text-muted fw-bold"> Net Premium: </span> {{ data.policy_total_premium }}
+                                <span class="text-muted fw-bold"> OD Premium: </span> {{ data.od_premium }}
+                                <span class="text-muted fw-bold"> TP Premium: </span> {{ data.tp_premium }}
+                                <span class="text-muted fw-bold"> GST: </span> {{ data.gst }}
+                              </td>
+                      
+                              <!-- RM Name -->
+                              <td>{{ data.rm_name }}</td>
+                      
+                              <!-- Payment Status -->
+                              <td>{{ data.payment_status|default:"Not Paid" }}</td>
+                      
+                              <!-- Policy Type -->
+                              <!-- <td></td> -->
+                      
+                              <!-- Vehicle Details -->
+                              <td>
+                                <div><strong>Type:</strong> {{ data.vehicle_type|default:"-" }}</div>
+                                <div><strong>Make/Model:</strong> {{ data.vehicle_make|default:"-" }} / {{ data.vehicle_model|default:"-" }}</div>
+                                <div><strong>Gross Weight:</strong> {{ data.vehicle_gross_weight|default:"-" }}</div>
+                                <div><strong>Sum Insured:</strong> {{ data.sum_insured|default:"-" }}</div>
+                                <div><strong>GST:</strong> {{ data.gst|default:"-" }}</div>
+                              </td>
+                      
+                              <!-- Manufacture Date -->
+                              <td>{{ data.vehicle_manuf_date|default:"-" }}</td>
+                      
+                              <!-- Actions (Download & Edit) -->
+                              <td>
+                                <a href="{{ data.filepath }}" class="tooltip-sec" data-title="Download Policy" target="_blank" download>{{ data.filename }}</a>
+                                <a href="{% url 'edit-policy' id=data.id %}" class="circle-arrow-link tooltip-sec" data-title="Edit Policy">
+                                  <i class="fa-solid fa-chevron-right"></i>
+                                </a>
+                              </td>
                             </tr>
                           {% endfor %}
                         </tbody>
                       </table>
+                      
                     </div>
                 </div>
               </div>

@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from datetime import datetime
 
 class Roles(models.Model):
     roleGenID = models.CharField(max_length=255)
@@ -28,10 +29,25 @@ class PolicyDocument(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.IntegerField()
     coverage_details = models.JSONField()
+    policy_start_date = models.DateTimeField()
+    payment_status = models.CharField(max_length=255)
+    policy_type = models.CharField(max_length=255)
+    vehicle_type = models.CharField(max_length=255)
+    vehicle_make = models.CharField(max_length=255)
+    vehicle_model = models.CharField(max_length=255)
+    vehicle_gross_weight = models.CharField(max_length=255)
+    vehicle_manuf_date = models.CharField(max_length=255)
+    gst = models.CharField(max_length=255)
+    od_premium = models.CharField(max_length=255)
+    tp_premium = models.CharField(max_length=255)
 
     def __str__(self):
         return self.filename    
     
+    @property
+    def start_date(self):
+        return self.policy_start_date.date() if self.policy_start_date else None
+
     class Meta:
         db_table = 'policydocument'
         

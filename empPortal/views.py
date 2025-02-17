@@ -18,7 +18,6 @@ from django.http import JsonResponse
 import os
 import zipfile
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
 
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 
@@ -361,8 +360,6 @@ def updateUserStatus(request):
     else:
         return redirect('login')
     
-    
-    
 def policyMgt(request):
     return render(request,'policy-mgt.html')
 
@@ -389,8 +386,8 @@ def browsePolicy(request):
             return redirect('policy-mgt')
         
         processed_text = process_text_with_chatgpt(extracted_text)
-        # processed_text = {"policy_number": "3005/O/379425038/00/000", "vehicle_number": "HR98P4781", "insured_name": "SHELLEY MUNJAL", "issue_date": "2025-02-01", "expiry_date": "2026-02-01", "premium_amount": "1,163.00", "sum_insured": "64,073.00", "policy_period": "1 year", "total_premium": "1,372.00", "insurance_company": "ICICI Lombard General Insurance Company Limited", "coverage_details": [{"benefit": "Basic OD Premium", "amount": "612.00"}, {"benefit": "Zero Depreciation (Silver)", "amount": "449.00"}, {"benefit": "Return to Invoice", "amount": "224.00"}]}
-    
+        # processed_text = {"policy_number": "1-3RZIAP5N / N0493710", "vehicle_number": "HR10AK1824", "insured_name": "SECANTCONSTRUCTION PRIVATE LIMITED", "issue_date": "2024-09-07", "start_date": "2024-09-07", "expiry_date": "2025-09-06", "gross_premium": "21310.30", "net_premium": "18059.58", "gst_premium": "3250.72", "sum_insured": "550000.00", "policy_period": "1 Year(s)", "insurance_company": "IFFCO-TOKIO General Insurance Co. Ltd", "coverage_details": [{"own_damage": {"premium": "10112.58", "additional_premiums": "0.00", "addons": [{"name": "Legal Liability to Driver (IMT 28)", "amount": "50.00"}]}, "third_party": {"premium": "7947.00", "additional_premiums": "0.00", "addons": []}}], "vehicle_details": {"make": "MAHINDRA", "model": "CAMPER GOLD ZX 2WD PS", "variant": "Not Found", "registration_year": "2020", "engine_number": "TNL4H91536", "chassis_number": "MA1RY2TNKL3H96572", "fuel_type": "Not Found", "cubic_capacity": "2523 CC", "vehicle_gross_weight": "Not Found", "vehicle_type": "Private Car", "commercial_vehicle_detail": "Not Found"}, "additional_details": {"policy_type": "Motor-Package Policy", "ncb": "0.0%", "addons": ["Legal Liability to Driver (IMT 28)"], "previous_insurer": "SHRIRAM GENERAL INSURANCE CO. LTD", "previous_policy_number": "108047/31/24/004033"}, "contact_information": {"address": "SC O-1 BEHIND HOTEL REGENCY GT ROAD PANIPAT HARYANA", "phone_number": "XXXXXXX402", "email": "Not Found"}} 
+        
         if "error" in processed_text:
             PolicyDocument.objects.create(
                 filename=image.name,
@@ -404,23 +401,40 @@ def browsePolicy(request):
             return redirect('policy-mgt')
         
         else:
-            vehicle_number = re.sub(r'[^a-zA-Z0-9]','',processed_text['vehicle_number'])
+            vehicle_number = re.sub(r"[^a-zA-Z0-9]", "", processed_text.get("vehicle_number", ""))
+            coverage_details = processed_text.get("coverage_details", [{}])
+            first_coverage = coverage_details[0] if coverage_details else {}
+
+            od_premium = first_coverage.get('own_damage', {}).get('premium', 0)
+            tp_premium = first_coverage.get('third_party', {}).get('premium', 0)
             PolicyDocument.objects.create(
                 filename=image.name,
                 extracted_text=processed_text,
                 filepath=fileurl,
                 rm_name=request.user.full_name,
-                insurance_provider=processed_text['insurance_company'],
+                
+                insurance_provider=processed_text.get("insurance_company", ""),
                 vehicle_number=vehicle_number,
-                policy_number=processed_text['policy_number'],
-                policy_issue_date=processed_text['issue_date'],
-                policy_expiry_date=processed_text['expiry_date'],
-                policy_period=processed_text['policy_period'],
-                holder_name=processed_text['insured_name'],
-                policy_total_premium=processed_text['total_premium'],
-                policy_premium=processed_text['premium_amount'],
-                sum_insured=processed_text['sum_insured'],
-                coverage_details=processed_text['coverage_details'],
+                policy_number=processed_text.get("policy_number", ""),
+                policy_issue_date=processed_text.get("issue_date", None),
+                policy_expiry_date=processed_text.get("expiry_date", None),
+                policy_period=processed_text.get("policy_period", ""),
+                holder_name=processed_text.get("insured_name", ""),
+                policy_total_premium=processed_text.get("gross_premium", 0),
+                policy_premium=processed_text.get("net_premium", 0),
+                sum_insured=processed_text.get("sum_insured", 0),
+                coverage_details=processed_text.get("coverage_details", ""),
+                policy_start_date=processed_text.get('start_date', None),
+                payment_status='Confirmed',
+                policy_type=processed_text.get('additional_details', {}).get('policy_type', ""),
+                vehicle_type=processed_text.get('vehicle_details', {}).get('vehicle_type', ""),
+                vehicle_make=processed_text.get('vehicle_details', {}).get('make', ""),                      
+                vehicle_model=processed_text.get('vehicle_details', {}).get('model', ""),                      
+                vehicle_gross_weight=processed_text.get('vehicle_details', {}).get('vehicle_gross_weight', ""),                     
+                vehicle_manuf_date=processed_text.get('vehicle_details', {}).get('registration_year', ""),                      
+                gst=processed_text.get('gst_premium', 0),                      
+                od_premium=od_premium,
+                tp_premium=tp_premium,
                 status=1,
             )
             messages.success(request, "PDF uploaded and processed successfully.")
@@ -444,7 +458,6 @@ def process_text_with_chatgpt(text):
 
     prompt = f"""
     Convert the following insurance document text into structured JSON format without any extra lines of comments:
-    
     ```
     {text}
     ```
@@ -452,7 +465,7 @@ def process_text_with_chatgpt(text):
     The JSON should have this structure:
     
     {{
-        "policy_number": "XXXXXX / XXXXX",   #complete policy number
+        "policy_number": "XXXXXX/XXXXX",   #complete policy number
         "vehicle_number": "XXXXXXXXXX",    
         "insured_name": "XXXXXX",
         "issue_date": "YYYY-MM-DD",
@@ -470,14 +483,14 @@ def process_text_with_chatgpt(text):
                     "premium": "XXXXX",
                     "additional_premiums:"XXXX",
                     "addons": [
-                        {{ "name": "XXXX", "amount": "XXXX" }}
+                        {{"addons":{{ "name": "XXXX", "amount": "XXXX" }},"discount":{{ "name": "XXXX", "amount": "XXXX" }}}}
                     ]
                 }},
                 "third_party": {{
                     "premium": "XXXXX",
                     "additional_premiums:"XXXX",
                     "addons": [
-                        {{ "name": "XXXX","amount": "XXXX" }}
+                        {{"addons":{{ "name": "XXXX", "amount": "XXXX" }},"discount":{{ "name": "XXXX", "amount": "XXXX" }}}}
                     ]
                 }}
             }}
@@ -613,7 +626,8 @@ def updatePolicy(request):
 def bulkBrowsePolicy(request):
     if request.method == "POST" and request.FILES.get("zip_file"):
         zip_file = request.FILES["zip_file"]
-        camp_name = request.POST.get("camp_name")  # Use POST instead of GET
+        camp_name = request.POST.get("camp_name") 
+        rm_name = request.POST.get("rm_name")
 
         # Validate ZIP file format
         if not zip_file.name.endswith(".zip"):
@@ -667,17 +681,23 @@ def bulkBrowsePolicy(request):
                         filename=file_name,
                         extracted_text=processed_text,
                         filepath=file_path_url,
-                        rm_name=request.user.full_name,
+                        rm_name=rm_name,
                         status=2,
                     )
                     messages.error(request, f"Error processing policy {file_name}: {processed_text}")
                 else:
                     vehicle_number = re.sub(r"[^a-zA-Z0-9]", "", processed_text.get("vehicle_number", ""))
+                    coverage_details = processed_text.get("coverage_details", [{}])
+                    first_coverage = coverage_details[0] if coverage_details else {}
+
+                    od_premium = first_coverage.get('own_damage', {}).get('premium', 0)
+                    tp_premium = first_coverage.get('third_party', {}).get('premium', 0)
+
                     PolicyDocument.objects.create(
                         filename=file_name,
                         extracted_text=processed_text,
                         filepath=file_path_url,
-                        rm_name=request.user.full_name,
+                        rm_name=rm_name,
                         insurance_provider=processed_text.get("insurance_company", ""),
                         vehicle_number=vehicle_number,
                         policy_number=processed_text.get("policy_number", ""),
@@ -685,12 +705,25 @@ def bulkBrowsePolicy(request):
                         policy_expiry_date=processed_text.get("expiry_date", None),
                         policy_period=processed_text.get("policy_period", ""),
                         holder_name=processed_text.get("insured_name", ""),
-                        policy_total_premium=processed_text.get("total_premium", 0),
-                        policy_premium=processed_text.get("premium_amount", 0),
+                        policy_total_premium=processed_text.get("gross_premium", 0),
+                        policy_premium=processed_text.get("net_premium", 0),
                         sum_insured=processed_text.get("sum_insured", 0),
                         coverage_details=processed_text.get("coverage_details", ""),
+
+                        policy_start_date=processed_text.get('start_date', None),
+                        payment_status='Confirmed',
+                        policy_type=processed_text.get('additional_details', {}).get('policy_type', ""),
+                        vehicle_type=processed_text.get('vehicle_details', {}).get('vehicle_type', ""),
+                        vehicle_make=processed_text.get('vehicle_details', {}).get('make', ""),                      
+                        vehicle_model=processed_text.get('vehicle_details', {}).get('model', ""),                      
+                        vehicle_gross_weight=processed_text.get('vehicle_details', {}).get('vehicle_gross_weight', ""),                     
+                        vehicle_manuf_date=processed_text.get('vehicle_details', {}).get('registration_year', ""),                      
+                        gst=processed_text.get('gst_premium', 0),                      
+                        od_premium=od_premium,
+                        tp_premium=tp_premium,
                         status=1,
                     )
+
                     uploaded_files += 1
             else:
                 not_pdf += 1

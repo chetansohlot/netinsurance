@@ -4,7 +4,6 @@ from . import authenticationView
 
 urlpatterns = [
     path("login", authenticationView.login_view, name="login"),
-
     path("register", authenticationView.register_view, name="register"),
     
     path('user-and-roles/', views.userAndRoles, name='user-and-roles'),
@@ -35,5 +34,5 @@ urlpatterns = [
     path('bulk-upload-logs/',views.bulkUploadLogs,name='bulk-upload-logs'),
     path('change-password/',views.changePassword,name='change-password'),
     path('update-password',views.updatePassword,name='update-password'),
-    path("logout/", views.userLogout, name="logout"),
+    path("logout/", views.userLogout, name="logout")
 ]
