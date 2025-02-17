@@ -5,3 +5,5 @@
 5. pip install requests
 6. pip install PyMuPDF
 
+or 
+pip install django requests python-magic openai pymysql python-dotenv fastapi PyMuPDF
