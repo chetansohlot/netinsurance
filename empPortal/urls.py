@@ -1,8 +1,16 @@
 from django.urls import path
+<<<<<<< HEAD
 from . import views,export
+=======
+from . import views
+from . import authenticationView
+>>>>>>> d7174715b955f0a96d436b9f113b29b62d294497
 
 urlpatterns = [
-    path("login", views.login_view, name="login"),
+    path("login", authenticationView.login_view, name="login"),
+
+    path("register", authenticationView.register_view, name="register"),
+    
     path('user-and-roles/', views.userAndRoles, name='user-and-roles'),
     path('', views.dashboard, name='dashboard'),
     path('dashboard/', views.dashboard, name='dashboard'),

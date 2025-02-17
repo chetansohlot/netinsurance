@@ -361,60 +361,7 @@ def updateUserStatus(request):
     else:
         return redirect('login')
     
-def login_view(request):
-    if request.user.is_authenticated:
-        return redirect('dashboard')
-    else:
-        if request.method == 'POST': 
-            login_via = request.POST.get('login_via', '').strip()
-            email = request.POST.get('email', '').strip()
-            mobile = request.POST.get('mobile', '').strip()
-            remember_me = request.POST.get('rememberme', '').strip()
-            password = request.POST.get('password', '').strip()
-            
-            # Validation Errors
-            if not login_via:
-                messages.error(request, 'Login via field is required')
-
-            if login_via == '1':  # Login via Email
-                if not email:
-                    messages.error(request, 'Email is required')
-                elif not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email):
-                    messages.error(request, 'Invalid email format')
-                elif not Users.objects.filter(email=email).exists():
-                    messages.error(request, 'This email is invalid')
-
-            elif login_via == '2':  # Login via Mobile
-                if not mobile:
-                    messages.error(request, 'Mobile is required')
-                elif not mobile.isdigit():
-                    messages.error(request, 'Mobile No must contain only numbers')
-                elif mobile[0] <= '5':
-                    messages.error(request, 'Invalid Mobile No')
-                elif len(mobile) != 10:
-                    messages.error(request, 'Mobile No must be of 10 digits')
-                elif not Users.objects.filter(phone=mobile).exists():
-                    messages.error(request, 'This mobile number is not registered with us.')
-
-            # Password Validation
-            if not password:
-                messages.error(request, 'Password is required.')
-
-            # Redirect if there are errors
-            if list(messages.get_messages(request)):  
-                return redirect(request.META.get('HTTP_REFERER', '/'))
-
-            # Fetch User Data
-            username = email if login_via == "1" else mobile
-            user = authenticate(request, username=username, password=password)
-            if user:
-                login(request, user)
-                return redirect('dashboard')
-            else:
-                messages.error(request, 'Invalid credentials')
-                return redirect(request.META.get('HTTP_REFERER', '/'))
-
-        return render(request, 'login.html')
+    
     
 def policyMgt(request):
     return render(request,'policy-mgt.html')
