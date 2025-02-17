@@ -87,7 +87,6 @@ class Users(AbstractBaseUser):
     is_superuser = models.BooleanField(default=False)
     
     objects = UsersManager()
-    
     USERNAME_FIELD  = 'email'
     REQUIRED_FIELDS = ['user_name']
     class Meta:
