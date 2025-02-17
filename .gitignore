@@ -6,6 +6,7 @@ config/settings_local.py
 # Ignore Django settings (if sensitive data is inside)
 elevateInsurance/settings.py
 
+
 # Ignore compiled Python files
 __pycache__/
 *.pyc
