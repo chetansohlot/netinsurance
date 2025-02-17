@@ -485,54 +485,6 @@ def browsePolicy(request):
 
     return redirect('policy-mgt')
 
-def extract_policy_details(response_text):
-    """
-    Extracts policy details from the given response text.
-    Supports multiple response formats.
-    """
-    
-    clean_text = re.sub(r"```json\n|\n```", "", response_text).strip()
-    
-    policy_data = {
-        "Policy Provider": "Not Found",
-        "Policy Number": "Not Found",
-        "Policy Issue Date": "Not Found",
-        "Policy Expiry Date": "Not Found",
-        "Vehicle Registration Number": "Not Found",
-        "Policy Holder":"Not Found",
-        "Policy Period":"Not Found"
-    }
-    
-    # Try parsing as JSON if response is structured
-    try:
-        data = json.loads(clean_text)
-        
-        for key in policy_data.keys():
-            for possible_key in [key, key.lower().replace(" ", "_")]:  # Handle variations
-                if possible_key in data:
-                    policy_data[key] = data[possible_key]
-                    break
-                
-                
-    except json.JSONDecodeError:
-        # If not JSON, try extracting using regex patterns
-        patterns = {
-            "Policy Provider": r"(?:Insurer|Company|Provider):\s*(.+)",
-            "Policy Number": r"(?:Policy No|Policy Number):\s*(\S+)",
-            "Policy Issue Date": r"(?:Issue Date|Policy Start Date|Policy Issue Date|Policy Issued On|Period of Insurance|Policy Issue Date):\s*([A-Z0-9-]+)",
-            "Policy Expiry Date": r"(?:Expiry Date|Valid Till|Policy Expiry Date):\s*(\d{2}-\d{2}-\d{4})",
-            "Vehicle Registration Number": r"(?:Vehicle No|Registration Number|Vehicle Registration No|Vehicle Registration No.|registration number):\s*([A-Z0-9-]+)",
-            "Policy Holder": r"(?:Insured|Insured's Name|Insured Name):\s*([A-Z0-9-]+)",
-            "Policy Period": r"(?:Policy Period|Period of Policy):\s*([A-Z0-9-]+)",
-        }
-        
-        for key, pattern in patterns.items():
-            match = re.search(pattern, response_text, re.IGNORECASE)
-            if match:
-                policy_data[key] = match.group(1)
-    
-    return policy_data
-
 def extract_text_from_pdf(pdf_path):
     try:
         doc = fitz.open(pdf_path)
@@ -553,7 +505,7 @@ def process_text_with_chatgpt(text):
     The JSON should have this structure:
     
     {{
-        "policy_number": "XXXXXX",
+        "policy_number": "XXXXXX / XXXXX",
         "vehicle_number": "XXXXXXXXXX",
         "insured_name": "XXXXXX",
         "issue_date": "YYYY-MM-DD",
@@ -592,10 +544,13 @@ def process_text_with_chatgpt(text):
             "engine_number": "XXXXXXXXXXXX",
             "chassis_number": "XXXXXXXXXXXX",
             "fuel_type": "XXXX",
-            "cubic_capacity": "XXXX CC"
+            "cubic_capacity": "XXXX CC",
+            "vehicle_gross_weight": "XXX"   #in kg if commercial vehicle
+            "vehicle_type": "XXXX XXXX", # type of vehicle pvt or commercial
+            "commercial_vehicle_detail":"XXXX XXXX" # if vehicle is commercial then detail in text format of commercial type 
         }},
         "additional_details": {{
-            "policy_type": "XXXX",
+            "policy_type": "XXXX",  # it must be type from Motor Stand Alone OD /Motor-Liability Only / Motor-Package Policy
             "ncb": "XX%",
             "addons": [
                 "XXXX",
