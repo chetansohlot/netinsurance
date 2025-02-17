@@ -1,7 +1,7 @@
 {% extends 'master.html' %}
 {% load static %}
 {% block title %}
-  Login
+  Register
 {% endblock %}
 
 {% block content %}
@@ -35,9 +35,9 @@
                                 <div class="form-group posrel">
                                     <select name="gender" class="admin-login-field" required>
                                         <option value="" disabled selected>Select Gender</option>
-                                        <option value="male">Male</option>
-                                        <option value="female">Female</option>
-                                        <option value="other">Other</option>
+                                        <option value="1">Male</option>
+                                        <option value="2">Female</option>
+                                        <option value="3">Other</option>
                                     </select>
                                     <span class="error gender_err"></span>
                                 </div>
@@ -62,7 +62,7 @@
                             </div>
                 
                             <!-- Password Field -->
-                            <div id="password_div">
+                            <div id="">
                                 <label class="admin-login-lbl">Password</label>
                                 <div class="form-group posrel">
                                     <input type="password" name="password" class="admin-login-field" placeholder="Enter password" id="login_password_id" autocomplete="off" required />
@@ -70,17 +70,6 @@
                                     <span class="error password_err"></span>
                                 </div>
                             </div>
-                        </div>
-                
-                        <!-- Remember Me Option -->
-                        <div class="col-12 col-sm-6">
-                            <input type="checkbox" name="rememberme" id="rememberme" class="rememberme" />
-                            <label for="rememberme">Remember me</label>
-                        </div>
-                
-                        <!-- Forgot Password Link -->
-                        <div class="col-12 col-sm-6">
-                            <a href="#" class="forgotxt text-right">Forgot Password?</a>
                         </div>
                 
                         <!-- Display Error Messages -->

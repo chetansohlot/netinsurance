@@ -19,6 +19,7 @@ import os
 import zipfile
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.core.cache import cache
 
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 
@@ -84,65 +85,134 @@ def login_view(request):
 def register_view(request):
     if request.user.is_authenticated:
         return redirect('dashboard')
-    else:
-        if request.method == 'POST':
-            # Extract form data
-            full_name = request.POST.get('full_name', '').strip()
-            gender = request.POST.get('gender', '').strip()
-            email = request.POST.get('email', '').strip()
-            mobile = request.POST.get('mobile', '').strip()
-            password = request.POST.get('password', '').strip()
-            remember_me = request.POST.get('rememberme', '').strip()
 
-            # Validation Errors
-            if not full_name:
-                messages.error(request, 'Full Name is required.')
+    if request.method == 'POST':
+        # Extract form data
+        full_name = request.POST.get('full_name', '').strip()
+        gender = request.POST.get('gender', '').strip()
+        email = request.POST.get('email', '').strip()
+        mobile = request.POST.get('mobile', '').strip()
+        password = request.POST.get('password', '').strip()
 
-            if not gender:
-                messages.error(request, 'Gender is required.')
+        # Splitting full name into first and last name
+        name_parts = full_name.split()
+        first_name = name_parts[0] if name_parts else ''
+        last_name = " ".join(name_parts[1:]) if len(name_parts) > 1 else ''
 
-            if not email:
-                messages.error(request, 'Email Address is required.')
-            elif not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email):
-                messages.error(request, 'Invalid email format.')
-            elif User.objects.filter(email=email).exists():
-                messages.error(request, 'This email is already registered.')
+        # Validation Errors
+        if not full_name:
+            messages.error(request, 'Full Name is required.')
 
-            if not mobile:
-                messages.error(request, 'Mobile Number is required.')
-            elif not mobile.isdigit():
-                messages.error(request, 'Mobile number must contain only digits.')
-            elif len(mobile) != 10:
-                messages.error(request, 'Mobile number must be 10 digits long.')
-            elif User.objects.filter(username=mobile).exists():
-                messages.error(request, 'This mobile number is already registered.')
+        if not gender:
+            messages.error(request, 'Gender is required.')
 
-            if not password:
-                messages.error(request, 'Password is required.')
+        if not email:
+            messages.error(request, 'Email Address is required.')
+        elif not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email):
+            messages.error(request, 'Invalid email format.')
+        elif Users.objects.filter(email=email).exists():
+            messages.error(request, 'This email is already registered.')
 
-            # Redirect if there are validation errors
-            if messages.get_messages(request):
-                return redirect(request.META.get('HTTP_REFERER', '/'))
+        if not mobile:
+            messages.error(request, 'Mobile Number is required.')
+        elif not mobile.isdigit():
+            messages.error(request, 'Mobile number must contain only digits.')
+        elif len(mobile) != 10:
+            messages.error(request, 'Mobile number must be 10 digits long.')
+        elif Users.objects.filter(phone=mobile).exists():
+            messages.error(request, 'This mobile number is already registered.')
 
-            # Create new user if there are no validation errors
-            user = User.objects.create_user(
-                username=mobile,  # Using mobile number as username
-                email=email,
-                password=password
-            )
+        if not password:
+            messages.error(request, 'Password is required.')
+        elif len(password) < 6:
+            messages.error(request, 'Password must be at least 6 characters long.')
 
-            # Optionally, set the full name and gender if needed
-            user.first_name = full_name
-            user.profile.gender = gender  # Assuming you have a custom profile model for gender
-            user.save()
-
-            # Automatically log in the user after registration
-            user = authenticate(request, username=mobile, password=password)
-            if user:
-                login(request, user)
-                return redirect('dashboard')
-
-            messages.error(request, 'Failed to create an account.')
+        # Redirect if there are validation errors
+        if messages.get_messages(request):
             return redirect(request.META.get('HTTP_REFERER', '/'))
 
-        return render(request, 'authentication/register.html')
+        # Generate User ID
+        last_user = Users.objects.all().order_by('-id').first()
+        if last_user and last_user.user_gen_id.startswith('UR-'):
+            last_user_gen_id = int(last_user.user_gen_id.split('-')[1])
+            new_gen_id = f"UR-{last_user_gen_id + 1:04d}"
+        else:
+            new_gen_id = "UR-0001"
+
+        # Hash password
+        hashed_password = make_password(password)
+
+        # Create new user
+        user = Users(
+            user_gen_id=new_gen_id,
+            role_id=2,  # Assuming role is assigned later
+            role_name="User",
+            user_name=full_name,
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            phone=mobile,
+            gender=gender,
+            password=hashed_password,
+            status=1,
+            is_superuser=0,
+            is_staff= 0 ,
+            is_active=0
+        )
+        user.save()
+
+        # Automatically log in the user after registration
+        user = authenticate(request, username=email, password=password)
+        if user:
+            login(request, user)
+            messages.success(request, 'Registration successful! You can now log in.')
+            return redirect('verify-otp')
+
+        # messages.error(request, 'Failed to create an account.')
+        # return redirect(request.META.get('HTTP_REFERER', '/'))
+
+    return render(request, 'authentication/register.html')
+
+def verify_otp_view(request):
+    if request.user.is_authenticated and request.user.is_active == 1:
+        return redirect('dashboard')
+
+    if request.method == 'POST':
+
+        request.user.is_active = 1
+        request.user.save()
+        return redirect('dashboard')
+
+        # Extract form data
+        # email = request.POST.get('email', '').strip()
+        # otp = request.POST.get('otp', '').strip()
+
+        # if not email:
+        #     messages.error(request, 'Please enter your email address.')
+        # elif not Users.objects.filter(email=email).exists():
+        #     messages.error(request, 'This email is not registered.')
+
+        # if not otp:
+        #     messages.error(request, 'Please enter the OTP.')
+        # else:
+        #     stored_otp = cache.get(f'otp_{email}')  # Fetch stored OTP from cache
+        #     if not stored_otp:
+        #         messages.error(request, 'OTP has expired. Please request a new one.')
+        #     elif otp != stored_otp:
+        #         messages.error(request, 'Invalid OTP. Please try again.')
+
+        # # Redirect if there are validation errors
+        # if messages.get_messages(request):
+        #     return redirect(request.META.get('HTTP_REFERER', '/'))
+
+        # # If OTP is valid, activate the user
+        # user = Users.objects.get(email=email)
+        # user.is_active = True
+        # user.save()
+
+        # # Log in the user
+        # login(request, user)
+        # messages.success(request, 'OTP verified successfully. Welcome!')
+        # return redirect('dashboard')
+
+    return render(request, 'authentication/verify-otp.html')

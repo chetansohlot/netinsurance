@@ -91,6 +91,7 @@ class Users(AbstractBaseUser):
     last_name = models.CharField(max_length=255)
     email = models.CharField(max_length=255, unique=True)
     phone = models.BigIntegerField(null=True, blank=True)
+    gender = models.PositiveSmallIntegerField(null=True, blank=True) 
     role = models.ForeignKey(Roles, on_delete=models.CASCADE, null=True)
     role_name = models.CharField(max_length=255)
     status = models.IntegerField(default=1)

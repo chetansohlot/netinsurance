@@ -1,10 +1,13 @@
 from django.urls import path
+from . import views,export
 from . import views
 from . import authenticationView
 
 urlpatterns = [
     path("login", authenticationView.login_view, name="login"),
     path("register", authenticationView.register_view, name="register"),
+    path("verify-otp", authenticationView.verify_otp_view, name="verify-otp"),
+    path("resend-otp", authenticationView.verify_otp_view, name="resend-otp"),
     
     path('user-and-roles/', views.userAndRoles, name='user-and-roles'),
     path('', views.dashboard, name='dashboard'),
@@ -31,8 +34,12 @@ urlpatterns = [
     path('policy-data/', views.policyData, name='policy-data'),
     path('edit-policy-data/<str:id>', views.editPolicy, name='edit-policy'),
     path('update-policy/', views.updatePolicy, name='update-policy'),
+   
     path('bulk-upload-logs/',views.bulkUploadLogs,name='bulk-upload-logs'),
     path('change-password/',views.changePassword,name='change-password'),
     path('update-password',views.updatePassword,name='update-password'),
-    path("logout/", views.userLogout, name="logout")
-]
+    path("logout/", views.userLogout, name="logout"),
+#  for creating of the export functionality 
+    #  path('export-policy/', views.exportPolicies, name='update-policy'),
+      path('export-policy/', export.exportPolicies, name='export-policy'),   
+] 
