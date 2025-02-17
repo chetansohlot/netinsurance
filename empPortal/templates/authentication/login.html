@@ -23,7 +23,7 @@
                         <div class="row admin-login-field">
                             <div class="col-sm-6">
                                 <label class="admin-login-lbl">Email</label>
-                                <input type="radio" name="login_via" id="login_via_email" value="1">
+                                <input type="radio" name="login_via" checked id="login_via_email" value="1">
                             </div>
                             <!-- <div class="col-sm-6">
                                 <label class="admin-login-lbl">Mobile</label>
@@ -34,21 +34,21 @@
                 </div>
                 <div class="row">
                   <div class="col-sm-12">
-                    <div id="email_div">
+                    <div id="email_divs">
                         <label class="admin-login-lbl">Email Address</label>
                         <div class="form-group posrel">
                             <input type="text" name="email" class="admin-login-field email" placeholder="Email" />
                             <span class="error email_err"></span>
                         </div>
                     </div>
-                    <div id="mobile_div">
+                    {% comment %} <div id="mobile_div">
                         <label class="admin-login-lbl">Mobile Number</label>
                         <div class="form-group posrel">
                             <input type="text" name="mobile" class="admin-login-field mobile" maxlength="10" placeholder="Mobile Number" />
                             <span class="error mobile_err"></span>
                         </div>
-                    </div>
-                    <div id="password_div">
+                    </div> {% endcomment %}
+                    <div id="password_divs">
                         <label class="admin-login-lbl">Password</label>
                         <div class="form-group posrel">
                           <input type="password" name="password" class="admin-login-field" placeholder="Enter password" id="login_password_id" autocomplete="off"/>
