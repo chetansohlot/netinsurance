@@ -505,31 +505,30 @@ def process_text_with_chatgpt(text):
     The JSON should have this structure:
     
     {{
-        "policy_number": "XXXXXX / XXXXX",
-        "vehicle_number": "XXXXXXXXXX",
+        "policy_number": "XXXXXX / XXXXX",   #complete policy number
+        "vehicle_number": "XXXXXXXXXX",    
         "insured_name": "XXXXXX",
         "issue_date": "YYYY-MM-DD",
         "start_date": "YYYY-MM-DD",
         "expiry_date": "YYYY-MM-DD",
-        "premium_amount": "XXXXX",
-        "total_premium": "XXXX",
+        "gross_premium": "XXXXX",
+        "net_premium": "XXXX",
+        "gst_premium": "XXXX",
         "sum_insured": "XXXXX",
         "policy_period": "XX Year(s)",
         "insurance_company": "XXXXX",
         "coverage_details": [
             {{
                 "own_damage": {{
-                    "benefit": "XXXX",
-                    "amount": "XXXXX",
                     "premium": "XXXXX",
+                    "additional_premiums:"XXXX",
                     "addons": [
                         {{ "name": "XXXX", "amount": "XXXX" }}
                     ]
                 }},
                 "third_party": {{
-                    "benefit": "XXXX",
-                    "amount": "XXXXX",
                     "premium": "XXXXX",
+                    "additional_premiums:"XXXX",
                     "addons": [
                         {{ "name": "XXXX","amount": "XXXX" }}
                     ]
@@ -550,7 +549,7 @@ def process_text_with_chatgpt(text):
             "commercial_vehicle_detail":"XXXX XXXX" # if vehicle is commercial then detail in text format of commercial type 
         }},
         "additional_details": {{
-            "policy_type": "XXXX",  # it must be type from Motor Stand Alone OD /Motor-Liability Only / Motor-Package Policy
+            "policy_type": "XXXX",  #it must be type from Motor Stand Alone OD /Motor-Liability Only / Motor-Package Policy
             "ncb": "XX%",
             "addons": [
                 "XXXX",
