@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views
+from . import views,export
 
 urlpatterns = [
     path("login", views.login_view, name="login"),
@@ -28,8 +28,12 @@ urlpatterns = [
     path('policy-data/', views.policyData, name='policy-data'),
     path('edit-policy-data/<str:id>', views.editPolicy, name='edit-policy'),
     path('update-policy/', views.updatePolicy, name='update-policy'),
+   
     path('bulk-upload-logs/',views.bulkUploadLogs,name='bulk-upload-logs'),
     path('change-password/',views.changePassword,name='change-password'),
     path('update-password',views.updatePassword,name='update-password'),
     path("logout/", views.userLogout, name="logout"),
-]
+#  for creating of the export functionality 
+    #  path('export-policy/', views.exportPolicies, name='update-policy'),
+      path('export-policy/', export.exportPolicies, name='export-policy'),   
+] 
