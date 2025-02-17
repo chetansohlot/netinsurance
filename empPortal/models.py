@@ -10,6 +10,7 @@ class Roles(models.Model):
     class Meta:
         db_table = 'roles'
         
+
 class PolicyDocument(models.Model):
     filename = models.CharField(max_length=255)
     insurance_provider = models.CharField(max_length=255)
@@ -81,6 +82,7 @@ class Users(AbstractBaseUser):
     status = models.IntegerField(default=1)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
+    password = models.CharField(max_length=255, null=True)
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -111,3 +113,15 @@ class Users(AbstractBaseUser):
         else :
             return 'N/A'
     
+class UserFiles(models.Model):
+    user = models.ForeignKey('Users', on_delete=models.CASCADE, related_name='files')
+    file_url = models.CharField(max_length=255, null=True, blank=True)  # updated to match 'file_url'
+    file_type = models.CharField(max_length=50, null=True, blank=True)  # added 'file_type'
+    file_updated_time = models.DateTimeField(null=True, blank=True)  # added 'file_updated_time'
+    created_at = models.DateTimeField(auto_now_add=True)  # existing field for 'file_created_time'
+
+    def __str__(self):
+        return f"Files for {self.user.user_name}"
+
+    class Meta:
+        db_table = 'user_files'

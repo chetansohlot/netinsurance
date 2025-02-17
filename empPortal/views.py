@@ -4,7 +4,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.template import loader
-from .models import Roles,Users,PolicyDocument,BulkPolicyLog
+from .models import Roles,Users,PolicyDocument,BulkPolicyLog, UserFiles
 from django.contrib.auth import authenticate, login ,logout
 from django.core.files.storage import FileSystemStorage
 import re
@@ -325,6 +325,10 @@ def updateUser(request):
                 user_data.last_name = last_name
                 user_data.save()
                 
+                # if request.FILES.getlist('files'):
+                #     for file in request.FILES.getlist('files'):
+                #         UserFiles.objects.create(user=user_data, file=file)
+
                 messages.success(request, "User updated successfully.")
                 return redirect('user-and-roles')
             else:       

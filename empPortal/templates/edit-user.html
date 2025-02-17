@@ -46,18 +46,20 @@ Add Members
                       </div>
                     {% endif %}
 
-                    <form autocomplete="off" id="myForm" name="updateUser" action="/update-user/" method="post">
-                        {% csrf_token %}
-                        <input type="hidden" class="form-control" name="user_id" id="user_id" value="{{ user_data.id }}">
-                        
-                        <div class="row">
-                            <div class="form-group col-sm-6">
-                                <label for="username">User Name</label>
-                                <input type="text" class="form-control username" name="username" id="username" placeholder="Username" value="{{ user_data.user_name }}">
-                                <span class="error username_err"></span>
-                            </div>
-
-                            <div class="form-group col-sm-6">
+                    <form autocomplete="off" id="myForm" name="updateUser" action="/update-user/" method="post" enctype="multipart/form-data">
+                      {% csrf_token %}
+                      <input type="hidden" class="form-control" name="user_id" id="user_id" value="{{ user_data.id }}">
+                      
+                      <div class="row">
+                          <!-- User Name -->
+                          <div class="form-group col-sm-6">
+                              <label for="username">User Name</label>
+                              <input type="text" class="form-control username" name="username" id="username" placeholder="Username" value="{{ user_data.user_name }}">
+                              <span class="error username_err"></span>
+                          </div>
+                  
+                          <!-- Password -->
+                          <div class="form-group col-sm-6">
                               <label for="password">Password</label>
                               <div class="input-group">
                                   <input type="password" class="form-control password" name="password" id="password" placeholder="Enter password">
@@ -69,12 +71,12 @@ Add Members
                               </div>
                               <span class="error password_err"></span>
                           </div>
-                          
+                  
                           <script>
                               function togglePassword() {
                                   let passwordField = document.getElementById("password");
                                   let toggleButton = document.getElementById("toggleShow");
-                          
+                                  
                                   if (passwordField.type === "password") {
                                       passwordField.type = "text";
                                       toggleButton.textContent = "Hide";
@@ -85,48 +87,63 @@ Add Members
                               }
                           </script>
                           
-                          
-                            
-                            <div class="form-group col-sm-6">
-                                <label for="first_name">First Name</label>
-                                <input type="text" class="form-control firstname" name="first_name" id="first_name" placeholder="First Name" value="{{ user_data.first_name }}">
-                                <span class="error first_name_err"></span>
-                            </div>
+                          <!-- First Name -->
+                          <div class="form-group col-sm-6">
+                              <label for="first_name">First Name</label>
+                              <input type="text" class="form-control firstname" name="first_name" id="first_name" placeholder="First Name" value="{{ user_data.first_name }}">
+                              <span class="error first_name_err"></span>
+                          </div>
+                  
+                          <!-- Last Name -->
+                          <div class="form-group col-sm-6">
+                              <label for="last_name">Last Name</label>
+                              <input type="text" class="form-control name" name="last_name" id="last_name" placeholder="Last Name" value="{{ user_data.last_name }}">
+                              <span class="error last_name_err"></span>
+                          </div>
+                  
+                          <!-- Email -->
+                          <div class="form-group col-sm-6">
+                              <label for="email">Email</label>
+                              <input type="text" class="form-control email" name="email" id="email" placeholder="Email" value="{{ user_data.email }}">
+                              <span class="error email_err"></span>
+                          </div>
+                  
+                          <!-- Phone -->
+                          <div class="form-group col-sm-6">
+                              <label for="phone">Phone</label>
+                              <input type="text" class="form-control mobile" name="phone" id="phone" placeholder="Phone" maxlength="10" value="{{ user_data.phone }}">
+                              <span class="error phone_err"></span>
+                          </div>
+                  
+                          <!-- Role -->
+                          <div class="form-group col-sm-6">
+                              <label for="role">Role</label>
+                              <select class="form-control" name="role" id="role">
+                                  <option value="">Select Role</option>
+                                  {% if role_data %}
+                                      {% for rl in role_data %}
+                                          <option value="{{ rl.id }}" {% if rl.id == user_data.role_id %}selected{% endif %}>
+                                              {{ rl.roleName }}
+                                          </option>
+                                      {% endfor %}
+                                  {% endif %}
+                              </select>
+                          </div>
+                      </div>
+                  
+                      <!-- File Upload Section -->
+                      {% comment %} <div class="row">
+                        <div class="form-group col-sm-6">
 
-                            <div class="form-group col-sm-6">
-                                <label for="last_name">Last Name</label>
-                                <input type="text" class="form-control name" name="last_name" id="last_name" placeholder="Last Name" value="{{ user_data.last_name }}">
-                                <span class="error last_name_err"></span>
-                            </div>
-
-                            <div class="form-group col-sm-6">
-                                <label for="email">Email</label>
-                                <input type="text" class="form-control email" name="email" id="email" placeholder="Email" value="{{ user_data.email }}">
-                                <span class="error email_err"></span>
-                            </div>
-
-                            <div class="form-group col-sm-6">
-                                <label for="phone">Phone</label>
-                                <input type="text" class="form-control mobile" name="phone" id="phone" placeholder="Phone" maxlength="10" value="{{ user_data.phone }}">
-                                <span class="error phone_err"></span>
-                            </div>
-
-                            <div class="form-group col-sm-6">
-                                <label for="role">Role</label>
-                                <select class="form-control" name="role" id="role">
-                                    <option value="">Select Role</option>
-                                    {% if role_data %}
-                                        {% for rl in role_data %}
-                                            <option value="{{ rl.id }}" {% if rl.id == user_data.role_id %}selected{% endif %}>
-                                                {{ rl.roleName }}
-                                            </option>
-                                        {% endfor %}
-                                    {% endif %}
-                                </select>
-                            </div>
+                          <label for="files">Upload Files</label>
+                          <input type="file" class="form-control" name="files" id="files" multiple>  <!-- 'multiple' allows multiple file selection -->
                         </div>
-                        <button type="submit" class="btn btn-primary">Save Role</button>
-                    </form>
+                      </div> {% endcomment %}
+                  
+                      <!-- Submit Button -->
+                      <button type="submit" class="btn btn-primary">Save Role</button>
+                  </form>
+                  
                   </div>
                   <div id="loader" class="form-loader" style="display: none;">
                     <div>
