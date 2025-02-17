@@ -57,7 +57,7 @@ Policy Data
                             <th class="nowrap">Policy Period</th>
                             <th class="nowrap">Premium</th>
                             <th class="nowrap">Total Premium</th>
-                            <th class="nowrap" width="150">Coverage Details</th>
+                            <!-- <th class="nowrap" width="150">Coverage Details</th> -->
                             <th class="nowrap">RM Name</th>
                             <th class="nowrap">Action</th>
                           </tr>
@@ -74,13 +74,13 @@ Policy Data
                                 <td>{{ data.policy_period }}</td>
                                 <td>{{ data.policy_premium }}</td>
                                 <td>{{ data.policy_total_premium }}</td>
-                                <td class="nowrap">
+                                <!-- <td class="nowrap">
                                   <ul>
                                     {% for benefit in data.coverage_details %}
                                     <li>{{benefit.benefit}} : {{ benefit.amount }}</li>
                                   {% endfor %}
                                 </ul>
-                                </td>
+                                </td> -->
                                 
                                 <td>{{ data.rm_name }}</td>
                                 
