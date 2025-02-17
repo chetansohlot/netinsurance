@@ -390,8 +390,7 @@ def browsePolicy(request):
             return redirect('policy-mgt')
         
         processed_text = process_text_with_chatgpt(extracted_text)
-        # processed_text = {"policy_number": "1-3RZIAP5N / N0493710", "vehicle_number": "HR10AK1824", "insured_name": "SECANTCONSTRUCTION PRIVATE LIMITED", "issue_date": "2024-09-07", "start_date": "2024-09-07", "expiry_date": "2025-09-06", "gross_premium": "21310.30", "net_premium": "18059.58", "gst_premium": "3250.72", "sum_insured": "550000.00", "policy_period": "1 Year(s)", "insurance_company": "IFFCO-TOKIO General Insurance Co. Ltd", "coverage_details": [{"own_damage": {"premium": "10112.58", "additional_premiums": "0.00", "addons": [{"name": "Legal Liability to Driver (IMT 28)", "amount": "50.00"}]}, "third_party": {"premium": "7947.00", "additional_premiums": "0.00", "addons": []}}], "vehicle_details": {"make": "MAHINDRA", "model": "CAMPER GOLD ZX 2WD PS", "variant": "Not Found", "registration_year": "2020", "engine_number": "TNL4H91536", "chassis_number": "MA1RY2TNKL3H96572", "fuel_type": "Not Found", "cubic_capacity": "2523 CC", "vehicle_gross_weight": "Not Found", "vehicle_type": "Private Car", "commercial_vehicle_detail": "Not Found"}, "additional_details": {"policy_type": "Motor-Package Policy", "ncb": "0.0%", "addons": ["Legal Liability to Driver (IMT 28)"], "previous_insurer": "SHRIRAM GENERAL INSURANCE CO. LTD", "previous_policy_number": "108047/31/24/004033"}, "contact_information": {"address": "SC O-1 BEHIND HOTEL REGENCY GT ROAD PANIPAT HARYANA", "phone_number": "XXXXXXX402", "email": "Not Found"}} 
-        
+        # processed_text = {"policy_number": "D185547496", "vehicle_number": "HR26BD7150", "insured_name": "TRIDENT 3T MARKETING", "issue_date": "2025-02-05", "start_date": "2025-02-28", "expiry_date": "2026-02-27", "gross_premium": "967.75", "net_premium": "820.13", "gst_premium": "147.62", "sum_insured": "11980", "policy_period": "1 Year(s)", "insurance_company": "Go Digit General Insurance Ltd.", "coverage_details": [{"own_damage": {"premium": "714.00", "additional_premiums": "50.00", "addons": [{"addons": {"name": "Not Found", "amount": "Not Found"}, "discount": {"name": "NCB Discount", "amount": "30.22"}}]}, "third_party": {"premium": "56.13", "additional_premiums": "Not Found", "addons": [{"addons": {"name": "Legal Liability to Paid Driver", "amount": "86.35"}, "discount": {"name": "Not Found", "amount": "Not Found"}}]}}], "vehicle_details": {"make": "BAJAJ", "model": "DISCOVER", "variant": "ELECTRIC START", "registration_year": "2010", "engine_number": "JBUBTD10722", "chassis_number": "MD2DSPAZZTPD66383", "fuel_type": "Petrol", "cubic_capacity": "100 CC", "vehicle_gross_weight": "Not Found", "vehicle_type": "Private", "commercial_vehicle_detail": "Not Found"}, "additional_details": {"policy_type": "Motor-Package Policy", "ncb": "35%", "addons": ["IMT-22", "IMT-28"], "previous_insurer": "Not Found", "previous_policy_number": "Not Found"}, "contact_information": {"address": "2315/23 BEHIND KREEM RESTAURANT OPP.PAYAL CINEMA OLD DELHI ROAD GURGAON HARYANA, 0, Gurgaon-122001", "phone_number": "xxxxxxxxx5118", "email": "rxxxxxxxxx8@gxxxl.com"}}
         if "error" in processed_text:
             PolicyDocument.objects.create(
                 filename=image.name,
@@ -407,10 +406,8 @@ def browsePolicy(request):
         else:
             vehicle_number = re.sub(r"[^a-zA-Z0-9]", "", processed_text.get("vehicle_number", ""))
             coverage_details = processed_text.get("coverage_details", [{}])
-            first_coverage = coverage_details[0] if coverage_details else {}
-
-            od_premium = first_coverage.get('own_damage', {}).get('premium', 0)
-            tp_premium = first_coverage.get('third_party', {}).get('premium', 0)
+            od_premium = coverage_details.get('own_damage', {}).get('premium', 0)
+            tp_premium = coverage_details.get('third_party', {}).get('premium', 0)
             PolicyDocument.objects.create(
                 filename=image.name,
                 extracted_text=processed_text,
@@ -461,7 +458,8 @@ def extract_text_from_pdf(pdf_path):
 def process_text_with_chatgpt(text):
 
     prompt = f"""
-    Convert the following insurance document text into structured JSON format without any extra lines of comments:
+    Convert the following insurance document text into a structured JSON format without any extra comments. Ensure that numerical values (like premiums and sum insured) are **only numbers** without extra text.
+
     ```
     {text}
     ```
@@ -469,56 +467,65 @@ def process_text_with_chatgpt(text):
     The JSON should have this structure:
     
     {{
-        "policy_number": "XXXXXX/XXXXX",   #complete policy number
-        "vehicle_number": "XXXXXXXXXX",    
+        "policy_number": "XXXXXX/XXXXX",
+        "vehicle_number": "XXXXXXXXXX",
         "insured_name": "XXXXXX",
         "issue_date": "YYYY-MM-DD",
         "start_date": "YYYY-MM-DD",
         "expiry_date": "YYYY-MM-DD",
-        "gross_premium": "XXXXX",
-        "net_premium": "XXXX",
-        "gst_premium": "XXXX",
-        "sum_insured": "XXXXX",
+        "gross_premium": XXXX,
+        "net_premium": XXXX,
+        "gst_premium": XXXX,
+        "sum_insured": XXXX,
         "policy_period": "XX Year(s)",
         "insurance_company": "XXXXX",
-        "coverage_details": [
-            {{
-                "own_damage": {{
-                    "premium": "XXXXX",
-                    "additional_premiums:"XXXX",
+        "coverage_details": {{
+            "own_damage": {{
+                "premium": XXXX,
+                "additional_premiums": XXXX,
+                "addons": {{
                     "addons": [
-                        {{"addons":{{ "name": "XXXX", "amount": "XXXX" }},"discount":{{ "name": "XXXX", "amount": "XXXX" }}}}
+                        {{ "name": "XXXX", "amount": XXXX }},
+                        {{ "name": "XXXX", "amount": XXXX }}
+                    ],
+                    "discounts": [
+                        {{ "name": "XXXX", "amount": XXXX }},
+                        {{ "name": "XXXX", "amount": XXXX }}
                     ]
-                }},
-                "third_party": {{
-                    "premium": "XXXXX",
-                    "additional_premiums:"XXXX",
+                }}
+            }},
+            "third_party": {{
+                "premium": XXXX,
+                "additional_premiums": XXXX,
+                "addons": {{
                     "addons": [
-                        {{"addons":{{ "name": "XXXX", "amount": "XXXX" }},"discount":{{ "name": "XXXX", "amount": "XXXX" }}}}
+                        {{ "name": "XXXX", "amount": XXXX }},
+                        {{ "name": "XXXX", "amount": XXXX }}
+                    ],
+                    "discounts": [
+                        {{ "name": "XXXX", "amount": XXXX }},
+                        {{ "name": "XXXX", "amount": XXXX }}
                     ]
                 }}
             }}
-        ],
+        }},
         "vehicle_details": {{
             "make": "XXXX",
             "model": "XXXX",
             "variant": "XXXX",
-            "registration_year": "YYYY",
+            "registration_year": YYYY,
             "engine_number": "XXXXXXXXXXXX",
             "chassis_number": "XXXXXXXXXXXX",
             "fuel_type": "XXXX",
-            "cubic_capacity": "XXXX CC",
-            "vehicle_gross_weight": "XXX"   #in kg if commercial vehicle
-            "vehicle_type": "XXXX XXXX", # type of vehicle pvt or commercial
-            "commercial_vehicle_detail":"XXXX XXXX" # if vehicle is commercial then detail in text format of commercial type 
+            "cubic_capacity": XXXX,
+            "vehicle_gross_weight": XXXX,
+            "vehicle_type": "XXXX XXXX",
+            "commercial_vehicle_detail": "XXXX XXXX"
         }},
         "additional_details": {{
-            "policy_type": "XXXX",  #it must be type from Motor Stand Alone OD /Motor-Liability Only / Motor-Package Policy
-            "ncb": "XX%",
-            "addons": [
-                "XXXX",
-                "XXXX"
-            ],
+            "policy_type": "XXXX",
+            "ncb": XX,
+            "addons": ["XXXX", "XXXX"],
             "previous_insurer": "XXXX",
             "previous_policy_number": "XXXX"
         }},
@@ -529,9 +536,7 @@ def process_text_with_chatgpt(text):
         }}
     }}
     
-    
-
-    If some details are missing, leave them as `"Not Found"`.
+    If some details are missing, leave them as blank.
     """
 
     api_url = "https://api.openai.com/v1/chat/completions"
@@ -804,6 +809,3 @@ def userLogout(request):
     else:
         return redirect("login")
         
-    
-   
-    

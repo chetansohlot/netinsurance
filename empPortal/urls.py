@@ -44,4 +44,8 @@ urlpatterns = [
       path('export-policy/', export.exportPolicies, name='export-policy'),   
     #   path('check-relations/', export.check_related_policies, name='check-relation'),   
 
+    
+    #  for creating of the export functionality 
+    #  path('export-policy/', views.exportPolicies, name='update-policy'),
+    path('export-policy/', export.exportPolicies, name='export-policy'),   
 ] 
