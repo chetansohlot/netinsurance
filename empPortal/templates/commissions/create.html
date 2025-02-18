@@ -1,0 +1,138 @@
+{% extends 'master.html' %}
+
+{% load static %}
+
+{% block title %}
+Add Commission
+{% endblock %}
+
+{% block content %}
+
+<body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+    
+        {% include "navbar.html" %}
+        {% include "sidebar.html" %}
+    
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <div class="content-header breadcrump-bg">
+          <div class="container-fluid">
+            <div class="row py-2">
+              <div class="col-sm-6">
+                <div class="d-flex align-items-center">
+                  <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Add Commission</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /.content-header -->
+    
+        <!-- Main content -->
+        <div class="content">
+          <div class="container-fluid">
+            <div class="row">
+              
+              <div class="col-sm-12">  
+                <div class="card box-shadow-none p-md-5 p-3">
+                  <div class="card-body px-0 pb-0 pt-0">
+                    {% if messages %}
+                      <div class="alert alert-danger">
+                        {% for message in messages %}
+                          <p>{{ message }}</p>
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+                    <form autocomplete="off" id="myForm" name="saveCommission" action="{% url 'store-commission' %}" method="post">
+                        {% csrf_token %}
+                        
+                        <!-- Display error messages -->
+                        {% if messages %}
+                            <div class="alert alert-danger">
+                                <ul>
+                                    {% for message in messages %}
+                                        <li>{{ message }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+                    
+                        <div class="row">
+                    
+                            <!-- Insurer -->
+                            <div class="form-group col-sm-6">
+                                <label for="insurer">Insurer</label>
+                                <select class="form-control" name="insurer" id="insurer">
+                                    <option value="">Select Insurer</option>
+                                    {% for insurer in insurers %}
+                                        <option value="{{ insurer.id }}" {% if request.POST.insurer == insurer.id|stringformat:"s" %}selected{% endif %}>
+                                            {{ insurer.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="form-group col-sm-6">
+                                <label for="product">Product</label>
+                                <select class="form-control" name="product" id="product">
+                                    <option value="">Select Product</option>
+                                    {% for product in products %}
+                                        <option value="{{ product.id }}" {% if request.POST.product == product.id|stringformat:"s" %}selected{% endif %}>
+                                            {{ product.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                    
+                            <!-- TP % -->
+                            <div class="form-group col-sm-6">
+                                <label for="tp_percentage">TP %</label>
+                                <input type="text" class="form-control percentage" name="tp_percentage" id="tp_percentage" 
+                                       placeholder="Enter TP percentage" value="{{ request.POST.tp_percentage }}">
+                                <span class="error tp_percentage_err"></span>
+                            </div>
+                    
+                            <!-- OD % -->
+                            <div class="form-group col-sm-6">
+                                <label for="od_percentage">OD %</label>
+                                <input type="text" class="form-control percentage" name="od_percentage" id="od_percentage" 
+                                       placeholder="Enter OD percentage" value="{{ request.POST.od_percentage }}">
+                                <span class="error od_percentage_err"></span>
+                            </div>
+                    
+                            <!-- Net % -->
+                            <div class="form-group col-sm-6">
+                                <label for="net_percentage">Net %</label>
+                                <input type="text" class="form-control percentage" name="net_percentage" id="net_percentage" 
+                                       placeholder="Enter Net percentage" value="{{ request.POST.net_percentage }}">
+                                <span class="error net_percentage_err"></span>
+                            </div>
+                    
+                        </div>
+                    
+                        <button type="submit" class="btn btn-primary">Save Commission</button>
+                    </form>
+                    
+                    
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>  
+        </div>
+      </div>
+        
+    </div>
+    
+    {% include "footer.html" %}
+    {% include "footer-script.html" %}
+    <script>
+      document.getElementById("myForm").addEventListener("submit", function() {
+          document.getElementById("loader").style.display = "flex";
+      });
+    </script>
+    
+</body>
+{% endblock %}
