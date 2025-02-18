@@ -16,8 +16,8 @@ class PolicyDocument(models.Model):
     filename = models.CharField(max_length=255)
     insurance_provider = models.CharField(max_length=255)
     policy_number = models.CharField(max_length=255)
-    policy_issue_date = models.CharField(max_length=255)
-    policy_expiry_date = models.CharField(max_length=255)
+    policy_issue_date = models.DateTimeField()
+    policy_expiry_date = models.DateTimeField()
     vehicle_number = models.CharField(max_length=255)
     holder_name = models.CharField(max_length=255)
     policy_period = models.CharField(max_length=255)
@@ -48,6 +48,12 @@ class PolicyDocument(models.Model):
     @property
     def start_date(self):
         return self.policy_start_date.date() if self.policy_start_date else None
+    
+    def issue_date(self):
+        return self.policy_issue_date.date() if self.policy_issue_date else None
+    
+    def expiry_date(self):
+        return self.policy_expiry_date.date() if self.policy_expiry_date else None
 
     class Meta:
         db_table = 'policydocument'
