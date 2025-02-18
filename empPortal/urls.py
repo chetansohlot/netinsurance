@@ -39,6 +39,7 @@ urlpatterns = [
     path('policy-mgt/', views.policyMgt, name='policy-mgt'),
     path('bulk-policy-mgt/', views.bulkPolicyMgt, name='bulk-policy-mgt'),
     path('browser-policy/', views.browsePolicy, name='browser-policy'),
+    path('policy-upload-view/<str:id>', views.policyUploadView, name='policy-upload-view'),
     path('bulk-browser-policy/', views.bulkBrowsePolicy, name='bulk-browser-policy'),
     path('policy-data/', views.policyData, name='policy-data'),
     path('edit-policy-data/<str:id>', views.editPolicy, name='edit-policy'),

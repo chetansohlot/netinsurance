@@ -101,16 +101,17 @@ Policy Data
                               <td> {{ data.sum_insured|default:"-" }}</td>
                               <td>{{ data.vehicle_manuf_date|default:"-" }}</td>
                               <td>
-                                <a href="{{ data.filepath }}" class="tooltip-sec" data-title="Download Policy" target="_blank" download>{{ data.filename }}</a>
-                                <a href="{% url 'edit-policy' id=data.id %}" class="circle-arrow-link tooltip-sec" data-title="Edit Policy">
-                                  <i class="fa-solid fa-chevron-right"></i>
-                                </a>
+                                <div class="d-flex">
+                                  <a href="{{ data.filepath }}" class="tooltip-sec mx-2" data-title="Download {{ data.filename }}" target="_blank" download><i class="fas fa-download"></i></a>
+                                  <a href="{% url 'edit-policy' id=data.id %}" class="tooltip-sec" data-title="Edit Policy">
+                                    <i class="fa-solid fa-edit"></i>
+                                  </a>
+                                </div>
                               </td>
                             </tr>
                           {% endfor %}
                         </tbody>
                       </table>
-                      
                     </div>
                 </div>
               </div>
