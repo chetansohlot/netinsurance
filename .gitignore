@@ -3,7 +3,10 @@
 *.pyc
 config/settings_local.py
 elevateInsurance/settings.py
-__pycache__/
+
+
+# Ignore compiled Python files
+__pycache__
 *.pyc
 *.pyo
 *.pyd
