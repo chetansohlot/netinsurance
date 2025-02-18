@@ -23,6 +23,9 @@ from django.contrib import messages
 from .models import PolicyDocument
 from faker import Faker 
 from .models import PolicyDocument
+import openpyxl
+from openpyxl.styles import Font, PatternFill
+from django.http import HttpResponse
 fake = Faker()
 
 processed_text = {"policy_number": "3005/O/379425038/00/000", "vehicle_number": "HR98P4781", "insured_name": "SHELLEY MUNJAL", "issue_date": "2025-02-01", "expiry_date": "2026-02-01", "premium_amount": "1,163.00", "sum_insured": "64,073.00", "policy_period": "1 year", "total_premium": "1,372.00", "insurance_company": "ICICI Lombard General Insurance Company Limited", "coverage_details": [{"benefit": "Basic OD Premium", "amount": "612.00"}, {"benefit": "Zero Depreciation (Silver)", "amount": "449.00"}, {"benefit": "Return to Invoice", "amount": "224.00"}]}
@@ -159,4 +162,56 @@ def exportPolicies(request):
     # Optional: Flash a success message
     messages.success(request, "The policy data has been successfully exported.")
     
+    return response
+
+
+def download_policy_data(request):
+    # Create an in-memory Excel workbook and worksheet
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Policy Data"
+
+    # Define headers
+    headers = [
+        "Policy Month", "Agent Name", "SM Name", "Franchise Name", "Insurer Name", "S.P. Name",
+        "Issue Date", "Risk Start Date", "Payment Status", "Insurance Company", "Policy Type",
+        "Policy No", "Insured Name", "Vehicle Type", "Vehicle Make/Model", "Gross Weight", 
+        "Reg. No.", "MFG Year", "Sum Insured", "Gross Prem.", "GST", "Net Prem.", "OD Prem.", 
+        "TP Prem.", "Agent Comm.% OD", "Agent OD Amount", "Agent TP Comm", "Agent TP Amount", 
+        "Agent Comm.% Net", "Agent Net Amt", "Agent Bonus", "Agent Total Comm.", 
+        "Franchise Comm.% OD", "Franchise OD Amount", "Franchise TP Comm", "Franchise Agent TP Amount", 
+        "Franchise Agent Comm.% Net", "Franchise Agent Net Amt", "Franchise Bonus", "Franchise Total Comm.", 
+        "Insurer Comm.% OD", "Insurer OD Amount", "Insurer TP Comm", "Insurer TP Amount", 
+        "Insurer Comm.% Net", "Insurer Net Amt", "Insurer Bonus", "Insurer Total Comm.", 
+        "Profit/Loss", "TDS %", "TDS Amount", "Net Profit"
+    ]
+
+    # Apply styling to header row (Blue background, White text)
+    header_fill = PatternFill(start_color="0000FF", end_color="0000FF", fill_type="solid")
+    header_font = Font(bold=True, color="FFFFFF")
+
+    for col_num, header in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col_num, value=header)
+        cell.fill = header_fill
+        cell.font = header_font
+
+    # Example data row
+    data = [
+        "Nov-2024", "XYZ", "ABC", "A2Z", "B2C", "Direct", "01-11-2024", "03-11-2024", "Confirmed", 
+        "Acko General", "Motor-Liability Only", "BCTA10285837458/00", "VINOD KUMAR", "Pvt Car", 
+        "MARUTI SUZUKI SWIFT DZIRE VDi BS-IV", "0", "HR08M3300", "2011", "0", "4031", "614.88", 
+        "3416", "0", "3416", "0", "0", "0", "0", "27", "922.32", "0", "922.32", "", "", "", "", 
+        "", "", "", "", "30", "0", "0", "1024.8", "102.48", "0", "0", "102.48"
+    ]
+
+    # Append data to the worksheet
+    ws.append(data)
+
+    # Create HTTP response for downloading
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename="policy_data.xlsx"'
+
+    # Save workbook to response
+    wb.save(response)
+
     return response
