@@ -294,7 +294,7 @@ body {
     width: 100px;
     height: auto;
 }
-
+.main-sidebar, .main-sidebar::before {width: 240px;}
 [class*=sidebar-dark-] .sidebar a {
     color: #343a40;
 }
@@ -343,13 +343,6 @@ body {
 
 [class*="sidebar-dark-"] .nav-sidebar>.nav-item>.nav-treeview {
     background-color: #f5eeebc7 !important;
-}
-
-
-/* Admin LTE changes */
-.main-sidebar,
-.main-sidebar::before {
-    width: 200px;
 }
 
 .content-wrapper.white-bg {
@@ -2291,3 +2284,12 @@ a:hover .dr-pdficon {
 .nowrap {white-space: nowrap;}
 
 .form-loader {position:fixed;left:0px; top:0px; right:0; bottom:0; display: flex; align-items: center; justify-content: center; background-color: rgba(0, 0, 0, 0.05); background-color: rgba(253, 248, 248, 0.6);   backdrop-filter: blur(1px); z-index:9999;}
+
+@media (min-width: 768px) {
+    body:not(.sidebar-mini-md):not(.sidebar-mini-xs):not(.layout-top-nav) .content-wrapper, body:not(.sidebar-mini-md):not(.sidebar-mini-xs):not(.layout-top-nav) .main-footer, body:not(.sidebar-mini-md):not(.sidebar-mini-xs):not(.layout-top-nav) .main-header {margin-left: 240px;  }
+}
+@media (min-width: 992px) {
+    .sidebar-mini.sidebar-collapse .main-sidebar.sidebar-focused, .sidebar-mini.sidebar-collapse .main-sidebar:hover {
+    width: 240px;
+    }
+}

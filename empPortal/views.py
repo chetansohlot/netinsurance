@@ -24,6 +24,7 @@ OPENAI_API_KEY = settings.OPENAI_API_KEY
 app = FastAPI()
 
 def dashboard(request):
+    # return HttpResponse()
     if request.user.is_authenticated:
         user = request.user
         return render(request,'dashboard.html',{'user':user})
@@ -365,16 +366,14 @@ def updateUserStatus(request):
         return redirect('login')
     
 def policyMgt(request):
-    return render(request,'policy-mgt.html')
+    return render(request,'policy/policy-mgt.html')
 
 def bulkPolicyMgt(request):
-    return render(request,'bulk-policy-mgt.html')
+    return render(request,'policy/bulk-policy-mgt.html')
 
 def browsePolicy(request):
     if request.method == "POST" and request.FILES.get("image"):
-        
         image = request.FILES["image"]
-        
          # Validate ZIP file format
         if not image.name.endswith(".pdf"):
             messages.error(request, "Invalid file format. Only pdf files are allowed.")
@@ -467,12 +466,12 @@ def process_text_with_chatgpt(text):
     The JSON should have this structure:
     
     {{
-        "policy_number": "XXXXXX/XXXXX",
+        "policy_number": "XXXXXX/XXXXX",   # complete policy number
         "vehicle_number": "XXXXXXXXXX",
         "insured_name": "XXXXXX",
-        "issue_date": "YYYY-MM-DD",
-        "start_date": "YYYY-MM-DD",
-        "expiry_date": "YYYY-MM-DD",
+        "issue_date": "YYYY-MM-DD H:i:s",     
+        "start_date": "YYYY-MM-DD H:i:s",
+        "expiry_date": "YYYY-MM-DD H:i:s",
         "gross_premium": XXXX,
         "net_premium": XXXX,
         "gst_premium": XXXX,
@@ -516,16 +515,16 @@ def process_text_with_chatgpt(text):
             "registration_year": YYYY,
             "engine_number": "XXXXXXXXXXXX",
             "chassis_number": "XXXXXXXXXXXX",
-            "fuel_type": "XXXX",
-            "cubic_capacity": XXXX,
-            "vehicle_gross_weight": XXXX,
-            "vehicle_type": "XXXX XXXX",
-            "commercial_vehicle_detail": "XXXX XXXX"
+            "fuel_type": "XXXX",     # diesel/petrol/cng/lpg/ev 
+            "cubic_capacity": XXXX,  
+            "vehicle_gross_weight": XXXX,   # in kg
+            "vehicle_type": "XXXX XXXX",    # private / commercial   2 wheeler or 4 wheeler
+            "commercial_vehicle_detail": "XXXX XXXX"    
         }},
         "additional_details": {{
-            "policy_type": "XXXX",
-            "ncb": XX,
-            "addons": ["XXXX", "XXXX"],
+            "policy_type": "XXXX",        # motor stand alone policy/ motor third party liablity policy / motor pakage policy
+            "ncb": XX,     # in percentage
+            "addons": ["XXXX", "XXXX"], 
             "previous_insurer": "XXXX",
             "previous_policy_number": "XXXX"
         }},
@@ -574,12 +573,12 @@ def policyData(request):
                 data.extracted_text = json.loads(data.extracted_text)  # Convert JSON string to dictionary
             except json.JSONDecodeError:
                 data.extracted_text = {}  # Handle invalid JSON case
-    return render(request,'policy-data.html',{"policy_data":policy_data})
+    return render(request,'policy/policy-data.html',{"policy_data":policy_data})
 
 def editPolicy(request,id):
     if request.user.is_authenticated:
         policy_data = PolicyDocument.objects.filter(id=id).first()
-        return render(request,'edit-policy.html',{'policy_data':policy_data})
+        return render(request,'policy/edit-policy.html',{'policy_data':policy_data})
     else:
         return redirect('login')
 
@@ -767,7 +766,7 @@ def bulkBrowsePolicy(request):
 
 def bulkUploadLogs(request):
     logs = BulkPolicyLog.objects.order_by('-id')
-    return render(request,'bulk-upload-logs.html',{'logs': logs})
+    return render(request,'policy/bulk-upload-logs.html',{'logs': logs})
 
 def changePassword(request):
     return render(request, 'change-password.html')

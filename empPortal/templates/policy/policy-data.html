@@ -23,8 +23,13 @@ Policy Data
         <div class="row py-2">
           <div class="col-sm-12">
             <div class="d-flex align-items-center justify-content-between">
-              <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Policy Data </a>
-              <a href="{% url 'export-policy' %}" class="breadcrump-addbtn">Export</a>
+              <div><a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Policy Data </a></div>
+              <div>
+                <a href="{% url 'bulk-upload-logs' %}" class="breadcrump-addbtn mx-1">View Bulk Logs</a>
+                <a href="{% url 'bulk-policy-mgt' %}" class="breadcrump-addbtn mx-1">Add Bulk Policy</a>
+                <a href="{% url 'policy-mgt' %}" class="breadcrump-addbtn mx-1">Add Policy</a>
+                <!-- <a href="{% url 'export-policy' %}" class="breadcrump-addbtn mx-1">Export</a> -->
+              </div>
             </div>
           </div>
         </div>
@@ -52,11 +57,22 @@ Policy Data
                             <th class="nowrap">Insurance Co.</th>
                             <th class="nowrap">Reg. No.</th>
                             <th class="nowrap">Holder</th>
-                            <th class="nowrap">Policy</th>
-                            <th class="nowrap">Premium</th>
-                            <th class="nowrap">RM</th>
+                            <th class="nowrap">Policy No.</th>
+                            <th class="nowrap">Policy Type</th>
+                            <th class="nowrap">Issue Date</th>
+                            <th class="nowrap">Start Date</th>
+                            <th class="nowrap">Expiry Date</th>
+                            <th class="nowrap">Gross Premium</th>
+                            <th class="nowrap">Net Premium</th>
+                            <th class="nowrap">OD Premium</th>
+                            <th class="nowrap">TP Premium</th>
+                            <th class="nowrap">GST</th>
+                            <th class="nowrap">RM Name</th>
                             <th class="nowrap">Payment</th>
-                            <th class="nowrap">Vehicle Details</th>
+                            <th class="nowrap">Vehicle Type</th>
+                            <th class="nowrap">Make/Model</th>
+                            <th class="nowrap">Gross Weight</th>
+                            <th class="nowrap">Sum Insured</th>
                             <th class="nowrap">Manufacture Year</th>
                             <th class="nowrap">Action</th>
                           </tr>
@@ -64,55 +80,26 @@ Policy Data
                         <tbody>
                           {% for data in policy_data %}
                             <tr>
-                              <!-- Insurance Co. -->
                               <td>{{ data.insurance_provider }}</td>
-                      
-                              <!-- Registration Number -->
                               <td>{{ data.vehicle_number }}</td>
-                      
-                              <!-- Holder Name -->
                               <td>{{ data.holder_name }}</td>
-                      
-                              <!-- Policy -->
-                              <td>
-                                <span class="text-muted fw-bold">Policy Number</span>{{ data.policy_number|default:"-" }} <br>
-                                <span class="text-muted fw-bold">Policy Type</span>{{ data.policy_type|default:"-" }} <br>
-                                <span class="text-muted fw-bold">Issue Date</span>{{ data.policy_issue_date|default:"-" }} <br>
-                                <span class="text-muted fw-bold">Start Date</span>{{ data.start_date|default:"-" }} <br>
-                                <span class="text-muted fw-bold">Expriy Date</span>{{ data.policy_expiry_date|default:"-" }}
-                              </td>
-                      
-                              <!-- Premium (Gross and Net) -->
-                              <td>
-                                <span class="text-muted fw-bold"> Gross Premium: </span> {{ data.policy_premium }} <br>
-                                <span class="text-muted fw-bold"> Net Premium: </span> {{ data.policy_total_premium }}
-                                <span class="text-muted fw-bold"> OD Premium: </span> {{ data.od_premium }}
-                                <span class="text-muted fw-bold"> TP Premium: </span> {{ data.tp_premium }}
-                                <span class="text-muted fw-bold"> GST: </span> {{ data.gst }}
-                              </td>
-                      
-                              <!-- RM Name -->
+                              <td>{{ data.policy_number|default:"-" }} </td>
+                              <td>{{ data.policy_type|default:"-" }}</td>
+                              <td>{{ data.issue_date|default:"-" }}</td>
+                              <td>{{ data.start_date|default:"-" }}</td>
+                              <td>{{ data.expiry_date|default:"-" }}</td>
+                              <td>{{ data.policy_premium }}</td>
+                              <td>{{ data.policy_total_premium }}</td>
+                              <td>{{ data.od_premium }}</td>
+                              <td>{{ data.tp_premium }}</td>
+                              <td>{{ data.gst }}</td>
                               <td>{{ data.rm_name }}</td>
-                      
-                              <!-- Payment Status -->
                               <td>{{ data.payment_status|default:"Not Paid" }}</td>
-                      
-                              <!-- Policy Type -->
-                              <!-- <td></td> -->
-                      
-                              <!-- Vehicle Details -->
-                              <td>
-                                <div><strong>Type:</strong> {{ data.vehicle_type|default:"-" }}</div>
-                                <div><strong>Make/Model:</strong> {{ data.vehicle_make|default:"-" }} / {{ data.vehicle_model|default:"-" }}</div>
-                                <div><strong>Gross Weight:</strong> {{ data.vehicle_gross_weight|default:"-" }}</div>
-                                <div><strong>Sum Insured:</strong> {{ data.sum_insured|default:"-" }}</div>
-                                <div><strong>GST:</strong> {{ data.gst|default:"-" }}</div>
-                              </td>
-                      
-                              <!-- Manufacture Date -->
+                              <td>{{ data.vehicle_type|default:"-" }}</td>
+                              <td>{{ data.vehicle_make|default:"-" }} / {{ data.vehicle_model|default:"-" }} </td>
+                              <td>{{ data.vehicle_gross_weight|default:"-" }}</td>
+                              <td> {{ data.sum_insured|default:"-" }}</td>
                               <td>{{ data.vehicle_manuf_date|default:"-" }}</td>
-                      
-                              <!-- Actions (Download & Edit) -->
                               <td>
                                 <a href="{{ data.filepath }}" class="tooltip-sec" data-title="Download Policy" target="_blank" download>{{ data.filename }}</a>
                                 <a href="{% url 'edit-policy' id=data.id %}" class="circle-arrow-link tooltip-sec" data-title="Edit Policy">
