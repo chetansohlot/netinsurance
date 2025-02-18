@@ -32,17 +32,6 @@ def dashboard(request):
     else:
         return redirect('login')
 
-def members(request):
-    if request.user.is_authenticated:
-        return render(request,'members.html')
-    else:
-        return redirect('login')
-
-def memberView(request):
-    if request.user.is_authenticated:
-        return render(request,'member-view.html')
-    else:
-        return redirect('login')
 
 def billings(request):
     if request.user.is_authenticated:

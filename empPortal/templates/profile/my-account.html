@@ -7,6 +7,11 @@
 {% block content %}
 {% load static %}
 
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Bootstrap Bundle with Popper.js -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <body class="hold-transition sidebar-mini">
     <div class="wrapper">
@@ -35,61 +40,127 @@
                 <div class="container-fluid">
                   <div class="row">
                     <div class="col-md-4 px-0">
-                      <div class="card member-detail-left-card">
-                          <div class="card-body box-profile">
-                            <img src="{% static 'dist/img/svg/profile-avatar-male.svg' %}" alt="" class="card-profile-img">
-                            <h3 class="profile-username text-center">Ratnesh Kumar Sharma</h3>
-                            <div class="d-flex justify-content-center mt-2">
-                              <p class="text-success">Active</p>
-                            </div>  
-                            <div class="profile-info-divider"></div>
-                            <ul class="member-detail-list">
-                                
-                                <li> 
-                                  <img src="dist/img/svg/gender_ic.svg" alt="">
-                                  <span class="list">Gender</span> 
-                                  <span class="list-output"> Male </span>
-                                </li>
-                                <li> 
-                                  <img src="dist/img/svg/birthday_ic.svg" alt="">
-                                  <span class="list">Date of birth</span> 
-                                  <span class="list-output"> 10th Nov'86 </span>
-                                </li>
-                                <li> 
-                                  <img src="dist/img/svg/phone_ic.svg" alt="">
-                                  <span class="list">Phone</span> 
-                                  <span class="list-output"> 9953786487 </span>
-                                </li>
-                                <li> 
-                                  <img src="dist/img/svg/email_ic.svg" alt="">
-                                  <span class="list">E-mail</span> 
-                                  <span class="list-output"> ratnesh@netleafinfosoft.com </span>
-                                </li>
-                                <li> 
-                                  <img src="dist/img/svg/membership-id_ic.svg" alt="">
-                                  <span class="list">State</span> 
-                                  <span class="list-output"> Haryana </span>
-                                </li>
-                                <li> 
-                                  <img src="dist/img/svg/activation-date_ic.svg" alt="">
-                                  <span class="list">City</span> 
-                                  <span class="list-output"> Gurugram</span>
-                                </li>
-                                <li> 
-                                  <img src="dist/img/svg/activation-date_ic.svg" alt="">
-                                  <span class="list">Pincode</span> 
-                                  <span class="list-output"> 121001</span>
-                                </li>
-                                <li> 
-                                  <img src="dist/img/svg/activation-date_ic.svg" alt="">
-                                  <span class="list">Communication Address </span> 
-                                  <span class="list-output"> Unit- 223, Tower A, Spaze I-Tech Park, Sec-49, Sohna Road, Gurgaon </span>
-                                </li>
-                                
-                            </ul>
-                          </div>
-                      </div>
+                        <div class="card member-detail-left-card">
+                            <div class="card-body box-profile">
+                                <img src="{% static 'dist/img/svg/profile-avatar-male.svg' %}" alt="" class="card-profile-img">
+                                <h3 class="profile-username text-center">{{ user_details.first_name }} {{ user_details.last_name }}</h3>
+                                <div class="d-flex justify-content-center mt-2">
+                                    <p class="text-success">Active</p>
+                                </div>  
+                                <div class="profile-info-divider"></div>
+                                <ul class="member-detail-list">
+                                    <li>
+                                        <img src="dist/img/svg/gender_ic.svg" alt="">
+                                        <span class="list">Gender</span>
+                                        <span class="list-output">
+                                            {% if user_details.gender == 1 %} Male {% elif user_details.gender == 2 %} Female {% else %} N/A {% endif %}
+                                        </span>
+                                    </li>
+                                    <li>
+                                        <img src="dist/img/svg/birthday_ic.svg" alt="">
+                                        <span class="list">Date of birth</span>
+                                        <span class="list-output">{{ user_details.dob }}</span>
+                                    </li>
+                                    <li>
+                                        <img src="dist/img/svg/phone_ic.svg" alt="">
+                                        <span class="list">Phone</span>
+                                        <span class="list-output">{{ user_details.phone }}</span>
+                                    </li>
+                                    <li>
+                                        <img src="dist/img/svg/email_ic.svg" alt="">
+                                        <span class="list">E-mail</span>
+                                        <span class="list-output">{{ user_details.email }}</span>
+                                    </li>
+                                    <li>
+                                        <img src="dist/img/svg/membership-id_ic.svg" alt="">
+                                        <span class="list">State</span>
+                                        <span class="list-output">{{ user_details.state }}</span>
+                                    </li>
+                                    <li>
+                                        <img src="dist/img/svg/activation-date_ic.svg" alt="">
+                                        <span class="list">City</span>
+                                        <span class="list-output">{{ user_details.city }}</span>
+                                    </li>
+                                    <li>
+                                        <img src="dist/img/svg/activation-date_ic.svg" alt="">
+                                        <span class="list">Pincode</span>
+                                        <span class="list-output">{{ user_details.pincode }}</span>
+                                    </li>
+                                    <li>
+                                        <img src="dist/img/svg/activation-date_ic.svg" alt="">
+                                        <span class="list">Communication Address</span>
+                                        <span class="list-output">{{ user_details.address }}</span>
+                                    </li>
+                                </ul>
+                    
+                                <!-- Edit Button -->
+                                <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#editUserModal">Edit</button>
+                            </div>
+                        </div>
                     </div>
+                    
+                    <!-- Edit Modal -->
+                    <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="editModalLabel">Edit User Details</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form name="user-form" id="user-form" method="POST" action="{% url 'update-user-details' %}">
+                                        {% csrf_token %}
+                                        <div class="mb-3">
+                                            <label for="editFirstName" class="form-label">First Name</label>
+                                            <input type="text" class="form-control" id="editFirstName" name="first_name" value="{{ user_details.first_name }}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="editLastName" class="form-label">Last Name</label>
+                                            <input type="text" class="form-control" id="editLastName" name="last_name" value="{{ user_details.last_name }}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="editEmail" class="form-label">E-mail</label>
+                                            <input type="email" class="form-control" id="editEmail" name="email" value="{{ user_details.email }}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="editPhone" class="form-label">Phone</label>
+                                            <input type="text" class="form-control" id="editPhone" name="phone" value="{{ user_details.phone }}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="editGender" class="form-label">Gender</label>
+                                            <select class="form-control" id="editGender" name="gender">
+                                                <option value="1" {% if user_details.gender == 1 %} selected {% endif %}>Male</option>
+                                                <option value="2" {% if user_details.gender == 2 %} selected {% endif %}>Female</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="editDob" class="form-label">Date of Birth</label>
+                                            <input type="date" class="form-control" id="editDob" name="dob" value="{{ user_details.dob }}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="editState" class="form-label">State</label>
+                                            <input type="text" class="form-control" id="editState" name="state" value="{{ user_details.state }}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="editCity" class="form-label">City</label>
+                                            <input type="text" class="form-control" id="editCity" name="city" value="{{ user_details.city }}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="editPincode" class="form-label">Pincode</label>
+                                            <input type="text" class="form-control" id="editPincode" name="pincode" value="{{ user_details.pincode }}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="editAddress" class="form-label">Communication Address</label>
+                                            <input type="text" class="form-control" id="editAddress" name="address" value="{{ user_details.address }}">
+                                        </div>
+                                        <button id="user-btn-sub" type="button" class="btn btn-success">Save Changes</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+
                     <div class="col-md-8 px-0">
                       <div class="card member-detail-right-card">
                         
@@ -103,80 +174,182 @@
                         <div class="card-body">
                           <div class="tab-content tab-scrollbar">
                             <div class="active tab-pane" id="membership-tab">
-                              <div class="row">
-                                <div class="col-md-9">
-                                  <a href="javascript:void(0)">
-                                    <h1 class="card-hding mb-0 pb-0 text-dark">Payout Details</h1>
-                                    <ul class="membership-list">
-                                      <li>
-                                        <i class="fas fa-check-circle"></i> 
-                                        <div>
-                                          Net Prem. In percentage
-                                          <span>5%</span>
-                                        </div>
-                                      </li>
-                                      <li>
-                                        <i class="fas fa-check-circle"></i> 
-                                        <div>
-                                          OD Prem. In percentage  
-                                          <span>5%</span>
-                                        </div>
-                                      </li>
-                                      <li>
-                                        <i class="fas fa-check-circle"></i> 
-                                        <div>
-                                          TP Prem. In percentage
-                                          <span>5%</span>
-                                        </div>
-                                      </li>
-                                    </ul>
-                                  </a>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="tab-pane" id="organisation-tab">
-                              <!-- Personal Details -->
-                              <div class="row mt-3">
-                                <div class="col-6 col-sm-6 col-md-4 col-lg-3">
-                                  <div class="userdetail-group">
-                                    <p class="userdetail-lbl ">Account Holder Name</p>
-                                    <p class="userdetail-highligt">Ratnesh Kumar Sharma</p>
-                                  </div>
-                                </div>
-                                <div class="col-6 col-sm-6 col-md-4 col-lg-3">
-                                  <div class="userdetail-group">
-                                    <p class="userdetail-lbl ">Re Enter Account Number</p>
-                                    <p class="userdetail-highligt">-</p>
-                                  </div>
-                                </div>
-                                <div class="col-6 col-sm-6 col-md-4 col-lg-3">
-                                  <div class="userdetail-group">
-                                    <p class="userdetail-lbl ">Account Number</p>
-                                    <p class="userdetail-highligt">-</p>
-                                  </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <h1 class="card-hding mb-3 text-dark">Payout Details</h1>
+                                        <table class="table table-bordered">
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th>Product</th>
+                                                    <th>TP Prem. (%)</th>
+                                                    <th>OD Prem. (%)</th>
+                                                    <th>Net Prem. (%)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Motor</td>
+                                                    <td>5%</td>
+                                                    <td>5%</td>
+                                                    <td>5%</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Health</td>
+                                                    <td>6%</td>
+                                                    <td>4%</td>
+                                                    <td>5.5%</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Term</td>
+                                                    <td>7%</td>
+                                                    <td>3%</td>
+                                                    <td>6%</td>
+                                                </tr>
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <th>Total</th>
+                                                    <th>18%</th>
+                                                    <th>12%</th>
+                                                    <th>16.5%</th>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
                                 </div>
                                 
-                                <div class="col-6 col-sm-6 col-md-4 col-lg-3">
-                                  <div class="userdetail-group">
-                                    <p class="userdetail-lbl ">IFSC Code</p>
-                                    <p class="userdetail-highligt">-</p>
-                                  </div>
-                                </div>
-                                <div class="col-6 col-sm-6 col-md-4 col-lg-3">
-                                  <div class="userdetail-group">
-                                    <p class="userdetail-lbl ">City </p>
-                                    <p class="userdetail-highligt">-</p>
-                                  </div>
-                                </div>
-                                <div class="col-6 col-sm-6 col-md-4 col-lg-3">
-                                  <div class="userdetail-group">
-                                    <p class="userdetail-lbl ">State</p>
-                                    <p class="userdetail-highligt">-</p>
-                                  </div>
-                                </div>
-                              </div>
-                              <!-- /.Personal Details -->
                             </div>
+                            <div class="tab-pane" id="organisation-tab">
+                                <!-- Personal Details -->
+                                <div class="row mt-3">
+                                    <div class="col-6 col-sm-6 col-md-4 col-lg-3">
+                                        <div class="userdetail-group">
+                                            <p class="userdetail-lbl">Account Holder Name</p>
+                                            <p class="userdetail-highligt" id="accountHolderName">
+                                                {% if bank_details %}
+                                                    {{ bank_details.account_holder_name }}
+                                                {% else %}
+                                                    -
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-sm-6 col-md-4 col-lg-3">
+                                        <div class="userdetail-group">
+                                            <p class="userdetail-lbl">Re Enter Account Number</p>
+                                            <p class="userdetail-highligt" id="reEnterAccountNumber">
+                                                {% if bank_details %}
+                                                    {{ bank_details.re_enter_account_number }}
+                                                {% else %}
+                                                    -
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-sm-6 col-md-4 col-lg-3">
+                                        <div class="userdetail-group">
+                                            <p class="userdetail-lbl">Account Number</p>
+                                            <p class="userdetail-highligt" id="accountNumber">
+                                                {% if bank_details %}
+                                                    {{ bank_details.account_number }}
+                                                {% else %}
+                                                    -
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-sm-6 col-md-4 col-lg-3">
+                                        <div class="userdetail-group">
+                                            <p class="userdetail-lbl">IFSC Code</p>
+                                            <p class="userdetail-highligt" id="ifscCode">
+                                                {% if bank_details %}
+                                                    {{ bank_details.ifsc_code }}
+                                                {% else %}
+                                                    -
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-sm-6 col-md-4 col-lg-3">
+                                        <div class="userdetail-group">
+                                            <p class="userdetail-lbl">City</p>
+                                            <p class="userdetail-highligt" id="city">
+                                                {% if bank_details %}
+                                                    {{ bank_details.city }}
+                                                {% else %}
+                                                    -
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-sm-6 col-md-4 col-lg-3">
+                                        <div class="userdetail-group">
+                                            <p class="userdetail-lbl">State</p>
+                                            <p class="userdetail-highligt" id="state">
+                                                {% if bank_details %}
+                                                    {{ bank_details.state }}
+                                                {% else %}
+                                                    -
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Edit Button -->
+                                <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#editBankModal">Edit</button>
+                            </div>
+                            
+                            
+                                                            
+                                                        <!-- Edit Modal -->
+                            <div class="modal fade" id="editBankModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="editModalLabel">Edit Payout Details</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form name="bank-form" id="bank-form" method="POST" action="{% url 'store-bank-data' %}">
+                                                {% csrf_token %}
+                                                <div class="mb-3">
+                                                    <label for="editAccountHolderName" class="form-label">Account Holder Name</label>
+                                                    <input type="text" class="form-control" id="editAccountHolderName" name="account_holder_name"
+                                                        value="{% if bank_details %}{{ bank_details.account_holder_name }}{% endif %}">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="editReEnterAccountNumber" class="form-label">Re Enter Account Number</label>
+                                                    <input type="text" class="form-control" id="editReEnterAccountNumber" name="re_enter_account_number"
+                                                        value="{% if bank_details %}{{ bank_details.re_enter_account_number }}{% endif %}">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="editAccountNumber" class="form-label">Account Number</label>
+                                                    <input type="text" class="form-control" id="editAccountNumber" name="account_number"
+                                                        value="{% if bank_details %}{{ bank_details.account_number }}{% endif %}">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="editIfscCode" class="form-label">IFSC Code</label>
+                                                    <input type="text" class="form-control" id="editIfscCode" name="ifsc_code"
+                                                        value="{% if bank_details %}{{ bank_details.ifsc_code }}{% endif %}">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="editCity" class="form-label">City</label>
+                                                    <input type="text" class="form-control" id="editCity" name="city"
+                                                        value="{% if bank_details %}{{ bank_details.city }}{% endif %}">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="editState" class="form-label">State</label>
+                                                    <input type="text" class="form-control" id="editState" name="state"
+                                                        value="{% if bank_details %}{{ bank_details.state }}{% endif %}">
+                                                </div>
+                                                <button id="bank-btn-sub" type="button" class="btn btn-success">Save Changes</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
                             <!-- /.tab-pane -->
                             <div class="tab-pane" id="personal-detail-tab">
                               <!-- Professional Detials -->
@@ -291,7 +464,31 @@
             </div>
           </div>
         <!-- /.content-wrapper -->
+    <script>
+        document.getElementById('user-btn-sub').addEventListener('click', function(event) {
+            event.preventDefault();  // Prevent default submit action
+            document.getElementById('user-form').submit();  // Submit the user form
+        });
+        
+        document.getElementById('bank-btn-sub').addEventListener('click', function(event) {
+            event.preventDefault();  // Prevent default submit action
+            document.getElementById('bank-form').submit();  // Submit the bank form
+        });
+    </script>
+<script>
+    function saveChanges() {
+        document.getElementById('accountHolderName').innerText = document.getElementById('editAccountHolderName').value;
+        document.getElementById('reEnterAccountNumber').innerText = document.getElementById('editReEnterAccountNumber').value;
+        document.getElementById('accountNumber').innerText = document.getElementById('editAccountNumber').value;
+        document.getElementById('ifscCode').innerText = document.getElementById('editIfscCode').value;
+        document.getElementById('city').innerText = document.getElementById('editCity').value;
+        document.getElementById('state').innerText = document.getElementById('editState').value;
     
+        // Close Modal
+        var modal = new bootstrap.Modal(document.getElementById('editModal'));
+        modal.hide();
+    }
+    </script>
         {% include "footer.html" %}
     </div>
     <!-- ./wrapper -->

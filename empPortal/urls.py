@@ -2,7 +2,7 @@ from django.urls import path
 from . import views,export
 from . import views
 from . import authenticationView
-from .controller import commissions, profile
+from .controller import commissions, profile, members
 
 urlpatterns = [
     path("login", authenticationView.login_view, name="login"),
@@ -15,9 +15,11 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
 
     path('my-account/', profile.myAccount, name='my-account'),
+    path('store-bank-data/', profile.storeOrUpdateBankDetails, name='store-bank-data'),
+    path('update-user-details/', profile.update_user_details, name='update-user-details'),
 
-    path('members/', views.members, name='members'),
-    path('member-view/', views.memberView, name='member-view'),
+    path('members/', members.members, name='members'),
+    path('member-view/', members.memberView, name='member-view'),
 
     path('commissions/', commissions.commissions, name='commissions'),
     path('add-commission/', commissions.create, name='add-commission'),
