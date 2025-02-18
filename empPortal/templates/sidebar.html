@@ -28,6 +28,14 @@
             </a>
           </li>
           <li class="nav-item">
+            <a href="{% url 'commissions' %}" class="nav-link {% if request.path == '/commissions/' %} active {% endif %}">
+              <svg class="sidbarmenu-svg">
+                <use xlink:href="#view-policy" />
+              </svg>
+              <p>Commissions</p>
+            </a>
+          </li>
+          <li class="nav-item">
             <a href="{% url 'billings' %}" class="nav-link {% if request.path == '/billings/' %} active {% endif %}">
               <svg class="sidbarmenu-svg">
                 <use xlink:href="#billing-icon" />

@@ -17,6 +17,41 @@ $(document).on('input', '.firstname', function() {
     $(this).val(sanitizedName);
 });
 
+$(document).on('input', '.percentage', function() {
+    var value = $(this).val();
+    var error_class = $(this).attr('name') + '_err';
+
+    // Allow only numbers with up to 2 decimal places
+    if (!/^\d{0,2}(\.\d{0,2})?$/.test(value)) {
+        $('.' + error_class).show().text('Enter a valid percentage (max 2 digits, up to 2 decimal places).');
+    } else {
+        $('.' + error_class).hide().text('');
+    }
+
+    // Remove non-numeric and multiple decimal points
+    var sanitizedValue = value.replace(/[^0-9.]/g, ''); // Remove alphabets and special characters except '.'
+
+    var parts = sanitizedValue.split('.');
+    
+    // Ensure only one decimal point
+    if (parts.length > 2) {
+        sanitizedValue = parts[0] + '.' + parts.slice(1).join('');
+    }
+
+    // Limit integer part to 2 digits
+    if (parts[0].length > 2) {
+        sanitizedValue = parts[0].slice(0, 2) + (parts.length > 1 ? '.' + parts[1] : '');
+    }
+
+    // Limit decimal part to 2 digits
+    if (parts.length === 2 && parts[1].length > 2) {
+        sanitizedValue = parts[0] + '.' + parts[1].substring(0, 2);
+    }
+
+    $(this).val(sanitizedValue);
+});
+
+
 $(document).on('input', '.name', function() {
     var name = $(this).val();
     var error_class = $(this).attr('name') + '_err';

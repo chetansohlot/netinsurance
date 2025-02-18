@@ -141,3 +141,22 @@ class UserFiles(models.Model):
 
     class Meta:
         db_table = 'user_files'
+
+
+class Commission(models.Model):
+    insurer_id = models.CharField(max_length=20, null=True, blank=True)
+    product_id = models.CharField(max_length=20, null=True, blank=True)
+    sub_broker_id = models.CharField(max_length=20, null=True, blank=True)
+    tp_percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    od_percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    net_percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    created_by = models.CharField(max_length=10, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    active = models.BooleanField(default=True)
+
+    class Meta:
+        db_table = "commissions"
+
+    def __str__(self):
+        return f"Commission {self.id} - Insurer {self.insurer_id}"
