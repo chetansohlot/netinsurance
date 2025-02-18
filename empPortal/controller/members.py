@@ -31,6 +31,20 @@ OPENAI_API_KEY = settings.OPENAI_API_KEY
 app = FastAPI()
 
 
+def members(request):
+    if request.user.is_authenticated:
+        return render(request,'members.html')
+    else:
+        return redirect('login')
+    
+
+def memberView(request):
+    if request.user.is_authenticated:
+        return render(request,'member-view.html')
+    else:
+        return redirect('login')
+    
+    
 def dictfetchall(cursor):
     "Returns all rows from a cursor as a dict"
     columns = [col[0] for col in cursor.description]

@@ -98,6 +98,13 @@ class Users(AbstractBaseUser):
     email = models.CharField(max_length=255, unique=True)
     phone = models.BigIntegerField(null=True, blank=True)
     gender = models.PositiveSmallIntegerField(null=True, blank=True) 
+    
+    dob = models.CharField(max_length=255)
+    state = models.CharField(max_length=255)
+    city = models.CharField(max_length=255)
+    pincode = models.CharField(max_length=255)
+    address = models.CharField(max_length=400)
+
     role = models.ForeignKey(Roles, on_delete=models.CASCADE, null=True)
     role_name = models.CharField(max_length=255)
     status = models.IntegerField(default=1)
