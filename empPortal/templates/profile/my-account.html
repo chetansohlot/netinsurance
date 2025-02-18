@@ -1,0 +1,306 @@
+{% extends 'master.html' %}
+
+{% block title %}
+    Members
+{% endblock %}
+  
+{% block content %}
+{% load static %}
+
+
+<body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+        {% include 'navbar.html' %}
+
+        {% include 'sidebar.html' %}
+    
+        <div class="content-wrapper white-bg">
+            <div class="content-header header-content-bg mb-0">
+              <div class="container-fluid">
+                <div class="row justify-content-between justify-content-sm-start pb-4">
+                  <div class="col col-sm-4">
+                    <!-- <h1 class="admin-title m-0 py-2">View Member </h1> -->
+                    <a href="#"><img src="{% static 'dist/img/svg/back_ic.svg' %}" alt="" class="mt-2 pl-3"></a>
+                  </div>
+                  <div class="col">
+                    <div class="d-flex justify-content-end mt-2">
+                      <button class="dashboard-btn-outline mb-0" type="button">Deactivate Membership</button>
+                    </div>  
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Main content -->
+            <div class="content px-0">
+                <div class="container-fluid">
+                  <div class="row">
+                    <div class="col-md-4 px-0">
+                      <div class="card member-detail-left-card">
+                          <div class="card-body box-profile">
+                            <img src="{% static 'dist/img/svg/profile-avatar-male.svg' %}" alt="" class="card-profile-img">
+                            <h3 class="profile-username text-center">Ratnesh Kumar Sharma</h3>
+                            <div class="d-flex justify-content-center mt-2">
+                              <p class="text-success">Active</p>
+                            </div>  
+                            <div class="profile-info-divider"></div>
+                            <ul class="member-detail-list">
+                                
+                                <li> 
+                                  <img src="dist/img/svg/gender_ic.svg" alt="">
+                                  <span class="list">Gender</span> 
+                                  <span class="list-output"> Male </span>
+                                </li>
+                                <li> 
+                                  <img src="dist/img/svg/birthday_ic.svg" alt="">
+                                  <span class="list">Date of birth</span> 
+                                  <span class="list-output"> 10th Nov'86 </span>
+                                </li>
+                                <li> 
+                                  <img src="dist/img/svg/phone_ic.svg" alt="">
+                                  <span class="list">Phone</span> 
+                                  <span class="list-output"> 9953786487 </span>
+                                </li>
+                                <li> 
+                                  <img src="dist/img/svg/email_ic.svg" alt="">
+                                  <span class="list">E-mail</span> 
+                                  <span class="list-output"> ratnesh@netleafinfosoft.com </span>
+                                </li>
+                                <li> 
+                                  <img src="dist/img/svg/membership-id_ic.svg" alt="">
+                                  <span class="list">State</span> 
+                                  <span class="list-output"> Haryana </span>
+                                </li>
+                                <li> 
+                                  <img src="dist/img/svg/activation-date_ic.svg" alt="">
+                                  <span class="list">City</span> 
+                                  <span class="list-output"> Gurugram</span>
+                                </li>
+                                <li> 
+                                  <img src="dist/img/svg/activation-date_ic.svg" alt="">
+                                  <span class="list">Pincode</span> 
+                                  <span class="list-output"> 121001</span>
+                                </li>
+                                <li> 
+                                  <img src="dist/img/svg/activation-date_ic.svg" alt="">
+                                  <span class="list">Communication Address </span> 
+                                  <span class="list-output"> Unit- 223, Tower A, Spaze I-Tech Park, Sec-49, Sohna Road, Gurgaon </span>
+                                </li>
+                                
+                            </ul>
+                          </div>
+                      </div>
+                    </div>
+                    <div class="col-md-8 px-0">
+                      <div class="card member-detail-right-card">
+                        
+                        <ul class="nav nav-pills profile-tab">
+                            <li class="nav-item text-bold"><a class="nav-link active" href="#membership-tab" data-toggle="tab">Payout Details</a></li>
+                            <li class="nav-item text-bold"><a class="nav-link" href="#organisation-tab" data-toggle="tab">Bank Details </a></li>
+                            <li class="nav-item text-bold"><a class="nav-link" href="#personal-detail-tab" data-toggle="tab">Documents</a></li>
+                        </ul>
+                        
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                          <div class="tab-content tab-scrollbar">
+                            <div class="active tab-pane" id="membership-tab">
+                              <div class="row">
+                                <div class="col-md-9">
+                                  <a href="javascript:void(0)">
+                                    <h1 class="card-hding mb-0 pb-0 text-dark">Payout Details</h1>
+                                    <ul class="membership-list">
+                                      <li>
+                                        <i class="fas fa-check-circle"></i> 
+                                        <div>
+                                          Net Prem. In percentage
+                                          <span>5%</span>
+                                        </div>
+                                      </li>
+                                      <li>
+                                        <i class="fas fa-check-circle"></i> 
+                                        <div>
+                                          OD Prem. In percentage  
+                                          <span>5%</span>
+                                        </div>
+                                      </li>
+                                      <li>
+                                        <i class="fas fa-check-circle"></i> 
+                                        <div>
+                                          TP Prem. In percentage
+                                          <span>5%</span>
+                                        </div>
+                                      </li>
+                                    </ul>
+                                  </a>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="tab-pane" id="organisation-tab">
+                              <!-- Personal Details -->
+                              <div class="row mt-3">
+                                <div class="col-6 col-sm-6 col-md-4 col-lg-3">
+                                  <div class="userdetail-group">
+                                    <p class="userdetail-lbl ">Account Holder Name</p>
+                                    <p class="userdetail-highligt">Ratnesh Kumar Sharma</p>
+                                  </div>
+                                </div>
+                                <div class="col-6 col-sm-6 col-md-4 col-lg-3">
+                                  <div class="userdetail-group">
+                                    <p class="userdetail-lbl ">Re Enter Account Number</p>
+                                    <p class="userdetail-highligt">-</p>
+                                  </div>
+                                </div>
+                                <div class="col-6 col-sm-6 col-md-4 col-lg-3">
+                                  <div class="userdetail-group">
+                                    <p class="userdetail-lbl ">Account Number</p>
+                                    <p class="userdetail-highligt">-</p>
+                                  </div>
+                                </div>
+                                
+                                <div class="col-6 col-sm-6 col-md-4 col-lg-3">
+                                  <div class="userdetail-group">
+                                    <p class="userdetail-lbl ">IFSC Code</p>
+                                    <p class="userdetail-highligt">-</p>
+                                  </div>
+                                </div>
+                                <div class="col-6 col-sm-6 col-md-4 col-lg-3">
+                                  <div class="userdetail-group">
+                                    <p class="userdetail-lbl ">City </p>
+                                    <p class="userdetail-highligt">-</p>
+                                  </div>
+                                </div>
+                                <div class="col-6 col-sm-6 col-md-4 col-lg-3">
+                                  <div class="userdetail-group">
+                                    <p class="userdetail-lbl ">State</p>
+                                    <p class="userdetail-highligt">-</p>
+                                  </div>
+                                </div>
+                              </div>
+                              <!-- /.Personal Details -->
+                            </div>
+                            <!-- /.tab-pane -->
+                            <div class="tab-pane" id="personal-detail-tab">
+                              <!-- Professional Detials -->
+                              <div class="row mt-3">
+                                
+                                <div class="col-md-12">
+                                  <hr>
+                                  <h3 class="card-hding pt-3">Documents</h3>
+                                </div>
+                                <div class="col-6 col-sm-6 col-md-6 col-lg-6">
+                                  <div class="family-info-card">
+                                    <div class="row">
+                                      <div class="col-auto">
+                                        <div class="nametag">
+                                          <img src="dist/img/aadhar-front.jpg" alt="">
+                                        </div>
+                                      </div>
+                                      <div class="col">
+                                        <h4 class="card-hding mb-0 pb-0">Aadhaar Card</h4>
+                                        <div class="d-flex">
+                                          <a href="#" class="wrap-small text-gray"><i class="fas fa-eye"></i> View Front </a>
+                                          <a href="#" class="wrap-small text-gray ml-3"><i class="fas fa-eye"></i> View Back </a>
+                                        </div>  
+                                      </div>
+                                    </div>
+                                    <div class="row">
+                                      <div class="col-sm-12">
+                                        <hr>
+                                        <div class="ml-3 pl-1">
+                                          <p class="wrap-prgh font-weight-bold mb-0 pb-0">Aadhaar Number</p>
+                                          <p class="wrap-small">7693 9033 1234</p>
+                                        </div>  
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="col-6 col-sm-6 col-md-6 col-lg-6">
+                                  <div class="family-info-card">
+                                    <div class="row">
+                                      <div class="col-auto">
+                                        <div class="nametag">
+                                          <img src="dist/img/pan-card.webp" alt="">
+                                        </div>
+                                      </div>
+                                      <div class="col">
+                                        <h4 class="card-hding mb-0 pb-0">PAN Card</h4>
+                                        <a href="#" class="wrap-small text-gray"><i class="fas fa-eye"></i> View Document</a>
+                                      </div>
+                                    </div>
+                                    <div class="row">
+                                      <div class="col-sm-12">
+                                        <hr>
+                                        <div class="ml-3 pl-1">
+                                          <p class="wrap-prgh font-weight-bold mb-0 pb-0">PAN Number</p>
+                                          <p class="wrap-small text-uppercase">BAXPK6214K</p>
+                                        </div>  
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <!-- /.Professional Detials -->
+                            </div>
+                            <!-- /.tab-pane -->
+                            <div class="tab-pane" id="claims-tab">
+                                <div class="row align-items-center mt-3 mb-3">
+                                  <div class="col-md-auto">
+                                    <h3 class="card-hding mb-0 pb-0">Claim History</h3>
+                                  </div>
+                                  <div class="col">
+                                    <div class="d-flex justify-content-end">
+                                      <a href="#" class="dashboard-btn-outline mx-2">Search Cashless Hospitals</a>
+                                      <a href="#" class="dashboard-addbtn">Raise a Claim</a>
+                                    </div>
+                                  </div>
+                                </div>  
+                              <!-- Documents -->
+                              <div class="table-responsive">
+                                <table class="table table-design admin-table-design">
+                                  <thead class="align-middle thead-light">
+                                      <tr>
+                                          <th>Claim ID/Type</th>
+                                          <th>Patient Name/Relation</th>
+                                          <th>Claim Status/Last Update On</th>
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr>
+                                      <td colspan="3">
+                                        <div class="d-flex justify-content-center py-5">
+                                          <div>
+                                            <img src="dist/img/svg/drive.svg" alt="" class="mx-auto d-table">
+                                            <p class="wrap-small text-gray text-center pt-2">No Data</p>
+                                          </div>  
+                                        </div>   
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                </table>                               
+                               </div>    
+                              <!-- /.Documents -->
+                            </div>
+                          </div>
+                            <!-- /.tab-content -->
+                        </div>
+                      </div>
+                    </div>
+                  </div>  
+                </div>
+                
+              </div>
+            </div>
+          </div>
+        <!-- /.content-wrapper -->
+    
+        {% include "footer.html" %}
+    </div>
+    <!-- ./wrapper -->
+    
+    {% include 'footer-script.html' %}
+    
+    
+    
+    
+    </body>
+
+{% endblock %}

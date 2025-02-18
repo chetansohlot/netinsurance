@@ -273,7 +273,7 @@ def verify_otp_view(request):
 
         request.user.is_active = 1
         request.user.save()
-        return redirect('dashboard')
+        return redirect('my-account')
 
         # Extract form data
         # email = request.POST.get('email', '').strip()
