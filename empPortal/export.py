@@ -195,8 +195,8 @@ def download_policy_data(request):
         cell.fill = header_fill
         cell.font = header_font
 
-    # Example data row
-    data = [
+    # Default values (to be used when database fields are missing)
+    default_values = [
         "Nov-2024", "XYZ", "ABC", "A2Z", "B2C", "Direct", "01-11-2024", "03-11-2024", "Confirmed", 
         "Acko General", "Motor-Liability Only", "BCTA10285837458/00", "VINOD KUMAR", "Pvt Car", 
         "MARUTI SUZUKI SWIFT DZIRE VDi BS-IV", "0", "HR08M3300", "2011", "0", "4031", "614.88", 
@@ -204,8 +204,46 @@ def download_policy_data(request):
         "", "", "", "", "30", "0", "0", "1024.8", "102.48", "0", "0", "102.48"
     ]
 
-    # Append data to the worksheet
-    ws.append(data)
+    # Fetch data from the database
+    policies = PolicyDocument.objects.all().order_by('-id')
+
+    for policy in policies:
+        # Fill in data, using database values if available, otherwise defaults
+        row_data = [
+            policy.policy_start_date if policy.policy_start_date else default_values[0],  # Policy Month
+            policy.rm_name if policy.rm_name else default_values[1],  # Agent Name
+            default_values[2],  # SM Name
+            default_values[3],  # Franchise Name
+            policy.insurance_provider if policy.insurance_provider else default_values[4],  # Insurer Name
+            default_values[5],  # S.P. Name
+            policy.policy_start_date if policy.policy_start_date else default_values[6],  # Issue Date
+            policy.policy_expiry_date if policy.policy_expiry_date else default_values[7],  # Risk Start Date
+            default_values[8],  # Payment Status
+            policy.insurance_provider if policy.insurance_provider else default_values[9],  # Insurance Company
+            policy.policy_type if policy.policy_type else default_values[10],  # Policy Type
+            policy.policy_number if policy.policy_number else default_values[11],  # Policy No
+            policy.holder_name if policy.holder_name else default_values[12],  # Insured Name
+            policy.vehicle_type if policy.vehicle_type else default_values[13],  # Vehicle Type
+            policy.vehicle_make if policy.vehicle_make else default_values[14],  # Vehicle Make/Model
+            policy.vehicle_gross_weight if policy.vehicle_gross_weight else default_values[15],  # Gross Weight
+            policy.vehicle_number if policy.vehicle_number else default_values[16],  # Reg. No.
+            policy.vehicle_manuf_date if policy.vehicle_manuf_date else default_values[17],  # MFG Year
+            policy.sum_insured if policy.sum_insured else default_values[18],  # Sum Insured
+            default_values[19],  # Gross Prem.
+            policy.gst if policy.gst else default_values[20],  # GST
+            policy.policy_total_premium if policy.policy_total_premium else default_values[21],  # Net Prem.
+            policy.od_premium if policy.od_premium else default_values[22],  # OD Prem.
+            policy.tp_premium if policy.tp_premium else default_values[23],  # TP Prem.
+            default_values[24], default_values[25], default_values[26], default_values[27],
+            default_values[28], default_values[29], default_values[30], default_values[31],
+            default_values[32], default_values[33], default_values[34], default_values[35],
+            default_values[36], default_values[37], default_values[38], default_values[39],
+            default_values[40], default_values[41], default_values[42], default_values[43],
+            default_values[44], default_values[45], default_values[46], default_values[47],
+            # default_values[48], default_values[49], default_values[50], default_values[51],
+            # default_values[52]
+        ]
+        ws.append(row_data)
 
     # Create HTTP response for downloading
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
