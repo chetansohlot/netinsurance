@@ -91,7 +91,6 @@ class UsersManager(BaseUserManager):
         return self.create_user(email,phone,password,**extra_fields)
     
 class Users(AbstractBaseUser):
-    
     user_gen_id = models.CharField(max_length=255)
     user_name = models.CharField(max_length=255)
     first_name = models.CharField(max_length=255)
