@@ -146,8 +146,6 @@ class UserFiles(models.Model):
     class Meta:
         db_table = 'user_files'
 
-<<<<<<< HEAD
-=======
 
 class Commission(models.Model):
     insurer_id = models.CharField(max_length=20, null=True, blank=True)
@@ -166,4 +164,3 @@ class Commission(models.Model):
 
     def __str__(self):
         return f"Commission {self.id} - Insurer {self.insurer_id}"
->>>>>>> 1c009a6eebb44b4264402abb73a76d08ed858a2b
