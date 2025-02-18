@@ -457,7 +457,7 @@ def extract_text_from_pdf(pdf_path):
 def process_text_with_chatgpt(text):
 
     prompt = f"""
-    Convert the following insurance document text into a structured JSON format without any extra comments. Ensure that numerical values (like premiums and sum insured) are **only numbers** without extra text.
+    Convert the following insurance document text into a structured JSON format without any extra comments. Ensure that numerical values (like premiums and sum insured) are **only numbers** without extra text.  if godigit replace the amount of od and tp from one another 
 
     ```
     {text}
@@ -466,13 +466,13 @@ def process_text_with_chatgpt(text):
     The JSON should have this structure:
     
     {{
-        "policy_number": "XXXXXX/XXXXX",   # complete policy number
+        "policy_number": "XXXXXX/XXXXX",   # complete policy number if insurance_company is godigit policy number is 'XXXXXX / XXXXX' in this format   e
         "vehicle_number": "XXXXXXXXXX",
         "insured_name": "XXXXXX",
         "issue_date": "YYYY-MM-DD H:i:s",     
         "start_date": "YYYY-MM-DD H:i:s",
         "expiry_date": "YYYY-MM-DD H:i:s",
-        "gross_premium": XXXX,
+        "gross_premium": XXXX,    
         "net_premium": XXXX,
         "gst_premium": XXXX,
         "sum_insured": XXXX,
@@ -518,11 +518,11 @@ def process_text_with_chatgpt(text):
             "fuel_type": "XXXX",     # diesel/petrol/cng/lpg/ev 
             "cubic_capacity": XXXX,  
             "vehicle_gross_weight": XXXX,   # in kg
-            "vehicle_type": "XXXX XXXX",    # private / commercial   2 wheeler or 4 wheeler
+            "vehicle_type": "XXXX XXXX",    # private / commercial
             "commercial_vehicle_detail": "XXXX XXXX"    
         }},
         "additional_details": {{
-            "policy_type": "XXXX",        # motor stand alone policy/ motor third party liablity policy / motor pakage policy
+            "policy_type": "XXXX",        # motor stand alone policy/ motor third party liablity policy / motor pakage policy   only in these texts
             "ncb": XX,     # in percentage
             "addons": ["XXXX", "XXXX"], 
             "previous_insurer": "XXXX",
@@ -696,7 +696,8 @@ def bulkBrowsePolicy(request):
                 else:
                     vehicle_number = re.sub(r"[^a-zA-Z0-9]", "", processed_text.get("vehicle_number", ""))
                     coverage_details = processed_text.get("coverage_details", [{}])
-                    first_coverage = coverage_details[0] if coverage_details else {}
+                    # return HttpResponse(coverage_details)
+                    first_coverage = coverage_details if coverage_details else {}
 
                     od_premium = first_coverage.get('own_damage', {}).get('premium', 0)
                     tp_premium = first_coverage.get('third_party', {}).get('premium', 0)
