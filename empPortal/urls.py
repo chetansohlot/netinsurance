@@ -2,6 +2,7 @@ from django.urls import path
 from . import views,export
 from . import views
 from . import authenticationView
+from .controller import commissions, profile
 
 urlpatterns = [
     path("login", authenticationView.login_view, name="login"),
@@ -12,8 +13,16 @@ urlpatterns = [
     path('user-and-roles/', views.userAndRoles, name='user-and-roles'),
     path('', views.dashboard, name='dashboard'),
     path('dashboard/', views.dashboard, name='dashboard'),
+
+    path('my-account/', profile.myAccount, name='my-account'),
+
     path('members/', views.members, name='members'),
     path('member-view/', views.memberView, name='member-view'),
+
+    path('commissions/', commissions.commissions, name='commissions'),
+    path('add-commission/', commissions.create, name='add-commission'),
+    path('store-commission/', commissions.store, name='store-commission'),
+
     path('billings/', views.billings, name='billings'),
     path('claim-tracker/', views.claimTracker, name='claim-tracker'),
     path('checkout/', views.checkout, name='checkout'),

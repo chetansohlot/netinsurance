@@ -82,7 +82,9 @@
                 
               </div>
               <div class="widget-user-image">
-                <img class="img-circle elevation-2 " src="{% static 'dist/img/user1-128x128.jpg' %}" alt="User Avatar">
+                <a href="{% url 'my-account' %}">
+                  <img class="img-circle elevation-2 " src="{% static 'dist/img/user1-128x128.jpg' %}" alt="User Avatar">
+                </a>
               </div>
               <div class="card-footer">
                 <div class="row">

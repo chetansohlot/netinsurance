@@ -1,9 +1,7 @@
-# Ignore environment variables and secrets
 .env
 *.env
+*.pyc
 config/settings_local.py
-
-# Ignore Django settings (if sensitive data is inside)
 elevateInsurance/settings.py
 
 
