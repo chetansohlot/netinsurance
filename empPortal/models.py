@@ -45,6 +45,7 @@ class PolicyDocument(models.Model):
     policy_total_premium = models.CharField(max_length=255)
     sum_insured = models.CharField(max_length=255)
     rm_name = models.CharField(max_length=255)
+    rm_id = models.IntegerField()
     extracted_text = models.JSONField()
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.IntegerField()
@@ -61,6 +62,9 @@ class PolicyDocument(models.Model):
     od_premium = models.CharField(max_length=255)
     tp_premium = models.CharField(max_length=255)
     bulk_log_id = models.IntegerField()
+    od_percent = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    tp_precent = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    net_precent = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
     def __str__(self):
         return self.filename    

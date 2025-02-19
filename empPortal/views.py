@@ -4,7 +4,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.template import loader
-from .models import Roles,Users,PolicyDocument,BulkPolicyLog, UserFiles,UnprocessedPolicyFiles
+from .models import Roles,Users,PolicyDocument,BulkPolicyLog, UserFiles,UnprocessedPolicyFiles, Commission
 from django.contrib.auth import authenticate, login ,logout
 from django.core.files.storage import FileSystemStorage
 import re
@@ -31,7 +31,6 @@ def dashboard(request):
         return render(request,'dashboard.html',{'user':user})
     else:
         return redirect('login')
-
 
 def billings(request):
     if request.user.is_authenticated:
@@ -359,7 +358,8 @@ def policyMgt(request):
     return render(request,'policy/policy-mgt.html')
 
 def bulkPolicyMgt(request):
-    return render(request,'policy/bulk-policy-mgt.html')
+    rms = Users.objects.all()
+    return render(request,'policy/bulk-policy-mgt.html',{'users':rms})
 
 def browsePolicy(request):
     if request.method == "POST" and request.FILES.get("image"):
@@ -378,6 +378,13 @@ def browsePolicy(request):
             messages.error(request, extracted_text)
             return redirect('policy-mgt')
         
+        member_id = request.user.id
+       
+        commision_rate = commisionRateByMemberId(member_id)
+        od_percentage = commision_rate.od_percentage
+        net_percentage = commision_rate.net_percentage
+        tp_percentage = commision_rate.tp_percentage
+        
         processed_text = process_text_with_chatgpt(extracted_text)
         if "error" in processed_text:
             PolicyDocument.objects.create(
@@ -385,6 +392,10 @@ def browsePolicy(request):
                 extracted_text=processed_text,
                 filepath=fileurl,
                 rm_name=request.user.full_name,
+                rm_id=request.user.id,
+                od_percent=od_percentage,
+                tp_percent=tp_percentage,
+                net_percent=net_percentage,
                 status=2,
             )
             
@@ -405,6 +416,7 @@ def browsePolicy(request):
                 extracted_text=processed_text,
                 filepath=fileurl,
                 rm_name=request.user.full_name,
+                rm_id=request.user.id,
                 insurance_provider=processed_text.get("insurance_company", ""),
                 vehicle_number=vehicle_number,
                 policy_number=policy_number,
@@ -427,6 +439,9 @@ def browsePolicy(request):
                 gst=processed_text.get('gst_premium', 0),                      
                 od_premium=od_premium,
                 tp_premium=tp_premium,
+                od_percent=od_percentage,
+                tp_percent=tp_percentage,
+                net_percent=net_percentage,
                 status=1,
             )
             messages.success(request, "PDF uploaded and processed successfully.")
@@ -656,13 +671,18 @@ def bulkBrowsePolicy(request):
     if request.method == "POST" and request.FILES.get("zip_file"):
         zip_file = request.FILES["zip_file"]
         camp_name = request.POST.get("camp_name") 
-        rm_name = request.POST.get("rm_name")
+        rm_id = request.POST.get("rm_id")
 
         # Validate ZIP file format
         if not zip_file.name.endswith(".zip"):
             messages.error(request, "Invalid file format. Only ZIP files are allowed.")
             return redirect("bulk-policy-mgt")
 
+        if rm_id:
+            rm_name = getUserNameByUserId(rm_id)
+        else:
+            rm_name = None
+                    
         # Save ZIP file
         fs = FileSystemStorage()
         filename = fs.save(zip_file.name, zip_file)
@@ -719,8 +739,13 @@ def bulkBrowsePolicy(request):
                     # messages.error(request, f"Error processing {file_name}: {extracted_text}")
                     continue
 
-                # processed_text = process_text_with_chatgpt(extracted_text)
-                processed_text = '"{\n    \"error\": \"API Error: 429\",\n    \"details\": \"{\\n    \\\"error\\\": {\\n        \\\"message\\\": \\\"Rate limit reached for gpt-4o in organization org-J5bqoyjjQpjdpBBMDG7A31ip on tokens per min (TPM): Limit 30000, Used 25671, Requested 7836. Please try again in 7.014s. Visit https://platform.openai.com/account/rate-limits to learn more.\\\",\\n        \\\"type\\\": \\\"tokens\\\",\\n        \\\"param\\\": null,\\n        \\\"code\\\": \\\"rate_limit_exceeded\\\"\\n    }\\n}\\n\"\n}"'
+                processed_text = process_text_with_chatgpt(extracted_text)
+                
+                commision_rate = commisionRateByMemberId(rm_id)
+                od_percentage = commision_rate.od_percentage
+                net_percentage = commision_rate.net_percentage
+                tp_percentage = commision_rate.tp_percentage
+        
                 if "error" in processed_text:
                     error_process_pdf_files += 1
                     policy_doc = PolicyDocument.objects.create(
@@ -728,7 +753,11 @@ def bulkBrowsePolicy(request):
                         extracted_text=processed_text,
                         filepath=file_path_url,
                         rm_name=rm_name,
+                        rm_id=rm_id,
                         bulk_log_id=bulk_log.id,
+                        od_percent=od_percentage,
+                        tp_percent=tp_percentage,
+                        net_percent=net_percentage,
                         status=2,
                     )
                     
@@ -759,6 +788,7 @@ def bulkBrowsePolicy(request):
                         extracted_text=processed_text,
                         filepath=file_path_url,
                         rm_name=rm_name,
+                        rm_id=rm_id,
                         insurance_provider=processed_text.get("insurance_company", ""),
                         vehicle_number=vehicle_number,
                         policy_number=policy_number,
@@ -782,6 +812,9 @@ def bulkBrowsePolicy(request):
                         gst=processed_text.get('gst_premium', 0),                      
                         od_premium=od_premium,
                         tp_premium=tp_premium,
+                        od_percent=od_percentage,
+                        tp_percent=tp_percentage,
+                        net_percent=net_percentage,
                         status=1,
                         bulk_log_id=bulk_log.id,
                     )
@@ -870,6 +903,11 @@ def policyUploadView(request, id):
 def reprocessBulkPolicies(request):
     if request.method == "POST":
         unprocessFiles = request.POST.get('reprocess_bulk_policies', '')
+        
+        if not unprocessFiles:
+            messages.error(request,'Select Atleast One Policy')
+            return redirect(request.META.get('HTTP_REFERER', '/'))
+            
         unprocessFilesList = unprocessFiles.split(",") if unprocessFiles else []
         
         for file_id in unprocessFilesList:
@@ -892,8 +930,6 @@ def reprocessBulkPolicies(request):
                     continue
                 
                 processed_text = process_text_with_chatgpt(extracted_text)
-                # processed_text = '"{\n    \"error\": \"API Error: 429\",\n    \"details\": \"{\\n    \\\"error\\\": {\\n        \\\"message\\\": \\\"Rate limit reached for gpt-4o in organization org-J5bqoyjjQpjdpBBMDG7A31ip on tokens per min (TPM): Limit 30000, Used 25671, Requested 7836. Please try again in 7.014s. Visit https://platform.openai.com/account/rate-limits to learn more.\\\",\\n        \\\"type\\\": \\\"tokens\\\",\\n        \\\"param\\\": null,\\n        \\\"code\\\": \\\"rate_limit_exceeded\\\"\\n    }\\n}\\n\"\n}"'
-                # processed_text = '{"policy_number": "1119903124P118014678", "vehicle_number": "HR-65-A-6954", "insured_name": "M/s HAVISH POLYPLAST PRIVATE LIMITED", "issue_date": "2025-02-11 00:00:00", "start_date": "2025-02-12 00:00:00", "expiry_date": "2026-02-11 23:59:59", "gross_premium": 20060, "net_premium": 17816, "gst_premium": 2244, "sum_insured": 400000, "policy_period": "1 Year(s)", "insurance_company": "UNITED INDIA INSURANCE COMPANY LIMITED", "coverage_details": {"own_damage": {"premium": 16049, "additional_premiums": 100, "addons": {"addons": [{"name": "LL to Paid Driver IMT 28", "amount": 100}], "discounts": []}}, "third_party": {"premium": 1667, "additional_premiums": 217.44, "addons": {"addons": [{"name": "Cover for lamps, tyres, tubes etc", "amount": 217.44}], "discounts": []}}}, "vehicle_details": {"make": "Mahindra & Mahindra", "model": "BOLERO MAXI TRUCK PLUS BMT PLUS", "variant": "Open", "registration_year": 2016, "engine_number": "TBG4D84701", "chassis_number": "MA1ZP2TBKG2D71484", "fuel_type": "", "cubic_capacity": 2523, "vehicle_gross_weight": 2620, "vehicle_type": "Public", "commercial_vehicle_detail": "Public Carrier"}, "additional_details": {"policy_type": "motor package policy", "ncb": 0, "addons": [], "previous_insurer": "", "previous_policy_number": ""}, "contact_information": {"address": "VPO SAMPAN KHERI KAITHAL, 136027, KAITHAL, HARYANA", "phone_number": "******8078", "email": "**********@gmail.com"}}'
                 if "error" in processed_text:
                     policy_doc = PolicyDocument.objects.filter(id=individual_file_id).first()
                     policy_doc.extracted_text = processed_text
@@ -960,3 +996,13 @@ def reprocessBulkPolicies(request):
     else:
         messages.error(request, 'Invalid URL')
         return redirect(request.META.get('HTTP_REFERER', '/'))
+
+def getUserNameByUserId(user_id):
+    try:
+        return Users.objects.get(id=user_id).full_name
+    except Users.DoesNotExist:
+        return None
+
+def commisionRateByMemberId(member_id):
+    commission_data = Commission.objects.filter(member_id=member_id).first()
+    return commission_data
