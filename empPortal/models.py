@@ -60,6 +60,7 @@ class PolicyDocument(models.Model):
     gst = models.CharField(max_length=255)
     od_premium = models.CharField(max_length=255)
     tp_premium = models.CharField(max_length=255)
+    bulk_log_id = models.IntegerField()
 
     def __str__(self):
         return self.filename    
@@ -73,13 +74,13 @@ class PolicyDocument(models.Model):
     @property
 
     def start_date(self):
-        return self.policy_start_date.date() if self.policy_start_date else None
+        return self.policy_start_date.strftime("%d-%m-%Y") if self.policy_start_date else None
     
     def issue_date(self):
-        return self.policy_issue_date.date() if self.policy_issue_date else None
+        return self.policy_issue_date.strftime("%d-%m-%Y") if self.policy_issue_date else None
     
     def expiry_date(self):
-        return self.policy_expiry_date.date() if self.policy_expiry_date else None
+        return self.policy_expiry_date.strftime("%d-%m-%Y") if self.policy_expiry_date else None
 
     class Meta:
         db_table = 'policydocument'
@@ -94,6 +95,7 @@ class BulkPolicyLog(models.Model):
     count_error_pdf_files = models.IntegerField(default=0)
     count_error_process_pdf_files = models.IntegerField(default=0)
     count_uploaded_files = models.IntegerField(default=0)
+    count_duplicate_files = models.IntegerField(default=0)
     status = models.SmallIntegerField(default=0)
     class Meta:
         db_table = 'bulk_policy_log'
@@ -120,10 +122,18 @@ class Users(AbstractBaseUser):
     user_gen_id = models.CharField(max_length=255)
     user_name = models.CharField(max_length=255)
     first_name = models.CharField(max_length=255)
+    activation_status = models.CharField(max_length=10)
     last_name = models.CharField(max_length=255)
     email = models.CharField(max_length=255, unique=True)
     phone = models.BigIntegerField(null=True, blank=True)
     gender = models.PositiveSmallIntegerField(null=True, blank=True) 
+    
+    dob = models.CharField(max_length=255)
+    state = models.CharField(max_length=255)
+    city = models.CharField(max_length=255)
+    pincode = models.CharField(max_length=255)
+    address = models.CharField(max_length=400)
+
     role = models.ForeignKey(Roles, on_delete=models.CASCADE, null=True)
     role_name = models.CharField(max_length=255)
     status = models.IntegerField(default=1)
@@ -150,7 +160,6 @@ class Users(AbstractBaseUser):
             return self.role.roleName
         return self.role_name
 
-    
     def status_type(self):
         if self.status == 1:
             return 'Active'
@@ -174,3 +183,19 @@ class UserFiles(models.Model):
 
 
 
+    # class Meta:
+    #     db_table = "commissions"
+
+    # def __str__(self):
+    #     return f"Commission {self.id} - Insurer {self.insurer_id}"
+
+
+class UnprocessedPolicyFiles(models.Model):
+    policy_document = models.CharField(max_length=255)
+    file_path = models.CharField(max_length=255)
+    error_message = models.TextField()
+    status = models.CharField(max_length=50, choices=[("Pending", "Pending"), ("Reprocessed", "Reprocessed")], default="Pending")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'unprocessed_policy_files'

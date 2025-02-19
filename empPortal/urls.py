@@ -2,7 +2,7 @@ from django.urls import path
 from . import views,export
 from . import views
 from . import authenticationView
-from .controller import commissions, profile
+from .controller import commissions, profile, members
 
 urlpatterns = [
     path("login", authenticationView.login_view, name="login"),
@@ -15,9 +15,12 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
 
     path('my-account/', profile.myAccount, name='my-account'),
+    path('store-bank-data/', profile.storeOrUpdateBankDetails, name='store-bank-data'),
+    path('update-user-details/', profile.update_user_details, name='update-user-details'),
 
-    path('members/', views.members, name='members'),
-    path('member-view/', views.memberView, name='member-view'),
+    path('members/', members.members, name='members'),
+    path('/member/member-view/<str:user_id>',members.memberView, name='member-view'),
+    path('/member/activate-user/<str:user_id>',members.activateUser, name='activate-user'),
 
     path('commissions/', commissions.commissions, name='commissions'),
     path('add-commission/', commissions.create, name='add-commission'),
@@ -39,6 +42,7 @@ urlpatterns = [
     path('policy-mgt/', views.policyMgt, name='policy-mgt'),
     path('bulk-policy-mgt/', views.bulkPolicyMgt, name='bulk-policy-mgt'),
     path('browser-policy/', views.browsePolicy, name='browser-policy'),
+    path('policy-upload-view/<str:id>', views.policyUploadView, name='policy-upload-view'),
     path('bulk-browser-policy/', views.bulkBrowsePolicy, name='bulk-browser-policy'),
     path('policy-data/', views.policyData, name='policy-data'),
     path('edit-policy-data/<str:id>', views.editPolicy, name='edit-policy'),

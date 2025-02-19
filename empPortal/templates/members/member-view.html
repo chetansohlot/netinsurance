@@ -27,11 +27,24 @@
                     <!-- <h1 class="admin-title m-0 py-2">View Member </h1> -->
                     <a href="#"><img src="{% static 'dist/img/svg/back_ic.svg' %}" alt="" class="mt-2 pl-3"></a>
                   </div>
-                  <div class="col">
-                    <div class="d-flex justify-content-end mt-2">
-                      <button class="dashboard-btn-outline mb-0" type="button">Deactivate Membership</button>
-                    </div>  
-                  </div>
+                  <form id="activate-form" name="activate-form" method="post" action="{% url 'activate-user' user_id=user_details.id %}" style="display: none;">
+                    {% csrf_token %}
+                  </form>
+                  
+                  {% if user_details.activation_status != '1' %}
+                    <div class="col">
+                      <div class="d-flex justify-content-end mt-2">
+                        <button class="dashboard-btn-outline mb-0" type="button" id="activate-btn" data-user-id="{{ user_details.id }}">Activate Account</button>
+                      </div>  
+                    </div>
+                  {% endif %}
+                  
+
+                    <div class="col">
+                        <div class="d-flex justify-content-end mt-2">
+                            <button class="dashboard-btn-outline mb-0" type="button">Deactivate Membership</button>
+                        </div>  
+                    </div>
                 </div>
               </div>
             </div>
@@ -45,7 +58,12 @@
                                 <img src="{% static 'dist/img/svg/profile-avatar-male.svg' %}" alt="" class="card-profile-img">
                                 <h3 class="profile-username text-center">{{ user_details.first_name }} {{ user_details.last_name }}</h3>
                                 <div class="d-flex justify-content-center mt-2">
-                                    <p class="text-success">Active</p>
+                                    
+                                    {% if user_details.activation_status == '1' %}
+                                        <p class="text-success">Active</p>
+                                    {% else %}
+                                        <p class="text-danger">Inactive</p>
+                                    {% endif %}
                                 </div>  
                                 <div class="profile-info-divider"></div>
                                 <ul class="member-detail-list">
@@ -206,14 +224,6 @@
                                                     <td>6%</td>
                                                 </tr>
                                             </tbody>
-                                            <tfoot>
-                                                <tr>
-                                                    <th>Total</th>
-                                                    <th>18%</th>
-                                                    <th>12%</th>
-                                                    <th>16.5%</th>
-                                                </tr>
-                                            </tfoot>
                                         </table>
                                     </div>
                                 </div>
@@ -464,6 +474,39 @@
             </div>
           </div>
         <!-- /.content-wrapper -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+        
+        <script>
+            // Add event listener to the button
+            document.getElementById('activate-btn').addEventListener('click', function() {
+              var userId = this.getAttribute('data-user-id');
+              
+              // Show SweetAlert confirmation
+              Swal.fire({
+                title: 'Are you sure?',
+                text: "You are about to activate this account.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, activate it!',
+                cancelButtonText: 'Cancel',
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  // Submit the hidden form
+                  document.getElementById('activate-form').submit();
+                  
+                  // Show success message (optional)
+                  Swal.fire(
+                    'Activated!',
+                    'The user account has been activated.',
+                    'success'
+                  );
+                }
+              });
+            });
+          </script>
+          
+        
     <script>
         document.getElementById('user-btn-sub').addEventListener('click', function(event) {
             event.preventDefault();  // Prevent default submit action

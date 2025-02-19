@@ -4,7 +4,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.template import loader
-from .models import Roles,Users,PolicyDocument,BulkPolicyLog, UserFiles
+from .models import Roles,Users,PolicyDocument,BulkPolicyLog, UserFiles,UnprocessedPolicyFiles
 from django.contrib.auth import authenticate, login ,logout
 from django.core.files.storage import FileSystemStorage
 import re
@@ -18,6 +18,7 @@ from django.http import JsonResponse
 import os
 import zipfile
 from django.conf import settings
+from datetime import datetime
 
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 
@@ -31,17 +32,6 @@ def dashboard(request):
     else:
         return redirect('login')
 
-def members(request):
-    if request.user.is_authenticated:
-        return render(request,'members.html')
-    else:
-        return redirect('login')
-
-def memberView(request):
-    if request.user.is_authenticated:
-        return render(request,'member-view.html')
-    else:
-        return redirect('login')
 
 def billings(request):
     if request.user.is_authenticated:
@@ -389,7 +379,6 @@ def browsePolicy(request):
             return redirect('policy-mgt')
         
         processed_text = process_text_with_chatgpt(extracted_text)
-        # processed_text = {"policy_number": "D185547496", "vehicle_number": "HR26BD7150", "insured_name": "TRIDENT 3T MARKETING", "issue_date": "2025-02-05", "start_date": "2025-02-28", "expiry_date": "2026-02-27", "gross_premium": "967.75", "net_premium": "820.13", "gst_premium": "147.62", "sum_insured": "11980", "policy_period": "1 Year(s)", "insurance_company": "Go Digit General Insurance Ltd.", "coverage_details": [{"own_damage": {"premium": "714.00", "additional_premiums": "50.00", "addons": [{"addons": {"name": "Not Found", "amount": "Not Found"}, "discount": {"name": "NCB Discount", "amount": "30.22"}}]}, "third_party": {"premium": "56.13", "additional_premiums": "Not Found", "addons": [{"addons": {"name": "Legal Liability to Paid Driver", "amount": "86.35"}, "discount": {"name": "Not Found", "amount": "Not Found"}}]}}], "vehicle_details": {"make": "BAJAJ", "model": "DISCOVER", "variant": "ELECTRIC START", "registration_year": "2010", "engine_number": "JBUBTD10722", "chassis_number": "MD2DSPAZZTPD66383", "fuel_type": "Petrol", "cubic_capacity": "100 CC", "vehicle_gross_weight": "Not Found", "vehicle_type": "Private", "commercial_vehicle_detail": "Not Found"}, "additional_details": {"policy_type": "Motor-Package Policy", "ncb": "35%", "addons": ["IMT-22", "IMT-28"], "previous_insurer": "Not Found", "previous_policy_number": "Not Found"}, "contact_information": {"address": "2315/23 BEHIND KREEM RESTAURANT OPP.PAYAL CINEMA OLD DELHI ROAD GURGAON HARYANA, 0, Gurgaon-122001", "phone_number": "xxxxxxxxx5118", "email": "rxxxxxxxxx8@gxxxl.com"}}
         if "error" in processed_text:
             PolicyDocument.objects.create(
                 filename=image.name,
@@ -401,8 +390,12 @@ def browsePolicy(request):
             
             messages.error(request, f"Failed to process policy")
             return redirect('policy-mgt')
-        
         else:
+            policy_number = processed_text.get("policy_number", None)
+            if PolicyDocument.objects.filter(policy_number=policy_number).exists():
+                messages.error(request, "Policy Number already exists.")
+                return redirect('policy-mgt')
+            
             vehicle_number = re.sub(r"[^a-zA-Z0-9]", "", processed_text.get("vehicle_number", ""))
             coverage_details = processed_text.get("coverage_details", [{}])
             od_premium = coverage_details.get('own_damage', {}).get('premium', 0)
@@ -412,10 +405,9 @@ def browsePolicy(request):
                 extracted_text=processed_text,
                 filepath=fileurl,
                 rm_name=request.user.full_name,
-                
                 insurance_provider=processed_text.get("insurance_company", ""),
                 vehicle_number=vehicle_number,
-                policy_number=processed_text.get("policy_number", ""),
+                policy_number=policy_number,
                 policy_issue_date=processed_text.get("issue_date", None),
                 policy_expiry_date=processed_text.get("expiry_date", None),
                 policy_period=processed_text.get("policy_period", ""),
@@ -582,6 +574,13 @@ def editPolicy(request,id):
     else:
         return redirect('login')
 
+def parse_date(date_str):
+    """Convert DD-MM-YYYY to YYYY-MM-DD format."""
+    try:
+        return datetime.strptime(date_str, "%d-%m-%Y").date() if date_str else None
+    except ValueError:
+        return None  # Handle invalid date formats gracefully
+
 def updatePolicy(request):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -589,17 +588,29 @@ def updatePolicy(request):
     if request.method != "POST":
         messages.error(request, 'Invalid URL')
         return redirect('policy-data')
-
+    
     policy_id = request.POST.get('policy_id', '').strip()
     insurer_name = request.POST.get('insurer_name', '').strip()
     policy_number = request.POST.get('policy_number', '').strip()
     vehicle_reg_no = request.POST.get('vehicle_reg_no', '').strip()
     policy_holder_name = request.POST.get('policy_holder_name', '').strip()
-    policy_issue_date = request.POST.get('policy_issue_date', '').strip()
+    policy_issue_date = parse_date(request.POST.get('policy_issue_date', '').strip())
+    policy_start_date = parse_date(request.POST.get('policy_start_date', '').strip())
+    policy_expiry_date = parse_date(request.POST.get('policy_expiry_date', '').strip())
     policy_premium = request.POST.get('policy_premium', '').strip()
     policy_total_premium = request.POST.get('policy_total_premium', '').strip()
+    policy_gst = request.POST.get('policy_gst', '').strip()
     policy_period = request.POST.get('policy_period', '').strip()
     rm_name = request.POST.get('rm_name', '').strip()
+    vehicle_type = request.POST.get('vehicle_type', '').strip()
+    vehicle_make = request.POST.get('vehicle_make', '').strip()
+    vehicle_model = request.POST.get('vehicle_model', '').strip()
+    gross_weight = request.POST.get('gross_weight', '').strip()
+    mgf_year = request.POST.get('mgf_year', '').strip()
+    sum_insured = request.POST.get('sum_insured', '').strip()
+    od_premium = request.POST.get('od_premium', '').strip()
+    tp_premium = request.POST.get('tp_premium', '').strip()
+
 
     if not policy_id:
         messages.error(request, 'Something Went Wrong. Kindly contact the administrator.')
@@ -613,15 +624,25 @@ def updatePolicy(request):
     policy_data = PolicyDocument.objects.filter(id=policy_id).first()
 
     if policy_data:
-        # Remove the trailing comma (fixes the tuple issue)
         policy_data.insurance_provider = insurer_name
         policy_data.policy_number = policy_number
         policy_data.vehicle_number = vehicle_reg_no
         policy_data.holder_name = policy_holder_name
         policy_data.policy_issue_date = policy_issue_date
+        policy_data.policy_start_date = policy_start_date
+        policy_data.policy_expiry_date = policy_expiry_date
         policy_data.policy_premium = policy_premium
         policy_data.policy_total_premium = policy_total_premium
+        policy_data.gst = policy_gst
         policy_data.policy_period = policy_period
+        policy_data.vehicle_type = vehicle_type
+        policy_data.vehicle_make = vehicle_make
+        policy_data.vehicle_model = vehicle_model
+        policy_data.vehicle_gross_weight = gross_weight
+        policy_data.vehicle_manuf_date = mgf_year
+        policy_data.sum_insured = sum_insured
+        policy_data.od_premium = od_premium
+        policy_data.tp_premium = tp_premium
         policy_data.rm_name = rm_name
         policy_data.save()
 
@@ -667,6 +688,23 @@ def bulkBrowsePolicy(request):
         error_pdf_files = 0
         error_process_pdf_files = 0
         uploaded_files = 0
+        duplicate_files = 0
+        
+        bulk_log = BulkPolicyLog.objects.create(
+            camp_name=camp_name,
+            file_name=filename,
+            count_total_files=0,
+            count_not_pdf=0,
+            count_pdf_files=0,
+            file_url=file_url,
+            count_error_pdf_files=0,
+            count_error_process_pdf_files=0,
+            count_uploaded_files=0,
+            count_duplicate_files=0,
+            status=0,
+        )
+        
+        # return HttpResponse()
 
         for file_name in os.listdir(extract_path):
             total_files += 1
@@ -678,25 +716,37 @@ def bulkBrowsePolicy(request):
 
                 if "Error" in extracted_text:
                     error_pdf_files += 1
-                    messages.error(request, f"Error processing {file_name}: {extracted_text}")
+                    # messages.error(request, f"Error processing {file_name}: {extracted_text}")
                     continue
 
-                processed_text = process_text_with_chatgpt(extracted_text)
-
+                # processed_text = process_text_with_chatgpt(extracted_text)
+                processed_text = '"{\n    \"error\": \"API Error: 429\",\n    \"details\": \"{\\n    \\\"error\\\": {\\n        \\\"message\\\": \\\"Rate limit reached for gpt-4o in organization org-J5bqoyjjQpjdpBBMDG7A31ip on tokens per min (TPM): Limit 30000, Used 25671, Requested 7836. Please try again in 7.014s. Visit https://platform.openai.com/account/rate-limits to learn more.\\\",\\n        \\\"type\\\": \\\"tokens\\\",\\n        \\\"param\\\": null,\\n        \\\"code\\\": \\\"rate_limit_exceeded\\\"\\n    }\\n}\\n\"\n}"'
                 if "error" in processed_text:
                     error_process_pdf_files += 1
-                    PolicyDocument.objects.create(
+                    policy_doc = PolicyDocument.objects.create(
                         filename=file_name,
                         extracted_text=processed_text,
                         filepath=file_path_url,
                         rm_name=rm_name,
+                        bulk_log_id=bulk_log.id,
                         status=2,
                     )
-                    messages.error(request, f"Error processing policy {file_name}: {processed_text}")
+                    
+                    UnprocessedPolicyFiles.objects.create(
+                        policy_document=bulk_log.id,
+                        file_path=file_path_url,
+                        error_message=processed_text,
+                        status="Pending",
+                    )
+                    
                 else:
+                    policy_number = processed_text.get("policy_number", None)
+                    if PolicyDocument.objects.filter(policy_number=policy_number).exists():
+                        duplicate_files += 1
+                        continue
+                    
                     vehicle_number = re.sub(r"[^a-zA-Z0-9]", "", processed_text.get("vehicle_number", ""))
                     coverage_details = processed_text.get("coverage_details", [{}])
-                    # return HttpResponse(coverage_details)
                     first_coverage = coverage_details if coverage_details else {}
 
                     od_premium = first_coverage.get('own_damage', {}).get('premium', 0)
@@ -709,7 +759,7 @@ def bulkBrowsePolicy(request):
                         rm_name=rm_name,
                         insurance_provider=processed_text.get("insurance_company", ""),
                         vehicle_number=vehicle_number,
-                        policy_number=processed_text.get("policy_number", ""),
+                        policy_number=policy_number,
                         policy_issue_date=processed_text.get("issue_date", None),
                         policy_expiry_date=processed_text.get("expiry_date", None),
                         policy_period=processed_text.get("policy_period", ""),
@@ -731,31 +781,28 @@ def bulkBrowsePolicy(request):
                         od_premium=od_premium,
                         tp_premium=tp_premium,
                         status=1,
+                        bulk_log_id=bulk_log.id,
                     )
 
                     uploaded_files += 1
             else:
                 not_pdf += 1
 
-        # Insert log entry in BulkPolicyLog
-        BulkPolicyLog.objects.create(
-            camp_name=camp_name,
-            file_name=filename,
-            count_total_files=total_files,
-            count_not_pdf=not_pdf,
-            count_pdf_files=pdf_files,
-            file_url=file_url,
-            count_error_pdf_files=error_pdf_files,
-            count_error_process_pdf_files=error_process_pdf_files,
-            count_uploaded_files=uploaded_files,
-            status=1,  # Mark as completed
-        )
+        bulk_log.count_total_files = total_files
+        bulk_log.count_not_pdf = not_pdf
+        bulk_log.count_pdf_files = pdf_files
+        bulk_log.count_error_pdf_files = error_pdf_files
+        bulk_log.count_error_process_pdf_files = error_process_pdf_files
+        bulk_log.count_uploaded_files = uploaded_files
+        bulk_log.count_duplicate_files = duplicate_files
+        bulk_log.status = 1
+        bulk_log.save()
 
         messages.success(
             request,
             f"ZIP file uploaded and extracted successfully. "
             f"Total Files: {total_files}, PDFs: {pdf_files}, Non-PDFs: {not_pdf}, "
-            f"Uploaded: {uploaded_files}, Extraction Errors: {error_pdf_files}, Processing Errors: {error_process_pdf_files}",
+            f"Uploaded: {uploaded_files}, Extraction Errors: {error_pdf_files}, Processing Errors: {error_process_pdf_files}, Duplicate Files: {duplicate_files}",
         )
 
         return redirect("policy-data")
@@ -809,3 +856,5 @@ def userLogout(request):
     else:
         return redirect("login")
         
+def policyUploadView(request,id):
+    return HttpResponse(id)

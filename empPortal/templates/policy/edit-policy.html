@@ -124,11 +124,37 @@
 
                             <div class="form-group col-sm-6">
                                 <label for="vehicle_model">Model</label>
-                                <input type="text" class="form-control" name="vehicle_model" id="vehicle_make" placeholder="Vehicle Make" value="{{ policy_data.vehicle_make }}">
+                                <input type="text" class="form-control" name="vehicle_model" id="vehicle_model" placeholder="Vehicle Model" value="{{ policy_data.vehicle_model }}">
                             </div>
+
+                            <div class="form-group col-sm-6">
+                                <label for="gross_weight">Gross Weight</label>
+                                <input type="text" class="form-control" name="gross_weight" id="gross_weight" placeholder="Gross Weight" value="{{ policy_data.vehicle_gross_weight }}">
+                            </div>
+
+                            <div class="form-group col-sm-6">
+                                <label for="mgf_year">Manufacture Date</label>
+                              <input type="text" class="form-control" name="mgf_year" id="mgf_year" placeholder="MGF Year" value="{{ policy_data.vehicle_manuf_date }}">
+                            </div>
+
+                            <div class="form-group col-sm-6">
+                                <label for="sum_insured">Sum Insured</label>
+                              <input type="text" class="form-control" name="sum_insured" id="sum_insured" placeholder="Sum Insured" value="{{ policy_data.sum_insured }}">
+                            </div>
+
+                            <div class="form-group col-sm-6">
+                                <label for="od_premium">OD Premium</label>
+                              <input type="text" class="form-control" name="od_premium" id="od_premium" placeholder="OD Premium" value="{{ policy_data.od_premium }}">
+                            </div>
+
+                            <div class="form-group col-sm-6">
+                                <label for="tp_premium">TP Premium</label>
+                              <input type="text" class="form-control" name="tp_premium" id="tp_premium" placeholder="TP Premium" value="{{ policy_data.tp_premium }}">
+                            </div>
+
                         </div>
                         
-                        <button type="submit" class="btn btn-primary">Edit Policy Data</button>
+                        <button type="submit" class="btn btn-primary">Save Policy Data</button>
                     </form>
                     <div id="loader" class="form-loader" style="display: none;">
                       <div>
