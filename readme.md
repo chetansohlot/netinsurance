@@ -9,6 +9,11 @@
 9. pip install faker
 10. pip install openpyxl
 11. pip install fitz
+12. pip install frontend
+13. pip install tools
 
 or 
-pip install django requests python-magic openai pymysql python-dotenv fastapi PyMuPDF
+pip install django requests python-magic openai pymysql python-dotenv fastapi PyMuPDF openai pandas faker openpyxl fitz frontend tools
+
+
+create "static" folder in root directory
