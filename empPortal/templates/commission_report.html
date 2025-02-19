@@ -1,0 +1,199 @@
+{% extends 'master.html' %}
+
+{% block title %}
+Users and Roles
+{% endblock %}
+
+{% block content %}
+{% load static %}
+
+<body class="hold-transition sidebar-mini">
+<div class="wrapper">
+  {% include 'navbar.html' %}
+  <!-- /.navbar -->
+
+  <!-- Main Sidebar Container -->
+   {% include 'sidebar.html' %}
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper white-bg">
+    <!-- Content Header (Page header) -->
+    <div class="content-header breadcrump-bg">
+      <div class="container-fluid ">
+        <div class="row py-2">
+          <div class="col-sm-6">
+            <div class="d-flex align-items-center">
+              <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Commission Report</a>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="d-flex justify-content-end">
+              <!-- <a href="/create-user" class="breadcrump-addbtn mr-2"><i class="fas fa-plus"></i>Commission Report</a> -->
+              <!-- <a href="/new-role" class="dashboard-btn-outline"><i class="fas fa-plus"></i> New Role</a> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <div class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-sm-12 col-md-12">
+            <div class="card box-shadow-none">
+              <div class="card-body px-0 pb-0 pt-0">
+                <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                  <a class="nav-item nav-link active" id="tab1-tab" data-toggle="tab" href="#tab1" role="tab"
+                    aria-controls="tab1" aria-selected="true">Report</a>
+                  <!-- <a class="nav-item nav-link" id="tab2-tab" data-toggle="tab" href="#tab2" role="tab"
+                    aria-controls="tab2" aria-selected="false">Roles</a> -->
+                </div>
+                <div>
+                
+                    <a href="{% url 'save-policy-data' %}" class="breadcrump-addbtn mx-1">Export</a>
+                  </div>
+                <div class="tab-content" id="nav-tabContent">
+                  <div class="tab-pane fade show active" id="tab1" role="tabpanel" aria-labelledby="tab1-tab">
+                    <div class="table-responsive table-ht">
+                      {% if messages %}
+                        {% for message in messages %}
+                          <p>{{ message }}</p>
+                        {% endfor %}
+                      {% endif %}
+                      <table class="table table-design">
+                        <thead class="table-thead-bg-light table-header-fix">
+                            <tr>
+                              <th class="nowrap">Insurance Co.</th>
+                              <th class="nowrap">Reg. No.</th>
+                              <th class="nowrap">Holder</th>
+                              <th class="nowrap">Policy No.</th>
+                              <th class="nowrap">Policy Type</th>
+                              <th class="nowrap">Issue Date</th>
+                              <th class="nowrap">Start Date</th>
+                              <th class="nowrap">Expiry Date</th>
+                              <th class="nowrap">Net Premium</th>
+                              <th class="nowrap">Gross Premium</th>
+                              <th class="nowrap">OD Premium</th>
+                              <th class="nowrap">TP Premium</th>
+                              <th class="nowrap">GST</th>
+                              <th class="nowrap">RM Name</th>
+                              <th class="nowrap">Payment</th>
+                              <th class="nowrap">Vehicle Type</th>
+                              <th class="nowrap">Make/Model</th>
+                              <th class="nowrap">Gross Weight</th>
+                              <th class="nowrap">Sum Insured</th>
+                              <th class="nowrap">Manufacture Year</th>
+                              <th class="nowrap">OD%</th>
+                              <th class="nowrap">OD Premium</th>
+                              <th class="nowrap">TP%</th>
+                              <th class="nowrap">TP Premium</th>
+                              <th class="nowrap">Net%</th>
+                              <th class="nowrap">Net Premium</th>
+                              <th class="nowrap">P/L</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                          {% for data in policy_data %}
+                          <tr>
+                              <!-- Vehicle Details Column -->
+                              <td>{{ data.policy.insurance_provider }}</td>
+                              <td>{{ data.policy.vehicle_number }}</td>
+                              <td>{{ data.policy.holder_name }}</td>
+                              <td>{{ data.policy.policy_number|default:"-" }}</td>
+                              <td>{{ data.policy.policy_type|default:"-" }}</td>
+                              <td>{{ data.policy.policy_issue_date|default:"-" }}</td>
+                              <td>{{ data.policy.policy_start_date|default:"-" }}</td>
+                              <td>{{ data.policy.policy_expiry_date|default:"-" }}</td>
+                              <td>{{ data.policy.policy_premium }}</td>
+                              <td>{{ data.policy.policy_total_premium }}</td>
+                              <td>{{ data.policy.od_premium }}</td>
+                              <td>{{ data.policy.tp_premium }}</td>
+                              <td>{{ data.policy.gst }}</td>
+                              <td>{{ data.policy.rm_name }}</td>
+                              <td>{{ data.policy.payment_status|default:"Not Paid" }}</td>
+                              <td>{{ data.policy.vehicle_type|default:"-" }}</td>
+                              <td>{{ data.policy.vehicle_make|default:"-" }} / {{ data.policy.vehicle_model|default:"-" }}</td>
+                              <td>{{ data.policy.vehicle_gross_weight|default:"-" }}</td>
+                              <td>{{ data.policy.sum_insured|default:"-" }}</td>
+                              <td>{{ data.policy.vehicle_manuf_date|default:"-" }}</td>
+                      
+                              <!-- OD% Column -->
+                              <td>
+                                  {% if data.policy.commission %}
+                                      {{ data.policy.commission.od_percentage }}%
+                                  {% else %}
+                                      0
+                                  {% endif %}
+                              </td>
+                      
+                              <!-- Commission Amount Column -->
+                              <td>
+                                  {% if data.od_commission_amount %}
+                                      {{ data.od_commission_amount|floatformat:2 }}
+                                  {% else %}
+                                      0
+                                  {% endif %}
+                              </td>
+                      
+                              <!-- TP% Column -->
+                              <td>
+                                  {% if data.policy.commission %}
+                                      {{ data.policy.commission.tp_percentage }}%
+                                  {% else %}
+                                      0
+                                  {% endif %}
+                              </td>
+                              <td>
+                                {% if data.tp_commission_amount %}
+                                    {{ data.tp_commission_amount|floatformat:2 }}
+                                {% else %}
+                                    0
+                                {% endif %}
+                            </td>
+                      
+                              <!-- N% Column -->
+                              <td>
+                                  {% if data.policy.commission %}
+                                      {{ data.policy.commission.net_percentage }}%
+                                  {% else %}
+                                      0
+                                  {% endif %}
+                              </td>
+                              <td>
+                                {% if data.net_commission_amount %}
+                                    {{ data.net_commission_amount|floatformat:2 }}
+                                {% else %}
+                                    0
+                                {% endif %}
+                            </td>
+                      
+                          </tr>
+                          {% endfor %}
+                      </tbody>
+                    </table>
+                    </div>
+                  </div>
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /.content-wrapper -->
+
+<!-- Main Footer -->
+{% include 'footer.html' %}
+
+</div>
+<!-- ./wrapper -->
+
+{% include 'footer-script.html' %}
+</body>
+
+{% endblock %}

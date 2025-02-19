@@ -181,6 +181,7 @@ def download_policy_data(request):
         "Agent Comm.% Net", "Agent Net Amt", "Agent Bonus", "Agent Total Comm.", 
         "Franchise Comm.% OD", "Franchise OD Amount", "Franchise TP Comm", "Franchise Agent TP Amount", 
         "Franchise Agent Comm.% Net", "Franchise Agent Net Amt", "Franchise Bonus", "Franchise Total Comm.", 
+
         "Insurer Comm.% OD", "Insurer OD Amount", "Insurer TP Comm", "Insurer TP Amount", 
         "Insurer Comm.% Net", "Insurer Net Amt", "Insurer Bonus", "Insurer Total Comm.", 
         "Profit/Loss", "TDS %", "TDS Amount", "Net Profit"
@@ -206,8 +207,19 @@ def download_policy_data(request):
 
     # Fetch data from the database
     policies = PolicyDocument.objects.all().order_by('-id')
-
+    
     for policy in policies:
+        od_premium = float(policy.od_premium.replace(',', ''))  
+        tp_premium = float(policy.tp_premium.replace(',', ''))  
+        net_premium = float(policy.policy_total_premium.replace(',', '')) 
+        commission = policy.commission()
+        od_percentage = float(commission.od_percentage) if commission.od_percentage else 0
+        tp_percentage = float(commission.tp_percentage) if commission.tp_percentage else 0
+        net_percentage = float(commission.net_percentage) if commission.net_percentage else 0
+
+        od_commission_amount = (od_premium * od_percentage) / 100
+        tp_commission_amount = (tp_premium * tp_percentage) / 100
+        net_commission_amount = (net_premium * net_percentage) / 100
         # Fill in data, using database values if available, otherwise defaults
         row_data = [
             policy.policy_start_date if policy.policy_start_date else default_values[0],  # Policy Month
@@ -238,10 +250,18 @@ def download_policy_data(request):
             default_values[28], default_values[29], default_values[30], default_values[31],
             default_values[32], default_values[33], default_values[34], default_values[35],
             default_values[36], default_values[37], default_values[38], default_values[39],
-            default_values[40], default_values[41], default_values[42], default_values[43],
-            default_values[44], default_values[45], default_values[46], default_values[47],
-            # default_values[48], default_values[49], default_values[50], default_values[51],
-            # default_values[52]
+            commission.od_percentage if commission.od_percentage else default_values[40], 
+            od_commission_amount if  od_commission_amount else default_values[41], 
+            commission.tp_percentage if commission.tp_percentage else default_values[42], 
+            tp_commission_amount if  tp_commission_amount else default_values[43],
+            commission.net_percentage if commission.net_percentage else default_values[44],
+            net_commission_amount if  net_commission_amount else default_values[45],
+            # commission.tp_premium if commission.tp_premium else default_values[46],
+            # commission.tp_premium if commission.tp_premium else default_values[47],
+            # commission.tp_premium if commission.tp_premium else default_values[48], 
+            # commission.tp_premium if commission.tp_premium else default_values[49], 
+            # commission.tp_premium if commission.tp_premium else default_values[50], 
+            # commission.tp_premium if commission.tp_premium else default_values[51],
         ]
         ws.append(row_data)
 
@@ -253,3 +273,59 @@ def download_policy_data(request):
     wb.save(response)
 
     return response
+
+def commission_report(request):
+    # Get all PolicyDocuments ordered by id in descending order
+    policies = PolicyDocument.objects.all().order_by('-id')
+    
+    # Initialize a list to store the policies with calculated commission amounts
+    policy_data = []
+    
+    for policy in policies:
+        
+        # Check if the policy has a valid commission and od_premium
+        if policy:
+            
+           
+                # Convert to float and print values for debugging
+                od_premium = float(policy.od_premium.replace(',', ''))  
+                tp_premium = float(policy.tp_premium.replace(',', ''))  
+                net_premium = float(policy.policy_total_premium.replace(',', ''))  
+
+                commission = policy.commission()  # Get the associated commission instance
+
+                od_percentage = float(commission.od_percentage) if commission.od_percentage else 0
+                tp_percentage = float(commission.tp_percentage) if commission.tp_percentage else 0
+                net_percentage = float(commission.net_percentage) if commission.net_percentage else 0
+
+                
+
+                # Calculate the commission amounts
+                od_commission_amount = (od_premium * od_percentage) / 100
+                tp_commission_amount = (tp_premium * tp_percentage) / 100
+                net_commission_amount = (net_premium * net_percentage) / 100
+
+                
+
+                # Print calculated commission amounts
+                print(f"OD Commission: {od_commission_amount}, TP Commission: {tp_commission_amount}, Net Commission: {net_commission_amount}")
+
+                # Append the calculated commission amounts and policy details to the list
+                policy_data.append({
+                    'policy': policy,
+                    'od_commission_amount': od_commission_amount,
+                    'tp_commission_amount': tp_commission_amount,
+                    'net_commission_amount': net_commission_amount
+                })
+           
+        else:
+            policy_data.append({
+                'policy': policy,
+                'od_commission_amount': None,
+                'tp_commission_amount': None,
+                'net_commission_amount': None
+            })
+
+    # Pass the calculated policy data to the template
+    # return HttpResponse(policy_data)
+    return render(request, 'commission_report.html', {'policy_data': policy_data})

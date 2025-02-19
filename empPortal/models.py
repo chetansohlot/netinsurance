@@ -12,6 +12,25 @@ class Roles(models.Model):
         db_table = 'roles'
         
 
+class Commission(models.Model):
+    rm_name  =models.CharField(max_length=255, unique=True)
+    insurer_id = models.CharField(max_length=20, null=True, blank=True)
+    product_id = models.CharField(max_length=20, null=True, blank=True)
+    sub_broker_id = models.CharField(max_length=20, null=True, blank=True)
+    tp_percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    od_percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    net_percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    created_by = models.CharField(max_length=10, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    active = models.BooleanField(default=True)
+
+    class Meta:
+        db_table = "commissions"
+
+    def __str__(self):
+        return f"Commission {self.id} - Insurer {self.insurer_id}"
+    
 class PolicyDocument(models.Model):
     filename = models.CharField(max_length=255)
     insurance_provider = models.CharField(max_length=255)
@@ -45,7 +64,14 @@ class PolicyDocument(models.Model):
     def __str__(self):
         return self.filename    
     
+    # commission = models.ForeignKey(Commission, to_field="rm_name", on_delete=models.SET_NULL, null=True, blank=True)
+
+    def commission(self):
+        return Commission.objects.filter(rm_name=self.rm_name).first()
+
+
     @property
+
     def start_date(self):
         return self.policy_start_date.date() if self.policy_start_date else None
     
@@ -135,10 +161,10 @@ class Users(AbstractBaseUser):
     
 class UserFiles(models.Model):
     user = models.ForeignKey('Users', on_delete=models.CASCADE, related_name='files')
-    file_url = models.CharField(max_length=255, null=True, blank=True)  # updated to match 'file_url'
-    file_type = models.CharField(max_length=50, null=True, blank=True)  # added 'file_type'
-    file_updated_time = models.DateTimeField(null=True, blank=True)  # added 'file_updated_time'
-    created_at = models.DateTimeField(auto_now_add=True)  # existing field for 'file_created_time'
+    file_url = models.CharField(max_length=255, null=True, blank=True)  
+    file_type = models.CharField(max_length=50, null=True, blank=True)  
+    file_updated_time = models.DateTimeField(null=True, blank=True)  
+    created_at = models.DateTimeField(auto_now_add=True)  
 
     def __str__(self):
         return f"Files for {self.user.user_name}"
@@ -147,20 +173,4 @@ class UserFiles(models.Model):
         db_table = 'user_files'
 
 
-class Commission(models.Model):
-    insurer_id = models.CharField(max_length=20, null=True, blank=True)
-    product_id = models.CharField(max_length=20, null=True, blank=True)
-    sub_broker_id = models.CharField(max_length=20, null=True, blank=True)
-    tp_percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
-    od_percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
-    net_percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
-    created_by = models.CharField(max_length=10, null=True, blank=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    active = models.BooleanField(default=True)
 
-    class Meta:
-        db_table = "commissions"
-
-    def __str__(self):
-        return f"Commission {self.id} - Insurer {self.insurer_id}"
