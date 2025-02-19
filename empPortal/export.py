@@ -29,6 +29,7 @@ from django.http import HttpResponse
 fake = Faker()
 from django.utils import timezone
 import datetime
+from django.conf import settings
 
 dt_aware = timezone.now()  # Django returns a timezone-aware datetime
 dt_naive = dt_aware.replace(tzinfo=None) 
@@ -203,15 +204,15 @@ def download_policy_data(request):
 
     # Default values (to be used when database fields are missing)
     default_values = [
-        "Nov-2024", "XYZ", "ABC", "A2Z", "B2C", "Direct", "01-11-2024", "03-11-2024", "Confirmed", 
-        "Acko General", "Motor-Liability Only", "BCTA10285837458/00", "VINOD KUMAR", "Pvt Car", 
-        "MARUTI SUZUKI SWIFT DZIRE VDi BS-IV", "0", "HR08M3300", "2011", "0", "4031", "614.88", 
-        "3416", "0", "3416", "0", "0", "0", "0", "27", "922.32", "0", "922.32", "", "", "", "", 
-        "", "", "", "", "30", "0", "0", "1024.8", "102.48", "0", "0", "102.48"
+        "-", "-", "-", "-", "-", "-", "-", "-", "-", 
+        "-", "-", "-", "-", "-", 
+        "-", "-", "-", "-", "-", "-", "-", 
+        "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", 
+        "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-"
     ]
 
     # Fetch data from the database
-    policies = PolicyDocument.objects.all().order_by('-id')
+    policies = PolicyDocument.objects.filter(status=1).all().order_by('-id')
     
     
     for policy in policies:
@@ -219,14 +220,26 @@ def download_policy_data(request):
         issue_date = datetime.datetime.strptime(policy.policy_start_date, "%Y-%m-%d").strftime("%m-%d-%Y") if isinstance(policy.policy_start_date, str) else policy.policy_start_date.strftime("%m-%d-%Y") if policy.policy_start_date else default_values[6]
         issue_year = policy.policy_start_date.strftime("%Y") if isinstance(policy.policy_start_date, datetime.datetime) else default_values[6]
         issue_month = policy.policy_start_date.strftime("%b-%Y") if isinstance(policy.policy_start_date, datetime.datetime) else default_values[6]
-        risk_start_date = policy.policy_expiry_date.astimezone(datetime.timezone.utc).replace(tzinfo=None) if policy.policy_expiry_date else ""
+        risk_start_date = policy.start_date if policy.start_date else ""
         od_premium = float(policy.od_premium.replace(',', '')) if policy.od_premium and policy.od_premium.replace(',', '').strip().isdigit() else 0  
         tp_premium = float(policy.tp_premium.replace(',', ''))  if policy.tp_premium and policy.tp_premium.replace(',', '').strip().isdigit() else 0  
         net_premium = float(policy.policy_total_premium.replace(',', '')) if policy.policy_total_premium and policy.policy_total_premium.replace(',', '').strip().isdigit() else 0  
+        make_and_model = (
+            (policy.vehicle_make if policy.vehicle_make else "-") + 
+            "/" + 
+            (policy.vehicle_model if policy.vehicle_model else "-")
+        )
+
         commission = policy.commission()
-        od_percentage = float(commission.od_percentage) if commission.od_percentage else 0
-        tp_percentage = float(commission.tp_percentage) if commission.tp_percentage else 0
-        net_percentage = float(commission.net_percentage) if commission.net_percentage else 0
+        if commission:
+            od_percentage = float(commission.od_percentage) if commission.od_percentage else 0
+            tp_percentage = float(commission.tp_percentage) if commission.tp_percentage else 0
+            net_percentage = float(commission.net_percentage) if commission.net_percentage else 0
+        else:
+            od_percentage = 0
+            tp_percentage = 0
+            net_percentage = 0
+            
 
         od_commission_amount = (od_premium * od_percentage) / 100
         tp_commission_amount = (tp_premium * tp_percentage) / 100
@@ -245,17 +258,17 @@ def download_policy_data(request):
             policy.rm_name if policy.rm_name else default_values[1],  # Agent Name
             default_values[2],  # SM Name
             default_values[3],  # Franchise Name
-            policy.insurance_provider if policy.insurance_provider else default_values[4],  # Insurer Name
+            settings.INSURER_NAME if settings.INSURER_NAME else default_values[4],  # Insurer Name
             default_values[5],  # S.P. Name
             issue_date if issue_date else default_values[6],  # Issue Date
             risk_start_date if risk_start_date else default_values[7],  # Risk Start Date
-            default_values[8],  # Payment Status
+            'Confirmed',  # Payment Status
             policy.insurance_provider if policy.insurance_provider else default_values[9],  # Insurance Company
             policy.policy_type if policy.policy_type else default_values[10],  # Policy Type
             policy.policy_number if policy.policy_number else default_values[11],  # Policy No
             policy.holder_name if policy.holder_name else default_values[12],  # Insured Name
             policy.vehicle_type if policy.vehicle_type else default_values[13],  # Vehicle Type
-            policy.vehicle_make if policy.vehicle_make else default_values[14],  # Vehicle Make/Model
+            make_and_model if make_and_model else default_values[14],  # Vehicle Make/Model
             policy.vehicle_gross_weight if policy.vehicle_gross_weight else default_values[15],  # Gross Weight
             policy.vehicle_number if policy.vehicle_number else default_values[16],  # Reg. No.
             policy.vehicle_manuf_date if policy.vehicle_manuf_date.isdigit() and len(policy.vehicle_manuf_date) == 4 
@@ -265,9 +278,9 @@ def download_policy_data(request):
 
            # MFG Year
             policy.sum_insured if policy.sum_insured else default_values[18],  # Sum Insured
-            default_values[19],  # Gross Prem.
+            policy.policy_total_premium if policy.policy_total_premium else default_values[19],  # Gross Prem.
             policy.gst if policy.gst else default_values[20],  # GST
-            policy.policy_total_premium if policy.policy_total_premium else default_values[21],  # Net Prem.
+            policy.policy_premium if policy.policy_premium else default_values[21],  # Net Prem.
             policy.od_premium if policy.od_premium else default_values[22],  # OD Prem.
             policy.tp_premium if policy.tp_premium else default_values[23],  # TP Prem.
             
@@ -315,7 +328,7 @@ def download_policy_data(request):
 
 def commission_report(request):
     # Get all PolicyDocuments ordered by id in descending order
-    policies = PolicyDocument.objects.all().order_by('-id')
+    policies = PolicyDocument.objects.filter(status=1).all().order_by('-id')
     
     # Initialize a list to store the policies with calculated commission amounts
     policy_data = []
@@ -325,17 +338,21 @@ def commission_report(request):
         # Check if the policy has a valid commission and od_premium
         if policy:
             
-           
                 # Convert to float and print values for debugging
-                od_premium = float(policy.od_premium.replace(',', ''))  
-                tp_premium = float(policy.tp_premium.replace(',', ''))  
-                net_premium = float(policy.policy_total_premium.replace(',', ''))  
+                od_premium = float(policy.od_premium.replace(',', '')) if policy.od_premium else 0.0  
+                tp_premium = float(policy.tp_premium.replace(',', '')) if policy.tp_premium else 0.0  
+                net_premium = float(policy.policy_total_premium.replace(',', '')) if policy.policy_total_premium else 0.0  
+
 
                 commission = policy.commission()  # Get the associated commission instance
-    
-                od_percentage = float(commission.od_percentage) if commission.od_percentage else 0
-                tp_percentage = float(commission.tp_percentage) if commission.tp_percentage else 0
-                net_percentage = float(commission.net_percentage) if commission.net_percentage else 0
+                if commission:
+                    od_percentage = float(commission.od_percentage) if commission.od_percentage else 0
+                    tp_percentage = float(commission.tp_percentage) if commission.tp_percentage else 0
+                    net_percentage = float(commission.net_percentage) if commission.net_percentage else 0
+                else:
+                    od_percentage = 0
+                    tp_percentage = 0
+                    net_percentage = 0
 
                 # Calculate the commission amounts
                 od_commission_amount = (od_premium * od_percentage) / 100
