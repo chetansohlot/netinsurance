@@ -70,7 +70,6 @@ class PolicyDocument(models.Model):
     def commission(self):
         return Commission.objects.filter(rm_name=self.rm_name).first()
 
-
     @property
 
     def start_date(self):
