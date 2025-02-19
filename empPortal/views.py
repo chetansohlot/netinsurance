@@ -381,9 +381,15 @@ def browsePolicy(request):
         member_id = request.user.id
        
         commision_rate = commisionRateByMemberId(member_id)
-        od_percentage = commision_rate.od_percentage
-        net_percentage = commision_rate.net_percentage
-        tp_percentage = commision_rate.tp_percentage
+        if commision_rate:
+            od_percentage = commision_rate.od_percentage
+            net_percentage = commision_rate.net_percentage
+            tp_percentage = commision_rate.tp_percentage
+        else:
+            od_percentage = 0.0
+            net_percentage = 0.0
+            tp_percentage = 0.0
+
         
         processed_text = process_text_with_chatgpt(extracted_text)
         if "error" in processed_text:
@@ -742,9 +748,14 @@ def bulkBrowsePolicy(request):
                 processed_text = process_text_with_chatgpt(extracted_text)
                 
                 commision_rate = commisionRateByMemberId(rm_id)
-                od_percentage = commision_rate.od_percentage
-                net_percentage = commision_rate.net_percentage
-                tp_percentage = commision_rate.tp_percentage
+                if commision_rate:
+                    od_percentage = commision_rate.od_percentage
+                    net_percentage = commision_rate.net_percentage
+                    tp_percentage = commision_rate.tp_percentage
+                else:
+                    od_percentage = 0.0
+                    net_percentage = 0.0
+                    tp_percentage = 0.0
         
                 if "error" in processed_text:
                     error_process_pdf_files += 1
