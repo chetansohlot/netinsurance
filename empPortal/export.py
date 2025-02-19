@@ -220,9 +220,9 @@ def download_policy_data(request):
         issue_year = policy.policy_start_date.strftime("%Y") if isinstance(policy.policy_start_date, datetime.datetime) else default_values[6]
         issue_month = policy.policy_start_date.strftime("%b-%Y") if isinstance(policy.policy_start_date, datetime.datetime) else default_values[6]
         risk_start_date = policy.policy_expiry_date.astimezone(datetime.timezone.utc).replace(tzinfo=None) if policy.policy_expiry_date else ""
-        od_premium = float(policy.od_premium.replace(',', ''))  
-        tp_premium = float(policy.tp_premium.replace(',', ''))  
-        net_premium = float(policy.policy_total_premium.replace(',', '')) 
+        od_premium = float(policy.od_premium.replace(',', '')) if policy.od_premium and policy.od_premium.replace(',', '').strip().isdigit() else 0  
+        tp_premium = float(policy.tp_premium.replace(',', ''))  if policy.tp_premium and policy.tp_premium.replace(',', '').strip().isdigit() else 0  
+        net_premium = float(policy.policy_total_premium.replace(',', '')) if policy.policy_total_premium and policy.policy_total_premium.replace(',', '').strip().isdigit() else 0  
         commission = policy.commission()
         od_percentage = float(commission.od_percentage) if commission.od_percentage else 0
         tp_percentage = float(commission.tp_percentage) if commission.tp_percentage else 0
