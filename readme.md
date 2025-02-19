@@ -8,6 +8,7 @@
 8. pip install pandas
 9. pip install faker
 10. pip install openpyxl
+11. pip install fitz
 
 or 
 pip install django requests python-magic openai pymysql python-dotenv fastapi PyMuPDF
