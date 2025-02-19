@@ -72,7 +72,7 @@ class PolicyDocument(models.Model):
     # commission = models.ForeignKey(Commission, to_field="rm_name", on_delete=models.SET_NULL, null=True, blank=True)
 
     def commission(self):
-        return Commission.objects.filter(rm_name=self.rm_name).first()
+         return Commission.objects.filter(member_id=self.rm_id ).first()
 
     @property
 

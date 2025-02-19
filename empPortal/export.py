@@ -216,7 +216,9 @@ def download_policy_data(request):
     
     for policy in policies:
         # Convert policy dates to naive datetime (fix timezone issue)
-        issue_date = policy.policy_start_date.astimezone(datetime.timezone.utc).replace(tzinfo=None) if policy.policy_start_date else ""
+        issue_date = datetime.datetime.strptime(policy.policy_start_date, "%Y-%m-%d").strftime("%m-%d-%Y") if isinstance(policy.policy_start_date, str) else policy.policy_start_date.strftime("%m-%d-%Y") if policy.policy_start_date else default_values[6]
+        issue_year = policy.policy_start_date.strftime("%Y") if isinstance(policy.policy_start_date, datetime.datetime) else default_values[6]
+        issue_month = policy.policy_start_date.strftime("%b-%Y") if isinstance(policy.policy_start_date, datetime.datetime) else default_values[6]
         risk_start_date = policy.policy_expiry_date.astimezone(datetime.timezone.utc).replace(tzinfo=None) if policy.policy_expiry_date else ""
         od_premium = float(policy.od_premium.replace(',', ''))  
         tp_premium = float(policy.tp_premium.replace(',', ''))  
@@ -230,21 +232,22 @@ def download_policy_data(request):
         tp_commission_amount = (tp_premium * tp_percentage) / 100
         net_commission_amount = (net_premium * net_percentage) / 100
         total_commission = float(od_commission_amount + tp_commission_amount + net_commission_amount)
+        
         broker_commision = 25  # Insurer Commission Percentage
         # Convert policy premium to float, removing commas
         tp = float(policy.policy_premium.replace(',', '')) if policy.policy_premium else 0  
         # Calculate Profit/Loss
-        profit_loss = (tp * (broker_commision / 100)) - (od_commission_amount + tp_commission_amount + net_commission_amount)
+        profit_loss = (tp * (broker_commision / 100)) - (net_commission_amount)
         total_broker_commission = (tp * (broker_commision / 100))
         # Fill in data, using database values if available, otherwise defaults
         row_data = [
-            issue_date if issue_date else default_values[0],  # Policy Month
+            issue_month if issue_month else default_values[0],  # Policy Month
             policy.rm_name if policy.rm_name else default_values[1],  # Agent Name
             default_values[2],  # SM Name
             default_values[3],  # Franchise Name
             policy.insurance_provider if policy.insurance_provider else default_values[4],  # Insurer Name
             default_values[5],  # S.P. Name
-            policy.policy_start_date if policy.policy_start_date else default_values[6],  # Issue Date
+            issue_date if issue_date else default_values[6],  # Issue Date
             risk_start_date if risk_start_date else default_values[7],  # Risk Start Date
             default_values[8],  # Payment Status
             policy.insurance_provider if policy.insurance_provider else default_values[9],  # Insurance Company
@@ -255,7 +258,11 @@ def download_policy_data(request):
             policy.vehicle_make if policy.vehicle_make else default_values[14],  # Vehicle Make/Model
             policy.vehicle_gross_weight if policy.vehicle_gross_weight else default_values[15],  # Gross Weight
             policy.vehicle_number if policy.vehicle_number else default_values[16],  # Reg. No.
-            policy.vehicle_manuf_date and datetime.datetime.strptime(policy.vehicle_manuf_date, "%d-%m-%Y").strftime("%Y") or default_values[17],
+            policy.vehicle_manuf_date if policy.vehicle_manuf_date.isdigit() and len(policy.vehicle_manuf_date) == 4 
+            else datetime.datetime.strptime(policy.vehicle_manuf_date, "%d-%m-%Y").strftime("%Y") if policy.vehicle_manuf_date 
+            else default_values[17],
+            
+
            # MFG Year
             policy.sum_insured if policy.sum_insured else default_values[18],  # Sum Insured
             default_values[19],  # Gross Prem.
