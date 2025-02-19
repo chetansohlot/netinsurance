@@ -56,25 +56,21 @@ def memberView(request, user_id):
     
 def activateUser(request, user_id):
     if request.user.is_authenticated:
-        try:
-            # Check if the user exists
-            user_details = Users.objects.get(id=user_id)
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "UPDATE users SET activation_status = %s WHERE id = %s",
+                ['1', user_id]
+            )
 
-            # Activate the user (set activation_status to '1')
-            user_details.activation_status = '1'
-            user_details.save()
+        # Display success message
+        messages.success(request, 'User account has been activated successfully!')
 
-            # Display success message
-            messages.success(request, 'User account has been activated successfully!')
-
-        except Users.DoesNotExist:
-            # If the user does not exist, show an error message
-            messages.error(request, 'User not found.')
 
         # Redirect back to the member view page after activation
         return redirect('member-view', user_id=user_id)
     else:
         return redirect('login')
+
 
     
 

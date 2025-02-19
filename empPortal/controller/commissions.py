@@ -40,7 +40,7 @@ def commissions(request):
         query = """
             SELECT c.*, u.first_name, u.last_name 
             FROM commissions c
-            INNER JOIN users u ON c.sub_broker_id = u.id
+            INNER JOIN users u ON c.member_id = u.id
             WHERE c.sub_broker_id = %s
         """
         
@@ -49,12 +49,6 @@ def commissions(request):
             commissions_list = dictfetchall(cursor)
         
         # Define insurers and products arrays
-        insurers = [
-            {'id': 1, 'name': 'ABC'},
-            {'id': 2, 'name': 'DEF'},
-            {'id': 3, 'name': 'XYZ'},
-            {'id': 4, 'name': 'PQY'}
-        ]
         products = [
             {'id': 1, 'name': 'Motor'},
             {'id': 2, 'name': 'Health'},
@@ -62,18 +56,17 @@ def commissions(request):
             {'id': 4, 'name': 'Product 4'}
         ]
 
-        # Create dictionaries for fast lookup
-        insurer_dict = {insurer['id']: insurer['name'] for insurer in insurers}
-        product_dict = {product['id']: product['name'] for product in products}
+        # Ensure the dictionary uses integer keys
+        product_dict = {int(product['id']): product['name'] for product in products}
 
-        # Map the names to the commissions list
+        # Map product names to the commissions list
         for commission in commissions_list:
-            commission['insurer_name'] = insurer_dict.get(commission['insurer_id'], 'Unknown')
-            commission['product_name'] = product_dict.get(commission['product_id'], 'Unknown')
+            commission['product_name'] = product_dict.get(int(commission['product_id']), 'Unknown')
 
         return render(request, 'commissions/commissions.html', {'commissions': commissions_list})
     else:
         return redirect('login')
+
     
 def create(request):
     if request.user.is_authenticated:
@@ -81,16 +74,15 @@ def create(request):
         products = [
             {'id': 1, 'name': 'Motor'},
             {'id': 2, 'name': 'Health'},
-            {'id': 3, 'name': 'Product 3'},
-            {'id': 4, 'name': 'Product 4'}
+            {'id': 3, 'name': 'Term'},
         ]
-        insurers = [
-            {'id': 1, 'name': 'ABC'},
-            {'id': 2, 'name': 'DEF'},
-            {'id': 3, 'name': 'XYZ'},
-            {'id': 4, 'name': 'PQY'}
-        ]
-        return render(request, 'commissions/create.html', {'products': products, 'insurers': insurers})
+        
+        if request.user.role_id == 1:
+            members = Users.objects.filter(role_id=2)
+        else:
+            members = Users.objects.none()
+    
+        return render(request, 'commissions/create.html', {'products': products, 'members': members})
     else:
         return redirect('login')
    
@@ -99,15 +91,15 @@ def store(request):
         return redirect('login')
 
     if request.method == "POST":
-        insurer_id = request.POST.get('insurer', '').strip()
+        member_id = request.POST.get('member', '').strip()
         product_id = request.POST.get('product', '').strip()
         tp_percentage = request.POST.get('tp_percentage', '').strip()
         od_percentage = request.POST.get('od_percentage', '').strip()
         net_percentage = request.POST.get('net_percentage', '').strip()
 
         # Validations
-        if not insurer_id:
-            messages.error(request, "Insurer is required.")
+        if not member_id:
+            messages.error(request, "Member is required.")
         if not product_id:
             messages.error(request, "Product is required.")
         if not tp_percentage or not tp_percentage.replace('.', '', 1).isdigit():
@@ -118,7 +110,7 @@ def store(request):
             messages.error(request, "Valid Net percentage is required.")
 
         # Check if this sub-broker already has a commission for the selected insurer
-        if Commission.objects.filter(insurer_id=insurer_id, product_id=product_id, sub_broker_id=request.user.id).exists():
+        if Commission.objects.filter(member_id=member_id, product_id=product_id, sub_broker_id=request.user.id).exists():
             messages.error(request, "You already have a commission for this insurer & product.")
 
         # If any errors, redirect back to the 'add-commission' page
@@ -128,7 +120,7 @@ def store(request):
         # Save to database
         Commission.objects.create(
             product_id=product_id,
-            insurer_id=insurer_id,
+            member_id=member_id,
             tp_percentage=float(tp_percentage),
             od_percentage=float(od_percentage),
             net_percentage=float(net_percentage),

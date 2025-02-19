@@ -125,6 +125,16 @@ Commissions
           </div>
           <!-- /.content-header -->
       
+                      <!-- Display error messages -->
+                      {% if messages %}
+                          <div class="alert alert-danger">
+                              <ul>
+                                  {% for message in messages %}
+                                      <li>{{ message }}</li>
+                                  {% endfor %}
+                              </ul>
+                          </div>
+                      {% endif %}
           <!-- Main content -->
           <div class="content">
             <div class="container-fluid">
@@ -138,7 +148,7 @@ Commissions
                             <div class="table-search-area">
                               <form>
                                 <select class="table-select-field">
-                                  <option value="">Insurer Name</option>
+                                  <option value="">Member Name</option>
                                   <option value="">Employee ID</option>
                                   <option value="">Mobile Number</option>
                                   <option value="">Email ID</option>
@@ -188,9 +198,8 @@ Commissions
                                             <input type="checkbox" name="" id="checkall" class="table-chk">
                                             <label for="checkall"></label>
                                         </th>
-                                        <th>Insurer Name</th>
+                                        <th>Member Name</th>
                                         <th>Product Name</th>
-                                        <th>Sub Broker</th>
                                         <th>TP %</th>
                                         <th>OD %</th>
                                         <th>Net %</th>
@@ -206,19 +215,11 @@ Commissions
                                         </td>
                                         <td>
                                             <!-- Insurer Name -->
-                                            {{ commission.insurer_name }}  
+                                            {{ commission.first_name }} {{ commission.last_name }}
                                         </td>
                                         <td>
                                             <!-- Product Name -->
                                             {{ commission.product_name }}  
-                                        </td>
-                                        <td>
-                                            <!-- Sub Broker Name -->
-                                            <a href="#" class="trlink">
-                                                {{ commission.first_name }} {{ commission.last_name }}
-                                                <!-- Uncomment to display username -->
-                                                <span class="text-gray d-block small">{{ commission.username }}</span>
-                                            </a>
                                         </td>
                                         <td>
                                             <!-- TP Percentage -->

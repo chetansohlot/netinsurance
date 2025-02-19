@@ -61,7 +61,7 @@
                           <div class="col">
                             
                             <p class="card-text">
-                              Actice Members
+                              Active Members
                             </p>
                             <h5 class="card-title card-number">6</h5>
                           </div>
@@ -213,19 +213,18 @@
                                       </td>
                                       <td>{{ user.role_names }} <span class="text-gray d-block small">{{ user.status_type }}</span></td>
                                       <td>
-                                        {% if user.activation_status == 1 %}
+                                        {% if user.activation_status == '1' %}
                                           <p class="text-success">Active</p>
                                         {% else %}
                                           <p class="text-danger">Inactive</p>
                                         {% endif %}
-                                        <span class="text-gray d-block small">{{ user.created_at|date:"d M 'y" }} - Present</span>
+                                        <span class="text-gray d-block small">{{ user.created_at|date:"d M 'y H:i:s" }} - Present</span>
                                       </td>
                                       <td>
                                         <div class="dropdown">
                                           <img src="{% static 'dist/img/svg/menu-dot-vr.svg' %}" alt="" class="table-doticon" data-toggle="dropdown" aria-expanded="false">
                                           <ul class="dropdown-menu table-dropdown-menu">
-                                            <li><a class="dropdown-item" href="#">Download Health Insurance Card</a></li>
-                                            <li><a class="dropdown-item" href="#">Deactivate Membership</a></li>
+                                            <li><a class="dropdown-item" href="{% url 'member-view' user_id=user.id %}">View member</a></li>
                                           </ul>
                                         </div>
                                       </td>
