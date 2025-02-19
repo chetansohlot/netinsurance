@@ -218,14 +218,13 @@
                                         {% else %}
                                           <p class="text-danger">Inactive</p>
                                         {% endif %}
-                                        <span class="text-gray d-block small">{{ user.created_at|date:"d M 'y" }} - Present</span>
+                                        <span class="text-gray d-block small">{{ user.created_at|date:"d M 'y H:i:s" }} - Present</span>
                                       </td>
                                       <td>
                                         <div class="dropdown">
                                           <img src="{% static 'dist/img/svg/menu-dot-vr.svg' %}" alt="" class="table-doticon" data-toggle="dropdown" aria-expanded="false">
                                           <ul class="dropdown-menu table-dropdown-menu">
-                                            <li><a class="dropdown-item" href="#">Download Health Insurance Card</a></li>
-                                            <li><a class="dropdown-item" href="#">Deactivate Membership</a></li>
+                                            <li><a class="dropdown-item" href="{% url 'member-view' user_id=user.id %}">View member</a></li>
                                           </ul>
                                         </div>
                                       </td>
