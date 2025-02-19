@@ -45,6 +45,7 @@ def commissions(request):
                 SELECT c.*, u.first_name, u.last_name, u.user_gen_id, c.product_id
                 FROM commissions c
                 INNER JOIN users u ON c.member_id = u.id
+                where role_id = 2
             """
             params = []
         else:
