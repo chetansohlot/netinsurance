@@ -21,6 +21,7 @@ urlpatterns = [
     path('members/', members.members, name='members'),
     path('/member/member-view/<str:user_id>',members.memberView, name='member-view'),
     path('/member/activate-user/<str:user_id>',members.activateUser, name='activate-user'),
+    path('update-commission/', commissions.update_commission, name='update-commission'),
 
     path('commissions/', commissions.commissions, name='commissions'),
     path('add-commission/', commissions.create, name='add-commission'),
