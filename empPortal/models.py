@@ -192,7 +192,9 @@ class UserFiles(models.Model):
 
 class UnprocessedPolicyFiles(models.Model):
     policy_document = models.CharField(max_length=255)
+    bulk_log_id = models.IntegerField()
     file_path = models.CharField(max_length=255)
+    doc_name = models.CharField(max_length=255)
     error_message = models.TextField()
     status = models.CharField(max_length=50, choices=[("Pending", "Pending"), ("Reprocessed", "Reprocessed")], default="Pending")
     created_at = models.DateTimeField(auto_now_add=True)

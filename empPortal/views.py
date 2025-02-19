@@ -733,7 +733,9 @@ def bulkBrowsePolicy(request):
                     )
                     
                     UnprocessedPolicyFiles.objects.create(
-                        policy_document=bulk_log.id,
+                        policy_document=policy_doc.id,
+                        doc_name=policy_doc.filename,
+                        bulk_log_id=bulk_log.id,
                         file_path=file_path_url,
                         error_message=processed_text,
                         status="Pending",
@@ -856,5 +858,105 @@ def userLogout(request):
     else:
         return redirect("login")
         
-def policyUploadView(request,id):
-    return HttpResponse(id)
+def policyUploadView(request, id):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    # Correct the filter logic
+    unprocessable_files = UnprocessedPolicyFiles.objects.filter(bulk_log_id=id, status="Pending")
+
+    return render(request, 'policy/unprocessable-files.html', {'files': unprocessable_files})
+  
+def reprocessBulkPolicies(request):
+    if request.method == "POST":
+        unprocessFiles = request.POST.get('reprocess_bulk_policies', '')
+        unprocessFilesList = unprocessFiles.split(",") if unprocessFiles else []
+        
+        for file_id in unprocessFilesList:
+            try:
+                file_data = UnprocessedPolicyFiles.objects.get(id=file_id)
+
+                individual_file_id = file_data.policy_document 
+                bulk_log_id = file_data.bulk_log_id
+                
+                stored_path = file_data.file_path
+                
+                if stored_path.startswith("/media/"):
+                    stored_path = stored_path.replace("/media/", "", 1)
+
+                file_path = os.path.normpath(os.path.join(settings.MEDIA_ROOT, stored_path))
+
+                extracted_text = extract_text_from_pdf(file_path)
+
+                if "Error" in extracted_text:
+                    continue
+                
+                processed_text = process_text_with_chatgpt(extracted_text)
+                # processed_text = '"{\n    \"error\": \"API Error: 429\",\n    \"details\": \"{\\n    \\\"error\\\": {\\n        \\\"message\\\": \\\"Rate limit reached for gpt-4o in organization org-J5bqoyjjQpjdpBBMDG7A31ip on tokens per min (TPM): Limit 30000, Used 25671, Requested 7836. Please try again in 7.014s. Visit https://platform.openai.com/account/rate-limits to learn more.\\\",\\n        \\\"type\\\": \\\"tokens\\\",\\n        \\\"param\\\": null,\\n        \\\"code\\\": \\\"rate_limit_exceeded\\\"\\n    }\\n}\\n\"\n}"'
+                # processed_text = '{"policy_number": "1119903124P118014678", "vehicle_number": "HR-65-A-6954", "insured_name": "M/s HAVISH POLYPLAST PRIVATE LIMITED", "issue_date": "2025-02-11 00:00:00", "start_date": "2025-02-12 00:00:00", "expiry_date": "2026-02-11 23:59:59", "gross_premium": 20060, "net_premium": 17816, "gst_premium": 2244, "sum_insured": 400000, "policy_period": "1 Year(s)", "insurance_company": "UNITED INDIA INSURANCE COMPANY LIMITED", "coverage_details": {"own_damage": {"premium": 16049, "additional_premiums": 100, "addons": {"addons": [{"name": "LL to Paid Driver IMT 28", "amount": 100}], "discounts": []}}, "third_party": {"premium": 1667, "additional_premiums": 217.44, "addons": {"addons": [{"name": "Cover for lamps, tyres, tubes etc", "amount": 217.44}], "discounts": []}}}, "vehicle_details": {"make": "Mahindra & Mahindra", "model": "BOLERO MAXI TRUCK PLUS BMT PLUS", "variant": "Open", "registration_year": 2016, "engine_number": "TBG4D84701", "chassis_number": "MA1ZP2TBKG2D71484", "fuel_type": "", "cubic_capacity": 2523, "vehicle_gross_weight": 2620, "vehicle_type": "Public", "commercial_vehicle_detail": "Public Carrier"}, "additional_details": {"policy_type": "motor package policy", "ncb": 0, "addons": [], "previous_insurer": "", "previous_policy_number": ""}, "contact_information": {"address": "VPO SAMPAN KHERI KAITHAL, 136027, KAITHAL, HARYANA", "phone_number": "******8078", "email": "**********@gmail.com"}}'
+                if "error" in processed_text:
+                    policy_doc = PolicyDocument.objects.filter(id=individual_file_id).first()
+                    policy_doc.extracted_text = processed_text
+                    policy_doc.save()
+                    
+                    unprocess_policy = UnprocessedPolicyFiles.objects.filter(id=file_id).first()
+                    unprocess_policy.error_message=processed_text
+                    unprocess_policy.save()
+                    
+                else:
+                    policy_number = processed_text.get("policy_number", None)
+                    if PolicyDocument.objects.filter(policy_number=policy_number).exists():
+                        continue
+                    
+                    vehicle_number = re.sub(r"[^a-zA-Z0-9]", "", processed_text.get("vehicle_number", ""))
+                    coverage_details = processed_text.get("coverage_details", [{}])
+                    first_coverage = coverage_details if coverage_details else {}
+
+                    od_premium = first_coverage.get('own_damage', {}).get('premium', 0)
+                    tp_premium = first_coverage.get('third_party', {}).get('premium', 0)
+                    
+                    policy_doc = PolicyDocument.objects.filter(id=individual_file_id).first()
+                    
+                    policy_doc.extracted_text = processed_text
+                    policy_doc.insurance_provider = processed_text.get("insurance_company", "")
+                    policy_doc.vehicle_number = vehicle_number
+                    policy_doc.policy_number=policy_number
+                    policy_doc.policy_issue_date=processed_text.get("issue_date", None)
+                    policy_doc.policy_expiry_date=processed_text.get("expiry_date", None)
+                    policy_doc.policy_period=processed_text.get("policy_period", "")
+                    policy_doc.holder_name=processed_text.get("insured_name", "")
+                    policy_doc.policy_total_premium=processed_text.get("gross_premium", 0)
+                    policy_doc.policy_premium=processed_text.get("net_premium", 0)
+                    policy_doc.sum_insured=processed_text.get("sum_insured", 0)
+                    policy_doc.coverage_details=processed_text.get("coverage_details", "")
+                    policy_doc.policy_start_date=processed_text.get('start_date', None)
+                    policy_doc.payment_status='Confirmed'
+                    policy_doc.policy_type=processed_text.get('additional_details', {}).get('policy_type', "")
+                    policy_doc.vehicle_type=processed_text.get('vehicle_details', {}).get('vehicle_type', "")
+                    policy_doc.vehicle_make=processed_text.get('vehicle_details', {}).get('make', "")               
+                    policy_doc.vehicle_model=processed_text.get('vehicle_details', {}).get('model', "")
+                    policy_doc.vehicle_gross_weight=processed_text.get('vehicle_details', {}).get('vehicle_gross_weight', "") 
+                    policy_doc.vehicle_manuf_date=processed_text.get('vehicle_details', {}).get('registration_year', "")                  
+                    policy_doc.gst=processed_text.get('gst_premium', 0)
+                    policy_doc.od_premium=od_premium
+                    policy_doc.tp_premium=tp_premium
+                    policy_doc.status=1
+                    policy_doc.save()
+                    
+                    bulk_log = BulkPolicyLog.objects.filter(id=bulk_log_id).first()
+                    bulk_log.count_error_process_pdf_files -= 1
+                    bulk_log.count_uploaded_files += 1
+                    bulk_log.save()
+                    
+                    unprocess_policy = UnprocessedPolicyFiles.objects.filter(id=file_id).first()
+                    unprocess_policy.error_message=''
+                    unprocess_policy.status="Reprocessed"
+                    unprocess_policy.save()
+                    
+            except UnprocessedPolicyFiles.DoesNotExist:
+                print(f"File with ID {file_id} not found")
+
+        return redirect('bulk-upload-logs')
+    else:
+        messages.error(request, 'Invalid URL')
+        return redirect(request.META.get('HTTP_REFERER', '/'))
