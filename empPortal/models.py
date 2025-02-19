@@ -94,6 +94,7 @@ class Users(AbstractBaseUser):
     user_gen_id = models.CharField(max_length=255)
     user_name = models.CharField(max_length=255)
     first_name = models.CharField(max_length=255)
+    activation_status = models.CharField(max_length=10)
     last_name = models.CharField(max_length=255)
     email = models.CharField(max_length=255, unique=True)
     phone = models.BigIntegerField(null=True, blank=True)

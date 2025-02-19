@@ -33,18 +33,51 @@ app = FastAPI()
 
 def members(request):
     if request.user.is_authenticated:
-        return render(request,'members.html')
+        if request.user.role_id == 1:
+            users = Users.objects.filter(role_id=2)
+        else:
+            users = Users.objects.none()
+        return render(request, 'members/members.html', {'users': users})
     else:
         return redirect('login')
     
 
-def memberView(request):
+def memberView(request, user_id):
     if request.user.is_authenticated:
-        return render(request,'member-view.html')
+        user_details = Users.objects.get(id=user_id)  # Fetching the user's details
+        bank_details = BankDetails.objects.filter(user_id=user_id).first()  # Fetching bank details
+
+        return render(request, 'members/member-view.html', {
+            'user_details': user_details,
+            'bank_details': bank_details
+        })
     else:
         return redirect('login')
     
+def activateUser(request, user_id):
+    if request.user.is_authenticated:
+        try:
+            # Check if the user exists
+            user_details = Users.objects.get(id=user_id)
+
+            # Activate the user (set activation_status to '1')
+            user_details.activation_status = '1'
+            user_details.save()
+
+            # Display success message
+            messages.success(request, 'User account has been activated successfully!')
+
+        except Users.DoesNotExist:
+            # If the user does not exist, show an error message
+            messages.error(request, 'User not found.')
+
+        # Redirect back to the member view page after activation
+        return redirect('member-view', user_id=user_id)
+    else:
+        return redirect('login')
+
     
+
 def dictfetchall(cursor):
     "Returns all rows from a cursor as a dict"
     columns = [col[0] for col in cursor.description]

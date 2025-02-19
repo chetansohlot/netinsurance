@@ -1,7 +1,7 @@
 {% extends 'master.html' %}
 
 {% block title %}
-Commissions
+    Members
 {% endblock %}
   
 {% block content %}
@@ -21,12 +21,12 @@ Commissions
               <div class="row pt-2 pb-5">
                 <div class="col-sm-6">
                   <div class="d-flex align-items-center">
-                  <h1 class="admin-title m-0 pt-2">Commissions</h1>
+                  <h1 class="admin-title m-0 pt-2">Members</h1>
                   </div>
                 </div>
                 <div class="col-sm-6">
                   <div class="d-flex justify-content-end">
-                    <a href="{% url 'add-commission' %}" class="breadcrump-addbtn"><i class="fas fa-plus"></i> Add Commission</a>
+                    <a href="{% url 'add-members' %}" class="breadcrump-addbtn"><i class="fas fa-plus"></i> Add Members</a>
                   </div>
                 </div>
               </div>
@@ -39,7 +39,7 @@ Commissions
                           <div class="col">
                             
                             <p class="card-text">
-                              Total Commission
+                              Total Members
                             </p>
                             <h5 class="card-title card-number">14</h5>
                           </div>
@@ -61,7 +61,7 @@ Commissions
                           <div class="col">
                             
                             <p class="card-text">
-                              Actice Commission
+                              Actice Members
                             </p>
                             <h5 class="card-title card-number">6</h5>
                           </div>
@@ -83,7 +83,7 @@ Commissions
                           <div class="col">
                             
                             <p class="card-text">
-                              Deactive Commission
+                              Deactive Members
                             </p>
                             <h5 class="card-title card-number">3</h5>
                           </div>
@@ -105,7 +105,7 @@ Commissions
                           <div class="col">
                             
                             <p class="card-text">
-                              Pending Commission
+                              Pending Members
                             </p>
                             <h5 class="card-title card-number">0</h5>
                           </div>
@@ -138,7 +138,7 @@ Commissions
                             <div class="table-search-area">
                               <form>
                                 <select class="table-select-field">
-                                  <option value="">Insurer Name</option>
+                                  <option value="">Member Name</option>
                                   <option value="">Employee ID</option>
                                   <option value="">Mobile Number</option>
                                   <option value="">Email ID</option>
@@ -183,72 +183,61 @@ Commissions
                         <div class="table-responsive table-ht">
                             <table class="table table-design table-trlink">
                                 <thead class="table-thead-bg-light table-header-fix">
-                                    <tr>
-                                        <th width="10">
-                                            <input type="checkbox" name="" id="checkall" class="table-chk">
-                                            <label for="checkall"></label>
-                                        </th>
-                                        <th>Insurer Name</th>
-                                        <th>Product Name</th>
-                                        <th>Sub Broker</th>
-                                        <th>TP %</th>
-                                        <th>OD %</th>
-                                        <th>Net %</th>
-                                        <th width="50">Status</th>
-                                    </tr>
+                                  <tr>
+                                    <th width="10">
+                                      <input type="checkbox" name="" id="checkall" class="table-chk">
+                                      <label for="checkall"></label>
+                                    </th>
+                                    <th>Name / Employee ID</th>
+                                    <th>Contact Details</th>
+                                    <th>Membership Plan(s)</th>
+                                    <th>Member Status</th>
+                                    <th width="50"></th>
+                                  </tr>
                                 </thead>
                                 <tbody>
-                                    {% for commission in commissions %}
+                                  {% for user in users %}
                                     <tr>
-                                        <td>
-                                            <input type="checkbox" name="" id="check{{ commission.id }}" class="table-chk">
-                                            <label for="check{{ commission.id }}"></label>
-                                        </td>
-                                        <td>
-                                            <!-- Insurer Name -->
-                                            {{ commission.insurer_name }}  
-                                        </td>
-                                        <td>
-                                            <!-- Product Name -->
-                                            {{ commission.product_name }}  
-                                        </td>
-                                        <td>
-                                            <!-- Sub Broker Name -->
-                                            <a href="#" class="trlink">
-                                                {{ commission.first_name }} {{ commission.last_name }}
-                                                <!-- Uncomment to display username -->
-                                                <span class="text-gray d-block small">{{ commission.username }}</span>
-                                            </a>
-                                        </td>
-                                        <td>
-                                            <!-- TP Percentage -->
-                                            {{ commission.tp_percentage }}%
-                                        </td>
-                                        <td>
-                                            <!-- OD Percentage -->
-                                            {{ commission.od_percentage }}%
-                                        </td>
-                                        <td>
-                                            <!-- Net Percentage -->
-                                            {{ commission.net_percentage }}%
-                                        </td>
-                                        
-                                        <td>
-                                            <!-- Status -->
-                                            {% if commission.active == '1' %}
-                                                Active
-                                            {% else %}
-                                                Inactive
-                                            {% endif %}
-                                        </td>
+                                      <td>
+                                        <input type="checkbox" name="" id="check{{ user.id }}" class="table-chk">
+                                        <label for="check{{ user.id }}"></label>
+                                      </td>
+                                      <td>
+                                        <a href="{% url 'member-view' user_id=user.id %}" class="trlink">{{ user.full_name }} 
+                                          <span class="text-gray d-block small">{{ user.user_gen_id }}</span>
+                                        </a>
+                                      </td>
+                                      <td>
+                                        {{ user.phone }} 
+                                        <span class="text-gray d-block small">{{ user.email }}</span>
+                                      </td>
+                                      <td>{{ user.role_names }} <span class="text-gray d-block small">{{ user.status_type }}</span></td>
+                                      <td>
+                                        {% if user.activation_status == 1 %}
+                                          <p class="text-success">Active</p>
+                                        {% else %}
+                                          <p class="text-danger">Inactive</p>
+                                        {% endif %}
+                                        <span class="text-gray d-block small">{{ user.created_at|date:"d M 'y" }} - Present</span>
+                                      </td>
+                                      <td>
+                                        <div class="dropdown">
+                                          <img src="{% static 'dist/img/svg/menu-dot-vr.svg' %}" alt="" class="table-doticon" data-toggle="dropdown" aria-expanded="false">
+                                          <ul class="dropdown-menu table-dropdown-menu">
+                                            <li><a class="dropdown-item" href="#">Download Health Insurance Card</a></li>
+                                            <li><a class="dropdown-item" href="#">Deactivate Membership</a></li>
+                                          </ul>
+                                        </div>
+                                      </td>
                                     </tr>
-                                    {% endfor %}
+                                  {% empty %}
+                                    <tr>
+                                      <td colspan="7" class="text-center">No users found</td>
+                                    </tr>
+                                  {% endfor %}
                                 </tbody>
-                            </table>
-                            
-                            
-                            
-                            
+                              </table>
+                              
                         </div>
                       </div>
                     </div>

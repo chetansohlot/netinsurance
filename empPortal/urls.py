@@ -19,7 +19,8 @@ urlpatterns = [
     path('update-user-details/', profile.update_user_details, name='update-user-details'),
 
     path('members/', members.members, name='members'),
-    path('member-view/', members.memberView, name='member-view'),
+    path('/member/member-view/<str:user_id>',members.memberView, name='member-view'),
+    path('/member/activate-user/<str:user_id>',members.activateUser, name='activate-user'),
 
     path('commissions/', commissions.commissions, name='commissions'),
     path('add-commission/', commissions.create, name='add-commission'),
