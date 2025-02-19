@@ -179,50 +179,117 @@
                         <div class="card-body">
                           <div class="tab-content tab-scrollbar">
                             <div class="active tab-pane" id="membership-tab">
+                              
+                              {% if request.user.role_id == 1 %}
+                              <div class="row mb-3">
+                                  <div class="col-md-12 text-end">
+                                      <button 
+                                          class="btn btn-sm btn-success" 
+                                          data-member="{{ user_details.id }}"
+                                          data-bs-toggle="modal" 
+                                          data-bs-target="#editCommissionModal" id="addCommissionBtn">
+                                          <i class="fas fa-plus"></i> Add Payout
+                                      </button>
+                                  </div>
+                              </div>
+                              {% endif %}
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <h1 class="card-hding mb-3 text-dark">Payout Details</h1>
-                                        <table class="table table-bordered">
-                                            <thead class="thead-light">
-                                                <tr>
-                                                    <th>Product</th>
-                                                    <th>TP Prem. (%)</th>
-                                                    <th>OD Prem. (%)</th>
-                                                    <th>Net Prem. (%)</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>Motor</td>
-                                                    <td>5%</td>
-                                                    <td>5%</td>
-                                                    <td>5%</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Health</td>
-                                                    <td>6%</td>
-                                                    <td>4%</td>
-                                                    <td>5.5%</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Term</td>
-                                                    <td>7%</td>
-                                                    <td>3%</td>
-                                                    <td>6%</td>
-                                                </tr>
-                                            </tbody>
-                                            <tfoot>
-                                                <tr>
-                                                    <th>Total</th>
-                                                    <th>18%</th>
-                                                    <th>12%</th>
-                                                    <th>16.5%</th>
-                                                </tr>
-                                            </tfoot>
-                                        </table>
+                                        
+                                      <table class="table table-bordered">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th>Product</th>
+                                                <th>TP Prem. (%)</th>
+                                                <th>OD Prem. (%)</th>
+                                                <th>Net Prem. (%)</th>
+                                                {% if request.user.role_id == 1 %}
+                                                <th>Action</th>
+                                                {% endif %}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for commission in commissions %}
+                                            <tr>
+                                                <td>{{ commission.product_name }}</td>
+                                                <td>{{ commission.tp_percentage }}%</td>
+                                                <td>{{ commission.od_percentage }}%</td>
+                                                <td>{{ commission.net_percentage }}%</td>
+                                                {% if request.user.role_id == 1 %}
+                                                <td>
+                                                    <button class="btn btn-sm btn-primary edit-btn" 
+                                                            data-id="{{ commission.id }}" 
+                                                            data-member="{{ commission.member_id }}"
+                                                            data-product="{{ commission.product_id }}"
+                                                            data-tp="{{ commission.tp_percentage }}"
+                                                            data-od="{{ commission.od_percentage }}"
+                                                            data-net="{{ commission.net_percentage }}"
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#editCommissionModal">
+                                                        Edit
+                                                    </button>
+                                                </td>
+                                                {% endif %}
+                                            </tr>
+                                            {% empty %}
+                                            <tr>
+                                                <td colspan="5" class="text-center">No commission found</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
                                     </div>
                                 </div>
                                 
+                            </div>
+                            
+                            <!-- Edit Commission Modal -->
+                            <div class="modal fade" id="editCommissionModal" tabindex="-1" aria-labelledby="editCommissionLabel" aria-hidden="true">
+                              <div class="modal-dialog">
+                                  <div class="modal-content">
+                                      <div class="modal-header">
+                                          <h5 class="modal-title" id="editCommissionLabel">Manage Commission</h5>
+                                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                      </div>
+                                      <div class="modal-body">
+                                          <form id="editCommissionForm" method="POST" action="{% url 'update-commission' %}">
+                                              {% csrf_token %}
+                                              <input type="hidden" name="commission_id" id="editCommissionId">
+                                              <input type="hidden" name="member_id" id="editMemberId"> <!-- Hidden member ID -->
+                            
+                                              <div class="mb-3">
+                                                  <label class="form-label">Product Name</label>
+                                                  <select class="form-control" name="product" id="editProduct">
+                                                      <option value="">Select Product</option>
+                                                      {% for product in products %}
+                                                          <option value="{{ product.id }}">{{ product.name }}</option>
+                                                      {% endfor %}
+                                                  </select>
+                                              </div>
+                                              
+                                              <div class="mb-3">
+                                                  <label class="form-label">TP %</label>
+                                                  <input type="text" class="form-control percentage" id="editTp" name="tp_percentage">
+                                                  <span class="error tp_percentage_err"></span>
+                                              </div>
+                            
+                                              <div class="mb-3">
+                                                  <label class="form-label">OD %</label>
+                                                  <input type="text" class="form-control percentage" id="editOd" name="od_percentage">
+                                                  <span class="error od_percentage_err"></span>
+                                              </div>
+                            
+                                              <div class="mb-3">
+                                                  <label class="form-label">Net %</label>
+                                                  <input type="text" class="form-control percentage" id="editNet" name="net_percentage">
+                                                  <span class="error net_percentage_err"></span>
+                                              </div>
+                            
+                                              <button type="submit" class="btn btn-success">Save</button>
+                                          </form>
+                                      </div>
+                                  </div>
+                              </div>
                             </div>
                             <div class="tab-pane" id="organisation-tab">
                                 <!-- Personal Details -->
@@ -480,6 +547,41 @@
             document.getElementById('bank-form').submit();  // Submit the bank form
         });
     </script>
+    
+          
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+          // Handle edit button click
+          document.querySelectorAll(".edit-btn").forEach(button => {
+              button.addEventListener("click", function() {
+                  let commissionId = this.getAttribute("data-id");
+                  let product = this.getAttribute("data-product");
+                  let tp = this.getAttribute("data-tp");
+                  let od = this.getAttribute("data-od");
+                  let net = this.getAttribute("data-net");
+      
+                  document.getElementById("editCommissionId").value = commissionId;
+                  document.getElementById("editMemberId").value = "";
+                  document.getElementById("editProduct").value = product;
+                  document.getElementById("editTp").value = tp;
+                  document.getElementById("editOd").value = od;
+                  document.getElementById("editNet").value = net;
+      
+                  document.getElementById("editCommissionLabel").innerText = "Edit Payout";
+              });
+          });
+      
+          // Handle add commission button click
+          document.getElementById("addCommissionBtn").addEventListener("click", function() {
+              let memberId = this.getAttribute("data-member");
+
+              document.getElementById("editCommissionForm").reset();
+              document.getElementById("editCommissionId").value = "";
+              document.getElementById("editMemberId").value = memberId;
+              document.getElementById("editCommissionLabel").innerText = "Add Payout";
+          });
+      });
+      </script>
 <script>
     function saveChanges() {
         document.getElementById('accountHolderName').innerText = document.getElementById('editAccountHolderName').value;

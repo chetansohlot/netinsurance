@@ -42,9 +42,38 @@ def myAccount(request):
         user_details = Users.objects.get(id=request.user.id)  # Fetching the user's details
         bank_details = BankDetails.objects.filter(user_id=request.user.id).first()  # Fetching bank details
 
+        # Fetch commissions for the specific member
+        query = """
+            SELECT c.*, u.first_name, u.last_name, c.product_id
+            FROM commissions c
+            INNER JOIN users u ON c.member_id = u.id
+            WHERE c.member_id = %s
+        """
+        
+        with connection.cursor() as cursor:
+            cursor.execute(query, [request.user.id])
+            commissions_list = dictfetchall(cursor)
+
+        # Define available products
+        products = [
+            {'id': 1, 'name': 'Motor'},
+            {'id': 2, 'name': 'Health'},
+            {'id': 3, 'name': 'Term'},
+        ]
+
+        # Ensure dictionary uses integer keys
+        product_dict = {product['id']: product['name'] for product in products}
+
+        # Map product names to commissions list
+        for commission in commissions_list:
+            product_id = commission.get('product_id')
+            commission['product_name'] = product_dict.get(int(product_id), 'Unknown') if product_id is not None else 'Unknown'
+
         return render(request, 'profile/my-account.html', {
             'user_details': user_details,
-            'bank_details': bank_details
+            'bank_details': bank_details,
+            'products': products,
+            'commissions': commissions_list  # Fixed variable name
         })
     else:
         return redirect('login')

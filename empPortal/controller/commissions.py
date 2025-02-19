@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import update_session_auth_hash
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib import messages
 from django.template import loader
 from ..models import Commission,Users
@@ -33,39 +33,56 @@ def dictfetchall(cursor):
     "Returns all rows from a cursor as a dict"
     columns = [col[0] for col in cursor.description]
     return [dict(zip(columns, row)) for row in cursor.fetchall()]
+from django.db import connection
+from django.shortcuts import render, redirect
 
 def commissions(request):
     if request.user.is_authenticated:
         user_id = request.user.id
-        query = """
-            SELECT c.*, u.first_name, u.last_name 
-            FROM commissions c
-            INNER JOIN users u ON c.member_id = u.id
-            WHERE c.sub_broker_id = %s
-        """
         
+        if request.user.role_id == 1:
+            query = """
+                SELECT c.*, u.first_name, u.last_name, u.user_gen_id, c.product_id
+                FROM commissions c
+                INNER JOIN users u ON c.member_id = u.id
+            """
+            params = []
+        else:
+            query = """
+                SELECT c.*, u.first_name, u.last_name, c.product_id
+                FROM commissions c
+                INNER JOIN users u ON c.member_id = u.id
+                WHERE c.member_id = %s
+            """
+            params = [user_id]
+
         with connection.cursor() as cursor:
-            cursor.execute(query, [user_id])
+            cursor.execute(query, params)
             commissions_list = dictfetchall(cursor)
-        
-        # Define insurers and products arrays
+
+        # Define available products
         products = [
             {'id': 1, 'name': 'Motor'},
             {'id': 2, 'name': 'Health'},
-            {'id': 3, 'name': 'Product 3'},
-            {'id': 4, 'name': 'Product 4'}
+            {'id': 3, 'name': 'Term'},
         ]
 
-        # Ensure the dictionary uses integer keys
-        product_dict = {int(product['id']): product['name'] for product in products}
+        # Ensure dictionary uses integer keys
+        product_dict = {product['id']: product['name'] for product in products}
 
-        # Map product names to the commissions list
+        # Map product names to commissions list
         for commission in commissions_list:
-            commission['product_name'] = product_dict.get(int(commission['product_id']), 'Unknown')
+            product_id = commission.get('product_id')  # Get product_id safely
+            if product_id is not None:
+                commission['product_name'] = product_dict.get(int(product_id), 'Unknown')
+            else:
+                commission['product_name'] = 'Unknown'
 
         return render(request, 'commissions/commissions.html', {'commissions': commissions_list})
     else:
         return redirect('login')
+
+
 
     
 def create(request):
@@ -78,7 +95,7 @@ def create(request):
         ]
         
         if request.user.role_id == 1:
-            members = Users.objects.filter(role_id=2)
+            members = Users.objects.filter(role_id=2, activation_status='1')
         else:
             members = Users.objects.none()
     
@@ -110,8 +127,8 @@ def store(request):
             messages.error(request, "Valid Net percentage is required.")
 
         # Check if this sub-broker already has a commission for the selected insurer
-        if Commission.objects.filter(member_id=member_id, product_id=product_id, sub_broker_id=request.user.id).exists():
-            messages.error(request, "You already have a commission for this insurer & product.")
+        if Commission.objects.filter(member_id=member_id, product_id=product_id).exists():
+            messages.error(request, "You already have a commission for this member & product.")
 
         # If any errors, redirect back to the 'add-commission' page
         if messages.get_messages(request):
@@ -124,7 +141,6 @@ def store(request):
             tp_percentage=float(tp_percentage),
             od_percentage=float(od_percentage),
             net_percentage=float(net_percentage),
-            sub_broker_id=request.user.id,
             created_by=request.user.id
         )
 
@@ -134,3 +150,64 @@ def store(request):
     else:
         messages.error(request, "Invalid request.")
         return redirect('add-commission')
+    
+def update_commission(request):
+    if not request.user.is_authenticated:
+        return redirect("login")
+
+    if request.method == "POST":
+        commission_id   = request.POST.get("commission_id", "").strip()
+        member_id       = request.POST.get("member_id", "").strip()
+        product_id      = request.POST.get("product", "").strip()
+        tp_percentage   = request.POST.get("tp_percentage", "").strip()
+        od_percentage   = request.POST.get("od_percentage", "").strip()
+        net_percentage  = request.POST.get("net_percentage", "").strip()
+
+        # Ensure at least commission_id or member_id is provided
+        if not commission_id and not member_id:
+            messages.error(request, "Either Commission ID or Member ID is required.")
+            return redirect("members")
+
+        # Validate required fields
+        if not all([product_id, tp_percentage, od_percentage, net_percentage]):
+            messages.error(request, "Product and percentage fields are required.")
+            return redirect("members")
+
+        # Validate numeric inputs
+        try:
+            tp_percentage = float(tp_percentage)
+            od_percentage = float(od_percentage)
+            net_percentage = float(net_percentage)
+        except ValueError:
+            messages.error(request, "Percentage values must be numeric.")
+            return redirect("members")
+
+        # Fetch or create a commission record
+        if commission_id.isdigit():  # Update an existing record
+            commission = get_object_or_404(Commission, id=int(commission_id))
+            action_message = "Commission updated successfully."
+        elif member_id.isdigit():  # Create a new record if only member_id is provided
+            if Commission.objects.filter(member_id=member_id, product_id=product_id).exists():
+                messages.error(request, "A commission for this member & product already exists.")
+                return redirect('member-view', user_id=member_id)
+
+            commission = Commission(member_id=member_id)
+            action_message = "Commission added successfully."
+        else:
+            messages.error(request, "Invalid Commission ID or Member ID.")
+            return redirect("members")
+
+        # Update or create commission
+        commission.product_id = product_id
+        commission.tp_percentage = tp_percentage
+        commission.od_percentage = od_percentage
+        commission.net_percentage = net_percentage
+        commission.save()
+
+        messages.success(request, action_message)
+        return redirect('member-view', user_id=commission.member_id)
+
+    messages.error(request, "Invalid request method.")
+    return redirect("members")
+
+
