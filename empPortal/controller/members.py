@@ -31,6 +31,11 @@ OPENAI_API_KEY = settings.OPENAI_API_KEY
 app = FastAPI()
 
 
+def dictfetchall(cursor):
+    "Returns all rows from a cursor as a dict"
+    columns = [col[0] for col in cursor.description]
+    return [dict(zip(columns, row)) for row in cursor.fetchall()]
+
 def members(request):
     if request.user.is_authenticated:
         if request.user.role_id == 1:
@@ -41,18 +46,48 @@ def members(request):
     else:
         return redirect('login')
     
-
 def memberView(request, user_id):
     if request.user.is_authenticated:
-        user_details = Users.objects.get(id=user_id)  # Fetching the user's details
-        bank_details = BankDetails.objects.filter(user_id=user_id).first()  # Fetching bank details
+        # Fetch user details and bank details
+        user_details = Users.objects.get(id=user_id)
+        bank_details = BankDetails.objects.filter(user_id=user_id).first()
+
+        # Fetch commissions for the specific member
+        query = """
+            SELECT c.*, u.first_name, u.last_name, c.product_id
+            FROM commissions c
+            INNER JOIN users u ON c.member_id = u.id
+            WHERE c.member_id = %s
+        """
+        
+        with connection.cursor() as cursor:
+            cursor.execute(query, [user_id])
+            commissions_list = dictfetchall(cursor)
+
+        # Define available products
+        products = [
+            {'id': 1, 'name': 'Motor'},
+            {'id': 2, 'name': 'Health'},
+            {'id': 3, 'name': 'Term'},
+        ]
+
+        # Ensure dictionary uses integer keys
+        product_dict = {product['id']: product['name'] for product in products}
+
+        # Map product names to commissions list
+        for commission in commissions_list:
+            product_id = commission.get('product_id')
+            commission['product_name'] = product_dict.get(int(product_id), 'Unknown') if product_id is not None else 'Unknown'
 
         return render(request, 'members/member-view.html', {
             'user_details': user_details,
-            'bank_details': bank_details
+            'bank_details': bank_details,
+            'commissions': commissions_list,  # Fixed variable name
+            'products': products  # Fixed variable name
         })
     else:
         return redirect('login')
+
     
 def activateUser(request, user_id):
     if request.user.is_authenticated:
