@@ -25,7 +25,7 @@ Policy Data
             <div class="d-flex align-items-center justify-content-between">
                 <div><a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Policy Data</a></div>
                 <div>
-                    <form action="{% url 'reprocess-bulk-policies' %}" method="post">
+                    <form id="myForm" action="{% url 'reprocess-bulk-policies' %}" method="post">
                             {% csrf_token %}
                         <input type="hidden" id="reprocess-bulk-policies" name="reprocess_bulk_policies">
                         <button type="submit" class="breadcrump-addbtn mx-1" id="">Re Process</button>
@@ -75,6 +75,12 @@ Policy Data
                         </tbody>
                       </table>
                     </div>
+                    <div id="loader" class="form-loader" style="display: none;">
+                        <div>
+                          <div class="spinner-border text-primary mx-auto d-block" role="status"></div>
+                          <span class="visually-hidden d-block pt-2">Loading...</span>
+                        </div>  
+                    </div>
                 </div>
               </div>
             </div>
@@ -114,7 +120,11 @@ Policy Data
         });
     });
 </script>
-
+<script>
+    document.getElementById("myForm").addEventListener("submit", function() {
+        document.getElementById("loader").style.display = "flex";
+    });
+  </script>
 </body>
 
 
