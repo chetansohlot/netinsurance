@@ -45,12 +45,13 @@
                                 <img src="{% static 'dist/img/svg/profile-avatar-male.svg' %}" alt="" class="card-profile-img">
                                 <h3 class="profile-username text-center">{{ user_details.first_name }} {{ user_details.last_name }}</h3>
                                 <div class="d-flex justify-content-center mt-2">
-                                    
+                                  {% if user_details.role_id != 1 %}
                                     {% if user_details.activation_status == '1' %}
                                         <p class="text-success">Active</p>
                                     {% else %}
                                         <p class="text-danger">Inactive</p>
                                     {% endif %}
+                                  {% endif %}
                                 </div>  
                                 <div class="profile-info-divider"></div>
                                 <ul class="member-detail-list">
