@@ -125,6 +125,16 @@ Commissions
           </div>
           <!-- /.content-header -->
       
+                      <!-- Display error messages -->
+                      {% if messages %}
+                          <div class="alert alert-danger">
+                              <ul>
+                                  {% for message in messages %}
+                                      <li>{{ message }}</li>
+                                  {% endfor %}
+                              </ul>
+                          </div>
+                      {% endif %}
           <!-- Main content -->
           <div class="content">
             <div class="container-fluid">
