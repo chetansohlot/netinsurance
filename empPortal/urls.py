@@ -40,6 +40,7 @@ urlpatterns = [
     path('users/edit-user-status',views.updateUserStatus, name='edit-user-status'),
     path('update-role/', views.updateRole, name='update-role'),
     path('update-user/', views.updateUser, name='update-user'),
+    
     path('policy-mgt/', views.policyMgt, name='policy-mgt'),
     path('bulk-policy-mgt/', views.bulkPolicyMgt, name='bulk-policy-mgt'),
     path('browser-policy/', views.browsePolicy, name='browser-policy'),
@@ -49,8 +50,8 @@ urlpatterns = [
     path('edit-policy-data/<str:id>', views.editPolicy, name='edit-policy'),
     path('update-policy/', views.updatePolicy, name='update-policy'),
     path('reprocess-bulk-policies',views.reprocessBulkPolicies,name="reprocess-bulk-policies"),
-   
     path('bulk-upload-logs/',views.bulkUploadLogs,name='bulk-upload-logs'),
+    
     path('change-password/',views.changePassword,name='change-password'),
     path('update-password',views.updatePassword,name='update-password'),
     path("logout/", views.userLogout, name="logout"),
