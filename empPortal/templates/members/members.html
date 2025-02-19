@@ -213,7 +213,7 @@
                                       </td>
                                       <td>{{ user.role_names }} <span class="text-gray d-block small">{{ user.status_type }}</span></td>
                                       <td>
-                                        {% if user.activation_status == 1 %}
+                                        {% if user.activation_status == '1' %}
                                           <p class="text-success">Active</p>
                                         {% else %}
                                           <p class="text-danger">Inactive</p>

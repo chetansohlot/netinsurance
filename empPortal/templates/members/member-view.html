@@ -31,7 +31,7 @@
                     {% csrf_token %}
                   </form>
                   
-                  {% if user_details.activation_status != 1 %}
+                  {% if user_details.activation_status != '1' %}
                     <div class="col">
                       <div class="d-flex justify-content-end mt-2">
                         <button class="dashboard-btn-outline mb-0" type="button" id="activate-btn" data-user-id="{{ user_details.id }}">Activate Account</button>
@@ -59,7 +59,7 @@
                                 <h3 class="profile-username text-center">{{ user_details.first_name }} {{ user_details.last_name }}</h3>
                                 <div class="d-flex justify-content-center mt-2">
                                     
-                                    {% if user_details.activation_status == 1 %}
+                                    {% if user_details.activation_status == '1' %}
                                         <p class="text-success">Active</p>
                                     {% else %}
                                         <p class="text-danger">Inactive</p>
