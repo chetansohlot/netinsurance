@@ -14,7 +14,7 @@ class Roles(models.Model):
 
 class Commission(models.Model):
     rm_name  =models.CharField(max_length=255, unique=True)
-    insurer_id = models.CharField(max_length=20, null=True, blank=True)
+    member_id = models.CharField(max_length=20, null=True, blank=True)
     product_id = models.CharField(max_length=20, null=True, blank=True)
     sub_broker_id = models.CharField(max_length=20, null=True, blank=True)
     tp_percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
@@ -29,7 +29,7 @@ class Commission(models.Model):
         db_table = "commissions"
 
     def __str__(self):
-        return f"Commission {self.id} - Insurer {self.insurer_id}"
+        return f"Commission {self.id} - Insurer {self.member_id}"
     
 class PolicyDocument(models.Model):
     filename = models.CharField(max_length=255)
@@ -186,12 +186,14 @@ class UserFiles(models.Model):
     #     db_table = "commissions"
 
     # def __str__(self):
-    #     return f"Commission {self.id} - Insurer {self.insurer_id}"
+    #     return f"Commission {self.id} - Insurer {self.member_id}"
 
 
 class UnprocessedPolicyFiles(models.Model):
     policy_document = models.CharField(max_length=255)
+    bulk_log_id = models.IntegerField()
     file_path = models.CharField(max_length=255)
+    doc_name = models.CharField(max_length=255)
     error_message = models.TextField()
     status = models.CharField(max_length=50, choices=[("Pending", "Pending"), ("Reprocessed", "Reprocessed")], default="Pending")
     created_at = models.DateTimeField(auto_now_add=True)

@@ -47,6 +47,7 @@ urlpatterns = [
     path('policy-data/', views.policyData, name='policy-data'),
     path('edit-policy-data/<str:id>', views.editPolicy, name='edit-policy'),
     path('update-policy/', views.updatePolicy, name='update-policy'),
+    path('reprocess-bulk-policies',views.reprocessBulkPolicies,name="reprocess-bulk-policies"),
    
     path('bulk-upload-logs/',views.bulkUploadLogs,name='bulk-upload-logs'),
     path('change-password/',views.changePassword,name='change-password'),
