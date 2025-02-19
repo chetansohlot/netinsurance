@@ -57,6 +57,7 @@ Policy Data
                           <tr>
                             <th></th>
                             <th class="nowrap">File Name</th>
+                            <th class="nowrap">Date of Upload</th>
                             <th class="nowrap">File</th>
                             <th class="nowrap">Action</th>
                           </tr>
@@ -66,6 +67,7 @@ Policy Data
                                 <tr>
                                     <td><input type="checkbox" name="reupload[]" class="reprocess" value="{{data.id}}"></td>
                                     <td>{{data.doc_name}}</td>
+                                    <td>{{data.created_date}}</td>
                                     <td><a href="{{data.file_path}}" target="_blank" download>View</a></td>
                                     <td>{{data.status}}</td>
                                 </tr>
