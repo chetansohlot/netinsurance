@@ -8,10 +8,10 @@
 {% load static %}
 
 <!-- Bootstrap CSS -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> -->
 
 <!-- Bootstrap Bundle with Popper.js -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> -->
 
 <body class="hold-transition sidebar-mini">
     <div class="wrapper">
@@ -42,6 +42,7 @@
                     <div class="col-md-4 px-0">
                         <div class="card member-detail-left-card">
                             <div class="card-body box-profile">
+                                <a href="javascript:void(0)" data-toggle="modal" data-target="#editUserModal" class="float-right"><i class="fas fa-edit"></i></a>
                                 <img src="{% static 'dist/img/svg/profile-avatar-male.svg' %}" alt="" class="card-profile-img">
                                 <h3 class="profile-username text-center">{{ user_details.first_name }} {{ user_details.last_name }}</h3>
                                 <div class="d-flex justify-content-center mt-2">
@@ -56,110 +57,134 @@
                                 <div class="profile-info-divider"></div>
                                 <ul class="member-detail-list">
                                     <li>
-                                        <img src="dist/img/svg/gender_ic.svg" alt="">
+                                        <img src="{% static 'dist/img/svg/gender_ic.svg' %}" alt="">
                                         <span class="list">Gender</span>
                                         <span class="list-output">
                                             {% if user_details.gender == 1 %} Male {% elif user_details.gender == 2 %} Female {% else %} N/A {% endif %}
                                         </span>
                                     </li>
                                     <li>
-                                        <img src="dist/img/svg/birthday_ic.svg" alt="">
+                                        <img src="{% static 'dist/img/svg/birthday_ic.svg' %}" alt="">
                                         <span class="list">Date of birth</span>
                                         <span class="list-output">{{ user_details.dob }}</span>
                                     </li>
                                     <li>
-                                        <img src="dist/img/svg/phone_ic.svg" alt="">
+                                        <img src="{% static 'dist/img/svg/phone_ic.svg' %}" alt="">
                                         <span class="list">Phone</span>
                                         <span class="list-output">{{ user_details.phone }}</span>
                                     </li>
                                     <li>
-                                        <img src="dist/img/svg/email_ic.svg" alt="">
+                                        <img src="{% static 'dist/img/svg/email_ic.svg' %}" alt="">
                                         <span class="list">E-mail</span>
                                         <span class="list-output">{{ user_details.email }}</span>
                                     </li>
                                     <li>
-                                        <img src="dist/img/svg/membership-id_ic.svg" alt="">
+                                        <img src="{% static 'dist/img/svg/state.svg' %}" alt="">
                                         <span class="list">State</span>
                                         <span class="list-output">{{ user_details.state }}</span>
                                     </li>
                                     <li>
-                                        <img src="dist/img/svg/activation-date_ic.svg" alt="">
+                                        <img src="{% static 'dist/img/svg/city.svg' %}" alt="">
                                         <span class="list">City</span>
                                         <span class="list-output">{{ user_details.city }}</span>
                                     </li>
                                     <li>
-                                        <img src="dist/img/svg/activation-date_ic.svg" alt="">
+                                        <img src="{% static 'dist/img/svg/map.svg' %}" alt="">
                                         <span class="list">Pincode</span>
                                         <span class="list-output">{{ user_details.pincode }}</span>
                                     </li>
                                     <li>
-                                        <img src="dist/img/svg/activation-date_ic.svg" alt="">
+                                        <img src="{% static 'dist/img/svg/address.svg' %}" alt="">
                                         <span class="list">Communication Address</span>
                                         <span class="list-output">{{ user_details.address }}</span>
                                     </li>
                                 </ul>
                     
-                                <!-- Edit Button -->
-                                <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#editUserModal">Edit</button>
                             </div>
                         </div>
                     </div>
                     
                     <!-- Edit Modal -->
-                    <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+                    <div class="modal fade modaldesign" id="editUserModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h5 class="modal-title" id="editModalLabel">Edit User Details</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
                                 </div>
                                 <div class="modal-body">
                                     <form name="user-form" id="user-form" method="POST" action="{% url 'update-user-details' %}">
                                         {% csrf_token %}
-                                        <div class="mb-3">
-                                            <label for="editFirstName" class="form-label">First Name</label>
-                                            <input type="text" class="form-control" id="editFirstName" name="first_name" value="{{ user_details.first_name }}">
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="editLastName" class="form-label">Last Name</label>
-                                            <input type="text" class="form-control" id="editLastName" name="last_name" value="{{ user_details.last_name }}">
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="editEmail" class="form-label">E-mail</label>
-                                            <input type="email" class="form-control" id="editEmail" name="email" value="{{ user_details.email }}">
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="editPhone" class="form-label">Phone</label>
-                                            <input type="text" class="form-control" id="editPhone" name="phone" value="{{ user_details.phone }}">
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="editGender" class="form-label">Gender</label>
-                                            <select class="form-control" id="editGender" name="gender">
-                                                <option value="1" {% if user_details.gender == 1 %} selected {% endif %}>Male</option>
-                                                <option value="2" {% if user_details.gender == 2 %} selected {% endif %}>Female</option>
-                                            </select>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="editDob" class="form-label">Date of Birth</label>
-                                            <input type="date" class="form-control" id="editDob" name="dob" value="{{ user_details.dob }}">
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="editState" class="form-label">State</label>
-                                            <input type="text" class="form-control" id="editState" name="state" value="{{ user_details.state }}">
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="editCity" class="form-label">City</label>
-                                            <input type="text" class="form-control" id="editCity" name="city" value="{{ user_details.city }}">
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="editPincode" class="form-label">Pincode</label>
-                                            <input type="text" class="form-control" id="editPincode" name="pincode" value="{{ user_details.pincode }}">
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="editAddress" class="form-label">Communication Address</label>
-                                            <input type="text" class="form-control" id="editAddress" name="address" value="{{ user_details.address }}">
-                                        </div>
-                                        <button id="user-btn-sub" type="button" class="btn btn-success">Save Changes</button>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="editFirstName" class="form-lbl">First Name</label>
+                                                    <input type="text" class="form-field" id="editFirstName" name="first_name" value="{{ user_details.first_name }}">
+                                                </div>
+                                            </div>   
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="editLastName" class="form-lbl">Last Name</label>
+                                                    <input type="text" class="form-field" id="editLastName" name="last_name" value="{{ user_details.last_name }}">
+                                                </div>
+                                            </div>   
+                                            <div class="col-md-6">    
+                                                <div class="mb-3">
+                                                    <label for="editEmail" class="form-lbl">E-mail</label>
+                                                    <input type="email" class="form-field" id="editEmail" name="email" value="{{ user_details.email }}">
+                                                </div>
+                                            </div>   
+                                            <div class="col-md-6">    
+                                                <div class="mb-3">
+                                                    <label for="editPhone" class="form-lbl">Phone</label>
+                                                    <input type="text" class="form-field" id="editPhone" name="phone" value="{{ user_details.phone }}">
+                                                </div>
+                                            </div>   
+                                            <div class="col-md-6">    
+                                                <div class="mb-3">
+                                                    <label for="editGender" class="form-lbl">Gender</label>
+                                                    <select class="form-field" id="editGender" name="gender">
+                                                        <option value="1" {% if user_details.gender == 1 %} selected {% endif %}>Male</option>
+                                                        <option value="2" {% if user_details.gender == 2 %} selected {% endif %}>Female</option>
+                                                    </select>
+                                                </div>
+                                            </div>   
+                                            <div class="col-md-6">    
+                                                <div class="mb-3">
+                                                    <label for="editDob" class="form-lbl">Date of Birth</label>
+                                                    <input type="date" class="form-field" id="editDob" name="dob" value="{{ user_details.dob }}">
+                                                </div>
+                                            </div>   
+                                            <div class="col-md-6">    
+                                                <div class="mb-3">
+                                                    <label for="editState" class="form-lbl">State</label>
+                                                    <input type="text" class="form-field" id="editState" name="state" value="{{ user_details.state }}">
+                                                </div>
+                                            </div>   
+                                            <div class="col-md-6">    
+                                                <div class="mb-3">
+                                                    <label for="editCity" class="form-lbl">City</label>
+                                                    <input type="text" class="form-field" id="editCity" name="city" value="{{ user_details.city }}">
+                                                </div>
+                                            </div>   
+                                            <div class="col-md-6">    
+                                                <div class="mb-3">
+                                                    <label for="editPincode" class="form-lbl">Pincode</label>
+                                                    <input type="text" class="form-field" id="editPincode" name="pincode" value="{{ user_details.pincode }}">
+                                                </div>
+                                            </div>   
+                                            <div class="col-md-6">    
+                                                <div class="mb-3">
+                                                    <label for="editAddress" class="form-lbl">Communication Address</label>
+                                                    <input type="text" class="form-field" id="editAddress" name="address" value="{{ user_details.address }}">
+                                                </div>
+                                            </div>   
+                                            <div class="col-md-12">   
+                                                <div class="d-flex justify-content-end">
+                                                    <button id="user-btn-sub" type="button" class="form-submit-btn">Save Changes</button>
+                                                </div>     
+                                            </div>    
+                                        </div>    
                                     </form>
                                 </div>
                             </div>
@@ -183,62 +208,65 @@
                               
                               {% if request.user.role_id == 1 %}
                               <div class="row mb-3">
-                                  <div class="col-md-12 text-end">
+                                  <div class="col-md-12">
+                                    <div class="d-flex justify-content-end">
                                       <button 
-                                          class="btn btn-sm btn-success" 
+                                          class="dashboard-addbtn" 
                                           data-member="{{ user_details.id }}"
-                                          data-bs-toggle="modal" 
-                                          data-bs-target="#editCommissionModal" id="addCommissionBtn">
+                                          data-toggle="modal" 
+                                          data-target="#editCommissionModal" id="addCommissionBtn">
                                           <i class="fas fa-plus"></i> Add Payout
                                       </button>
+                                    </div>
                                   </div>
                               </div>
                               {% endif %}
                                 <div class="row">
                                     <div class="col-md-12">
-                                        
-                                      <table class="table table-bordered">
-                                        <thead class="thead-light">
-                                            <tr>
-                                                <th>Product</th>
-                                                <th>TP Prem. (%)</th>
-                                                <th>OD Prem. (%)</th>
-                                                <th>Net Prem. (%)</th>
-                                                {% if request.user.role_id == 1 %}
-                                                <th>Action</th>
-                                                {% endif %}
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for commission in commissions %}
-                                            <tr>
-                                                <td>{{ commission.product_name }}</td>
-                                                <td>{{ commission.tp_percentage }}%</td>
-                                                <td>{{ commission.od_percentage }}%</td>
-                                                <td>{{ commission.net_percentage }}%</td>
-                                                {% if request.user.role_id == 1 %}
-                                                <td>
-                                                    <button class="btn btn-sm btn-primary edit-btn" 
-                                                            data-id="{{ commission.id }}" 
-                                                            data-member="{{ commission.member_id }}"
-                                                            data-product="{{ commission.product_id }}"
-                                                            data-tp="{{ commission.tp_percentage }}"
-                                                            data-od="{{ commission.od_percentage }}"
-                                                            data-net="{{ commission.net_percentage }}"
-                                                            data-bs-toggle="modal" 
-                                                            data-bs-target="#editCommissionModal">
-                                                        Edit
-                                                    </button>
-                                                </td>
-                                                {% endif %}
-                                            </tr>
-                                            {% empty %}
-                                            <tr>
-                                                <td colspan="5" class="text-center">No commission found</td>
-                                            </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
+                                      <div class="table-responsive">
+                                        <table class="table table-design table-trlink">
+                                            <thead class="table-thead-bg-light table-header-fix">
+                                                <tr>
+                                                    <th>Product</th>
+                                                    <th>TP Prem. (%)</th>
+                                                    <th>OD Prem. (%)</th>
+                                                    <th>Net Prem. (%)</th>
+                                                    {% if request.user.role_id == 1 %}
+                                                    <th>Action</th>
+                                                    {% endif %}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for commission in commissions %}
+                                                <tr>
+                                                    <td>{{ commission.product_name }}</td>
+                                                    <td>{{ commission.tp_percentage }}%</td>
+                                                    <td>{{ commission.od_percentage }}%</td>
+                                                    <td>{{ commission.net_percentage }}%</td>
+                                                    {% if request.user.role_id == 1 %}
+                                                    <td>
+                                                        <button class="btn btn-xs btn-primary edit-btn" 
+                                                                data-id="{{ commission.id }}" 
+                                                                data-member="{{ commission.member_id }}"
+                                                                data-product="{{ commission.product_id }}"
+                                                                data-tp="{{ commission.tp_percentage }}"
+                                                                data-od="{{ commission.od_percentage }}"
+                                                                data-net="{{ commission.net_percentage }}"
+                                                                data-toggle="modal" 
+                                                                data-target="#editCommissionModal">
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
+                                                    </td>
+                                                    {% endif %}
+                                                </tr>
+                                                {% empty %}
+                                                <tr>
+                                                    <td colspan="5" class="text-center">No commission found</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                      </div>  
                                     </div>
                                 </div>
                                 
@@ -250,43 +278,52 @@
                                   <div class="modal-content">
                                       <div class="modal-header">
                                           <h5 class="modal-title" id="editCommissionLabel">Manage Commission</h5>
-                                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
                                       </div>
                                       <div class="modal-body">
                                           <form id="editCommissionForm" method="POST" action="{% url 'update-commission' %}">
                                               {% csrf_token %}
                                               <input type="hidden" name="commission_id" id="editCommissionId">
                                               <input type="hidden" name="member_id" id="editMemberId"> <!-- Hidden member ID -->
-                            
-                                              <div class="mb-3">
-                                                  <label class="form-label">Product Name</label>
-                                                  <select class="form-control" name="product" id="editProduct">
-                                                      <option value="">Select Product</option>
-                                                      {% for product in products %}
-                                                          <option value="{{ product.id }}">{{ product.name }}</option>
-                                                      {% endfor %}
-                                                  </select>
-                                              </div>
-                                              
-                                              <div class="mb-3">
-                                                  <label class="form-label">TP %</label>
-                                                  <input type="text" class="form-control percentage" id="editTp" name="tp_percentage">
-                                                  <span class="error tp_percentage_err"></span>
-                                              </div>
-                            
-                                              <div class="mb-3">
-                                                  <label class="form-label">OD %</label>
-                                                  <input type="text" class="form-control percentage" id="editOd" name="od_percentage">
-                                                  <span class="error od_percentage_err"></span>
-                                              </div>
-                            
-                                              <div class="mb-3">
-                                                  <label class="form-label">Net %</label>
-                                                  <input type="text" class="form-control percentage" id="editNet" name="net_percentage">
-                                                  <span class="error net_percentage_err"></span>
-                                              </div>
-                            
-                                              <button type="submit" class="btn btn-success">Save</button>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label class="form-lbl">Product Name</label>
+                                                        <select class="form-field" name="product" id="editProduct">
+                                                            <option value="">Select Product</option>
+                                                            {% for product in products %}
+                                                                <option value="{{ product.id }}">{{ product.name }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                </div>    
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label class="form-lbl">TP %</label>
+                                                        <input type="text" class="form-field percentage" id="editTp" name="tp_percentage">
+                                                        <span class="error tp_percentage_err"></span>
+                                                    </div>
+                                                </div>    
+                                                <div class="col-md-6">    
+                                                    <div class="mb-3">
+                                                        <label class="form-lbl">OD %</label>
+                                                        <input type="text" class="form-field percentage" id="editOd" name="od_percentage">
+                                                        <span class="error od_percentage_err"></span>
+                                                    </div>
+                                                </div>    
+                                                <div class="col-md-6">    
+                                                    <div class="mb-3">
+                                                        <label class="form-lbl">Net %</label>
+                                                        <input type="text" class="form-field percentage" id="editNet" name="net_percentage">
+                                                        <span class="error net_percentage_err"></span>
+                                                    </div>
+                                                </div>    
+                                                <div class="col-md-12">   
+                                                    <div class="d-flex justify-content-end">
+                                                        <button  button type="submit" class="form-submit-btn">Save</button>
+                                                    </div>     
+                                                </div>    
+                                            </div>  
                                           </form>
                                       </div>
                                   </div>
@@ -294,8 +331,13 @@
                             </div>
                             <div class="tab-pane" id="organisation-tab">
                                 <!-- Personal Details -->
-                                <div class="row mt-3">
-                                    <div class="col-6 col-sm-6 col-md-4 col-lg-3">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="d-flex justify-content-end mb-3">
+                                            <button type="button" class="dashboard-addbtn" data-toggle="modal" data-target="#editBankModal">Edit</button>
+                                        </div>    
+                                    </div>
+                                    <div class="col-6 col-sm-6 col-md-4 col-lg-4">
                                         <div class="userdetail-group">
                                             <p class="userdetail-lbl">Account Holder Name</p>
                                             <p class="userdetail-highligt" id="accountHolderName">
@@ -307,7 +349,7 @@
                                             </p>
                                         </div>
                                     </div>
-                                    <div class="col-6 col-sm-6 col-md-4 col-lg-3">
+                                    <div class="col-6 col-sm-6 col-md-4 col-lg-4">
                                         <div class="userdetail-group">
                                             <p class="userdetail-lbl">Re Enter Account Number</p>
                                             <p class="userdetail-highligt" id="reEnterAccountNumber">
@@ -319,7 +361,7 @@
                                             </p>
                                         </div>
                                     </div>
-                                    <div class="col-6 col-sm-6 col-md-4 col-lg-3">
+                                    <div class="col-6 col-sm-6 col-md-4 col-lg-4">
                                         <div class="userdetail-group">
                                             <p class="userdetail-lbl">Account Number</p>
                                             <p class="userdetail-highligt" id="accountNumber">
@@ -331,7 +373,7 @@
                                             </p>
                                         </div>
                                     </div>
-                                    <div class="col-6 col-sm-6 col-md-4 col-lg-3">
+                                    <div class="col-6 col-sm-6 col-md-4 col-lg-4">
                                         <div class="userdetail-group">
                                             <p class="userdetail-lbl">IFSC Code</p>
                                             <p class="userdetail-highligt" id="ifscCode">
@@ -343,7 +385,7 @@
                                             </p>
                                         </div>
                                     </div>
-                                    <div class="col-6 col-sm-6 col-md-4 col-lg-3">
+                                    <div class="col-6 col-sm-6 col-md-4 col-lg-4">
                                         <div class="userdetail-group">
                                             <p class="userdetail-lbl">City</p>
                                             <p class="userdetail-highligt" id="city">
@@ -369,7 +411,7 @@
                                     </div>
                                 </div>
                                 <!-- Edit Button -->
-                                <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#editBankModal">Edit</button>
+                                
                             </div>
                             
                             
@@ -380,42 +422,60 @@
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <h5 class="modal-title" id="editModalLabel">Edit Payout Details</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
                                         </div>
                                         <div class="modal-body">
                                             <form name="bank-form" id="bank-form" method="POST" action="{% url 'store-bank-data' %}">
                                                 {% csrf_token %}
-                                                <div class="mb-3">
-                                                    <label for="editAccountHolderName" class="form-label">Account Holder Name</label>
-                                                    <input type="text" class="form-control" id="editAccountHolderName" name="account_holder_name"
-                                                        value="{% if bank_details %}{{ bank_details.account_holder_name }}{% endif %}">
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label for="editReEnterAccountNumber" class="form-label">Re Enter Account Number</label>
-                                                    <input type="text" class="form-control" id="editReEnterAccountNumber" name="re_enter_account_number"
-                                                        value="{% if bank_details %}{{ bank_details.re_enter_account_number }}{% endif %}">
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label for="editAccountNumber" class="form-label">Account Number</label>
-                                                    <input type="text" class="form-control" id="editAccountNumber" name="account_number"
-                                                        value="{% if bank_details %}{{ bank_details.account_number }}{% endif %}">
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label for="editIfscCode" class="form-label">IFSC Code</label>
-                                                    <input type="text" class="form-control" id="editIfscCode" name="ifsc_code"
-                                                        value="{% if bank_details %}{{ bank_details.ifsc_code }}{% endif %}">
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label for="editCity" class="form-label">City</label>
-                                                    <input type="text" class="form-control" id="editCity" name="city"
-                                                        value="{% if bank_details %}{{ bank_details.city }}{% endif %}">
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label for="editState" class="form-label">State</label>
-                                                    <input type="text" class="form-control" id="editState" name="state"
-                                                        value="{% if bank_details %}{{ bank_details.state }}{% endif %}">
-                                                </div>
-                                                <button id="bank-btn-sub" type="button" class="btn btn-success">Save Changes</button>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="mb-3">
+                                                            <label for="editAccountHolderName" class="form-lbl">Account Holder Name</label>
+                                                            <input type="text" class="form-field" id="editAccountHolderName" name="account_holder_name"
+                                                                value="{% if bank_details %}{{ bank_details.account_holder_name }}{% endif %}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="mb-3">
+                                                            <label for="editReEnterAccountNumber" class="form-lbl">Re Enter Account Number</label>
+                                                            <input type="text" class="form-field" id="editReEnterAccountNumber" name="re_enter_account_number"
+                                                                value="{% if bank_details %}{{ bank_details.re_enter_account_number }}{% endif %}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">    
+                                                        <div class="mb-3">
+                                                            <label for="editAccountNumber" class="form-lbl">Account Number</label>
+                                                            <input type="text" class="form-field" id="editAccountNumber" name="account_number"
+                                                                value="{% if bank_details %}{{ bank_details.account_number }}{% endif %}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">    
+                                                        <div class="mb-3">
+                                                            <label for="editIfscCode" class="form-lbl">IFSC Code</label>
+                                                            <input type="text" class="form-field" id="editIfscCode" name="ifsc_code"
+                                                                value="{% if bank_details %}{{ bank_details.ifsc_code }}{% endif %}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">    
+                                                        <div class="mb-3">
+                                                            <label for="editCity" class="form-lbl">City</label>
+                                                            <input type="text" class="form-field" id="editCity" name="city"
+                                                                value="{% if bank_details %}{{ bank_details.city }}{% endif %}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">    
+                                                        <div class="mb-3">
+                                                            <label for="editState" class="form-lbl">State</label>
+                                                            <input type="text" class="form-field" id="editState" name="state"
+                                                                value="{% if bank_details %}{{ bank_details.state }}{% endif %}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-12">    
+                                                        <div class="d-flex justify-content-end">
+                                                            <button id="bank-btn-sub" type="button" class="form-submit-btn">Save Changes</button>
+                                                        </div>    
+                                                    </div>    
+                                                </div>        
                                             </form>
                                         </div>
                                     </div>
@@ -429,7 +489,6 @@
                               <div class="row mt-3">
                                 
                                 <div class="col-md-12">
-                                  <hr>
                                   <h3 class="card-hding pt-3">Documents</h3>
                                 </div>
                                 <div class="col-6 col-sm-6 col-md-6 col-lg-6">
@@ -437,7 +496,7 @@
                                     <div class="row">
                                       <div class="col-auto">
                                         <div class="nametag">
-                                          <img src="dist/img/aadhar-front.jpg" alt="">
+                                          <img src="{% static 'dist/img/aadhar-front.jpg' %}" alt="">
                                         </div>
                                       </div>
                                       <div class="col">
@@ -464,7 +523,7 @@
                                     <div class="row">
                                       <div class="col-auto">
                                         <div class="nametag">
-                                          <img src="dist/img/pan-card.webp" alt="">
+                                          <img src="{% static 'dist/img/pan-card.webp' %}" alt="">
                                         </div>
                                       </div>
                                       <div class="col">

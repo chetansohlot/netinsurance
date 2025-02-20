@@ -956,15 +956,14 @@ body {
     width: 100%;
     font-size: 12px;
     font-weight: 400;
-    border: 1px solid rgb(221 221 221 / 30%);
-    background: #fff1ff;
+    border: 1px solid #c1c1c1;
+    background: #fff;
     border-radius: 4px;
     padding: 6px 10px;
     color: #000;
 }
 
 .form-field:focus-visible {
-    border: 1px solid rgb(221 221 221 / 30%);
     outline: none;
 }
 
@@ -983,7 +982,7 @@ select.form-field {
     line-height: 1.5;
     border-radius: 4px;
     border: none;
-    background: #5e295f;
+    background: #f15e33;
     color: #fff;
     text-align: center;
 }
@@ -1280,7 +1279,10 @@ select.form-field {
 }
 
 .profile-tab li a.active {
-    background-color: #f15e33 !important;
+    background-color: #fff !important;
+    color: #f15e33 !important;
+    border-bottom: 2px solid #f15e33;
+    border-radius: 0px;
 }
 
 .wrap-btn {
@@ -1745,7 +1747,7 @@ a:hover .dr-pdficon {
     }
 
     .table-ht {
-        height: 400px;
+        max-height: 400px;
     }
 
     .table-header-fix {
@@ -2146,6 +2148,7 @@ a:hover .dr-pdficon {
         margin: 0px 0 0;
         padding: 0px 0 0;
     }
+    
 
     .member-detail-list li {
         list-style: none;
@@ -2156,8 +2159,9 @@ a:hover .dr-pdficon {
         flex-wrap: wrap;
     }
 
-    .member-detail-list li>img {
+       .member-detail-list li > img {
         margin-right: 10px;
+        width: 20px;
     }
 
     .member-detail-list li .list {
@@ -2255,7 +2259,8 @@ a:hover .dr-pdficon {
         font-size: 14px;
         margin-left: 15px;
     }
-
+    .nametag > img {width: 100%; height: 100%; object-fit: fill; border-radius: 50%;}
+    
     .tab-scrollbar {
         height: 440px;
         overflow: auto;
@@ -2293,3 +2298,19 @@ a:hover .dr-pdficon {
     width: 240px;
     }
 }
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,1);
+    border-radius: 20px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #db3721 ;
+  border-radius: 20px;
+
+}
+
+.modaldesign .modal-title {font-size:18px; font-weight: 700;}
+.form-label {font-size:12px; font-weight: 500 !important;}
