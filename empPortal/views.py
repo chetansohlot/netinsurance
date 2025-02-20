@@ -746,7 +746,7 @@ def bulkBrowsePolicy(request):
                     continue
 
                 processed_text = process_text_with_chatgpt(extracted_text)
-                
+                # processed_text = '"\"{\n    \"error\": \"API Errorgit : 429\",\n    \"details\": \"{\\n    \\\"error\\\": {\\n        \\\"message\\\": \\\"Rate limit reached for gpt-4o in organization org-J5bqoyjjQpjdpBBMDG7A31ip on tokens per min (TPM): Limit 30000, Used 25671, Requested 7836. Please try again in 7.014s. Visit https://platform.openai.com/account/rate-limits to learn more.\\\",\\n        \\\"type\\\": \\\"tokens\\\",\\n        \\\"param\\\": null,\\n        \\\"code\\\": \\\"rate_limit_exceeded\\\"\\n    }\\n}\\n\"\n}\""'
                 commision_rate = commisionRateByMemberId(rm_id)
                 if commision_rate:
                     od_percentage = commision_rate.od_percentage

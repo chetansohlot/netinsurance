@@ -63,8 +63,8 @@ class PolicyDocument(models.Model):
     tp_premium = models.CharField(max_length=255)
     bulk_log_id = models.IntegerField()
     od_percent = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    tp_precent = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    net_precent = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    tp_percent = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    net_percent = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
     def __str__(self):
         return self.filename    
@@ -72,8 +72,7 @@ class PolicyDocument(models.Model):
     # commission = models.ForeignKey(Commission, to_field="rm_name", on_delete=models.SET_NULL, null=True, blank=True)
 
     def commission(self):
-        return Commission.objects.filter(rm_name=self.rm_name).first()
-
+         return Commission.objects.filter(member_id=self.rm_id ).first()
 
     @property
 
@@ -101,6 +100,11 @@ class BulkPolicyLog(models.Model):
     count_uploaded_files = models.IntegerField(default=0)
     count_duplicate_files = models.IntegerField(default=0)
     status = models.SmallIntegerField(default=0)
+    created_at = models.DateTimeField(default=timezone.now)
+    
+    def created_date(self):
+        return self.created_at.strftime("%d-%m-%Y %H:%M:%S") if self.created_at else None
+    
     class Meta:
         db_table = 'bulk_policy_log'
         
@@ -202,6 +206,9 @@ class UnprocessedPolicyFiles(models.Model):
     error_message = models.TextField()
     status = models.CharField(max_length=50, choices=[("Pending", "Pending"), ("Reprocessed", "Reprocessed")], default="Pending")
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def created_date(self):
+        return self.created_at.strftime("%d-%m-%Y %H:%M:%S") if self.created_at else None
 
     class Meta:
         db_table = 'unprocessed_policy_files'

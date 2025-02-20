@@ -147,6 +147,7 @@ AUTHENTICATION_BACKENDS = ['empPortal.authentication.EmailAuthBackend']
 AUTH_USER_MODEL = 'empPortal.Users'
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+INSURER_NAME = os.getenv("INSURER_NAME")
 
 LOGIN_URL = "/login/"
 LOGOUT_REDIRECT_URL = "/login/"
