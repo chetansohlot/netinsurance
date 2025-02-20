@@ -221,9 +221,11 @@ def download_policy_data(request):
         issue_year = policy.policy_start_date.strftime("%Y") if isinstance(policy.policy_start_date, datetime.datetime) else default_values[6]
         issue_month = policy.policy_start_date.strftime("%b-%Y") if isinstance(policy.policy_start_date, datetime.datetime) else default_values[6]
         risk_start_date = policy.start_date if policy.start_date else ""
-        od_premium = float(policy.od_premium.replace(',', '')) if policy.od_premium and policy.od_premium.replace(',', '').strip().isdigit() else 0  
-        tp_premium = float(policy.tp_premium.replace(',', ''))  if policy.tp_premium and policy.tp_premium.replace(',', '').strip().isdigit() else 0  
-        net_premium = float(policy.policy_total_premium.replace(',', '')) if policy.policy_total_premium and policy.policy_total_premium.replace(',', '').strip().isdigit() else 0  
+
+        od_premium = float(policy.od_premium.replace(',', '')) if policy.od_premium else 0.0  
+        tp_premium = float(policy.tp_premium.replace(',', '')) if policy.tp_premium else 0.0  
+        net_premium = float(policy.policy_total_premium.replace(',', '')) if policy.policy_total_premium else 0.0   
+        
         make_and_model = (
             (policy.vehicle_make if policy.vehicle_make else "-") + 
             "/" + 
@@ -240,11 +242,13 @@ def download_policy_data(request):
             tp_percentage = 0
             net_percentage = 0
             
-
+        
         od_commission_amount = (od_premium * od_percentage) / 100
         tp_commission_amount = (tp_premium * tp_percentage) / 100
         net_commission_amount = (net_premium * net_percentage) / 100
         total_commission = float(od_commission_amount + tp_commission_amount + net_commission_amount)
+        
+        # return HttpResponse(od_commission_amount , tp_commission_amount,net_commission_amount,total_commission)
         
         broker_commision = 25  # Insurer Commission Percentage
         # Convert policy premium to float, removing commas
