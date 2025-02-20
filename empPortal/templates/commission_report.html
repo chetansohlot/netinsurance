@@ -50,72 +50,12 @@
                             
 
                             <div class="col-sm-2 form-group">
-                                <select name="insurer_name" class="form-field    ">
-                                    <option value="">Select Insurer</option>
-                                    <option value="8">Nitin sir</option>
-                                    <option value="7">Bajaj</option>
-                                    <option value="6">STAR HEALTH</option>
-                                    <option value="5">ICICI Lombard 2</option>
-                                    <option value="4">niva bupa</option>
-                                    <option value="3">Go Digit</option>
-                                    <option value="2">Kotak</option>
-                                    <option value="1">Tata</option>
-                                </select>
-                            </div>
-
-                            <div class="col-sm-2 form-group">
-                                <select name="product_name" id="product" class="form-field">
-                                    <option value="">Select Product</option>
-                                        <option value="1">Personal loan</option>
-                                        <option value="2">Business Loan</option>
-                                        <option value="3">Home Loan</option>
-                                        <option value="4">Car Loan</option>
-                                        <option value="5">Education Loan</option>
-                                        <option value="6">Gold Loan</option>
-                                                                                <option value="7">
-                                        Loan Against Property</option>
-                                                                                <option value="9">
-                                        Credit Cards</option>
-                                                                                <option value="10">
-                                        Debit Cards</option>
-                                                                                <option value="11">
-                                        Fixed Deposit</option>
-                                                                                <option value="12">
-                                        Mutual Funds</option>
-                                                                                <option value="13">
-                                        Saving Account</option>
-                                                                                <option value="14">
-                                        Doctor Professional Indemnity</option>
-                                                                                <option value="15">
-                                        Doctor Health Insurance</option>
-                                                                                <option value="16">
-                                        Doctor Motor Insurance</option>
-                                                                                <option value="17">
-                                        Doctor Terms Insurance</option>
-                                                                                <option value="18">
-                                        Doctor Life Insurance</option>
-                                                                                <option value="19">
-                                        Doctor Home Insurance</option>
-                                                                                <option value="20">
-                                        Hospital Professional Indemnity</option>
-                                                                                <option value="21">
-                                        Hospital Property Insurance</option>
-                                                                                <option value="22">
-                                        Hospital Public Liability Insurance</option>
-                                                                                <option value="23">
-                                        Hospital Money Insurance</option>
-                                                                                <option value="24">
-                                        Hospital Employee Dishonesty</option>
-                                                                                <option value="25">
-                                        Hospital Comprehensive Package</option>
-                                                                                <option value="26">
-                                        Doctor Personal Accident</option>
-                                                                                <option value="27">
-                                        Doctor Covid Death Insurance</option>
-                                                                                <option value="29">
-                                        Test-DPI_1</option>
-                                                                                                                        </select>
-                            </div>
+                              <input type="text" placeholder="Insurer Name" name="insurer_name" class="form-field" value="{{ request.GET.insurer_name }}">
+                          </div>
+                          
+                          <div class="col-sm-2 form-group">
+                              <input type="text" placeholder="Policy No" name="policy_no" class="form-field" value="{{ request.GET.policy_no }}">
+                          </div>
                             <!-- <div class="col-sm-2 form-group">
                                 <select name="bill_status" id="status" class="form-field">
                                     <option value="">Select Status</option>
@@ -161,8 +101,8 @@
             <div class="card box-shadow-none">
               <div class="card-body px-0 pb-0 pt-0">
                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                  <a class="nav-item nav-link active" id="tab1-tab" data-toggle="tab" href="#tab1" role="tab"
-                    aria-controls="tab1" aria-selected="true">Report</a>
+                  <!-- <a class="nav-item nav-link active" id="tab1-tab" data-toggle="tab" href="#tab1" role="tab"
+                     aria-controls="tab1" aria-selected="true">Report</a> -->
                   <!-- <a class="nav-item nav-link" id="tab2-tab" data-toggle="tab" href="#tab2" role="tab"
                     aria-controls="tab2" aria-selected="false">Roles</a> -->
                 </div>
@@ -178,7 +118,7 @@
                           <p>{{ message }}</p>
                         {% endfor %}
                       {% endif %}
-                      <table class="table table-design">
+                      <table class="table table-design commission-report-table-width">
                         <thead class="table-thead-bg-light table-header-fix">
                             <tr>
                               <th class="nowrap">Insurance Co.</th>

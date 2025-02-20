@@ -1750,7 +1750,7 @@ a:hover .dr-pdficon {
     }
 
     .table-ht {
-        max-height: 400px;
+        height: 400px;
     }
 
     .table-header-fix {
@@ -2286,7 +2286,13 @@ a:hover .dr-pdficon {
     }
 }
 .table-width-design {
-    width:1100px;
+    width:2800px;
+}
+.policy-data-table-width {
+    width:2800px;
+}
+.commission-report-table-width {
+    width:3800px;
 }
 .table-width-design thead tr th, .table-width-design tbody tr td {font-size:12px;}
 .nowrap {white-space: nowrap;}
@@ -2302,7 +2308,6 @@ a:hover .dr-pdficon {
     }
 }
 
-<<<<<<< HEAD
 ::-webkit-scrollbar {
     width: 8px;
 }
@@ -2318,7 +2323,6 @@ a:hover .dr-pdficon {
 
 .modaldesign .modal-title {font-size:18px; font-weight: 700;}
 .form-label {font-size:12px; font-weight: 500 !important;}
-=======
 .mobile-filter-close,
 .mobile-filter-show-icon {
     display: none;
@@ -2364,4 +2368,3 @@ a:hover .dr-pdficon {
         background: #f2f2f2;
     }
 }
->>>>>>> 6681b35070b5f62d565d03d1a1dad3232b93cac0

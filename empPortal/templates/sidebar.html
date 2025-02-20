@@ -105,15 +105,15 @@
               </a>
             </li> -->
             <li class="nav-item">
-              <a href="#" class="nav-link {% if request.path == '/user-and-roles/' %} active {% endif %}">
+              <a href="#" class="nav-link {% if request.path == '/commission-report/' %} active {% endif %}">
                 <svg class="sidbarmenu-svg">
                   <use xlink:href="#billing-icon" />
                 </svg>
                 <p>Reports  <i class="fas fa-angle-right right"></i></p>
               </a>
               <ul class="nav nav-treeview">
-                 <li class="nav-item {% if request.path == '/user-and-roles/' %} active {% endif %}">
-                  <a href="{% url 'user-and-roles' %}" class="nav-link ">
+                 <li class="nav-item {% if request.path == '/commission-report/' %} active {% endif %}">
+                  <a href="{% url 'commission-report' %}" class="nav-link ">
                     <i class="nav-icon far fa-user"></i>
                     <p> Commission Report </p>
                   </a>
