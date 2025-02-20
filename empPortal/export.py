@@ -31,6 +31,7 @@ from django.utils import timezone
 import datetime
 from django.conf import settings
 from django.db.models import Q
+from django.core.paginator import Paginator
 
 
 dt_aware = timezone.now()  # Django returns a timezone-aware datetime
@@ -395,10 +396,17 @@ def exportPolicies(request):
 #     return render(request, 'commission_report.html', {'policy_data': policy_data})
  
 
+
 def commission_report(request):
     # Get filter values from GET parameters
     policy_no = request.GET.get("policy_no", None)
     insurer_name = request.GET.get("insurer_name", None)
+    per_page = request.GET.get("per_page", 10)  # Default: 10 records per page
+
+    try:
+        per_page = int(per_page)
+    except ValueError:
+        per_page = 10
 
     # Get logged-in user ID
     user_id = request.user.id
@@ -419,13 +427,14 @@ def commission_report(request):
     # Order by latest first
     policies = policies.order_by('-id')
 
-    # If no policies match, return an empty queryset
-    if not policies.exists():
-        policies = []
+    # Apply pagination
+    paginator = Paginator(policies, per_page)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
     # Process policy data with commission calculations
     policy_data = []
-    for policy in policies:
+    for policy in page_obj:  # Iterate only over paginated data
         # Convert values safely
         od_premium = float(policy.od_premium.replace(',', '')) if policy.od_premium else 0.0
         tp_premium = float(policy.tp_premium.replace(',', '')) if policy.tp_premium else 0.0
@@ -453,7 +462,12 @@ def commission_report(request):
             'net_commission_amount': net_commission_amount
         })
 
-    return render(request, 'commission_report.html', {'policy_data': policy_data})
+    return render(request, 'commission_report.html', {
+        'policy_data': policy_data,
+        'page_obj': page_obj  # Pass paginated object to template
+    })
+
+
 
 # def download_policy_data(request):
 #     # Create an in-memory Excel workbook and worksheet

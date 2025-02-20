@@ -2368,3 +2368,61 @@ a:hover .dr-pdficon {
         background: #f2f2f2;
     }
 }
+
+.pagination-dynamic {
+    padding: 15px;
+    padding-left: 2px;
+}
+
+.pagination-dynamic>nav>div>div>p {
+    font-size: 13px !important;
+}
+
+.pagination-dynamic>nav>div>div>span {
+    display: inline-flex;
+}
+
+.pagination-dynamic nav>div>div>span>a {
+    padding: 8px 16px !important;
+}
+
+.pagination-dynamic nav>div>div>span>a>svg {
+    width: 20px;
+    height: 20px;
+}
+
+.pagination-dynamic nav>div>div>span>span[aria-current="page"]>span {
+    display: inline-flex;
+    padding: 8px 16px !important;
+    background-color: #1b7cfa !important;
+    color: #fff !important;
+}
+
+.pagination-dynamic nav>div>div>span>span[aria-disabled="true"]>span {
+    display: inline-flex;
+}
+
+.pagination-dynamic nav>div>div>span>span[aria-disabled="true"]>span>svg {
+    width: 20px;
+    height: 20px;
+}
+
+.pagination-dynamic nav>div>div>span>span[aria-current="page"]>span {
+    padding: 8px 10px !important;
+}
+
+.pagination-dynamic nav>div>div>span>a {
+    padding: 8px 10px !important;
+}
+
+.pagination-dynamic nav>div>div>span>span[aria-disabled="true"]>span {
+    padding: 8px 0px !important;
+}
+
+.pagination-dynamic nav>div>div>span>a:last-child {
+    padding: 8px 0px !important;
+}
+
+.pagination-dynamic nav>div>div>span>a:first-child {
+    padding: 8px 0px !important;
+}
