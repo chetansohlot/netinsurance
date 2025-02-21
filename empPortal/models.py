@@ -127,7 +127,8 @@ class BulkPolicyLog(models.Model):
     count_duplicate_files = models.IntegerField(default=0)
     status = models.SmallIntegerField(default=0)
     created_at = models.DateTimeField(default=timezone.now)
-    
+    created_by = models.IntegerField()
+    rm_id = models.IntegerField()
     def created_date(self):
         return self.created_at.strftime("%d-%m-%Y %H:%M:%S") if self.created_at else None
     

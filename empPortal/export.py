@@ -409,14 +409,21 @@ def commission_report(request):
         per_page = 10
 
     # Get logged-in user ID
-    user_id = request.user.id
+    # user_id = request.user.id
 
     # Start with a base queryset
     policies = PolicyDocument.objects.filter(status=1)
 
     # Apply user role filter
-    if user_id == 2:  
-        policies = policies.filter(rm_id=user_id)
+    # if user_id == 2:  
+    #     policies = policies.filter(rm_id=user_id)
+    id  = request.user.id
+    # Fetch policies
+    role_id = Users.objects.filter(id=id).values_list('role_id', flat=True).first()
+    if role_id == 2:
+        policies = PolicyDocument.objects.filter(status=1,rm_id=id).exclude(rm_id__isnull=True).all().order_by('-id')
+    else:
+        policies = PolicyDocument.objects.filter(status=1).exclude(rm_id__isnull=True).all().order_by('-id')
 
     # Apply filters only if values are provided
     if policy_no:
