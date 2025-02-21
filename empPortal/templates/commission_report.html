@@ -112,6 +112,7 @@
                   </div>
                 <div class="tab-content" id="nav-tabContent">
                   <div class="tab-pane fade show active" id="tab1" role="tabpanel" aria-labelledby="tab1-tab">
+                    
                     <div class="table-responsive table-ht">
                       {% if messages %}
                         {% for message in messages %}
@@ -177,8 +178,8 @@
                       
                               <!-- OD% Column -->
                               <td>
-                                  {% if data.policy.commission %}
-                                      {{ data.policy.commission.od_percentage }}%
+                                  {% if data.policy %}
+                                      {{ data.policy.od_percent }}%
                                   {% else %}
                                       0
                                   {% endif %}
@@ -195,8 +196,8 @@
                       
                               <!-- TP% Column -->
                               <td>
-                                  {% if data.policy.commission %}
-                                      {{ data.policy.commission.tp_percentage }}%
+                                  {% if data.policy %}
+                                      {{ data.policy.tp_percent }}%
                                   {% else %}
                                       0
                                   {% endif %}
@@ -211,8 +212,8 @@
                       
                               <!-- N% Column -->
                               <td>
-                                  {% if data.policy.commission %}
-                                      {{ data.policy.commission.net_percentage }}%
+                                  {% if data.policy %}
+                                      {{ data.policy.net_percent }}%
                                   {% else %}
                                       0
                                   {% endif %}
@@ -240,19 +241,19 @@
                     <ul class="pagination">
                         {% if page_obj.has_previous %}
                             <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}&per_page={{ request.GET.per_page }}">« Prev</a>
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value|urlencode }}{% endif %}{% endfor %}">« Prev</a>
                             </li>
                         {% endif %}
             
                         {% for num in page_obj.paginator.page_range %}
                             <li class="page-item {% if num == page_obj.number %}active{% endif %}">
-                                <a class="page-link" href="?page={{ num }}&per_page={{ request.GET.per_page }}">{{ num }}</a>
+                                <a class="page-link" href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value|urlencode }}{% endif %}{% endfor %}">{{ num }}</a>
                             </li>
                         {% endfor %}
             
                         {% if page_obj.has_next %}
                             <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.next_page_number }}&per_page={{ request.GET.per_page }}">Next »</a>
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value|urlencode }}{% endif %}{% endfor %}">Next »</a>
                             </li>
                         {% endif %}
                     </ul>
@@ -260,8 +261,8 @@
             </div>
             
             
-          
-          
+            
+
           </div>
 
         </div>

@@ -438,13 +438,13 @@ def commission_report(request):
         # Convert values safely
         od_premium = float(policy.od_premium.replace(',', '')) if policy.od_premium else 0.0
         tp_premium = float(policy.tp_premium.replace(',', '')) if policy.tp_premium else 0.0
-        net_premium = float(policy.policy_total_premium.replace(',', '')) if policy.policy_total_premium else 0.0
+        net_premium = float(policy.policy_premium.replace(',', '')) if policy.policy_premium else 0.0
 
         commission = policy.commission()
         if commission:
-            od_percentage = float(commission.od_percentage) if commission.od_percentage else 0
-            tp_percentage = float(commission.tp_percentage) if commission.tp_percentage else 0
-            net_percentage = float(commission.net_percentage) if commission.net_percentage else 0
+            od_percentage = float(policy.od_percent) if policy.od_percent else 0
+            tp_percentage = float(policy.tp_percent	) if policy.tp_percent	 else 0
+            net_percentage = float(policy.net_percent) if policy.net_percent else 0
         else:
             od_percentage = 0
             tp_percentage = 0
@@ -588,30 +588,26 @@ def download_policy_data(request):
     wb = openpyxl.Workbook()
     ws = wb.active
     ws.title = "Policy Data"
+    user_id = request.user.id
 
-    # ✅ Ensure all required headers are present
-    headers = [
-    "Policy Month", "Agent Name", "SM Name", "Franchise Name", "Insurer Name", "S.P. Name",
-    "Issue Date", "Risk Start Date", "Payment Status", "Insurance Company", "Policy Type",
-    "Policy No", "Insured Name", "Vehicle Type", "Vehicle Make/Model", "Gross Weight", 
-    "Reg. No.", "MFG Year", "Sum Insured", "Gross Prem.", "GST", "Net Prem.", "OD Prem.", 
-    "TP Prem.", "Agent Comm.% OD", "Agent OD Amount", "Agent TP Comm", "Agent TP Amount", 
-    "Agent Comm.% Net", "Agent Net Amt", "Agent Bonus", "Agent Total Comm.", 
-    "Franchise Comm.% OD", "Franchise OD Amount", "Franchise TP Comm", "Franchise Agent TP Amount", 
-    "Franchise Agent Comm.% Net", "Franchise Agent Net Amt", "Franchise Bonus", "Franchise Total Comm.", 
-
-    "Insurer Comm.% OD", "Insurer OD Amount", "Insurer TP Comm", "Insurer TP Amount", 
-    "Insurer Comm.% Net", "Insurer Net Amt", "Insurer Bonus", "Insurer Total Comm.", 
-    "Profit/Loss", "TDS %", "TDS Amount", "Net Profit"
+    # Define headers based on role
+    full_headers = [
+        "Policy Month", "Agent Name", "SM Name", "Franchise Name", "Insurer Name", "S.P. Name",
+        "Issue Date", "Risk Start Date", "Payment Status", "Insurance Company", "Policy Type",
+        "Policy No", "Insured Name", "Vehicle Type", "Vehicle Make/Model", "Gross Weight", 
+        "Reg. No.", "MFG Year", "Sum Insured", "Gross Prem.", "GST", "Net Prem.", "OD Prem.", 
+        "TP Prem.", "Agent Comm.% OD", "Agent OD Amount", "Agent TP Comm", "Agent TP Amount", 
+        "Agent Comm.% Net", "Agent Net Amt", "Agent Bonus", "Agent Total Comm.", 
+        "Franchise Comm.% OD", "Franchise OD Amount", "Franchise TP Comm", "Franchise Agent TP Amount", 
+        "Franchise Agent Comm.% Net", "Franchise Agent Net Amt", "Franchise Bonus", "Franchise Total Comm.", 
+        "Insurer Comm.% OD", "Insurer OD Amount", "Insurer TP Comm", "Insurer TP Amount", 
+        "Insurer Comm.% Net", "Insurer Net Amt", "Insurer Bonus", "Insurer Total Comm.", 
+        "Profit/Loss", "TDS %", "TDS Amount", "Net Profit"
     ]
+    
+    limited_headers = full_headers[:32]  # Show only up to "Agent Total Comm." for role ID 2
+    headers = full_headers if user_id == 1 else limited_headers
 
-    default_values = [
-    "-", "-", "-", "-", "-", "-", "-", "-", "-", 
-    "-", "-", "-", "-", "-", 
-    "-", "-", "-", "-", "-", "-", "-", 
-    "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", 
-    "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-"
-    ]
     # Apply styling to the header row
     header_fill = PatternFill(start_color="0000FF", end_color="0000FF", fill_type="solid")
     header_font = Font(bold=True, color="FFFFFF")
@@ -620,32 +616,29 @@ def download_policy_data(request):
         cell = ws.cell(row=1, column=col_num, value=header)
         cell.fill = header_fill
         cell.font = header_font
-
-    # Fetch all active policies
     id  = request.user.id
-    if id == 2:
+    # Fetch policies
+    role_id = Users.objects.filter(id=id).values_list('role_id', flat=True).first()
+    if role_id == 2:
         policies = PolicyDocument.objects.filter(status=1,rm_id=id).all().order_by('-id')
     else:
         policies = PolicyDocument.objects.filter(status=1).all().order_by('-id')
-    
+
     for policy in policies:
         issue_month = policy.policy_start_date.strftime("%b-%Y") if policy.policy_start_date else "-"
         issue_date = policy.policy_start_date.strftime("%m-%d-%Y") if policy.policy_start_date else "-"
-        risk_start_date = policy.start_date if policy.start_date else "-"
-
-        # Ensure proper float conversion
+        risk_start_date = policy.start_date or "-"
+        
         od_premium = float(policy.od_premium.replace(',', '')) if policy.od_premium else 0.0  
         tp_premium = float(policy.tp_premium.replace(',', '')) if policy.tp_premium else 0.0  
         net_premium = float(policy.policy_premium.replace(',', '')) if policy.policy_premium else 0.0
-
+        
         admin_id = policy.rm_id  
         role_id = Users.objects.filter(id=admin_id).values_list('role_id', flat=True).first()
-        commission = policy.commission()
         
-        # Handle commission values safely
-        od_percentage = float(commission.od_percentage) if commission and commission.od_percentage else 0
-        tp_percentage = float(commission.tp_percentage) if commission and commission.tp_percentage else 0
-        net_percentage = float(commission.net_percentage) if commission and commission.net_percentage else 0
+        od_percentage = float(policy.od_percent) if policy.od_percent else 0
+        tp_percentage = float(policy.tp_percent) if policy.tp_percent else 0
+        net_percentage = float(policy.net_percent) if policy.net_percent else 0
         
         if role_id == 2:  # Agent Role
             od_commission_amount = (od_premium * od_percentage) / 100
@@ -657,32 +650,17 @@ def download_policy_data(request):
 
         # Broker commission calculations
         commission_broker = Commission.objects.filter(member_id=1).first()
-        insurer_od_percent = float(commission_broker.od_percentage) if commission_broker and commission_broker.od_percentage else 0
-        insurer_tp_percent = float(commission_broker.tp_percentage) if commission_broker and commission_broker.tp_percentage else 0
-        insurer_net_percent = float(commission_broker.net_percentage) if commission_broker and commission_broker.net_percentage else 0 
+        insurer_od_percent = float(policy.insurer_od_commission) if policy.insurer_od_commission else 0
+        insurer_tp_percent = float(policy.insurer_tp_commission) if policy.insurer_tp_commission else 0
+        insurer_net_percent = float(policy.insurer_net_commission) if policy.insurer_net_commission else 0 
         
         insurer_od_commission = (od_premium * insurer_od_percent) / 100
         insurer_tp_commission = (tp_premium * insurer_tp_percent) / 100
         insurer_net_commission = (net_premium * insurer_net_percent) / 100
         insurer_total_commission = insurer_od_commission + insurer_tp_commission + insurer_net_commission
 
-        # Franchise and TSD fields
-        franchise_percentage = "-"
-        franchise_amount = "-"
-        tsd_percentage = "-"
-        tsd_amount = "-"
-        tds_percentage = "-"
-        tds_amount = "-"
-        net_profit = "-"
+        profit_loss = insurer_total_commission - agent_total_commission if role_id == 2 else insurer_total_commission
 
-        if role_id == 1:  # Insurer Role
-            profit_loss = insurer_total_commission
-        elif role_id == 2:
-            profit_loss = insurer_total_commission - agent_total_commission
-        else:
-            profit_loss = "-"
-
-        # ✅ Ensure all row fields match the header order
         row_data = [
             issue_month, policy.rm_name or "-", "-", "-", settings.INSURER_NAME or "-", "-",
             issue_date, risk_start_date, 'Confirmed', policy.insurance_provider or "-", policy.policy_type or "-",
@@ -693,17 +671,20 @@ def download_policy_data(request):
             policy.od_premium or "-", policy.tp_premium or "-",
             od_percentage if role_id == 2 else "-",
             od_commission_amount if role_id == 2 else "-",
-
             tp_percentage if role_id == 2 else "-",
             tp_commission_amount if role_id == 2 else "-",
             net_percentage if role_id == 2 else "-",
             net_commission_amount if role_id == 2 else "-",
-            "-",
-            agent_total_commission if role_id == 2 else "-",
-             None,None,None,None,None,None,None,None,
-            insurer_od_percent, insurer_od_commission, insurer_tp_percent, insurer_tp_commission,
-            insurer_net_percent, insurer_net_commission, "-", insurer_total_commission,
-            profit_loss, "-", "-", profit_loss]
+            "-", agent_total_commission if role_id == 2 else "-",
+        ]
+
+        if user_id == 1:  # Append extra fields only for role ID 1
+            row_data.extend([
+                None,None,None,None,None,None,None,None,
+                insurer_od_percent, insurer_od_commission, insurer_tp_percent, insurer_tp_commission,
+                insurer_net_percent, insurer_net_commission, "-", insurer_total_commission,
+                profit_loss, "-", "-", profit_loss
+            ])
         ws.append(row_data)
 
     # Generate Excel response
@@ -711,3 +692,6 @@ def download_policy_data(request):
     response['Content-Disposition'] = 'attachment; filename="policy_data.xlsx"'
     wb.save(response)
     return response
+
+
+

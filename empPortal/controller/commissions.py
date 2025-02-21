@@ -4,7 +4,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib import messages
 from django.template import loader
-from ..models import Commission,Users
+from ..models import Commission,Users,CommissionHistory
 from django.contrib.auth import authenticate, login ,logout
 from django.core.files.storage import FileSystemStorage
 import re
@@ -144,6 +144,16 @@ def store(request):
             net_percentage=float(net_percentage),
             created_by=request.user.id
         )
+        CommissionHistory.objects.create(
+            commission_id=Commission.id,
+            member_id=member_id,
+            product_id=product_id,
+            tp_percentage=tp_percentage,
+            od_percentage=od_percentage,
+            net_percentage=net_percentage,
+            created_by=request.user.id
+        )
+
 
         messages.success(request, "Commission added successfully.")
         return redirect('commissions')
@@ -204,6 +214,17 @@ def update_commission(request):
         commission.od_percentage = od_percentage
         commission.net_percentage = net_percentage
         commission.save()
+
+        # Log the commission update in history
+        CommissionHistory.objects.create(
+            commission_id=commission.id,
+            member_id=commission.member_id,
+            product_id=product_id,
+            tp_percentage=tp_percentage,
+            od_percentage=od_percentage,
+            net_percentage=net_percentage,
+            created_by=request.user.id
+        )
 
         messages.success(request, action_message)
         return redirect('member-view', user_id=commission.member_id)

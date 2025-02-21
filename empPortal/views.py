@@ -381,6 +381,7 @@ def browsePolicy(request):
         member_id = request.user.id
        
         commision_rate = commisionRateByMemberId(member_id)
+        insurer_rate = insurercommisionRateByMemberId(1)
         if commision_rate:
             od_percentage = commision_rate.od_percentage
             net_percentage = commision_rate.net_percentage
@@ -402,6 +403,9 @@ def browsePolicy(request):
                 od_percent=od_percentage,
                 tp_percent=tp_percentage,
                 net_percent=net_percentage,
+                insurer_tp_commission   = insurer_rate.tp_percentage,
+                insurer_od_commission   = insurer_rate.od_percentage,
+                insurer_net_commission  = insurer_rate.net_percentage,
                 status=2,
             )
             
@@ -448,6 +452,10 @@ def browsePolicy(request):
                 od_percent=od_percentage,
                 tp_percent=tp_percentage,
                 net_percent=net_percentage,
+                insurer_tp_commission   = insurer_rate.tp_percentage,
+                insurer_od_commission   = insurer_rate.od_percentage,
+                insurer_net_commission  = insurer_rate.net_percentage,
+
                 status=1,
             )
             messages.success(request, "PDF uploaded and processed successfully.")
@@ -748,6 +756,8 @@ def bulkBrowsePolicy(request):
                 processed_text = process_text_with_chatgpt(extracted_text)
                 # processed_text = '"\"{\n    \"error\": \"API Errorgit : 429\",\n    \"details\": \"{\\n    \\\"error\\\": {\\n        \\\"message\\\": \\\"Rate limit reached for gpt-4o in organization org-J5bqoyjjQpjdpBBMDG7A31ip on tokens per min (TPM): Limit 30000, Used 25671, Requested 7836. Please try again in 7.014s. Visit https://platform.openai.com/account/rate-limits to learn more.\\\",\\n        \\\"type\\\": \\\"tokens\\\",\\n        \\\"param\\\": null,\\n        \\\"code\\\": \\\"rate_limit_exceeded\\\"\\n    }\\n}\\n\"\n}\""'
                 commision_rate = commisionRateByMemberId(rm_id)
+                insurer_rate = insurercommisionRateByMemberId(1)
+                
                 if commision_rate:
                     od_percentage = commision_rate.od_percentage
                     net_percentage = commision_rate.net_percentage
@@ -826,6 +836,9 @@ def bulkBrowsePolicy(request):
                         od_percent=od_percentage,
                         tp_percent=tp_percentage,
                         net_percent=net_percentage,
+                        insurer_tp_commission   = insurer_rate.tp_percentage,
+                        insurer_od_commission   = insurer_rate.od_percentage,
+                        insurer_net_commission  = insurer_rate.net_percentage,
                         status=1,
                         bulk_log_id=bulk_log.id,
                     )
@@ -1015,5 +1028,9 @@ def getUserNameByUserId(user_id):
         return None
 
 def commisionRateByMemberId(member_id):
+    commission_data = Commission.objects.filter(member_id=member_id).first()
+    return commission_data
+
+def insurercommisionRateByMemberId(member_id):
     commission_data = Commission.objects.filter(member_id=member_id).first()
     return commission_data

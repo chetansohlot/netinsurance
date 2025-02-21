@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from datetime import datetime
+from django.utils.timezone import now
 
 class Roles(models.Model):
     roleGenID = models.CharField(max_length=255)
@@ -31,6 +32,7 @@ class Commission(models.Model):
     def __str__(self):
         return f"Commission {self.id} - Insurer {self.member_id}"
     
+
 class PolicyDocument(models.Model):
     filename = models.CharField(max_length=255)
     insurance_provider = models.CharField(max_length=255)
@@ -65,7 +67,9 @@ class PolicyDocument(models.Model):
     od_percent = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     tp_percent = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     net_percent = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-
+    insurer_tp_commission = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    insurer_od_commission = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    insurer_net_commission = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     def __str__(self):
         return self.filename    
     
@@ -87,6 +91,28 @@ class PolicyDocument(models.Model):
 
     class Meta:
         db_table = 'policydocument'
+
+class CommissionHistory(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    member_id = models.CharField(max_length=20, null=True, blank=True)
+    commission_id = models.BigIntegerField(null=True, blank=True)
+    insurer_id = models.BigIntegerField(null=True, blank=True)
+    rm_name = models.CharField(max_length=220, null=True, blank=True)
+    product_id = models.CharField(max_length=10, null=True, blank=True)
+    sub_broker_id = models.CharField(max_length=20, null=True, blank=True)
+    tp_percentage = models.CharField(max_length=10, null=True, blank=True)
+    od_percentage = models.CharField(max_length=10, null=True, blank=True)
+    net_percentage = models.CharField(max_length=10, null=True, blank=True)
+    created_by = models.CharField(max_length=10, null=True, blank=True)
+    updated_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(default=now)
+    active = models.BooleanField(default=True)
+    
+    class Meta:
+        db_table = "commissions_logs"
+
+    def __str__(self):
+        return f"Commission {self.id} - {self.od_percentage}% / {self.net_percentage}%"
         
 class BulkPolicyLog(models.Model):
     camp_name = models.CharField(max_length=255)
