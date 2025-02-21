@@ -585,7 +585,15 @@ def process_text_with_chatgpt(text):
         return json.dumps({"error": "Request failed", "details": str(e)}, indent=4)
     
 def policyData(request):
-    policy_data = PolicyDocument.objects.filter(status=1).order_by('-id')
+    
+    # policy_data = PolicyDocument.objects.filter(status=1).order_by('-id')
+    id  = request.user.id
+    # Fetch policies
+    role_id = Users.objects.filter(id=id).values_list('role_id', flat=True).first()
+    if role_id == 2:
+        policy_data = PolicyDocument.objects.filter(status=1,rm_id=id).all().order_by('-id')
+    else:
+        policy_data = PolicyDocument.objects.filter(status=1).all().order_by('-id')
 
     
     for data in policy_data:
