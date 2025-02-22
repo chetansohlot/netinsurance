@@ -55,8 +55,8 @@ Add Commission
                       <div class="row">
                           <!-- Member -->
                           <div class="form-group col-md-6">
-                              <label for="member">Member</label>
-                              <select class="form-control" name="member" id="member">
+                              <label class="form-lbl" for="member">Member</label>
+                              <select class="form-field" name="member" id="member">
                                   <option value="">Select Member</option>
                                   {% for member in members %}
                                       <option value="{{ member.id }}" {% if request.POST.member == member.id|stringformat:"s" %}selected{% endif %}>
@@ -68,8 +68,8 @@ Add Commission
                   
                           <!-- Product -->
                           <div class="form-group col-md-6">
-                              <label for="product">Product</label>
-                              <select class="form-control" name="product" id="product">
+                              <label class="form-lbl" for="product">Product</label>
+                              <select class="form-field" name="product" id="product">
                                   <option value="">Select Product</option>
                                   {% for product in products %}
                                       <option value="{{ product.id }}" {% if request.POST.product == product.id|stringformat:"s" %}selected{% endif %}>
@@ -83,28 +83,29 @@ Add Commission
                       <div class="row">
                           <!-- TP %, OD %, Net % in a single row and smaller -->
                           <div class="form-group col-md-4">
-                              <label for="tp_percentage">TP %</label>
-                              <input type="text" class="form-control percentage" name="tp_percentage" id="tp_percentage" 
+                              <label class="form-lbl" for="tp_percentage">TP %</label>
+                              <input type="text" class="form-field percentage" name="tp_percentage" id="tp_percentage" 
                                      placeholder="Enter TP percentage" value="{{ request.POST.tp_percentage }}">
                               <span class="error tp_percentage_err"></span>
                           </div>
                   
                           <div class="form-group col-md-4">
-                              <label for="od_percentage">OD %</label>
-                              <input type="text" class="form-control percentage" name="od_percentage" id="od_percentage" 
+                              <label class="form-lbl" for="od_percentage">OD %</label>
+                              <input type="text" class="form-field percentage" name="od_percentage" id="od_percentage" 
                                      placeholder="Enter OD percentage" value="{{ request.POST.od_percentage }}">
                               <span class="error od_percentage_err"></span>
                           </div>
                   
                           <div class="form-group col-md-4">
-                              <label for="net_percentage">Net %</label>
-                              <input type="text" class="form-control percentage" name="net_percentage" id="net_percentage" 
+                              <label class="form-lbl" for="net_percentage">Net %</label>
+                              <input type="text" class="form-field percentage" name="net_percentage" id="net_percentage" 
                                      placeholder="Enter Net percentage" value="{{ request.POST.net_percentage }}">
                               <span class="error net_percentage_err"></span>
                           </div>
                       </div>
-                  
-                      <button type="submit" class="btn btn-primary">Save Commission</button>
+                      <div class="d-flex justify-content-end">
+                        <button type="submit" class="form-submit-btn">Save Commission</button>
+                      </div>  
                   </form>
                   
                   

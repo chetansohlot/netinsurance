@@ -74,36 +74,57 @@
               <span class="hidden-xs ">{{request.user.full_name}}</span>
               <img src="{% static 'dist/img/netleaf-icon.png' %}" class="user-image mt-1" alt="User Image">
             </a>
-            <ul class="dropdown-menu">
+            <ul class="dropdown-menu border-0">
               <li>
-                <div class="card card-widget widget-user shadow ">
-              <div class="widget-user-header bg-info">
-                <h3 class="widget-user-username">{{request.user.full_name}}</h3>
-                
-              </div>
-              <div class="widget-user-image">
-                <a href="{% url 'my-account' %}">
-                  <img class="img-circle elevation-2 " src="{% static 'dist/img/user1-128x128.jpg' %}" alt="User Avatar">
-                </a>
-              </div>
-              <div class="card-footer">
-                <div class="row">
-                  <div class="col-sm-6 border-right">
-                    <div class="description-block">
-                      <a href="{% url 'change-password' %}" class="description-text">Change Password</a>
-                    </div>
+                <div class="card card-widget widget-user shadow mb-0">
+                  <div class="widget-user-header bg-info">
+                    <h3 class="widget-user-username">{{request.user.full_name}}</h3>
                   </div>
-                  <div class="col-sm-6">
-                    <div class="description-block">
-                      <form action="{% url 'logout' %}" method="post">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-danger">Sign out</button>
-                      </form>
+                  <div class="card-footer">
+                    <div class="row">
+                      <div class="col-auto">
+                        <div class="widget-user-image">
+                          <a href="{% url 'my-account' %}">
+                            <img class="img-circle elevation-2 " src="{% static 'dist/img/user1-128x128.jpg' %}" alt="User Avatar">
+                          </a>
+                        </div>
+                      </div>
+                      <div class="col">
+                        <div class="row">
+                          <div class="col-12">
+                            <p class="navbar-profile-contact">+91 9953786487</p>
+                            <p class="navbar-profile-contact">hr@netleafinfosoft.com</p>
+                            <a href="{% url 'change-password' %}" class="navbar-profile-contact text-success pb-1">Change Password</a>
+                            <ul class="navbar-profile-list">
+                              <li><a href="#" class="text-primary">My Account</a></li>
+                              <li>
+                                <form action="{% url 'logout' %}" method="post">
+                                  {% csrf_token %}
+                                  <button type="submit" class="navbar-logout-btn text-danger">Sign out</button>
+                                </form>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>  
                     </div>
+                    <!-- <div class="row">
+                      <div class="col-sm-6 border-right">
+                        <div class="description-block">
+                          <a href="{% url 'change-password' %}" class="description-text">Change Password</a>
+                        </div>
+                      </div>
+                      <div class="col-sm-6">
+                        <div class="description-block">
+                          <form action="{% url 'logout' %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="header-logout-btn">Sign out</button>
+                          </form>
+                        </div>
+                      </div>
+                    </div> -->
                   </div>
                 </div>
-              </div>
-            </div>
               </li>
             </ul>
           </li>

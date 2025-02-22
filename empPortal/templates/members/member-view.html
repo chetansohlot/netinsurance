@@ -29,7 +29,7 @@
                 <div class="row justify-content-between justify-content-sm-start pb-4">
                   <div class="col col-sm-4">
                     <!-- <h1 class="admin-title m-0 py-2">View Member </h1> -->
-                    <a href="#"><img src="{% static 'dist/img/svg/back_ic.svg' %}" alt="" class="mt-2 pl-3"></a>
+                    <!-- <a href="#"><img src="{% static 'dist/img/svg/back_ic.svg' %}" alt="" class="mt-2 pl-3"></a> -->
                   </div>
                   <form id="activate-form" name="activate-form" method="post" action="{% url 'activate-user' user_id=user_details.id %}" style="display: none;">
                     {% csrf_token %}
@@ -38,7 +38,7 @@
                   {% if user_details.activation_status != '1' %}
                     <div class="col">
                       <div class="d-flex justify-content-end mt-2">
-                        <button class="dashboard-btn-outline mb-0" type="button" id="activate-btn" data-user-id="{{ user_details.id }}">Activate Account</button>
+                        <button class="dashboard-btn-outline mb-0 bg-success border-success" type="button" id="activate-btn" data-user-id="{{ user_details.id }}">Activate Account</button>
                       </div>  
                     </div>
                   {% endif %}
@@ -46,7 +46,7 @@
 
                     <div class="col">
                         <div class="d-flex justify-content-end mt-2">
-                            <button class="dashboard-btn-outline mb-0" type="button">Deactivate Membership</button>
+                            <button class="dashboard-btn-outline mb-0 bg-danger border-danger" type="button">Deactivate Membership</button>
                         </div>  
                     </div>
                 </div>
@@ -429,7 +429,7 @@
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="editModalLabel">Edit Payout Details</h5>
+                                            <h5 class="modal-title" id="editModalLabel">Bank Details</h5>
                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
                                         </div>
                                         <div class="modal-body">

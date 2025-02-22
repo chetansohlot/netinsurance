@@ -2174,6 +2174,8 @@ a:hover .dr-pdficon {
 
     .member-detail-list li .list-output {
         color: #000;
+        margin-left: auto;
+        
     }
 
     .profile-info-divider {
@@ -2426,3 +2428,16 @@ a:hover .dr-pdficon {
 .pagination-dynamic nav>div>div>span>a:first-child {
     padding: 8px 0px !important;
 }
+.header-logout-btn { border:none; background: none; }
+
+.widget-user .card-footer {padding-top:15px !important; background: #fff; margin-top:-80px;}
+.widget-user .widget-user-username {font-size: 18px; font-weight: 700;}
+.widget-user .widget-user-image { position:relative; margin-left:0px; top:0; left:0; }
+.widget-user .widget-user-image img {width: 50px !important;}
+.navbar-logout-btn {font-size:12px; border: none; background: none; color:#ff3300; margin-left:10px; }
+.navbar-profile-contact {font-size:13px; color:#999; margin:0; padding-bottom: 5px;}
+.navbar-profile-list {margin:5px 0 10px; padding:0; display: flex;}
+.navbar-profile-list li {list-style: none; line-height:10px;  border-right: 1px solid #ccc; }
+.navbar-profile-list li:last-child {border:none;}
+.navbar-profile-list li a {font-size:12px; border: none; background: none; color:#ff3300; padding:0 10px;  }
+.navbar-profile-list li:first-child a {padding-left: 0px;}
