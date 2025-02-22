@@ -96,7 +96,7 @@
                             <p class="navbar-profile-contact">hr@netleafinfosoft.com</p>
                             <a href="{% url 'change-password' %}" class="navbar-profile-contact text-success pb-1">Change Password</a>
                             <ul class="navbar-profile-list">
-                              <li><a href="#" class="text-primary">My Account</a></li>
+                              <li><a href="{% url 'my-account' %}" class="text-primary">My Account</a></li>
                               <li>
                                 <form action="{% url 'logout' %}" method="post">
                                   {% csrf_token %}

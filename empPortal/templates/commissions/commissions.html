@@ -203,7 +203,7 @@ Commissions
                                     <th>TP %</th>
                                     <th>OD %</th>
                                     <th>Net %</th>
-                                    <th width="50">Status</th>
+                                    <th width="100">Status</th>
                                     <th>Info</th>
                                     <th>Action</th>
                                 </tr>
@@ -235,8 +235,8 @@ Commissions
                                         <i class="fas fa-calendar-alt text-secondary"></i> {{ commission.created_at|date:"d M Y, H:i:s" }}
                                     </td>
                                     <td>
-                                        <a href="{% url 'member-view' user_id=commission.member_id %}" class="btn btn-sm btn-primary">
-                                            <i class="fas fa-eye"></i> View
+                                        <a href="{% url 'member-view' user_id=commission.member_id %}" class="btn btn-xs btn-primary">
+                                            <i class="fas fa-eye"></i> 
                                         </a>
                                     </td>
                                 </tr>
