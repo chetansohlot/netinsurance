@@ -29,7 +29,7 @@
                   </div>
                   <div class="col">
                     <div class="d-flex justify-content-end mt-2">
-                      <button class="dashboard-btn-outline mb-0" type="button">Deactivate Membership</button>
+                      <!-- <button class="dashboard-btn-outline mb-0" type="button">Deactivate Membership</button> -->
                     </div>  
                   </div>
                 </div>
@@ -289,7 +289,7 @@
                                                 <div class="col-md-6">
                                                     <div class="mb-3">
                                                         <label class="form-lbl">Product Name</label>
-                                                        <select class="form-field" name="product" id="editProduct">
+                                                        <select class="form-field" name="product"  id="editProduct">
                                                             <option value="">Select Product</option>
                                                             {% for product in products %}
                                                                 <option value="{{ product.id }}">{{ product.name }}</option>
@@ -300,21 +300,21 @@
                                                 <div class="col-md-6">
                                                     <div class="mb-3">
                                                         <label class="form-lbl">TP %</label>
-                                                        <input type="text" class="form-field percentage" id="editTp" name="tp_percentage">
+                                                        <input type="text" class="form-field percentage" placeholder="TP%" id="editTp" name="tp_percentage">
                                                         <span class="error tp_percentage_err"></span>
                                                     </div>
                                                 </div>    
                                                 <div class="col-md-6">    
                                                     <div class="mb-3">
                                                         <label class="form-lbl">OD %</label>
-                                                        <input type="text" class="form-field percentage" id="editOd" name="od_percentage">
+                                                        <input type="text" class="form-field percentage" id="editOd" placeholder="OD%" name="od_percentage">
                                                         <span class="error od_percentage_err"></span>
                                                     </div>
                                                 </div>    
                                                 <div class="col-md-6">    
                                                     <div class="mb-3">
                                                         <label class="form-lbl">Net %</label>
-                                                        <input type="text" class="form-field percentage" id="editNet" name="net_percentage">
+                                                        <input type="text" class="form-field percentage" id="editNet" placeholder="Net%" name="net_percentage">
                                                         <span class="error net_percentage_err"></span>
                                                     </div>
                                                 </div>    
@@ -421,7 +421,7 @@
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="editModalLabel">Edit Payout Details</h5>
+                                            <h5 class="modal-title" id="editModalLabel">Edit Bank Details</h5>
                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
                                         </div>
                                         <div class="modal-body">
@@ -432,42 +432,43 @@
                                                         <div class="mb-3">
                                                             <label for="editAccountHolderName" class="form-lbl">Account Holder Name</label>
                                                             <input type="text" class="form-field" id="editAccountHolderName" name="account_holder_name"
-                                                                value="{% if bank_details %}{{ bank_details.account_holder_name }}{% endif %}">
+                                                              placeholder="Account Holder Name"  value="{% if bank_details %}{{ bank_details.account_holder_name }}{% endif %}">
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="col-md-6">    
+                                                        <div class="mb-3">
+                                                            <label for="editAccountNumber" class="form-lbl">Account Number</label>
+                                                            <input type="text" class="form-field" id="editAccountNumber" name="account_number"
+                                                             placeholder="Account Number" value="{% if bank_details %}{{ bank_details.account_number }}{% endif %}">
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6">
                                                         <div class="mb-3">
                                                             <label for="editReEnterAccountNumber" class="form-lbl">Re Enter Account Number</label>
                                                             <input type="text" class="form-field" id="editReEnterAccountNumber" name="re_enter_account_number"
-                                                                value="{% if bank_details %}{{ bank_details.re_enter_account_number }}{% endif %}">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">    
-                                                        <div class="mb-3">
-                                                            <label for="editAccountNumber" class="form-lbl">Account Number</label>
-                                                            <input type="text" class="form-field" id="editAccountNumber" name="account_number"
-                                                                value="{% if bank_details %}{{ bank_details.account_number }}{% endif %}">
+                                                             placeholder="Re-Enter Account Number"   value="{% if bank_details %}{{ bank_details.re_enter_account_number }}{% endif %}">
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6">    
                                                         <div class="mb-3">
                                                             <label for="editIfscCode" class="form-lbl">IFSC Code</label>
                                                             <input type="text" class="form-field" id="editIfscCode" name="ifsc_code"
-                                                                value="{% if bank_details %}{{ bank_details.ifsc_code }}{% endif %}">
+                                                            placeholder="IFSC Code"    value="{% if bank_details %}{{ bank_details.ifsc_code }}{% endif %}">
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6">    
                                                         <div class="mb-3">
                                                             <label for="editCity" class="form-lbl">City</label>
                                                             <input type="text" class="form-field" id="editCity" name="city"
-                                                                value="{% if bank_details %}{{ bank_details.city }}{% endif %}">
+                                                             placeholder="City"   value="{% if bank_details %}{{ bank_details.city }}{% endif %}">
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6">    
                                                         <div class="mb-3">
                                                             <label for="editState" class="form-lbl">State</label>
                                                             <input type="text" class="form-field" id="editState" name="state"
-                                                                value="{% if bank_details %}{{ bank_details.state }}{% endif %}">
+                                                            placeholder="State"    value="{% if bank_details %}{{ bank_details.state }}{% endif %}">
                                                         </div>
                                                     </div>
                                                     <div class="col-md-12">    
