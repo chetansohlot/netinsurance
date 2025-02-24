@@ -978,6 +978,7 @@ select.form-field {
     padding: 7px 10px;
 }
 
+input[type="file"] {padding:4px 10px !important;}
 .form-submit-btn {
     padding: 6px 15px;
     margin-top: 0px;
