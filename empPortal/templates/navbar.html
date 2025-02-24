@@ -92,8 +92,10 @@
                       <div class="col">
                         <div class="row">
                           <div class="col-12">
-                            <p class="navbar-profile-contact">+91 9953786487</p>
-                            <p class="navbar-profile-contact">hr@netleafinfosoft.com</p>
+                            <p class="navbar-profile-contact">{% if request.user.phone != None %}
+                              +91 {{ request.user.phone }}
+                            {% endif %}</p>
+                            <p class="navbar-profile-contact">{{ request.user.email }}</p>
                             <a href="{% url 'change-password' %}" class="navbar-profile-contact text-success pb-1">Change Password</a>
                             <ul class="navbar-profile-list">
                               <li><a href="{% url 'my-account' %}" class="text-primary">My Account</a></li>
