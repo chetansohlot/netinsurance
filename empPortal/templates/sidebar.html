@@ -39,6 +39,14 @@
               </a>
             </li>
             <li class="nav-item">
+              <a href="{% url 'customers' %}" class="nav-link {% if request.path == '/customers/' %} active {% endif %}">
+                <svg class="sidbarmenu-svg">
+                  <use xlink:href="#customers" />
+                </svg>
+                <p>Customers</p>
+              </a>
+            </li>
+            <li class="nav-item">
               <a href="{% url 'commissions' %}" class="nav-link {% if request.path == '/commissions/' %} active {% endif %}">
                 <svg class="sidbarmenu-svg">
                   <use xlink:href="#commission-icon" />

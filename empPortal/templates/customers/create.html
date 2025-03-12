@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Customer{% endblock %}
+
+{% block content %}
+<div class="content-header breadcrump-bg">
+    <div class="container-fluid">
+        <div class="row py-2">
+            <div class="col-sm-6">
+                <div class="d-flex align-items-center">
+                    <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Add Customer</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12">  
+                <div class="card box-shadow-none p-md-5 p-3">
+                    <div class="card-body px-0 pb-0 pt-0">
+                        <form autocomplete="off" id="myForm" action="{% url 'store-commission' %}" method="post">
+                            {% csrf_token %}
+
+                            <!-- Error Messages -->
+                            {% if messages %}
+                                <div class="alert alert-danger">
+                                    <ul>
+                                        {% for message in messages %}
+                                            <li>{{ message }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+
+                            <div class="row">
+                                <div class="form-group col-md-6">
+                                    <label class="form-lbl" for="member">Member</label>
+                                    <select class="form-field" name="member" id="member">
+                                        <option value="">Select Member</option>
+                                        {% for member in members %}
+                                            <option value="{{ member.id }}" {% if request.POST.member == member.id|stringformat:"s" %}selected{% endif %}>
+                                                {{ member.first_name }} {{ member.last_name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    <label class="form-lbl" for="product">Product</label>
+                                    <select class="form-field" name="product" id="product">
+                                        <option value="">Select Product</option>
+                                        {% for product in products %}
+                                            <option value="{{ product.id }}" {% if request.POST.product == product.id|stringformat:"s" %}selected{% endif %}>
+                                                {{ product.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-end">
+                                <button type="submit" class="form-submit-btn">Save Commission</button>
+                            </div>  
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>  
+</div>
+{% endblock %}

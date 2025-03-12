@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Default Title{% endblock %}</title>
+
+    {% load static %}
+    {% include 'head.html' %}  <!-- Includes common styles and scripts -->
+
+    <script src="{% static 'dist/js/jquery.min.js' %}"></script>
+    <script src="{% static 'dist/js/custom.js' %}"></script>
+</head>
+
+<body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+    
+        {% include "navbar.html" %}  <!-- Include the Navbar -->
+        {% include "sidebar.html" %} <!-- Include the Sidebar -->
+
+        <!-- Content Wrapper -->
+        <div class="content-wrapper">
+            {% block content %}{% endblock %}
+        </div>
+
+        {% include "footer.html" %}  <!-- Include the Footer -->
+        {% include "footer-script.html" %} <!-- Include footer scripts -->
+    </div>
+
+    <script>
+        document.getElementById("myForm")?.addEventListener("submit", function() {
+            document.getElementById("loader").style.display = "flex";
+        });
+    </script>
+</body>
+</html>
