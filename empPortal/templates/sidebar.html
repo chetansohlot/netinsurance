@@ -47,13 +47,14 @@
               </a>
             </li>
             <li class="nav-item">
-              <a href="{% url 'quote-management' %}" class="nav-link {% if request.path == '/quote-management/' %} active {% endif %}">
+              <a href="{% url 'quote-management' %}" class="nav-link {% if "/quote-management/" in request.path %} active {% endif %}">
                 <svg class="sidbarmenu-svg">
                   <use xlink:href="#quote-mgt-icon" />
                 </svg>
                 <p>Quote Management</p>
               </a>
             </li>
+            
             <li class="nav-item">
               <a href="{% url 'commissions' %}" class="nav-link {% if request.path == '/commissions/' %} active {% endif %}">
                 <svg class="sidbarmenu-svg">
