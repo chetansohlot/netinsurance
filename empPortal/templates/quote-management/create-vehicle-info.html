@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Customer{% endblock %}
+
+{% block content %}
+
+<div class="content-header header-content-bg">
+    <div class="container-fluid ">
+      <div class="row pt-2 pb-3">
+        <div class="col-sm-6">
+          <div class="d-flex align-items-center">
+          <h1 class="admin-title m-0 pt-2">Create Quote</h1>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+  <!-- /.content-header -->
+
+  <!-- Main content -->
+  <div class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-12 col-md-12">  
+            <ul class="stepflow-text">
+              <li class="active"><a href="#link1"><span>Client Information</span></a></li>
+              <li><a href="#link2"><span>Vehicle & Policy Information</span></a></li>
+            </ul>
+            <ul class="new-stepflow">
+              <li class="active"><a href="#link1"></a></li>
+              <li class="circle-active"><a href="#link2"></a></li>
+            </ul>
+            <div class="card box-shadow-none">
+              <div class="card-body px-0 pb-0">
+                <form action="{% url 'show-quotation-info' %}">
+                  <div class="card">
+                    <div class="card-body pb-0 position-relative">
+                      <p class="form-top-title">Vehicle & Policy Information</p>
+                      <div class="row">
+                        <div class="col-sm-6 col-md-3">
+                          <div class="form-group">
+                            <label class="form-lbl">Registration Number</label>
+                            <input class="form-field" type="text" placeholder="Registration Number" value="">
+                          </div>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+                          <div class="form-group">
+                            <label class="form-lbl">Vehicle Type </label>
+                            <select class="form-field">
+                              <option>Car</option>
+                              <option>Bike</option>
+                              <option>Commercial</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+                          <div class="form-group">
+                            <label class="form-lbl">Make</label>
+                            <input class="form-field" type="text" placeholder="Make" value="">
+                          </div>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+                          <div class="form-group">
+                            <label class="form-lbl">Model</label>
+                            <input class="form-field" type="text" placeholder="Model" value="">
+                          </div>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+                          <div class="form-group">
+                            <label class="form-lbl">Variant</label>
+                            <select class="form-field">
+                              <option>Petrol</option>
+                              <option>Diesel</option>
+                              <option>Electric</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+                          <div class="form-group">
+                            <label class="form-lbl">Year of Manufacture</label>
+                            <input class="form-field" type="text" placeholder="Year of Manufacture" value="">
+                          </div>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+                          <div class="form-group">
+                            <label class="form-lbl">Registration State</label>
+                            <input class="form-field" type="text" placeholder="Registration State" value="">
+                          </div>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+                          <div class="form-group">
+                            <label class="form-lbl">Registration City</label>
+                            <input class="form-field" type="text" placeholder="Registration City" value="">
+                          </div>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+                          <div class="form-group">
+                            <label class="form-lbl">Chassis Number</label>
+                            <input class="form-field" type="text" placeholder="Chassis Number" value="">
+                          </div>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+                          <div class="form-group">
+                            <label class="form-lbl">Engine Number</label>
+                            <input class="form-field" type="text" placeholder="Engine Number" value="">
+                          </div>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+                          <div class="form-group">
+                            <label class="form-lbl">Claim History (Last Year)</label>
+                            <select class="form-field">
+                              <option>Yes</option>
+                              <option>No</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+                          <div class="form-group">
+                            <label class="form-lbl">NCB (No Claim Bonus) Percentage</label>
+                            <select class="form-field">
+                              <option>Yes</option>
+                              <option>No</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+                          <div class="form-group">
+                            <label class="form-lbl">Percentage</label>
+                            <input class="form-field" type="text" placeholder="Percentage" value="">
+                          </div>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+                          <div class="form-group">
+                            <label class="form-lbl">IDV (Insured Declared Value)</label>
+                            <input class="form-field" type="text" placeholder="IDV (Insured Declared Value)" value="">
+                          </div>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+                          <div class="form-group">
+                            <label class="form-lbl">Policy Type</label>
+                            <input class="form-field" type="text" placeholder="Policy Type" value="">
+                          </div>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+                          <div class="form-group">
+                            <label class="form-lbl">Policy Duration</label>
+                            <input class="form-field" type="text" placeholder="Policy Duration" value="">
+                          </div>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+                          <div class="form-group">
+                            <label class="form-lbl">Add-ons</label>
+                            <select class="form-field">
+                              <option>Zero Depreciation</option>
+                              <option>Roadside Assistance</option>
+                              <option>Engine Protection</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group d-flex justify-content-end">
+                    <button type="submit" class="wrap-btn">Submit</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>  
+    </div>
+    
+  </div>
+
+
+{% endblock %}

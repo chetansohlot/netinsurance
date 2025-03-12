@@ -18,7 +18,7 @@ def index(request):
             users = Users.objects.filter(role_id=2)
         else:
             users = Users.objects.none()
-        return render(request, 'customers/customers.html', {'users': users})
+        return render(request, 'quote-management/index.html', {'users': users})
     else:
         return redirect('login')
     
@@ -37,7 +37,43 @@ def create(request):
         else:
             members = Users.objects.none()
     
-        return render(request, 'customers/create.html', {'products': products, 'members': members})
+        return render(request, 'quote-management/create.html', {'products': products, 'members': members})
+    else:
+        return redirect('login')
+    
+def createVehicleInfo(request):
+    if request.user.is_authenticated:
+
+        products = [
+            {'id': 1, 'name': 'Motor'},
+            {'id': 2, 'name': 'Health'},
+            {'id': 3, 'name': 'Term'},
+        ]
+        
+        if request.user.role_id == 1:
+            members = Users.objects.filter(role_id=2, activation_status='1')
+        else:
+            members = Users.objects.none()
+    
+        return render(request, 'quote-management/create-vehicle-info.html', {'products': products, 'members': members})
+    else:
+        return redirect('login')
+    
+def showQuotation(request):
+    if request.user.is_authenticated:
+
+        products = [
+            {'id': 1, 'name': 'Motor'},
+            {'id': 2, 'name': 'Health'},
+            {'id': 3, 'name': 'Term'},
+        ]
+        
+        if request.user.role_id == 1:
+            members = Users.objects.filter(role_id=2, activation_status='1')
+        else:
+            members = Users.objects.none()
+    
+        return render(request, 'quote-management/show-quotation-info.html', {'products': products, 'members': members})
     else:
         return redirect('login')
     
