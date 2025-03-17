@@ -1,11 +1,18 @@
-from django.shortcuts import render,redirect
-from ..models import Commission,Users
-
-from django.contrib.auth import authenticate, login ,logout
-from django.conf import settings
-from django.contrib.auth.decorators import login_required
+from django.shortcuts import render,redirect, get_object_or_404
+from ..models import Commission, Users, QuotationCustomer, VehicleInfo
+from django.db.models import OuterRef, Subquery
 from django.contrib import messages
+from datetime import datetime
+from django.urls import reverse
+import pprint  # Import pprint for better formatting
+from django.http import JsonResponse
+import pdfkit
+import os
+from django.conf import settings
+import os
+from dotenv import load_dotenv
 
+from django.http import HttpResponse
 
 def dictfetchall(cursor):
     "Returns all rows from a cursor as a dict"
@@ -13,19 +20,121 @@ def dictfetchall(cursor):
     return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
 def index(request):
-    if request.user.is_authenticated:
-        if request.user.role_id == 1:
-            users = Users.objects.filter(role_id=2)
-        else:
-            users = Users.objects.none()
-        return render(request, 'quote-management/index.html', {'users': users})
-    else:
+    if not request.user.is_authenticated:
         return redirect('login')
-    
-    
-def create(request):
-    if request.user.is_authenticated:
 
+    # Get filters from request
+    customer_id = request.GET.get('customer_id', '').strip()
+    customer_name = request.GET.get('customer_name', '').strip()
+    customer_mobile = request.GET.get('customer_mobile', '').strip()
+    policy_type = request.GET.get('policy_type', '').strip()
+    quote_status = request.GET.get('quote_status', '').strip()
+    quote_date_range = request.GET.get('quote_date_range', '').strip()
+    vehicle_type = request.GET.get('vehicle_type', '').strip()
+    ncb = request.GET.get('ncb', '').strip()
+    insurer_name = request.GET.get('insurer_name', '').strip()
+
+    # Base QuerySet
+    quotations = QuotationCustomer.objects.all()
+
+    # Apply filters dynamically
+    if customer_id:
+        quotations = quotations.filter(customer_id=customer_id)
+    if customer_name:
+        quotations = quotations.filter(name_as_per_pan__icontains=customer_name)
+    if customer_mobile:
+        quotations = quotations.filter(mobile_number__icontains=customer_mobile)
+    if policy_type:
+        quotations = quotations.filter(vehicleinfo__policy_type__icontains=policy_type)
+    if quote_status:
+        quotations = quotations.filter(status__icontains=quote_status)
+    if vehicle_type:
+        quotations = quotations.filter(vehicleinfo__vehicle_type__icontains=vehicle_type)
+    if ncb:
+        quotations = quotations.filter(vehicleinfo__ncb_percentage=ncb)
+    if insurer_name:
+        quotations = quotations.filter(vehicleinfo__insurer_name__icontains=insurer_name)
+
+    # Handle date range filtering
+    if quote_date_range:
+        try:
+            start_date, end_date = map(str.strip, quote_date_range.split(" - "))
+            quotations = quotations.filter(created_at__range=[start_date, end_date])
+        except ValueError:
+            pass  # Ignore invalid date format
+
+    # Fetch latest vehicle information
+    latest_vehicle_info = VehicleInfo.objects.filter(
+        customer_id=OuterRef('customer_id')
+    ).order_by('-created_at')
+
+    # Annotate vehicle information properly
+    quotations_with_vehicle = quotations.annotate(
+        registration_number=Subquery(latest_vehicle_info.values('registration_number')[:1]),
+        vehicle_type=Subquery(latest_vehicle_info.values('vehicle_type')[:1]),
+        make=Subquery(latest_vehicle_info.values('make')[:1]),  # ✅ Fixed reference
+        model=Subquery(latest_vehicle_info.values('model')[:1]),  # ✅ Fixed reference
+        year_of_manufacture=Subquery(latest_vehicle_info.values('year_of_manufacture')[:1]),
+        policy_type=Subquery(latest_vehicle_info.values('policy_type')[:1]),
+        idv_value=Subquery(latest_vehicle_info.values('idv_value')[:1]),
+        claim_history=Subquery(latest_vehicle_info.values('claim_history')[:1]),
+        ncb_percentage=Subquery(latest_vehicle_info.values('ncb_percentage')[:1]),
+        addons=Subquery(latest_vehicle_info.values('addons')[:1]),
+    )
+
+    # Add-ons Mapping
+    ADDONS_MAP = {
+        "1": "Zero Depreciation",
+        "2": "Roadside Assistance",
+        "3": "Engine Protection"
+    }
+
+    # Convert QuerySet to structured JSON response
+    data = []
+    for quotation in quotations_with_vehicle:
+        customer_data = {field.name: getattr(quotation, field.name) for field in QuotationCustomer._meta.fields}
+        vehicle_data = {
+            "registration_number": quotation.registration_number,
+            "vehicle_type": quotation.vehicle_type,
+            "make": quotation.make,
+            "model": quotation.model,
+            "year_of_manufacture": quotation.year_of_manufacture,
+            "policy_type": quotation.policy_type,
+            "idv_value": quotation.idv_value,
+            "claim_history": quotation.claim_history,
+            "ncb_percentage": quotation.ncb_percentage,
+            "addons": quotation.addons,
+        }
+
+        customer_data['vehicle'] = vehicle_data if quotation.registration_number else {}
+
+        if customer_data["vehicle"].get("addons"):
+            addons_key = str(customer_data["vehicle"]["addons"])
+            customer_data["vehicle"]["addons_display"] = ADDONS_MAP.get(addons_key, "N/A")
+        else:
+            customer_data["vehicle"]["addons_display"] = "N/A"
+
+        data.append(customer_data)
+        
+    return render(request, 'quote-management/index.html', {'quotations': data})
+
+
+# from django.shortcuts import get_object_or_404, redirect, render
+# from django.urls import reverse
+# from django.contrib import messages
+# from datetime import datetime
+# from .models import QuotationCustomer, Users
+
+def create_or_edit(request, customer_id=None):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    # Fetch existing customer if editing
+    quotation = None
+    if customer_id:
+        quotation = get_object_or_404(QuotationCustomer, customer_id=customer_id)
+
+    if request.method == "GET":
         products = [
             {'id': 1, 'name': 'Motor'},
             {'id': 2, 'name': 'Health'},
@@ -36,46 +145,232 @@ def create(request):
             members = Users.objects.filter(role_id=2, activation_status='1')
         else:
             members = Users.objects.none()
+
+        return render(request, 'quote-management/create.html', {
+            'products': products,
+            'members': members,
+            'quotation': quotation  # Pass existing data if editing
+        })
     
-        return render(request, 'quote-management/create.html', {'products': products, 'members': members})
-    else:
+    elif request.method == "POST":
+        # Extract form data
+        mobile_number = request.POST.get("mobile_number", "").strip()
+        email_address = request.POST.get("email_address", "").strip()
+        quote_date = request.POST.get("quote_date", "").strip()
+        name_as_per_pan = request.POST.get("name_as_per_pan", "").strip()
+        pan_card_number = request.POST.get("pan_card_number", "").strip() or None
+        date_of_birth = request.POST.get("date_of_birth", "").strip()
+        state = request.POST.get("state", "").strip()
+        city = request.POST.get("city", "").strip()
+        pincode = request.POST.get("pincode", "").strip()
+        address = request.POST.get("address", "").strip()
+
+        # Validate and format date fields
+        try:
+            quote_date = datetime.strptime(quote_date, "%Y-%m-%d").date() if quote_date else None
+            date_of_birth = datetime.strptime(date_of_birth, "%Y-%m-%d").date() if date_of_birth else None
+        except ValueError:
+            messages.error(request, "Invalid date format.")
+            return redirect(reverse("quote-management-create") if not customer_id else reverse("quote-management-edit", args=[customer_id]))
+
+        if quotation:
+            # Update existing record
+            quotation.mobile_number = mobile_number
+            quotation.email_address = email_address
+            quotation.quote_date = quote_date
+            quotation.name_as_per_pan = name_as_per_pan
+            quotation.pan_card_number = pan_card_number
+            quotation.date_of_birth = date_of_birth
+            quotation.state = state
+            quotation.city = city
+            quotation.pincode = pincode
+            quotation.address = address
+            quotation.save()
+
+            messages.success(request, f"Quotation updated successfully! Customer ID: {quotation.customer_id}")
+
+            # Redirect to vehicle info page
+            return redirect(reverse("create-vehicle-info", args=[quotation.customer_id]))
+        
+        else:
+            # Generate new customer_id
+            last_customer = QuotationCustomer.objects.order_by('-id').first()
+            if last_customer and last_customer.customer_id.startswith("CUS"):
+                last_number = int(last_customer.customer_id[3:])
+                new_customer_id = f"CUS{last_number + 1}"
+            else:
+                new_customer_id = "CUS1000001"
+
+            # Create new record
+            new_quotation = QuotationCustomer.objects.create(
+                customer_id=new_customer_id,
+                mobile_number=mobile_number,
+                email_address=email_address,
+                quote_date=quote_date,
+                name_as_per_pan=name_as_per_pan,
+                pan_card_number=pan_card_number,
+                date_of_birth=date_of_birth,
+                state=state,
+                city=city,
+                pincode=pincode,
+                address=address,
+                active=True,
+            )
+
+            messages.success(request, f"Quotation created successfully! Customer ID: {new_customer_id}")
+
+            # Redirect to create-vehicle-info page
+            return redirect(reverse("create-vehicle-info", args=[new_customer_id]))
+
+
+def createVehicleInfo(request, cus_id):
+    if not request.user.is_authenticated:
         return redirect('login')
     
-def createVehicleInfo(request):
-    if request.user.is_authenticated:
-
+    # Fetch existing customer
+    customer = get_object_or_404(QuotationCustomer, customer_id=cus_id)
+    vehicle_info = VehicleInfo.objects.filter(customer_id=cus_id).first()
+    
+    if request.method == "GET":
         products = [
             {'id': 1, 'name': 'Motor'},
             {'id': 2, 'name': 'Health'},
             {'id': 3, 'name': 'Term'},
         ]
         
-        if request.user.role_id == 1:
-            members = Users.objects.filter(role_id=2, activation_status='1')
-        else:
-            members = Users.objects.none()
-    
-        return render(request, 'quote-management/create-vehicle-info.html', {'products': products, 'members': members})
-    else:
-        return redirect('login')
-    
-def showQuotation(request):
-    if request.user.is_authenticated:
+        members = Users.objects.filter(role_id=2, activation_status='1') if request.user.role_id == 1 else Users.objects.none()
 
-        products = [
-            {'id': 1, 'name': 'Motor'},
-            {'id': 2, 'name': 'Health'},
-            {'id': 3, 'name': 'Term'},
-        ]
-        
-        if request.user.role_id == 1:
-            members = Users.objects.filter(role_id=2, activation_status='1')
+        return render(request, 'quote-management/create-vehicle-info.html', {
+            'products': products,
+            'members': members,
+            'cus_id': cus_id,
+            'customer': customer,
+            'vehicle_info': vehicle_info  # Pass existing data if available
+        })
+
+    elif request.method == "POST":
+        def parse_date(date_str):
+            """Convert date string to datetime.date or None if empty."""
+            try:
+                return datetime.strptime(date_str.strip(), "%Y-%m-%d").date() if date_str.strip() else None
+            except ValueError:
+                messages.error(request, "Invalid date format.")
+                return None
+
+        # Extract and validate form data
+        registration_number = request.POST.get("registration_number", "").strip()
+        registration_date = parse_date(request.POST.get("registration_date", ""))
+        vehicle_type = request.POST.get("vehicle_type", "").strip()
+        make = request.POST.get("make", "").strip()
+        model = request.POST.get("model", "").strip()
+        variant = request.POST.get("variant", "").strip()
+        year_of_manufacture = request.POST.get("year_of_manufacture", "").strip() or None
+        registration_state = request.POST.get("registration_state", "").strip()
+        registration_city = request.POST.get("registration_city", "").strip()
+        chassis_number = request.POST.get("chassis_number", "").strip()
+        engine_number = request.POST.get("engine_number", "").strip()
+        claim_history = request.POST.get("claim_history", "").strip()
+        ncb_percentage = request.POST.get("ncb_percentage", "").strip() or None
+        idv_value = request.POST.get("idv_value", "").strip() or None
+        policy_type = request.POST.get("policy_type", "").strip()
+        policy_duration = request.POST.get("policy_duration", "").strip()
+        addons = request.POST.get("add_ons", "").strip()
+
+        if vehicle_info:
+            # Update existing vehicle info
+            vehicle_info.registration_number = registration_number
+            vehicle_info.registration_date = registration_date
+            vehicle_info.vehicle_type = vehicle_type
+            vehicle_info.make = make
+            vehicle_info.model = model
+            vehicle_info.variant = variant
+            vehicle_info.year_of_manufacture = year_of_manufacture
+            vehicle_info.registration_state = registration_state
+            vehicle_info.registration_city = registration_city
+            vehicle_info.chassis_number = chassis_number
+            vehicle_info.engine_number = engine_number
+            vehicle_info.claim_history = claim_history
+            vehicle_info.ncb_percentage = ncb_percentage
+            vehicle_info.idv_value = idv_value
+            vehicle_info.policy_type = policy_type
+            vehicle_info.policy_duration = policy_duration
+            vehicle_info.addons = addons
+            vehicle_info.active = True
+            vehicle_info.save()
+            messages.success(request, "Vehicle information updated successfully!")
         else:
-            members = Users.objects.none()
-    
-        return render(request, 'quote-management/show-quotation-info.html', {'products': products, 'members': members})
-    else:
+            # Create new vehicle info record
+            VehicleInfo.objects.create(
+                customer_id=cus_id,
+                registration_number=registration_number,
+                registration_date=registration_date,
+                vehicle_type=vehicle_type,
+                make=make,
+                model=model,
+                variant=variant,
+                year_of_manufacture=year_of_manufacture,
+                registration_state=registration_state,
+                registration_city=registration_city,
+                chassis_number=chassis_number,
+                engine_number=engine_number,
+                claim_history=claim_history,
+                ncb_percentage=ncb_percentage,
+                idv_value=idv_value,
+                policy_type=policy_type,
+                policy_duration=policy_duration,
+                addons=addons,
+                active=True,
+            )
+            messages.success(request, "Vehicle information added successfully!")
+        
+
+        return redirect(reverse("show-quotation-info", args=[cus_id]))
+
+
+def showQuotation(request, cus_id):
+    if not request.user.is_authenticated:
         return redirect('login')
+
+    products = [
+        {'id': 1, 'name': 'Motor'},
+        {'id': 2, 'name': 'Health'},
+        {'id': 3, 'name': 'Term'},
+    ]
+
+    members = Users.objects.filter(role_id=2, activation_status='1') if request.user.role_id == 1 else Users.objects.none()
+
+    # Fetch customer details
+    customer = get_object_or_404(QuotationCustomer, customer_id=cus_id)
+
+    return render(request, 'quote-management/show-quotation-info.html', {
+        'products': products,
+        'members': members,
+        'cus_id': cus_id,
+        'customer': customer
+    })
+
+def downloadQuotationPdf(request, cus_id):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    wkhtml_path = os.getenv('WKHTML_PATH', r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
+    config = pdfkit.configuration(wkhtmltopdf=wkhtml_path)
+
+    html_file_path = os.path.join(settings.BASE_DIR, "empPortal/templates", "quote-management", "show-quotation-pdf.html")
+
+    # Ensure the file exists before passing it to pdfkit
+    if not os.path.exists(html_file_path):
+        raise FileNotFoundError(f"File not found: {html_file_path}")
+    
+    # Generate PDF
+    pdf = pdfkit.from_file(html_file_path, False, configuration=config)
+
+    # Create HTTP response with PDF as an attachment
+    response = HttpResponse(pdf, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="quotation_{cus_id}.pdf"'
+
+    return response
+
     
 def store(request):
     if not request.user.is_authenticated:

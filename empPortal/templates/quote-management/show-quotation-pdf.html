@@ -1,8 +1,3 @@
-{% extends 'base.html' %}
-
-{% block title %}Add Customer{% endblock %}
-
-{% block content %}
 <div class="content-header header-content-bg">
     <div class="container-fluid ">
       <div class="row pt-2 pb-3">
@@ -149,36 +144,6 @@
                     </tr>
                   </tbody>
                 </table>
-                <form action="{% url 'quote-management' %}">
-                  <div class="row mt-4 justify-content-end text-end">
-                    <div class="col-auto">
-                      <!-- Download PDF Button with Right Padding -->
-                      <a href="{% url 'download-quotation-pdf' cus_id %}" class="wrap-btn m-3">
-                        <i class="fas fa-download"></i>
-                      </a>
-                
-                      <!-- Radio Buttons -->
-                      <div class="d-inline-block">
-                        <input type="radio" name="shareopt" class="radio-btn" id="email">
-                        <label for="email">Email</label>
-                      </div>
-                      <div class="d-inline-block">
-                        <input type="radio" name="shareopt" class="radio-btn" id="Whatsapp">
-                        <label for="Whatsapp">WhatsApp</label>
-                      </div>
-                      <div class="d-inline-block">
-                        <input type="radio" name="shareopt" class="radio-btn" id="sms">
-                        <label for="sms">SMS</label>
-                      </div>
-                
-                      <!-- Send & Share Button -->
-                      <button type="submit" class="wrap-btn ms-2">Send & Share</button>
-                    </div>
-                  </div>
-                </form>
-                
-                
-                
               </div>
             </div>
           </div>
@@ -188,5 +153,3 @@
     
   </div>
 
-
-{% endblock %}

@@ -32,6 +32,63 @@ class Commission(models.Model):
     def __str__(self):
         return f"Commission {self.id} - Insurer {self.member_id}"
     
+    from django.db import models
+
+class QuotationCustomer(models.Model):
+    customer_id = models.CharField(max_length=20, unique=True)  # For values like CUS2343545
+    mobile_number = models.CharField(max_length=15, null=True, blank=True)
+    email_address = models.CharField(max_length=255, null=True, blank=True)
+    quote_date = models.DateField(null=True, blank=True)
+    name_as_per_pan = models.CharField(max_length=255, null=True, blank=True)
+    pan_card_number = models.CharField(max_length=10, null=True, blank=True)
+    date_of_birth = models.DateField(null=True, blank=True)
+    state = models.CharField(max_length=100, null=True, blank=True)
+    city = models.CharField(max_length=100, null=True, blank=True)
+    pincode = models.CharField(max_length=10, null=True, blank=True)
+    address = models.TextField(null=True, blank=True)
+    active = models.BooleanField(default=True)  # 1 for active, 0 for inactive
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "quotation_customers"
+
+    def __str__(self):
+        return f"QuotationCustomer {self.customer_id} - {self.name_as_per_pan}"
+
+
+class VehicleInfo(models.Model):
+    customer_id = models.CharField(max_length=20, null=True, blank=True)  # Nullable as per SQL table
+    registration_number = models.CharField(max_length=20, null=True, blank=True)
+    registration_date = models.DateField(null=True, blank=True)  # Added registration_date
+    vehicle_type = models.CharField(max_length=50, null=True, blank=True)
+    make = models.CharField(max_length=50, null=True, blank=True)
+    model = models.CharField(max_length=50, null=True, blank=True)
+    variant = models.CharField(max_length=50, null=True, blank=True)
+    year_of_manufacture = models.IntegerField(null=True, blank=True)
+    registration_date = models.DateField(null=True, blank=True)
+    registration_state = models.CharField(max_length=50, null=True, blank=True)
+    registration_city = models.CharField(max_length=50, null=True, blank=True)
+    chassis_number = models.CharField(max_length=50, null=True, blank=True)
+    engine_number = models.CharField(max_length=50, null=True, blank=True)
+    claim_history = models.CharField(max_length=10, choices=[("Yes", "Yes"), ("No", "No")], null=True, blank=True)
+    ncb_percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    idv_value = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    policy_type = models.CharField(max_length=50, null=True, blank=True)
+    policy_duration = models.CharField(max_length=50, null=True, blank=True)
+    addons = models.TextField(null=True, blank=True)
+    active = models.BooleanField(default=True)  # 1 for active, 0 for inactive
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "quotation_vehicle_info"
+
+    def __str__(self):
+        return f"VehicleInfo {self.registration_number} - {self.customer_id}"
+
+
+
 
 class PolicyDocument(models.Model):
     filename = models.CharField(max_length=255)

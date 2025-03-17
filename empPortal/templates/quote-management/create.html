@@ -32,82 +32,102 @@
           </ul>
           <div class="card box-shadow-none">
             <div class="card-body px-0 pb-0">
-              <form action="{% url 'create-vehicle-info' %}">
-                <div class="card">
-                  <div class="card-body pb-0 position-relative">
-                    <p class="form-top-title">Client Information</p>
-                    <div class="row">
-                      <div class="col-sm-6 col-md-3">
-                        <div class="form-group">
-                          <label class="form-lbl">Mobile Number</label>
-                          <input class="form-field" type="text" placeholder="Mobile Number" value="">
+                <form action="{% if quotation %}{% url 'quote-management-edit' customer_id=quotation.customer_id %}{% else %}{% url 'quote-management-create' %}{% endif %}" method="post">
+                    {% csrf_token %}
+                
+                    <div class="card">
+                        <div class="card-body pb-0 position-relative">
+                            <p class="form-top-title">Client Information</p>
+                            <div class="row">
+                                <div class="col-sm-6 col-md-3">
+                                    <div class="form-group">
+                                        <label class="form-lbl">Mobile Number</label>
+                                        <input class="form-field" type="text" name="mobile_number" placeholder="Mobile Number" 
+                                               value="{{ quotation.mobile_number|default_if_none:'' }}">
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-md-3">
+                                    <div class="form-group">
+                                        <label class="form-lbl">Email Address</label>
+                                        <input class="form-field" type="email" name="email_address" placeholder="Email Address" 
+                                               value="{{ quotation.email_address|default_if_none:'' }}">
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-md-3">
+                                    <div class="form-group">
+                                        <label class="form-lbl">Quote Date</label>
+                                        <input class="form-field" type="date" name="quote_date" placeholder="Quote Date" 
+                                               value="{{ quotation.quote_date|date:'Y-m-d' }}">
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-md-3">
+                                    <div class="form-group">
+                                        <label class="form-lbl">Name (as per PAN Card)</label>
+                                        <input class="form-field" type="text" name="name_as_per_pan" placeholder="Name (as per PAN Card)" 
+                                               value="{{ quotation.name_as_per_pan|default_if_none:'' }}">
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-md-3">
+                                    <div class="form-group">
+                                        <label class="form-lbl">PAN Card Number <small>(Optional)</small></label>
+                                        <input class="form-field" type="text" name="pan_card_number" placeholder="PAN Card Number" 
+                                               value="{{ quotation.pan_card_number|default_if_none:'' }}">
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-md-3">
+                                    <div class="form-group">
+                                        <label class="form-lbl">Date of Birth</label>
+                                        <input class="form-field common_datepicker" type="date" name="date_of_birth" placeholder="Date of Birth" 
+                                               value="{{ quotation.date_of_birth|date:'Y-m-d' }}">
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-md-3">
+                                    <div class="form-group">
+                                        <label class="form-lbl">State</label>
+                                        <input class="form-field" type="text" name="state" placeholder="Enter State" 
+                                               value="{{ quotation.state|default_if_none:'' }}">
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-md-3">
+                                    <div class="form-group">
+                                        <label class="form-lbl">City</label>
+                                        <input class="form-field" type="text" name="city" placeholder="Enter City" 
+                                               value="{{ quotation.city|default_if_none:'' }}">
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-md-3">
+                                    <div class="form-group">
+                                        <label class="form-lbl">PinCode</label>
+                                        <input class="form-field" type="text" name="pincode" placeholder="PinCode" 
+                                               value="{{ quotation.pincode|default_if_none:'' }}">
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-md-3">
+                                    <div class="form-group">
+                                        <label class="form-lbl">Address</label>
+                                        <textarea rows="3" class="form-field" name="address" placeholder="Address">{{ quotation.address|default_if_none:'' }}</textarea>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-md-3">
+                                    <div class="form-group">
+                                        <label class="form-lbl">Status</label>
+                                        <select class="form-field" name="active">
+                                            <option value="1" {% if quotation.active %}selected{% endif %}>Active</option>
+                                            <option value="0" {% if quotation and not quotation.active %}selected{% endif %}>Inactive</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                      </div>
-                      <div class="col-sm-6 col-md-3">
-                        <div class="form-group">
-                          <label class="form-lbl">Email Address</label>
-                          <input class="form-field" type="text" placeholder="Email Address" value="">
-                        </div>
-                      </div>
-                      <div class="col-sm-6 col-md-3">
-                        <div class="form-group">
-                          <label class="form-lbl">Quote Date</label>
-                          <input class="form-field" type="text" placeholder="Quote Date" value="">
-                        </div>
-                      </div>
-                      <div class="col-sm-6 col-md-3">
-                        <div class="form-group">
-                          <label class="form-lbl">Name (as per PAN Card)</label>
-                          <input class="form-field" type="text" placeholder="Name (as per PAN Card)" value="">
-                        </div>
-                      </div>
-                      <div class="col-sm-6 col-md-3">
-                        <div class="form-group">
-                          <label class="form-lbl">PAN Card Number <small>(Optional)</small></label>
-                          <input class="form-field" type="text" placeholder="PAN Card Number" value="">
-                        </div>
-                      </div>
-                      <div class="col-sm-6 col-md-3">
-                        <div class="form-group">
-                          <label class="form-lbl">Date of Birth</label>
-                          <input class="form-field common_datepicker" type="text" placeholder="Date of Birth" value="">
-                        </div>
-                      </div>
-                      <div class="col-sm-6 col-md-3">
-                        <div class="form-group">
-                          <label class="form-lbl">State</label>
-                          <select class="form-field">
-                            <option>Choose State</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="col-sm-6 col-md-3">
-                        <div class="form-group">
-                          <label class="form-lbl">City</label>
-                          <select class="form-field">
-                            <option>Choose City</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="col-sm-6 col-md-3">
-                        <div class="form-group">
-                          <label class="form-lbl">PinCode</label>
-                          <input class="form-field" type="text" placeholder="PinCode" value="">
-                        </div>
-                      </div>
-                      <div class="col-sm-6 col-md-3">
-                        <div class="form-group">
-                          <label class="form-lbl">Address</label>
-                          <textarea rows="3" class="form-field" placeholder="Address"></textarea>
-                        </div>
-                      </div>
                     </div>
-                  </div>
-                </div>
-                <div class="form-group d-flex justify-content-end">
-                  <button type="submit" class="wrap-btn">Save & Continue</button>
-                </div>
-              </form>
+                
+                    <div class="form-group d-flex justify-content-end">
+                        <button type="submit" class="wrap-btn">
+                            {% if quotation %} Update & Continue {% else %} Save & Continue {% endif %}
+                        </button>
+                    </div>
+                </form>
+                
             </div>
           </div>
         </div>

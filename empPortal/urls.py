@@ -28,9 +28,11 @@ urlpatterns = [
     path('store-customer/', customers.store, name='store-customer'),
 
     path('quote-management/', quoteManagement.index, name='quote-management'),
-    path('quote-management/create-quote', quoteManagement.create, name='quote-management-create'),
-    path('quote-management/create-quote-vehicle-info', quoteManagement.createVehicleInfo, name='create-vehicle-info'),
-    path('quote-management/show-quotation-info', quoteManagement.showQuotation, name='show-quotation-info'),
+    path('download-quotation-pdf/<str:cus_id>/', quoteManagement.downloadQuotationPdf, name='download-quotation-pdf'),
+    path('quote-management/create-quote', quoteManagement.create_or_edit, name='quote-management-create'),
+    path('quote-management/<str:customer_id>/', quoteManagement.create_or_edit, name='quote-management-edit'),
+    path('quote-management/create-quote-vehicle-info/<str:cus_id>/', quoteManagement.createVehicleInfo, name='create-vehicle-info'),
+    path('quote-management/show-quotation-info/<str:cus_id>/', quoteManagement.showQuotation, name='show-quotation-info'),
 
     path('commissions/', commissions.commissions, name='commissions'),
     path('add-commission/', commissions.create, name='add-commission'),

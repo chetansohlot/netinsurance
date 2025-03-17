@@ -33,138 +33,171 @@
             </ul>
             <div class="card box-shadow-none">
               <div class="card-body px-0 pb-0">
-                <form action="{% url 'show-quotation-info' %}">
+                
+                <form action="{% if vehicle_info %}{% url 'create-vehicle-info' vehicle_info.customer_id %}{% else %}{% url 'create-vehicle-info' cus_id %}{% endif %}" method="POST">
+                  {% csrf_token %}
                   <div class="card">
-                    <div class="card-body pb-0 position-relative">
-                      <p class="form-top-title">Vehicle & Policy Information</p>
-                      <div class="row">
-                        <div class="col-sm-6 col-md-3">
-                          <div class="form-group">
-                            <label class="form-lbl">Registration Number</label>
-                            <input class="form-field" type="text" placeholder="Registration Number" value="">
+                      <div class="card-body pb-0 position-relative">
+                          <p class="form-top-title">Vehicle & Policy Information</p>
+                          <div class="row">
+                              <div class="col-sm-6 col-md-3">
+                                  <div class="form-group">
+                                      <label class="form-lbl">Registration Number</label>
+                                      <input class="form-field" type="text" name="registration_number" placeholder="Registration Number"
+                                             value="{{ vehicle_info.registration_number|default_if_none:'' }}">
+                                  </div>
+                              </div>
+              
+                              <div class="col-sm-6 col-md-3">
+                                  <div class="form-group">
+                                      <label class="form-lbl">Registration Date</label>
+                                      <input class="form-field common_datepicker" type="date" name="registration_date" 
+                                             value="{{ vehicle_info.registration_date|date:'Y-m-d' }}">
+                                  </div>
+                              </div>
+              
+                              <div class="col-sm-6 col-md-3">
+                                  <div class="form-group">
+                                      <label class="form-lbl">Vehicle Type</label>
+                                      <select class="form-field" name="vehicle_type">
+                                          <option value="Car" {% if vehicle_info.vehicle_type == "Car" %}selected{% endif %}>Car</option>
+                                          <option value="Bike" {% if vehicle_info.vehicle_type == "Bike" %}selected{% endif %}>Bike</option>
+                                          <option value="Commercial" {% if vehicle_info.vehicle_type == "Commercial" %}selected{% endif %}>Commercial</option>
+                                      </select>
+                                  </div>
+                              </div>
+              
+                              <div class="col-sm-6 col-md-3">
+                                  <div class="form-group">
+                                      <label class="form-lbl">Make</label>
+                                      <input class="form-field" type="text" name="make" placeholder="Make"
+                                             value="{{ vehicle_info.make|default_if_none:'' }}">
+                                  </div>
+                              </div>
+              
+                              <div class="col-sm-6 col-md-3">
+                                  <div class="form-group">
+                                      <label class="form-lbl">Model</label>
+                                      <input class="form-field" type="text" name="model" placeholder="Model"
+                                             value="{{ vehicle_info.model|default_if_none:'' }}">
+                                  </div>
+                              </div>
+              
+                              <div class="col-sm-6 col-md-3">
+                                  <div class="form-group">
+                                      <label class="form-lbl">Variant</label>
+                                      <select class="form-field" name="variant">
+                                          <option value="Petrol" {% if vehicle_info.variant == "Petrol" %}selected{% endif %}>Petrol</option>
+                                          <option value="Diesel" {% if vehicle_info.variant == "Diesel" %}selected{% endif %}>Diesel</option>
+                                          <option value="Electric" {% if vehicle_info.variant == "Electric" %}selected{% endif %}>Electric</option>
+                                      </select>
+                                  </div>
+                              </div>
+              
+                              <div class="col-sm-6 col-md-3">
+                                  <div class="form-group">
+                                      <label class="form-lbl">Year of Manufacture</label>
+                                      <input class="form-field" type="number" name="year_of_manufacture" placeholder="Year of Manufacture"
+                                             value="{{ vehicle_info.year_of_manufacture|default_if_none:'' }}">
+                                  </div>
+                              </div>
+              
+                              <div class="col-sm-6 col-md-3">
+                                  <div class="form-group">
+                                      <label class="form-lbl">Registration State</label>
+                                      <input class="form-field" type="text" name="registration_state" placeholder="Registration State"
+                                             value="{{ vehicle_info.registration_state|default_if_none:'' }}">
+                                  </div>
+                              </div>
+              
+                              <div class="col-sm-6 col-md-3">
+                                  <div class="form-group">
+                                      <label class="form-lbl">Registration City</label>
+                                      <input class="form-field" type="text" name="registration_city" placeholder="Registration City"
+                                             value="{{ vehicle_info.registration_city|default_if_none:'' }}">
+                                  </div>
+                              </div>
+              
+                              <div class="col-sm-6 col-md-3">
+                                  <div class="form-group">
+                                      <label class="form-lbl">Chassis Number</label>
+                                      <input class="form-field" type="text" name="chassis_number" placeholder="Chassis Number"
+                                             value="{{ vehicle_info.chassis_number|default_if_none:'' }}">
+                                  </div>
+                              </div>
+              
+                              <div class="col-sm-6 col-md-3">
+                                  <div class="form-group">
+                                      <label class="form-lbl">Engine Number</label>
+                                      <input class="form-field" type="text" name="engine_number" placeholder="Engine Number"
+                                             value="{{ vehicle_info.engine_number|default_if_none:'' }}">
+                                  </div>
+                              </div>
+              
+                              <div class="col-sm-6 col-md-3">
+                                  <div class="form-group">
+                                      <label class="form-lbl">Claim History (Last Year)</label>
+                                      <select class="form-field" name="claim_history">
+                                          <option value="Yes" {% if vehicle_info.claim_history == "Yes" %}selected{% endif %}>Yes</option>
+                                          <option value="No" {% if vehicle_info.claim_history == "No" %}selected{% endif %}>No</option>
+                                      </select>
+                                  </div>
+                              </div>
+              
+                              <div class="col-sm-6 col-md-3">
+                                  <div class="form-group">
+                                      <label class="form-lbl">NCB (No Claim Bonus) Percentage</label>
+                                      <input class="form-field" type="text" name="ncb_percentage" placeholder="Percentage"
+                                             value="{{ vehicle_info.ncb_percentage|default_if_none:'' }}">
+                                  </div>
+                              </div>
+              
+                              <div class="col-sm-6 col-md-3">
+                                  <div class="form-group">
+                                      <label class="form-lbl">IDV (Insured Declared Value)</label>
+                                      <input class="form-field" type="text" name="idv_value" placeholder="IDV (Insured Declared Value)"
+                                             value="{{ vehicle_info.idv_value|default_if_none:'' }}">
+                                  </div>
+                              </div>
+              
+                              <div class="col-sm-6 col-md-3">
+                                  <div class="form-group">
+                                      <label class="form-lbl">Policy Type</label>
+                                      <input class="form-field" type="text" name="policy_type" placeholder="Policy Type"
+                                             value="{{ vehicle_info.policy_type|default_if_none:'' }}">
+                                  </div>
+                              </div>
+              
+                              <div class="col-sm-6 col-md-3">
+                                  <div class="form-group">
+                                      <label class="form-lbl">Policy Duration</label>
+                                      <input class="form-field" type="text" name="policy_duration" placeholder="Policy Duration"
+                                             value="{{ vehicle_info.policy_duration|default_if_none:'' }}">
+                                  </div>
+                              </div>
+              
+                              <div class="col-sm-6 col-md-3">
+                                  <div class="form-group">
+                                      <label class="form-lbl">Add-ons</label>
+                                      <select class="form-field" name="addons">
+                                          <option value="1" {% if vehicle_info.addons == "1" %}selected{% endif %}>Zero Depreciation</option>
+                                          <option value="2" {% if vehicle_info.addons == "2" %}selected{% endif %}>Roadside Assistance</option>
+                                          <option value="3" {% if vehicle_info.addons == "3" %}selected{% endif %}>Engine Protection</option>
+                                      </select>
+                                  </div>
+                              </div>
                           </div>
-                        </div>
-                        <div class="col-sm-6 col-md-3">
-                          <div class="form-group">
-                            <label class="form-lbl">Vehicle Type </label>
-                            <select class="form-field">
-                              <option>Car</option>
-                              <option>Bike</option>
-                              <option>Commercial</option>
-                            </select>
-                          </div>
-                        </div>
-                        <div class="col-sm-6 col-md-3">
-                          <div class="form-group">
-                            <label class="form-lbl">Make</label>
-                            <input class="form-field" type="text" placeholder="Make" value="">
-                          </div>
-                        </div>
-                        <div class="col-sm-6 col-md-3">
-                          <div class="form-group">
-                            <label class="form-lbl">Model</label>
-                            <input class="form-field" type="text" placeholder="Model" value="">
-                          </div>
-                        </div>
-                        <div class="col-sm-6 col-md-3">
-                          <div class="form-group">
-                            <label class="form-lbl">Variant</label>
-                            <select class="form-field">
-                              <option>Petrol</option>
-                              <option>Diesel</option>
-                              <option>Electric</option>
-                            </select>
-                          </div>
-                        </div>
-                        <div class="col-sm-6 col-md-3">
-                          <div class="form-group">
-                            <label class="form-lbl">Year of Manufacture</label>
-                            <input class="form-field" type="text" placeholder="Year of Manufacture" value="">
-                          </div>
-                        </div>
-                        <div class="col-sm-6 col-md-3">
-                          <div class="form-group">
-                            <label class="form-lbl">Registration State</label>
-                            <input class="form-field" type="text" placeholder="Registration State" value="">
-                          </div>
-                        </div>
-                        <div class="col-sm-6 col-md-3">
-                          <div class="form-group">
-                            <label class="form-lbl">Registration City</label>
-                            <input class="form-field" type="text" placeholder="Registration City" value="">
-                          </div>
-                        </div>
-                        <div class="col-sm-6 col-md-3">
-                          <div class="form-group">
-                            <label class="form-lbl">Chassis Number</label>
-                            <input class="form-field" type="text" placeholder="Chassis Number" value="">
-                          </div>
-                        </div>
-                        <div class="col-sm-6 col-md-3">
-                          <div class="form-group">
-                            <label class="form-lbl">Engine Number</label>
-                            <input class="form-field" type="text" placeholder="Engine Number" value="">
-                          </div>
-                        </div>
-                        <div class="col-sm-6 col-md-3">
-                          <div class="form-group">
-                            <label class="form-lbl">Claim History (Last Year)</label>
-                            <select class="form-field">
-                              <option>Yes</option>
-                              <option>No</option>
-                            </select>
-                          </div>
-                        </div>
-                        <div class="col-sm-6 col-md-3">
-                          <div class="form-group">
-                            <label class="form-lbl">NCB (No Claim Bonus) Percentage</label>
-                            <select class="form-field">
-                              <option>Yes</option>
-                              <option>No</option>
-                            </select>
-                          </div>
-                        </div>
-                        <div class="col-sm-6 col-md-3">
-                          <div class="form-group">
-                            <label class="form-lbl">Percentage</label>
-                            <input class="form-field" type="text" placeholder="Percentage" value="">
-                          </div>
-                        </div>
-                        <div class="col-sm-6 col-md-3">
-                          <div class="form-group">
-                            <label class="form-lbl">IDV (Insured Declared Value)</label>
-                            <input class="form-field" type="text" placeholder="IDV (Insured Declared Value)" value="">
-                          </div>
-                        </div>
-                        <div class="col-sm-6 col-md-3">
-                          <div class="form-group">
-                            <label class="form-lbl">Policy Type</label>
-                            <input class="form-field" type="text" placeholder="Policy Type" value="">
-                          </div>
-                        </div>
-                        <div class="col-sm-6 col-md-3">
-                          <div class="form-group">
-                            <label class="form-lbl">Policy Duration</label>
-                            <input class="form-field" type="text" placeholder="Policy Duration" value="">
-                          </div>
-                        </div>
-                        <div class="col-sm-6 col-md-3">
-                          <div class="form-group">
-                            <label class="form-lbl">Add-ons</label>
-                            <select class="form-field">
-                              <option>Zero Depreciation</option>
-                              <option>Roadside Assistance</option>
-                              <option>Engine Protection</option>
-                            </select>
-                          </div>
-                        </div>
                       </div>
-                    </div>
                   </div>
+              
                   <div class="form-group d-flex justify-content-end">
-                    <button type="submit" class="wrap-btn">Submit</button>
+                      <button type="submit" class="wrap-btn">
+                          {% if vehicle_info %} Update & Continue {% else %} Save & Continue {% endif %}
+                      </button>
                   </div>
-                </form>
+              </form>
+              
+                
               </div>
             </div>
           </div>
