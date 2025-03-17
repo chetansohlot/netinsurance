@@ -20,11 +20,61 @@
   <!-- Main content -->
   <div class="content">
     <div class="container-fluid">
+      
       <div class="row">
         <div class="col-sm-12 col-md-12">  
             
             <div class="card box-shadow-none">
-              <div class="card-body px-0 pb-0">
+              <div class="card-body pb-0">
+                <div class="row justify-content-between">
+                  <div class="col-3">
+                    <div class="d-flex align-items-center h-100">
+                      <img src="http://localhost:8000/static/dist/img/logo.png" alt="" class="bill-header-logo">
+                    </div>  
+                  </div>
+                  <div class="col-3">
+                      <p class="invoice-to">Customer Details </p>
+                      <p class="invoice-detail">
+                          <strong>Vinod Kumar</strong> <br>
+                          9812345678 <br>
+                          vinod.kumar@netleafinfosoft.com <br>
+                          <strong>PAN:</strong> BAXPK1234K<br>
+                          <strong>DOB:</strong> 15-12-1986 <br>
+                         Jawahar colony Faridabad, Haryana (121005) <br>
+                      </p>
+                  </div>
+                  <div class="col-6">
+                      <p class="invoice-to">Vehicle Information </p>
+                      <table border="0" class="w-100 mb-3">
+                        <tr>
+                          <td>
+                            <p class="invoice-detail">
+                              <strong>Vehicle:</strong> Bike <br>
+                              <strong>Model:</strong> 2013 <br>
+                              <strong>Registration No.:</strong> ADSFDFSD768SD <br>
+                              <strong>Registration Date:</strong> 10-10-2023 <br>
+                              <strong>Variant:</strong> Petrol <br>
+                              <strong>Year of Manufacture:</strong> 2007 <br>
+                              <strong>Chassis No.:</strong> ASDSFFSFS465REWR <br>
+                              <strong>Engine No.:</strong> SDSSFFDS454
+                            </p>
+                          </td>
+                          <td>
+                            <p class="invoice-detail">
+                              <strong>Registration State:</strong> Haryana <br>
+                              <strong>Registration City: </strong>Gurugram <br>
+                              <strong>Claim (Last Year):</strong> Yes <br>
+                              <strong>NCB Percentage:</strong> 12.00 <br>
+                              <strong>IDV:</strong> 2000.00 <br>
+                              <strong>Policy Type:</strong> Smart Ride <br>
+                              <strong>Policy Duration:</strong> 432 <br>
+                              <strong>Add-ons:</strong> Zero Depreciation
+                            </p>
+                          </td>
+                        </tr>
+                      </table>
+                  </div>
+                </div>
                 <table class="table table-design table-bordered">
                   <tbody>
                     <tr>
@@ -159,15 +209,15 @@
                 
                       <!-- Radio Buttons -->
                       <div class="d-inline-block">
-                        <input type="radio" name="shareopt" class="radio-btn" id="email">
+                        <input type="checkbox" name="shareopt" class="chkbox-btn" id="email">
                         <label for="email">Email</label>
                       </div>
                       <div class="d-inline-block">
-                        <input type="radio" name="shareopt" class="radio-btn" id="Whatsapp">
+                        <input type="checkbox" name="shareopt" class="chkbox-btn" id="Whatsapp">
                         <label for="Whatsapp">WhatsApp</label>
                       </div>
                       <div class="d-inline-block">
-                        <input type="radio" name="shareopt" class="radio-btn" id="sms">
+                        <input type="checkbox" name="shareopt" class="chkbox-btn" id="sms">
                         <label for="sms">SMS</label>
                       </div>
                 

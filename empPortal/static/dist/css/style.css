@@ -2483,6 +2483,32 @@ a:hover .dr-pdficon {
   .stepflow-text {display: none;}
 }
 .radio-btn {display: none;}
-.radio-btn + label { border: 1px solid #000; cursor: pointer; border-radius: 5px; padding: 5px 15px 5px 15px; font-size: 12px; font-weight: 400 !important; margin-right: 8px;  position: relative;}
-.radio-btn:checked + label {background: #FFC9BA; color: #000; }
-.readio-btn + label:before {content: ''; position: absolute; left: 10px; top:10px; width: 8px; height: 8px; border-radius: 50%; border: 1px solid #000;}
+.radio-btn + label { border: 1px solid #afafaf; cursor: pointer; border-radius: 5px; padding: 6px 15px 5px 35px; font-size: 12px; font-weight: 400 !important; margin-right: 8px;  position: relative;}
+.radio-btn:checked + label {background: #fee7e1; border-color: #f15e33; color: #000; }
+.radio-btn + label:before {content: ''; position: absolute; left: 10px; top:6px; width: 16px; height: 16px; border-radius: 50%; border: 1px solid #a1a1a1;}
+.radio-btn:checked + label:after {content: ''; position: absolute; left: 13px; top:9px; width: 10px; height: 10px; border-radius: 50%; background-color: #f15e33;}
+.radio-btn:checked + label:before {border-color: #f15e33;}
+
+.chkbox-btn {display: none;}
+.chkbox-btn + label { border: 1px solid #afafaf; cursor: pointer; border-radius: 5px; padding: 6px 15px 5px 35px; font-size: 12px; font-weight: 400 !important; margin-right: 8px;  position: relative;}
+.chkbox-btn:checked + label {background: #fee7e1; border-color: #f15e33;  color: #000; }
+.chkbox-btn + label:before {content: ''; position: absolute; border-radius: 4px; left: 10px; top:6px; width: 16px; height: 16px;  border: 1px solid #a1a1a1;}
+.chkbox-btn:checked + label:after {content: '\f00c'; font-family:"Font Awesome 6 Free"; font-weight: 900; color:#f15e33; position: absolute; left: 13px; top:6px; width: 10px; height: 10px; }
+.chkbox-btn:checked + label:before {border-color: #f15e33;}
+
+
+.bill-header-logo {width:180px;}
+.invoice-to {
+    font-weight: 700;
+    text-align: left;
+    text-transform: uppercase;
+    font-size: 15px;
+    margin-bottom: 10px;
+}
+.invoice-detail {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.8;
+    margin-bottom: 15px;
+}
+.table-header thead tr td {padding:4px 0px;}
