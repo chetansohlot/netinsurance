@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect, get_object_or_404
-from ..models import Commission, Users, QuotationCustomer, VehicleInfo
+from ..models import Commission, Users, QuotationCustomer, VehicleInfo, QuotationVehicleDetail
 from django.db.models import OuterRef, Subquery
 from django.contrib import messages
 from datetime import datetime
@@ -119,11 +119,42 @@ def index(request):
     return render(request, 'quote-management/index.html', {'quotations': data})
 
 
-# from django.shortcuts import get_object_or_404, redirect, render
-# from django.urls import reverse
-# from django.contrib import messages
-# from datetime import datetime
-# from .models import QuotationCustomer, Users
+def fetch_customer(request):
+    if request.method == "POST":
+        mobile_number = request.POST.get("mobile_number", "").strip()
+
+        if not mobile_number:
+            messages.error(request, "Please enter a mobile number.")
+            return redirect("quote-management-create")
+
+        # Check if customer exists
+        quotation = QuotationCustomer.objects.filter(mobile_number=mobile_number).first()
+
+        if quotation:
+            messages.success(request, f"Existing customer found! Customer ID: {quotation.customer_id}")
+            return redirect(reverse("quote-management-edit", args=[quotation.customer_id]))
+        else:
+            # Generate new customer_id
+            last_customer = QuotationCustomer.objects.order_by('-id').first()
+            if last_customer and last_customer.customer_id.startswith("CUS"):
+                last_number = int(last_customer.customer_id[3:])
+                new_customer_id = f"CUS{last_number + 1}"
+            else:
+                new_customer_id = "CUS1000001"
+
+            # Create a new customer record
+            new_quotation = QuotationCustomer.objects.create(
+                customer_id=new_customer_id,
+                mobile_number=mobile_number,
+                active=True,
+            )
+
+            messages.success(request, f"New customer created! Customer ID: {new_customer_id}")
+
+            return redirect(reverse("quote-management-edit", args=[new_customer_id]))
+
+    return redirect("quote-management-create")
+
 
 def create_or_edit(request, customer_id=None):
     if not request.user.is_authenticated:
@@ -222,6 +253,53 @@ def create_or_edit(request, customer_id=None):
             # Redirect to create-vehicle-info page
             return redirect(reverse("create-vehicle-info", args=[new_customer_id]))
 
+
+def fetch_vehicle_info(request):
+    if request.method == "POST":
+        registration_number = request.POST.get("registration_number", "").strip()
+        customer_id = request.POST.get("customer_id", "").strip()
+
+        if not registration_number:
+            messages.error(request, "Please enter a Registration number.")
+            return redirect("quote-management-create")
+        
+        if not customer_id:
+            messages.error(request, "Please create a customer.")
+            return redirect("quote-management-create")
+
+        # Check if customer exists
+        vehicle_detail = QuotationVehicleDetail.objects.filter(registration_number=registration_number).first()
+        vehicle_info = VehicleInfo.objects.filter(customer_id=customer_id).first()
+
+        if vehicle_info:
+            messages.success(request, f"Existing Vehicle found! Vehicle Reg. No.: {vehicle_info.registration_number}")
+            return redirect(reverse("create-vehicle-info", args=[vehicle_info.customer_id]))
+        else:
+            # Generate new customer_id
+            last_customer = QuotationCustomer.objects.order_by('-id').first()
+            if last_customer and last_customer.customer_id.startswith("CUS"):
+                last_number = int(last_customer.customer_id[3:])
+                new_customer_id = f"CUS{last_number + 1}"
+            else:
+                new_customer_id = "CUS1000001"
+
+            # Create a new customer record
+            new_quotation = QuotationCustomer.objects.create(
+                customer_id=new_customer_id,
+                mobile_number=mobile_number,
+                active=True,
+            )
+
+            messages.success(request, f"New customer created! Customer ID: {new_customer_id}")
+
+            return render(request, 'quote-management/create-vehicle-info.html', {
+                'cus_id': cus_id,
+                'customer': customer,
+                'vehicle_info': vehicle_info  # Pass existing data if available
+            })
+            return redirect(reverse("quote-management-edit", args=[new_customer_id]))
+
+    return redirect("quote-management-create")
 
 def createVehicleInfo(request, cus_id):
     if not request.user.is_authenticated:

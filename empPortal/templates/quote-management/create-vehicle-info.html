@@ -18,6 +18,29 @@
   </div>
   <!-- /.content-header -->
 
+  <style>
+    .input-group .fetch-btn {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        border: 1px solid #f15e33;
+        background-color: #f15e33;;
+        color: white;
+        padding: 6px 12px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: 0.3s ease;
+    }
+
+    .input-group .fetch-btn:hover {
+        background-color: #f16e63;
+        border-color: #f16e63;
+    }
+
+    .input-group .form-control {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+</style>
   <!-- Main content -->
   <div class="content">
     <div class="container-fluid">
@@ -40,14 +63,19 @@
                       <div class="card-body pb-0 position-relative">
                           <p class="form-top-title">Vehicle & Policy Information</p>
                           <div class="row">
-                              <div class="col-sm-6 col-md-3">
-                                  <div class="form-group">
-                                      <label class="form-lbl">Registration Number</label>
-                                      <input class="form-field" type="text" name="registration_number" placeholder="Registration Number"
-                                             value="{{ vehicle_info.registration_number|default_if_none:'' }}">
-                                  </div>
-                              </div>
               
+                              <div class="col-sm-6 col-md-3">
+                                <div class="form-group">
+                                    <label class="form-lbl">Registration Number</label>
+                                    <div class="input-group">
+                                        <input class="form-field form-control" type="text" name="registration_number" id="registration_number" placeholder="Registration Number" 
+                                               value="{{ vehicle_info.registration_number|default_if_none:'' }}">
+                                        
+                                        <button type="button" id="fetch-vehicle-btn" class="btn btn-primary fetch-btn">Fetch</button>
+                                    </div>
+                                </div>
+                              </div>
+
                               <div class="col-sm-6 col-md-3">
                                   <div class="form-group">
                                       <label class="form-lbl">Registration Date</label>
@@ -207,5 +235,42 @@
     
   </div>
 
+  <script>
+
+    document.getElementById("fetch-vehicle-btn").addEventListener("click", function () {
+        let registrationNumber = document.getElementById("registration_number").value;
+        let csrfToken = document.querySelector("input[name='csrfmiddlewaretoken']").value;
+
+        // Create a form programmatically
+        let form = document.createElement("form");
+        form.method = "post";
+        form.action = "{% url 'fetch-vehicle-info' %}";
+
+        // Add CSRF token
+        let csrfInput = document.createElement("input");
+        csrfInput.type = "hidden";
+        csrfInput.name = "csrfmiddlewaretoken";
+        csrfInput.value = csrfToken;
+        form.appendChild(csrfInput);
+
+        // Add Mobile Number field
+        let registrationNumberInput = document.createElement("input");
+        registrationNumberInput.type = "hidden";
+        registrationNumberInput.name = "registration_number";
+        registrationNumberInput.value = registrationNumber;
+        form.appendChild(registrationNumberInput);
+
+        // Add Mobile Number field
+        let customerIdInput = document.createElement("input");
+        customerIdInput.type = "hidden";
+        customerIdInput.name = "customer_id";
+        customerIdInput.value = "{{ vehicle_info.customer_id|default_if_none:'' }}";
+        form.appendChild(customerIdInput);
+
+        // Append form to body and submit
+        document.body.appendChild(form);
+        form.submit();
+    });
+</script>
 
 {% endblock %}

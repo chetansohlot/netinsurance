@@ -17,6 +17,29 @@
 </div>
 <!-- /.content-header -->
 
+<style>
+    .input-group .fetch-btn {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        border: 1px solid #f15e33;
+        background-color: #f15e33;;
+        color: white;
+        padding: 6px 12px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: 0.3s ease;
+    }
+
+    .input-group .fetch-btn:hover {
+        background-color: #f16e63;
+        border-color: #f16e63;
+    }
+
+    .input-group .form-control {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+</style>
 <!-- Main content -->
 <div class="content">
   <div class="container-fluid">
@@ -32,7 +55,7 @@
           </ul>
           <div class="card box-shadow-none">
             <div class="card-body px-0 pb-0">
-                <form action="{% if quotation %}{% url 'quote-management-edit' customer_id=quotation.customer_id %}{% else %}{% url 'quote-management-create' %}{% endif %}" method="post">
+                <form id="create-customer" action="{% if quotation %}{% url 'quote-management-edit' customer_id=quotation.customer_id %}{% else %}{% url 'quote-management-create' %}{% endif %}" method="post">
                     {% csrf_token %}
                 
                     <div class="card">
@@ -42,10 +65,18 @@
                                 <div class="col-sm-6 col-md-3">
                                     <div class="form-group">
                                         <label class="form-lbl">Mobile Number</label>
-                                        <input class="form-field" type="text" name="mobile_number" placeholder="Mobile Number" 
-                                               value="{{ quotation.mobile_number|default_if_none:'' }}">
+                                        <div class="input-group">
+                                            <input class="form-field form-control" type="text" name="mobile_number" id="mobile_number" placeholder="Mobile Number" 
+                                                   value="{{ quotation.mobile_number|default_if_none:'' }}">
+                                            
+                                            {% if not quotation %}
+                                                <button type="button" id="fetch-customer-btn" class="btn btn-primary fetch-btn">Fetch</button>
+                                            {% endif %}
+                                        </div>
                                     </div>
                                 </div>
+                                
+
                                 <div class="col-sm-6 col-md-3">
                                     <div class="form-group">
                                         <label class="form-lbl">Email Address</label>
@@ -122,7 +153,7 @@
                     </div>
                 
                     <div class="form-group d-flex justify-content-end">
-                        <button type="submit" class="wrap-btn">
+                        <button type="button" id="quote-customer-btn" class="wrap-btn">
                             {% if quotation %} Update & Continue {% else %} Save & Continue {% endif %}
                         </button>
                     </div>
@@ -136,4 +167,38 @@
   </div>
   
 </div>   
+
+<script>
+    document.getElementById("quote-customer-btn").addEventListener("click", function () {
+        document.getElementById("create-customer").submit();
+    });
+
+    document.getElementById("fetch-customer-btn").addEventListener("click", function () {
+        let mobileNumber = document.getElementById("mobile_number").value;
+        let csrfToken = document.querySelector("input[name='csrfmiddlewaretoken']").value;
+
+        // Create a form programmatically
+        let form = document.createElement("form");
+        form.method = "post";
+        form.action = "{% url 'fetch-customer' %}";
+
+        // Add CSRF token
+        let csrfInput = document.createElement("input");
+        csrfInput.type = "hidden";
+        csrfInput.name = "csrfmiddlewaretoken";
+        csrfInput.value = csrfToken;
+        form.appendChild(csrfInput);
+
+        // Add Mobile Number field
+        let mobileInput = document.createElement("input");
+        mobileInput.type = "hidden";
+        mobileInput.name = "mobile_number";
+        mobileInput.value = mobileNumber;
+        form.appendChild(mobileInput);
+
+        // Append form to body and submit
+        document.body.appendChild(form);
+        form.submit();
+    });
+</script>
 {% endblock %}

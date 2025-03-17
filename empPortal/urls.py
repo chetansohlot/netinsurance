@@ -28,6 +28,8 @@ urlpatterns = [
     path('store-customer/', customers.store, name='store-customer'),
 
     path('quote-management/', quoteManagement.index, name='quote-management'),
+    path('fetch-customer/', quoteManagement.fetch_customer, name='fetch-customer'),
+    path('fetch-vehicle-info/', quoteManagement.fetch_vehicle_info, name='fetch-vehicle-info'),
     path('download-quotation-pdf/<str:cus_id>/', quoteManagement.downloadQuotationPdf, name='download-quotation-pdf'),
     path('quote-management/create-quote', quoteManagement.create_or_edit, name='quote-management-create'),
     path('quote-management/<str:customer_id>/', quoteManagement.create_or_edit, name='quote-management-edit'),
