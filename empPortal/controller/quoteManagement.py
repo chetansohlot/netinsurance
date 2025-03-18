@@ -11,8 +11,9 @@ import os
 from django.conf import settings
 import os
 from dotenv import load_dotenv
-
+from django.templatetags.static import static  # ✅ Import static
 from django.http import HttpResponse
+from django.template.loader import render_to_string
 
 def dictfetchall(cursor):
     "Returns all rows from a cursor as a dict"
@@ -427,6 +428,7 @@ def showQuotation(request, cus_id):
         'customer': customer
     })
 
+
 def downloadQuotationPdf(request, cus_id):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -434,14 +436,25 @@ def downloadQuotationPdf(request, cus_id):
     wkhtml_path = os.getenv('WKHTML_PATH', r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
     config = pdfkit.configuration(wkhtmltopdf=wkhtml_path)
 
-    html_file_path = os.path.join(settings.BASE_DIR, "empPortal/templates", "quote-management", "show-quotation-pdf.html")
+    # Data to pass to the template
+    context = {
+        "customer_id": cus_id,
+        "customer_name": "John Doe",
+        "quotation_amount": "₹10,000",
+        "logo_url": request.build_absolute_uri(static('dist/img/logo.png'))
+    }
 
-    # Ensure the file exists before passing it to pdfkit
-    if not os.path.exists(html_file_path):
-        raise FileNotFoundError(f"File not found: {html_file_path}")
-    
-    # Generate PDF
-    pdf = pdfkit.from_file(html_file_path, False, configuration=config)
+    # Render HTML template with context data
+    html_content = render_to_string("quote-management/show-quotation-pdf.html", context)
+
+    options = {
+        'enable-local-file-access': '',
+        'page-size': 'A4',
+        'encoding': "UTF-8",
+    }
+
+    # Generate PDF from HTML content
+    pdf = pdfkit.from_string(html_content, False, configuration=config, options=options)
 
     # Create HTTP response with PDF as an attachment
     response = HttpResponse(pdf, content_type='application/pdf')
