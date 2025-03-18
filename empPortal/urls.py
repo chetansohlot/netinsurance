@@ -2,7 +2,7 @@ from django.urls import path
 from . import views,export
 from . import views
 from . import authenticationView
-from .controller import commissions, profile, members, customers, quoteManagement
+from .controller import commissions, profile, members, customers, quoteManagement, homeManagement
 
 urlpatterns = [
     path("login", authenticationView.login_view, name="login"),
@@ -11,7 +11,7 @@ urlpatterns = [
     path("resend-otp", authenticationView.verify_otp_view, name="resend-otp"),
     
     path('user-and-roles/', views.userAndRoles, name='user-and-roles'),
-    path('', views.dashboard, name='dashboard'),
+    path('', homeManagement.index, name='home-index'),
     path('dashboard/', views.dashboard, name='dashboard'),
 
     path('my-account/', profile.myAccount, name='my-account'),
