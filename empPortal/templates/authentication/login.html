@@ -86,27 +86,36 @@
                               </form>
                             </div>    
                             <div id="mobile-login" style="display:none;">
-                                <form action="" method="post" >
-                                    <div class="row" >
-                                    
-                                        <div class="col-md-12">
+                              <form action="{% url 'login-mobile' %}" method="post" autocomplete="off">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-md-12">
                                         <div class="signup-form-group">
                                             <label class="signup-form-lbl">Enter 10-Digit Mobile Number <span class="asterisk">*</span></label>                        
-                                            <input type="text" name="" class="signup-form-field" placeholder="Mobile Number">
+                                            <input type="text" name="mobile" class="signup-form-field" placeholder="Mobile Number" />
+                                            <span class="error mobile_err"></span>
                                         </div>   
-                                        </div>
-                                        <div class="col-sm-12">
-                                        
-                                        <button type="submit" class="signup-submit-btn  mt-5">Login with OTP</button>
-                                        </div>
                                     </div>
-                                </form>
+                            
+                                    {% if messages %}
+                                        <div class="alert alert-danger col-sm-12">
+                                            {% for message in messages %}
+                                                <p>{{ message }}</p>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                            
+                                    <div class="col-sm-12">
+                                        <button type="submit" class="signup-submit-btn mt-5 w-100">Login with OTP</button>
+                                    </div>
+                                </div>
+                            </form>
+                            
                             </div>    
                           </div>
                          
                         </div>
                         
-                      </form>
                       
                       <div class="col-sm-12 text-center mt-3">
                           <p>Don't have an account? <a href="{% url 'register' %}" class="text-primary">Register here</a></p>

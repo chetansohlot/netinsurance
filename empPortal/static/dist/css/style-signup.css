@@ -37,6 +37,9 @@ body {font-family: 'Roboto', sans-serif !important; letter-spacing: 0.5px;}
   .signup-righ-bg {border-radius: 0px 0px 20px 20px;}
 }
 
+
+.inputicon-right {position: absolute; right: 15px; color: #949090; font-size: 14px; margin-top: 11px; }
+.showhide-password {cursor: pointer; }
 .otp-field { width: 42px; height: 42px;  border-radius: 4px;  text-align: center;  display: inline-flex; margin: 0 5px;  border: 1px solid #999; background: #fff; padding: 10px 15px; font-size: 14px; color: #000;}
 .otp-field:focus {background: #fff;}
 .otp-field:valid {background: #fff;}

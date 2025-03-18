@@ -87,6 +87,7 @@ def register_view(request):
         return redirect('dashboard')
 
     if request.method == 'POST':
+        
         # Extract form data
         full_name = request.POST.get('full_name', '').strip()
         gender = request.POST.get('gender', '').strip()
@@ -129,7 +130,8 @@ def register_view(request):
 
         # Redirect if there are validation errors
         if messages.get_messages(request):
-            return redirect(request.META.get('HTTP_REFERER', '/'))
+            return render(request, 'authentication/register.html')
+    
 
         # Generate User ID
         last_user = Users.objects.all().order_by('-id').first()
@@ -173,6 +175,42 @@ def register_view(request):
 
     return render(request, 'authentication/register.html')
 
+
+def login_mobile_view(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+
+    if request.method == 'POST':
+        mobile = request.POST.get('mobile', '').strip()
+
+        # Validation Errors
+        if not mobile:
+            messages.error(request, 'Mobile number is required.')
+        elif not mobile.isdigit():
+            messages.error(request, 'Mobile number must contain only digits.')
+        elif len(mobile) != 10:
+            messages.error(request, 'Mobile number must be 10 digits long.')
+        elif mobile[0] <= '5':  # Mobile numbers in India start from 6-9
+            messages.error(request, 'Invalid Mobile Number.')
+        elif not Users.objects.filter(phone=mobile).exists():
+            messages.error(request, 'This mobile number is not registered.')
+
+        # Redirect if validation fails
+        if list(messages.get_messages(request)):  
+            return render(request, 'authentication/login.html')
+
+        # Fetch User and Log Them In
+        user = Users.objects.filter(phone=mobile).first()
+        if user:
+            user.is_login_available = 0  # Set is_login_available to 0
+            user.save(update_fields=['is_login_available'])  # Save only this field
+            login(request, user)  # Log in without password
+            return redirect('verify-otp')
+
+        messages.error(request, 'Login failed. Please try again.')
+        return redirect(request.META.get('HTTP_REFERER', '/'))
+
+    return render(request, 'authentication/login.html')
 
 def register_view2(request):
     if request.user.is_authenticated:
@@ -266,8 +304,11 @@ def register_view2(request):
     return render(request, 'authentication/register2.html')
 
 def verify_otp_view(request):
-    if request.user.is_authenticated and request.user.is_active == 1:
-        return redirect('dashboard')
+    if request.user.is_authenticated:
+        if request.user.is_login_available == 0:
+            return render(request, 'authentication/verify-otp.html')
+        elif request.user.is_active == 1:
+            return redirect('dashboard')
 
     if request.method == 'POST':
 
