@@ -133,7 +133,7 @@ if os.getenv("APPLY_STATIC", "False") == "True":
     MEDIA_URL = "/media/"
     MEDIA_ROOT = BASE_DIR / "media"
 else:
-    STATIC_URL = '/static/'
+    STATIC_URL = '/sstatic/'
     STATIC_ROOT = '/usr/share/nginx/html/netinsurance/static/'
     MEDIA_URL = "/media/"
     MEDIA_ROOT = '/usr/share/nginx/html/netinsurance/media/'
