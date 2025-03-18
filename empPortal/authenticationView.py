@@ -212,6 +212,120 @@ def login_mobile_view(request):
 
     return render(request, 'authentication/login.html')
 
+
+def forget_pass_view(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+    else:
+        if request.method == 'POST': 
+            email = request.POST.get('email', '').strip()
+            # Validation Errors
+            if not email:
+                messages.error(request, 'Email is required')
+
+            # Redirect if there are errors
+            if list(messages.get_messages(request)):  
+                return redirect(request.META.get('HTTP_REFERER', '/'))
+
+        # Fetch User and Log Them In
+            user = Users.objects.filter(email=email).first()
+            if user:
+                user.is_login_available = 0  # Set is_login_available to 0
+                user.save(update_fields=['is_login_available'])  # Save only this field
+                login(request, user)  # Log in without password
+                return redirect('email-verify-otp')
+            else:
+                messages.error(request, 'Invalid credentials')
+                return redirect(request.META.get('HTTP_REFERER', '/'))
+
+        return render(request, 'authentication/reset-password.html')
+
+def email_verify_otp(request):
+    if request.user.is_authenticated and request.method != 'POST':
+        if request.user.is_login_available == 0:
+            return render(request, 'authentication/email-otp-verify.html')
+        elif request.user.is_active == 1:
+            return redirect('dashboard')
+
+    if request.method == 'POST':
+
+        request.user.is_login_available = 0
+        request.user.is_active = 1
+        request.user.save()
+        return redirect('reset-password')
+
+        # Extract form data
+        # email = request.POST.get('email', '').strip()
+        # otp = request.POST.get('otp', '').strip()
+
+        # if not email:
+        #     messages.error(request, 'Please enter your email address.')
+        # elif not Users.objects.filter(email=email).exists():
+        #     messages.error(request, 'This email is not registered.')
+
+        # if not otp:
+        #     messages.error(request, 'Please enter the OTP.')
+        # else:
+        #     stored_otp = cache.get(f'otp_{email}')  # Fetch stored OTP from cache
+        #     if not stored_otp:
+        #         messages.error(request, 'OTP has expired. Please request a new one.')
+        #     elif otp != stored_otp:
+        #         messages.error(request, 'Invalid OTP. Please try again.')
+
+        # # Redirect if there are validation errors
+        # if messages.get_messages(request):
+        #     return redirect(request.META.get('HTTP_REFERER', '/'))
+
+        # # If OTP is valid, activate the user
+        # user = Users.objects.get(email=email)
+        # user.is_active = True
+        # user.save()
+
+        # # Log in the user
+        # login(request, user)
+        # messages.success(request, 'OTP verified successfully. Welcome!')
+        # return redirect('dashboard')
+
+    return render(request, 'authentication/email-otp-verify.html')
+
+def reset_pass_view(request):
+    if request.user.is_authenticated and request.method != 'POST':
+        if request.user.is_login_available == 0:
+            return render(request, 'authentication/change-password.html')
+        elif request.user.is_active == 1:
+            return redirect('dashboard')
+
+    if request.method == 'POST':
+        old_password = request.POST.get('old_password', '').strip()
+        new_password = request.POST.get('new_password', '').strip()
+        confirm_password = request.POST.get('confirm_password', '').strip()
+
+        # Validation checks
+        if not old_password:
+            messages.error(request, "Old password is required.")
+        elif not new_password:
+            messages.error(request, "New password is required.")
+        elif not confirm_password:
+            messages.error(request, "Confirm password is required.")
+        elif new_password != confirm_password:
+            messages.error(request, "New password and confirm password do not match.")
+
+        # If validation fails, return with error messages
+        if list(messages.get_messages(request)):
+            return render(request, 'authentication/reset-password.html')
+
+        # Update password and user status
+        request.user.is_login_available = 1
+        request.user.is_active = 1
+        request.user.password = make_password(new_password)
+        request.user.save()
+
+        messages.success(request, "Password reset successfully.")
+        return redirect('my-account')
+
+    return render(request, 'authentication/reset-password.html')
+
+
 def register_view2(request):
     if request.user.is_authenticated:
         return redirect('dashboard')

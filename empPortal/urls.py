@@ -9,6 +9,9 @@ urlpatterns = [
     path("login-mobile", authenticationView.login_mobile_view, name="login-mobile"),
     path("register", authenticationView.register_view, name="register"),
     path("verify-otp", authenticationView.verify_otp_view, name="verify-otp"),
+    path("forget-password", authenticationView.forget_pass_view, name="forget-password"),
+    path("reset-password", authenticationView.reset_pass_view, name="reset-password"),
+    path("email-verify-otp", authenticationView.email_verify_otp, name="email-verify-otp"),
     path("resend-otp", authenticationView.verify_otp_view, name="resend-otp"),
     
     path('user-and-roles/', views.userAndRoles, name='user-and-roles'),
