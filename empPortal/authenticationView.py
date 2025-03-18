@@ -31,12 +31,12 @@ def login_view(request):
         return redirect('dashboard')
     else:
         if request.method == 'POST': 
-            login_via = request.POST.get('login_via', '').strip()
+            login_via = request.POST.get('loginvia', '').strip()
             email = request.POST.get('email', '').strip()
             mobile = request.POST.get('mobile', '').strip()
             remember_me = request.POST.get('rememberme', '').strip()
             password = request.POST.get('password', '').strip()
-            
+            login_via = '1'
             # Validation Errors
             if not login_via:
                 messages.error(request, 'Login via field is required')
@@ -49,7 +49,7 @@ def login_view(request):
                 elif not Users.objects.filter(email=email).exists():
                     messages.error(request, 'This email is invalid')
 
-            elif login_via == '2':  # Login via Mobile
+            elif login_via == 'Mobile':  # Login via Mobile
                 if not mobile:
                     messages.error(request, 'Mobile is required')
                 elif not mobile.isdigit():

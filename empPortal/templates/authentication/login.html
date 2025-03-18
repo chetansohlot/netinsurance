@@ -39,32 +39,51 @@
                               </div>
                             </div>
                             <div id="email-login">
-                                <form action="" method="post">
-                                    {% csrf_token %}
-
-                                    <div class="row" >
-                                        <div class="col-md-12">
-                                        <div class="signup-form-group">
-                                            <label class="signup-form-lbl">Enter Your Email <span class="asterisk">*</span></label>                        
-                                            <input type="text" name="email" class="signup-form-field" placeholder="Email Id">
-                                        </div>   
-                                        <div class="signup-form-group mb-3">
-                                            <label class="signup-form-lbl">Password <span class="asterisk">*</span></label>     
-                                            <div class="position-relative">                   
-                                            <input type="password" name="password" class="signup-form-field" placeholder="*********" id="login_password_id">
-                                            <span class="inputicon-right showhide-password" onclick="seePassword()"><i class="fa-solid fa-eye"></i></span>
-                                            </div>  
-                                        </div>    
-                                        </div>
-                                        <div class="col-sm-12">
-                                        <div class="signup-terms text-right small">
-                                            <label for="signup-terms"><a href="#" target="_blank">Forgot Password</a></label>
-                                        </div>
-                                        <button type="submit" class="signup-submit-btn  mt-5">Login</button>
-                                        </div>
-                                    
-                                    </div>
-                                </form>
+                              <form action="{% url 'login' %}" method="post" autocomplete="off">
+                                  {% csrf_token %}
+                              
+                                  <div class="row">
+                                      <div class="col-md-12">
+                                          <div class="signup-form-group">
+                                              <label class="signup-form-lbl">Enter Your Email <span class="asterisk">*</span></label>                        
+                                              <input type="text" name="email" class="signup-form-field" placeholder="Email Id" />
+                                              <span class="error email_err"></span>
+                                          </div>   
+                              
+                                          <div class="signup-form-group mb-3">
+                                              <label class="signup-form-lbl">Password <span class="asterisk">*</span></label>     
+                                              <div class="position-relative">                   
+                                                  <input type="password" name="password" class="signup-form-field" placeholder="*********" id="login_password_id" autocomplete="off" />
+                                                  <span class="inputicon-right showhide-password" onclick="seePassword()">
+                                                      <i class="fa-solid fa-eye"></i>
+                                                  </span>
+                                              </div>  
+                                              <span class="error password_err"></span>
+                                          </div>    
+                                      </div>
+                              
+                                      <div class="col-12 col-sm-6">
+                                          <input type="checkbox" name="rememberme" id="rememberme" class="rememberme" />
+                                          <label for="rememberme">Remember me</label>
+                                      </div>
+                              
+                                      <div class="col-12 col-sm-6 text-right">
+                                          <a href="#" class="forgotxt">Forgot Password?</a>
+                                      </div>
+                              
+                                      {% if messages %}
+                                          <div class="alert alert-danger col-sm-12">
+                                              {% for message in messages %}
+                                                  <p>{{ message }}</p>
+                                              {% endfor %}
+                                          </div>
+                                      {% endif %}
+                              
+                                      <div class="col-sm-12">
+                                          <button type="submit" class="signup-submit-btn mt-5 w-100">Login</button>
+                                      </div>
+                                  </div>
+                              </form>
                             </div>    
                             <div id="mobile-login" style="display:none;">
                                 <form action="" method="post" >
@@ -88,6 +107,10 @@
                         </div>
                         
                       </form>
+                      
+                      <div class="col-sm-12 text-center mt-3">
+                          <p>Don't have an account? <a href="{% url 'register' %}" class="text-primary">Register here</a></p>
+                      </div>
                     </div>
                 </div>
                 <div class="col-lg-4">
