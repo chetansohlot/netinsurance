@@ -304,7 +304,7 @@ def register_view2(request):
     return render(request, 'authentication/register2.html')
 
 def verify_otp_view(request):
-    if request.user.is_authenticated:
+    if request.user.is_authenticated and request.method != 'POST':
         if request.user.is_login_available == 0:
             return render(request, 'authentication/verify-otp.html')
         elif request.user.is_active == 1:
@@ -312,6 +312,7 @@ def verify_otp_view(request):
 
     if request.method == 'POST':
 
+        request.user.is_login_available = 1
         request.user.is_active = 1
         request.user.save()
         return redirect('my-account')
