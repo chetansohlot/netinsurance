@@ -1,7 +1,7 @@
 {% extends 'master.html' %}
 {% load static %}
 {% block title %}
-  OTP Verification
+  Email OTP Verification
 {% endblock %}
 
 {% block content %}
@@ -17,8 +17,8 @@
                     <div class="signup-form-area">
                       <img src="{% static 'home/assets/image/logo.png' %}" alt="" class="singup-logo">
                             
-                    <h1 class="signup-hding">Mobile Verification</h1>
-                    <p class="signup-prgh text-secondary"><small>Enter the OTP Sent to +91 9876543210</small></p>
+                    <h1 class="signup-hding">Email Verification</h1>
+                    <p class="signup-prgh text-secondary"><small>Enter the OTP Sent to vinod.kumar@netleafinfosoft.com</small></p>
                     
                 <form action="{% url 'verify-otp' %}" method="post" autocomplete="off">
                   {% csrf_token %}

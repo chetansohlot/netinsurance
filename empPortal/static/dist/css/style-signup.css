@@ -21,18 +21,22 @@ body {font-family: 'Roboto', sans-serif !important; letter-spacing: 0.5px;}
 .signup-gender-box {border-radius: 5px; border:1px solid #999; padding:1px; display: flex; flex-wrap: wrap;}
 .signup-gender-area {display: flex;}
 .signup-radio-button {display: none;}
-.signup-radio-button + label {width: 100%; padding:10px 15px; cursor: pointer; font-size: 14px; border-radius: 5px; background-color: #fff2ec; text-align: center;}
+.signup-radio-button + label {width: 100%; padding:10px 15px; margin-bottom: 0px !important; cursor: pointer; font-size: 14px; border-radius: 5px; background-color: #fff2ec; text-align: center;}
 .signup-radio-button:checked + label { background:#f26722; color:#fff !important; }
 .asterisk {color: #ff3300;}
 .signup-radio-btn-area {flex-grow: 1;}
 .signup-form-group {margin-bottom: 25px; }
 .signup-terms > .terms-checkbtn {width: 20px; height: 20px; position: relative; top:5px; margin-right: 5px;}
-.signup-terms > label {font-weight: 400; color:#999;}
+.signup-terms > label {font-weight: 400 !important; color:#999; font-size:13px;}
 .signup-terms > label > a {color: #000;}
-.signup-submit-btn {border-radius: 5px; background: #f26722; color:#fff; padding:10px 15px; width: 100%; border:2px solid #999; outline: none; margin-top:15px;}
+.signup-submit-btn {border-radius: 5px; font-size:16px;  background: #f26722; color:#fff; padding:10px 15px; width: 100%; border:2px solid #999; outline: none; margin-top:15px;}
 .signup-submit-btn[disabled] {opacity: 0.4; color:#000;}
 
 .signup-righ-bg {background-color: #f26722; height: 100%; border-radius: 0 20px 20px 0; }
 @media (max-width:767px) {
   .signup-righ-bg {border-radius: 0px 0px 20px 20px;}
 }
+
+.otp-field { width: 42px; height: 42px;  border-radius: 4px;  text-align: center;  display: inline-flex; margin: 0 5px;  border: 1px solid #999; background: #fff; padding: 10px 15px; font-size: 14px; color: #000;}
+.otp-field:focus {background: #fff;}
+.otp-field:valid {background: #fff;}

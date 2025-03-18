@@ -21,7 +21,7 @@ body {font-family: 'Roboto', sans-serif !important; letter-spacing: 0.5px;}
 .signup-gender-box {border-radius: 5px; border:1px solid #999; padding:1px; display: flex; flex-wrap: wrap;}
 .signup-gender-area {display: flex;}
 .signup-radio-button {display: none;}
-.signup-radio-button + label {width: 100%; padding:10px 15px; cursor: pointer; font-size: 14px; border-radius: 5px; background-color: #fff2ec; text-align: center;}
+.signup-radio-button + label {width: 100%; padding:10px 15px; margin-bottom: 0px !important; cursor: pointer; font-size: 14px; border-radius: 5px; background-color: #fff2ec; text-align: center;}
 .signup-radio-button:checked + label { background:#bb215b; color:#fff !important; }
 .asterisk {color: #ff3300;}
 .signup-radio-btn-area {flex-grow: 1;}
