@@ -14,6 +14,7 @@ from dotenv import load_dotenv
 from django.templatetags.static import static  # ✅ Import static
 from django.http import HttpResponse
 from django.template.loader import render_to_string
+from django.forms.models import model_to_dict
 
 def dictfetchall(cursor):
     "Returns all rows from a cursor as a dict"
@@ -255,50 +256,39 @@ def create_or_edit(request, customer_id=None):
             return redirect(reverse("create-vehicle-info", args=[new_customer_id]))
 
 
+
 def fetch_vehicle_info(request):
     if request.method == "POST":
         registration_number = request.POST.get("registration_number", "").strip()
         customer_id = request.POST.get("customer_id", "").strip()
 
-        if not registration_number:
-            messages.error(request, "Please enter a Registration number.")
-            return redirect("quote-management-create")
-        
         if not customer_id:
             messages.error(request, "Please create a customer.")
             return redirect("quote-management-create")
 
-        # Check if customer exists
+        if not registration_number:
+            messages.error(request, "Please enter a Registration number.")
+            return redirect("quote-management-create")
+
+        customer = get_object_or_404(QuotationCustomer, customer_id=customer_id)
+
+        products = [{'id': 1, 'name': 'Motor'}, {'id': 2, 'name': 'Health'}, {'id': 3, 'name': 'Term'}]
+        members = Users.objects.filter(role_id=2, activation_status='1') if request.user.role_id == 1 else Users.objects.none()
+
         vehicle_detail = QuotationVehicleDetail.objects.filter(registration_number=registration_number).first()
         vehicle_info = VehicleInfo.objects.filter(customer_id=customer_id).first()
+        
+        vehicle_data = model_to_dict(vehicle_detail) if vehicle_detail else {}
 
-        if vehicle_info:
-            messages.success(request, f"Existing Vehicle found! Vehicle Reg. No.: {vehicle_info.registration_number}")
-            return redirect(reverse("create-vehicle-info", args=[vehicle_info.customer_id]))
-        else:
-            # Generate new customer_id
-            last_customer = QuotationCustomer.objects.order_by('-id').first()
-            if last_customer and last_customer.customer_id.startswith("CUS"):
-                last_number = int(last_customer.customer_id[3:])
-                new_customer_id = f"CUS{last_number + 1}"
-            else:
-                new_customer_id = "CUS1000001"
-
-            # Create a new customer record
-            new_quotation = QuotationCustomer.objects.create(
-                customer_id=new_customer_id,
-                mobile_number=mobile_number,
-                active=True,
-            )
-
-            messages.success(request, f"New customer created! Customer ID: {new_customer_id}")
-
-            return render(request, 'quote-management/create-vehicle-info.html', {
-                'cus_id': cus_id,
-                'customer': customer,
-                'vehicle_info': vehicle_info  # Pass existing data if available
-            })
-            return redirect(reverse("quote-management-edit", args=[new_customer_id]))
+        return render(request, 'quote-management/create-vehicle-info.html', {
+            'products': products,
+            'members': members,
+            'cus_id': customer_id,
+            'customer': customer,
+            'registration_number': registration_number,
+            'vehicle_info': vehicle_info,
+            'vehicle_detail': vehicle_data  
+        })
 
     return redirect("quote-management-create")
 

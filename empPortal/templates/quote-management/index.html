@@ -228,7 +228,13 @@
                                     <tr>
                                         <td>{{ quotation.customer_id }}</td>
                                         <td>{{ quotation.name_as_per_pan|default:"N/A" }}</td>
-                                        <td>{{ quotation.vehicle.registration_number|default:"N/A" }}</td>
+                                        <td>
+                                            <a 
+                                                style="all: unset; cursor: pointer;" 
+                                                href="{% url 'quote-management-edit' customer_id=quotation.customer_id %}">
+                                                {{ quotation.vehicle.registration_number|default:"N/A" }}
+                                            </a>
+                                        </td>
                                         <td>{{ quotation.vehicle.vehicle_type|default:"N/A" }}</td>
                                         <td>{{ quotation.vehicle.year_of_manufacture|default:"N/A" }}</td>
                                         <td>{{ quotation.vehicle.policy_type|default:"N/A" }}</td>

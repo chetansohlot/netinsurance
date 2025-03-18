@@ -68,8 +68,8 @@
                                 <div class="form-group">
                                     <label class="form-lbl">Registration Number</label>
                                     <div class="input-group">
-                                        <input class="form-field form-control" type="text" name="registration_number" id="registration_number" placeholder="Registration Number" 
-                                               value="{{ vehicle_info.registration_number|default_if_none:'' }}">
+                                        <input class="form-field form-control" type="text" name="registration_number" id="registration_number" placeholder="Registration Number"
+                                               value="{{ registration_number|default:vehicle_info.registration_number|default_if_none:'' }}">
                                         
                                         <button type="button" id="fetch-vehicle-btn" class="btn btn-primary fetch-btn">Fetch</button>
                                     </div>
@@ -145,14 +145,15 @@
                                              value="{{ vehicle_info.registration_city|default_if_none:'' }}">
                                   </div>
                               </div>
-              
-                              <div class="col-sm-6 col-md-3">
-                                  <div class="form-group">
-                                      <label class="form-lbl">Chassis Number</label>
-                                      <input class="form-field" type="text" name="chassis_number" placeholder="Chassis Number"
-                                             value="{{ vehicle_info.chassis_number|default_if_none:'' }}">
-                                  </div>
-                              </div>
+
+                                <div class="col-sm-6 col-md-3">
+                                    <div class="form-group">
+                                        <label class="form-lbl">Chassis Number</label>
+                                        <input class="form-field" type="text" name="chassis_number" placeholder="Chassis Number"
+                                            value="{{ vehicle_data.vehicle_details.result.rc_chassis_number|default:vehicle_info.chassis_number|default_if_none:'' }}">
+                                    </div>
+                                </div>
+                            
               
                               <div class="col-sm-6 col-md-3">
                                   <div class="form-group">
