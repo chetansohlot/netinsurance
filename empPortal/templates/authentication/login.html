@@ -67,16 +67,20 @@
                                           <label for="rememberme">Remember me</label>
                                       </div>
                               
-                                      <div class="col-12 col-sm-6 text-right">
+                                      <div class="col-12 col-sm-6">
+                                        <div class="signup-terms text-right small">
                                           <a href="#" class="forgotxt">Forgot Password?</a>
+                                        </div>  
                                       </div>
                               
                                       {% if messages %}
-                                          <div class="alert alert-danger col-sm-12">
+                                        <div class="col-sm-12">
+                                          <div class="alert alert-danger w-100 mb-0">
                                               {% for message in messages %}
-                                                  <p>{{ message }}</p>
+                                                  <p class="mb-0">{{ message }}</p>
                                               {% endfor %}
                                           </div>
+                                        </div>  
                                       {% endif %}
                               
                                       <div class="col-sm-12">
@@ -98,11 +102,13 @@
                                     </div>
                             
                                     {% if messages %}
-                                        <div class="alert alert-danger col-sm-12">
+                                      <div class="col-md-12">
+                                        <div class="alert alert-danger w-100 mb-0">
                                             {% for message in messages %}
-                                                <p>{{ message }}</p>
+                                                <p class="mb-0">{{ message }}</p>
                                             {% endfor %}
                                         </div>
+                                      </div>  
                                     {% endif %}
                             
                                     <div class="col-sm-12">
@@ -111,15 +117,14 @@
                                 </div>
                             </form>
                             
-                            </div>    
+                            </div> 
+                            <div class="row">
+                              <div class="col-sm-12 text-center mt-3">
+                                  <p>Don't have an account? <a href="{% url 'register' %}" class="text-primary">Register here</a></p>
+                              </div>
+                            </div>   
                           </div>
-                         
                         </div>
-                        
-                      
-                      <div class="col-sm-12 text-center mt-3">
-                          <p>Don't have an account? <a href="{% url 'register' %}" class="text-primary">Register here</a></p>
-                      </div>
                     </div>
                 </div>
                 <div class="col-lg-4">
