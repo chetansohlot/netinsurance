@@ -15,6 +15,7 @@ from django.templatetags.static import static  # ✅ Import static
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.forms.models import model_to_dict
+import json
 
 def dictfetchall(cursor):
     "Returns all rows from a cursor as a dict"
@@ -277,8 +278,17 @@ def fetch_vehicle_info(request):
 
         vehicle_detail = QuotationVehicleDetail.objects.filter(registration_number=registration_number).first()
         vehicle_info = VehicleInfo.objects.filter(customer_id=customer_id).first()
-        
+
+        # Convert model instance to dict
         vehicle_data = model_to_dict(vehicle_detail) if vehicle_detail else {}
+
+        # Parse vehicle_details JSON if it exists
+        vehicle_json = {}
+        if vehicle_detail and vehicle_detail.vehicle_details:
+            try:
+                vehicle_json = json.loads(vehicle_detail.vehicle_details)
+            except json.JSONDecodeError:
+                vehicle_json = {}
 
         return render(request, 'quote-management/create-vehicle-info.html', {
             'products': products,
@@ -287,7 +297,8 @@ def fetch_vehicle_info(request):
             'customer': customer,
             'registration_number': registration_number,
             'vehicle_info': vehicle_info,
-            'vehicle_detail': vehicle_data  
+            'vehicle_detail': vehicle_data,  # Model details
+            'vehicle_json': vehicle_json  # Parsed JSON details
         })
 
     return redirect("quote-management-create")

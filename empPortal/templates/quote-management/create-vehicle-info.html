@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
 
-{% block title %}Add Customer{% endblock %}
+{% block title %}Add Vehicle Info{% endblock %}
 
 {% block content %}
+{% load custom_filters %}
 
 <div class="content-header header-content-bg">
     <div class="container-fluid ">
@@ -64,24 +65,25 @@
                           <p class="form-top-title">Vehicle & Policy Information</p>
                           <div class="row">
               
-                              <div class="col-sm-6 col-md-3">
+                            <div class="col-sm-6 col-md-3">
                                 <div class="form-group">
                                     <label class="form-lbl">Registration Number</label>
                                     <div class="input-group">
                                         <input class="form-field form-control" type="text" name="registration_number" id="registration_number" placeholder="Registration Number"
-                                               value="{{ registration_number|default:vehicle_info.registration_number|default_if_none:'' }}">
+                                               value="{% if registration_number %}{{ registration_number }}{% elif vehicle_info.registration_number %}{{ vehicle_info.registration_number }}{% endif %}">
                                         
                                         <button type="button" id="fetch-vehicle-btn" class="btn btn-primary fetch-btn">Fetch</button>
                                     </div>
                                 </div>
-                              </div>
-
+                            </div>
+                            
+                              
                               <div class="col-sm-6 col-md-3">
-                                  <div class="form-group">
-                                      <label class="form-lbl">Registration Date</label>
-                                      <input class="form-field common_datepicker" type="date" name="registration_date" 
-                                             value="{{ vehicle_info.registration_date|date:'Y-m-d' }}">
-                                  </div>
+                                <div class="form-group">
+                                    <label class="form-lbl">Registration Date</label>
+                                    <input class="form-field common_datepicker" type="date" name="registration_date" 
+                                           value="{{ vehicle_info.registration_date|date:'Y-m-d' }}">
+                                </div>
                               </div>
               
                               <div class="col-sm-6 col-md-3">
@@ -106,8 +108,13 @@
                               <div class="col-sm-6 col-md-3">
                                   <div class="form-group">
                                       <label class="form-lbl">Model</label>
-                                      <input class="form-field" type="text" name="model" placeholder="Model"
-                                             value="{{ vehicle_info.model|default_if_none:'' }}">
+                                      
+                                        {% if vehicle_info %}
+                                            <input class="form-field" type="text" name="model" placeholder="Model"
+                                                value="{{ vehicle_json.result.vehicle_make_model|default:vehicle_info.model|default_if_none:'' }}">
+                                        {% else %}
+                                            <input class="form-field" type="text" name="model" placeholder="Model" value="{{ vehicle_json.result.vehicle_make_model|default:'' }}">
+                                        {% endif %}
                                   </div>
                               </div>
               
@@ -125,43 +132,69 @@
                               <div class="col-sm-6 col-md-3">
                                   <div class="form-group">
                                       <label class="form-lbl">Year of Manufacture</label>
-                                      <input class="form-field" type="number" name="year_of_manufacture" placeholder="Year of Manufacture"
-                                             value="{{ vehicle_info.year_of_manufacture|default_if_none:'' }}">
+                                        {% if vehicle_info %}
+                                            <input class="form-field" type="number" name="year_of_manufacture" placeholder="Year of Manufacture"
+                                                value="{{ vehicle_json.result.vehicle_manufactured_date|get_year|default:vehicle_info.year_of_manufacture|default_if_none:'' }}">
+                                        {% else %}
+                                            <input class="form-field" type="number" name="year_of_manufacture" placeholder="Year of Manufacture"
+                                                value="{{ vehicle_json.result.vehicle_manufactured_date|get_year|default:'' }}">
+                                        {% endif %}
+
                                   </div>
                               </div>
               
                               <div class="col-sm-6 col-md-3">
                                   <div class="form-group">
                                       <label class="form-lbl">Registration State</label>
-                                      <input class="form-field" type="text" name="registration_state" placeholder="Registration State"
-                                             value="{{ vehicle_info.registration_state|default_if_none:'' }}">
+                                        {% if vehicle_info %}
+                                            <input class="form-field" type="text" name="registration_state" placeholder="Registration State"
+                                                value="{{ vehicle_json.result.state|default:vehicle_info.registration_state|default_if_none:'' }}">
+                                        {% else %}
+                                            <input class="form-field" type="text" name="registration_state" placeholder="Registration State" value="{{ vehicle_json.result.state|default_if_none:'' }}">
+                                        {% endif %}
                                   </div>
                               </div>
-              
                               <div class="col-sm-6 col-md-3">
-                                  <div class="form-group">
-                                      <label class="form-lbl">Registration City</label>
-                                      <input class="form-field" type="text" name="registration_city" placeholder="Registration City"
-                                             value="{{ vehicle_info.registration_city|default_if_none:'' }}">
-                                  </div>
-                              </div>
-
+                                <div class="form-group">
+                                    <label class="form-lbl">Registration City</label>
+                                    {% if vehicle_info %}
+                                        <input class="form-field" type="text" name="registration_city" placeholder="Registration City"
+                                               value="{{ vehicle_json.result.city|default:vehicle_info.registration_city|default_if_none:'' }}">
+                                    {% else %}
+                                        <input class="form-field" type="text" name="registration_city" placeholder="Registration City"
+                                               value="{{ vehicle_json.result.city|default_if_none:'' }}">
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            
+                                <!-- <pre>{{ vehicle_json.result|default:"No result data" | pprint }}</pre> -->
                                 <div class="col-sm-6 col-md-3">
                                     <div class="form-group">
                                         <label class="form-lbl">Chassis Number</label>
-                                        <input class="form-field" type="text" name="chassis_number" placeholder="Chassis Number"
-                                            value="{{ vehicle_data.vehicle_details.result.rc_chassis_number|default:vehicle_info.chassis_number|default_if_none:'' }}">
+                                        {% if vehicle_info %}
+                                            <input class="form-field" type="text" name="chassis_number" placeholder="Chassis Number"
+                                                   value="{{ vehicle_json.result.rc_chassis_number|default:vehicle_info.chassis_number|default_if_none:'' }}">
+                                        {% else %}
+                                            <input class="form-field" type="text" name="chassis_number" placeholder="Chassis Number"
+                                                   value="{{ vehicle_json.result.rc_chassis_number|default_if_none:'' }}">
+                                        {% endif %}
                                     </div>
                                 </div>
-                            
-              
-                              <div class="col-sm-6 col-md-3">
-                                  <div class="form-group">
-                                      <label class="form-lbl">Engine Number</label>
-                                      <input class="form-field" type="text" name="engine_number" placeholder="Engine Number"
-                                             value="{{ vehicle_info.engine_number|default_if_none:'' }}">
-                                  </div>
-                              </div>
+                                
+                                <div class="col-sm-6 col-md-3">
+                                    <div class="form-group">
+                                        <label class="form-lbl">Engine Number</label>
+                                        {% if vehicle_info %}
+                                            <input class="form-field" type="text" name="engine_number" placeholder="Engine Number"
+                                                   value="{{ vehicle_json.result.rc_engine_number|default:vehicle_info.engine_number|default_if_none:'' }}">
+                                        {% else %}
+                                            <input class="form-field" type="text" name="engine_number" placeholder="Engine Number"
+                                                   value="{{ vehicle_json.result.rc_engine_number|default_if_none:'' }}">
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
               
                               <div class="col-sm-6 col-md-3">
                                   <div class="form-group">
@@ -265,7 +298,7 @@
         let customerIdInput = document.createElement("input");
         customerIdInput.type = "hidden";
         customerIdInput.name = "customer_id";
-        customerIdInput.value = "{{ vehicle_info.customer_id|default_if_none:'' }}";
+        customerIdInput.value = "{{ cus_id|default_if_none:'' }}";
         form.appendChild(customerIdInput);
 
         // Append form to body and submit
