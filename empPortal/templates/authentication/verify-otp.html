@@ -18,7 +18,7 @@
                       <img src="{% static 'home/assets/image/logo.png' %}" alt="" class="singup-logo">
                             
                     <h1 class="signup-hding">Mobile Verification</h1>
-                    <p class="signup-prgh text-secondary"><small>Enter the OTP Sent to +91 9876543210</small></p>
+                    <p class="signup-prgh text-secondary"><small>Enter the OTP Sent to +91 9876543210 <a href="#"><i class="fa-solid fa-pen-to-square"></i></a></small></p>
                     
                 <form action="{% url 'verify-otp' %}" method="post" autocomplete="off">
                   {% csrf_token %}
