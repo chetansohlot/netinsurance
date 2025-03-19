@@ -8,7 +8,6 @@
 8. pip install pandas
 9. pip install faker
 10. pip install openpyxl
-11. pip install fitz
 12. pip install frontend
 13. pip install tools
 
