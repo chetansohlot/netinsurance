@@ -113,13 +113,13 @@
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
                                 </div>
                                 <div class="modal-body">
-                                    <form name="user-form" id="user-form" method="POST" action="{% url 'update-user-details' %}">
+                                    <form name="user-form" id="user-form-validate" method="POST" action="{% url 'update-user-details' %}">
                                         {% csrf_token %}
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="mb-3">
                                                     <label for="editFirstName" class="form-lbl">First Name</label>
-                                                    <input type="text" class="form-field" id="editFirstName" name="first_name" value="{{ user_details.first_name }}">
+                                                    <input type="text" class="form-field" id="editFirstName" name="first_name" value="{{ user_details.first_name }}" maxlength="50">
                                                 </div>
                                             </div>   
                                             <div class="col-md-6">
@@ -181,7 +181,7 @@
                                             </div>   
                                             <div class="col-md-12">   
                                                 <div class="d-flex justify-content-end">
-                                                    <button id="user-btn-sub" type="button" class="form-submit-btn">Save Changes</button>
+                                                    <button id="user-btn-sub" type="submit" class="form-submit-btn">Save Changes</button>
                                                 </div>     
                                             </div>    
                                         </div>    

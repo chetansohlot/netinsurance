@@ -145,4 +145,268 @@
 });
 
   </script>
+
+  
+
+  <!-- jQuery Validate Plugin -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+
+<script>
+  $(document).ready(function() {
+      $("#user-form-validate").validate({
+          rules: {
+              first_name: {
+                  required: true,
+                  minlength: 2,
+                  maxlength: 50
+              },
+              last_name: {
+                  required: true,
+                  minlength: 2,
+                  maxlength: 50
+              },
+              email: {
+                  required: true,
+                  email: true
+              },
+              phone: {
+                  required: true,
+                  digits: true,
+                  minlength: 10,
+                  maxlength: 10
+              },
+              gender: {
+                  required: true
+              },
+              dob: {
+                  required: true,
+                  date: true
+              },
+              state: {
+                  required: true
+              },
+              city: {
+                  required: true
+              },
+              pincode: {
+                  required: true,
+                  digits: true,
+                  minlength: 6,
+                  maxlength: 6
+              },
+              address: {
+                  required: true,
+                  minlength: 5
+              }
+          },
+          messages: {
+              first_name: {
+                  required: "Please enter your first name",
+                  minlength: "First name must be at least 2 characters",
+                  maxlength: "First name cannot exceed 50 characters"
+              },
+              last_name: {
+                  required: "Please enter your last name",
+                  minlength: "Last name must be at least 2 characters",
+                  maxlength: "Last name cannot exceed 50 characters"
+              },
+              email: {
+                  required: "Please enter your email",
+                  email: "Enter a valid email address"
+              },
+              phone: {
+                  required: "Please enter your phone number",
+                  digits: "Only numbers allowed",
+                  minlength: "Phone number must be 10 digits",
+                  maxlength: "Phone number must be 10 digits"
+              },
+              gender: {
+                  required: "Please select your gender"
+              },
+              dob: {
+                  required: "Please enter your date of birth",
+                  date: "Enter a valid date"
+              },
+              state: {
+                  required: "Please enter your state"
+              },
+              city: {
+                  required: "Please enter your city"
+              },
+              pincode: {
+                  required: "Please enter your pincode",
+                  digits: "Only numbers allowed",
+                  minlength: "Pincode must be 6 digits",
+                  maxlength: "Pincode must be 6 digits"
+              },
+              address: {
+                  required: "Please enter your address",
+                  minlength: "Address must be at least 5 characters long"
+              }
+          },
+          errorElement: "div",
+          errorPlacement: function(error, element) {
+              error.addClass("text-danger");
+              error.insertAfter(element);
+          },
+          submitHandler: function(form) {
+              form.submit();
+          }
+      });
+  });
+</script>
+
+<!-- jQuery Validate Plugin -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+
+<script>
+  $(document).ready(function () {
+    $("#editCommissionForm").validate({
+        rules: {
+            product: {
+                required: true
+            },
+            tp_percentage: {
+                required: true,
+                number: true,
+                min: 0,
+                max: 100
+            },
+            od_percentage: {
+                required: true,
+                number: true,
+                min: 0,
+                max: 100
+            },
+            net_percentage: {
+                required: true,
+                number: true,
+                min: 0,
+                max: 100
+            }
+        },
+        messages: {
+            product: {
+                required: "Please select a product"
+            },
+            tp_percentage: {
+                required: "Please enter TP percentage",
+                number: "Enter a valid number",
+                min: "Value must be at least 0%",
+                max: "Value cannot exceed 100%"
+            },
+            od_percentage: {
+                required: "Please enter OD percentage",
+                number: "Enter a valid number",
+                min: "Value must be at least 0%",
+                max: "Value cannot exceed 100%"
+            },
+            net_percentage: {
+                required: "Please enter Net percentage",
+                number: "Enter a valid number",
+                min: "Value must be at least 0%",
+                max: "Value cannot exceed 100%"
+            }
+        },
+        errorElement: "div",
+        errorPlacement: function (error, element) {
+            error.addClass("text-danger");
+            error.insertAfter(element);
+        },
+        submitHandler: function (form) {
+            form.submit();
+        }
+    });
+  });
+</script>
+<!-- jQuery Validate Plugin -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+
+<script>
+  $(document).ready(function () {
+      console.log("jQuery Loaded:", !!window.jQuery);
+      console.log("jQuery Validate Loaded:", typeof $.fn.validate !== "undefined");
+
+      $("#bank-form").validate({
+          rules: {
+              account_holder_name: {
+                  required: true,
+                  minlength: 3,
+                  maxlength: 50
+              },
+              account_number: {
+                  required: true,
+                  digits: true,
+                  minlength: 6,
+                  maxlength: 18
+              },
+              re_enter_account_number: {
+                  required: true,
+                  digits: true,
+                  minlength: 6,
+                  maxlength: 18,
+                  equalTo: "#editAccountNumber" // Ensures both account numbers match
+              },
+              ifsc_code: {
+                  required: true,
+                  pattern: /^[A-Z]{4}0[A-Z0-9]{6}$/ // Standard IFSC pattern
+              },
+              city: {
+                  required: true
+              },
+              state: {
+                  required: true
+              }
+          },
+          messages: {
+              account_holder_name: {
+                  required: "Please enter the account holder's name",
+                  minlength: "Name must be at least 3 characters long",
+                  maxlength: "Name cannot exceed 50 characters"
+              },
+              account_number: {
+                  required: "Please enter the account number",
+                  digits: "Only numbers allowed",
+                  minlength: "Account number must be at least 6 digits",
+                  maxlength: "Account number cannot exceed 18 digits"
+              },
+              re_enter_account_number: {
+                  required: "Please re-enter the account number",
+                  digits: "Only numbers allowed",
+                  minlength: "Account number must be at least 6 digits",
+                  maxlength: "Account number cannot exceed 18 digits",
+                  equalTo: "Account numbers do not match"
+              },
+              ifsc_code: {
+                  required: "Please enter the IFSC code",
+                  pattern: "Enter a valid IFSC code (e.g., ABCD0123456)"
+              },
+              city: {
+                  required: "Please enter the city"
+              },
+              state: {
+                  required: "Please enter the state"
+              }
+          },
+          errorElement: "div",
+          errorPlacement: function (error, element) {
+              error.addClass("text-danger");
+              error.insertAfter(element);
+          },
+          submitHandler: function (form) {
+              form.submit();
+          }
+      });
+
+      // Prevent form submission when clicking "Save Changes"
+      $("#bank-btn-sub").click(function () {
+          if ($("#bank-form").valid()) {
+              $("#bank-form").submit();
+          }
+      });
+
+  });
+</script>
+
+
 </html>
