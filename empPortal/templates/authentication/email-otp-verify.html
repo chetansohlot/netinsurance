@@ -20,7 +20,7 @@
                     <h1 class="signup-hding">Email Verification</h1>
                     <p class="signup-prgh text-secondary"><small>Enter the OTP Sent to vinod.kumar@netleafinfosoft.com <a href="#"><i class="fa-solid fa-pen-to-square"></i></a></small></p>
                     
-                <form action="{% url 'verify-otp' %}" method="post" autocomplete="off">
+                <form action="{% url 'reset-password' %}" method="post" autocomplete="off">
                   {% csrf_token %}
                       <div class="row">
                         <div class="col-md-6">

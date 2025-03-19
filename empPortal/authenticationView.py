@@ -296,14 +296,10 @@ def reset_pass_view(request):
             return redirect('dashboard')
 
     if request.method == 'POST':
-        old_password = request.POST.get('old_password', '').strip()
         new_password = request.POST.get('new_password', '').strip()
         confirm_password = request.POST.get('confirm_password', '').strip()
 
-        # Validation checks
-        if not old_password:
-            messages.error(request, "Old password is required.")
-        elif not new_password:
+        if not new_password:
             messages.error(request, "New password is required.")
         elif not confirm_password:
             messages.error(request, "Confirm password is required.")
@@ -312,7 +308,7 @@ def reset_pass_view(request):
 
         # If validation fails, return with error messages
         if list(messages.get_messages(request)):
-            return render(request, 'authentication/reset-password.html')
+            return render(request, 'authentication/change-password.html')
 
         # Update password and user status
         request.user.is_login_available = 1
@@ -323,7 +319,7 @@ def reset_pass_view(request):
         messages.success(request, "Password reset successfully.")
         return redirect('my-account')
 
-    return render(request, 'authentication/reset-password.html')
+    return render(request, 'authentication/change-password.html')
 
 
 def register_view2(request):
