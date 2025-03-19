@@ -18,67 +18,74 @@
                       <img src="{% static 'home/assets/image/logo.png' %}" alt="" class="singup-logo">
                       <h1 class="signup-hding">Say Hello to a Smarter, Faster, and Successful Insurance Sales journey</h1>
                       <p class="signup-prgh">With Leap, you'll have everything you need at your fingertips to become a top-performing Point of Sale Partner</p>
-                      <form action="{% url 'register' %}" method="post" class="mt-4 pt-2" autocomplete="off">
-                        {% csrf_token %}
-                        <div class="row">
-                          <div class="col-md-6">
-                            <div class="signup-form-group">
-                              <label class="signup-form-lbl">Full Name <span class="asterisk">*</span></label>                        
-                              <input type="text" name="full_name" class="signup-form-field" placeholder="As per Aadhaar Card">
-                            </div>    
-                          </div>
-                          <div class="col-md-6">
-                            <div class="signup-form-group">
-                              <label class="signup-form-lbl">Gender <span class="asterisk">*</span></label>                        
-                              <div class="signup-gender-box">
-                                <div class="signup-radio-btn-area">
-                                  <input type="radio" name="gender" class="signup-radio-button" value="1" id="male" checked="checked">
-                                  <label for="male">Male</label>
+                                              
+                        <!-- Form -->
+                        <form id="registerForm" action="{% url 'register' %}" method="post" class="mt-4 pt-2" autocomplete="off">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="signup-form-group">
+                                        <label class="signup-form-lbl">Full Name <span class="asterisk">*</span></label>
+                                        <input type="text" name="full_name" class="signup-form-field" placeholder="As per Aadhaar Card">
+                                    </div>    
                                 </div>
-                                <div class="signup-radio-btn-area">
-                                  <input type="radio" name="gender" class="signup-radio-button" value="2" id="female">
-                                  <label for="female">Female</label>
-                                </div>
-                              </div>   
-                            </div>  
-                          </div>
-                          <div class="col-md-6">
-                            <div class="signup-form-group">
-                              <label class="signup-form-lbl">Enter Your Email <span class="asterisk">*</span></label>                        
-                              <input type="text" name="email" class="signup-form-field" placeholder="Email Id">
-                            </div>    
-                          </div>
-                          <div class="col-md-6">
-                            <div class="signup-form-group">
-                              <label class="signup-form-lbl">Enter 10-Digit Mobile Number <span class="asterisk">*</span></label>
-                              <input type="text" name="mobile" class="signup-form-field" placeholder="Register Mobile Number">
-                            </div>    
-                          </div>
-                          
-                          <div class="col-md-6">
-                            <div class="signup-form-group">
-                              <label class="signup-form-lbl">Enter Password <span class="asterisk">*</span></label>
-                              <input type="password" name="password" class="signup-form-field" placeholder="Enter Password">
-                            </div>    
-                          </div>
 
-                          <div class="col-sm-12 mt-5">
-                            <div class="signup-terms">
-                              <input type="checkbox" name="" class="terms-checkbtn" id="signup-terms">
-                              <label for="signup-terms">By continuing, you agree to <a href="#" target="_blank">Terms & Conditions</a></label>
+                                <div class="col-md-6">
+                                    <div class="signup-form-group">
+                                        <label class="signup-form-lbl">Gender <span class="asterisk">*</span></label>
+                                        <div class="signup-gender-box">
+                                            <div class="signup-radio-btn-area">
+                                                <input type="radio" name="gender" class="signup-radio-button" value="Male" id="male" checked>
+                                                <label for="male">Male</label>
+                                            </div>
+                                            <div class="signup-radio-btn-area">
+                                                <input type="radio" name="gender" class="signup-radio-button" value="Female" id="female">
+                                                <label for="female">Female</label>
+                                            </div>
+                                        </div>   
+                                    </div>  
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="signup-form-group">
+                                        <label class="signup-form-lbl">Enter Your Email <span class="asterisk">*</span></label>                        
+                                        <input type="text" name="email" class="signup-form-field" placeholder="Email Id">
+                                    </div>    
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="signup-form-group">
+                                        <label class="signup-form-lbl">Enter 10-Digit Mobile Number <span class="asterisk">*</span></label>
+                                        <input type="text" name="mobile" class="signup-form-field" placeholder="Register Mobile Number">
+                                    </div>    
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="signup-form-group">
+                                        <label class="signup-form-lbl">Enter Password <span class="asterisk">*</span></label>
+                                        <input type="password" name="password" class="signup-form-field" placeholder="Enter Password">
+                                    </div>    
+                                </div>
+
+                                <div class="col-sm-12 mt-5">
+                                    <div class="signup-terms">
+                                        <input type="checkbox" name="terms" class="terms-checkbtn" id="signup-terms">
+                                        <label for="signup-terms">By continuing, you agree to <a href="#" target="_blank">Terms & Conditions</a></label>
+                                    </div>
+                                    <button type="submit" class="signup-submit-btn">Let's Get Started</button>
+                                </div>
                             </div>
-                            <button type="submit" class="signup-submit-btn">Let's Get Started</button>
-                          </div>
-                        </div>
-                        
-                        {% if messages %}
-                            <div class="alert alert-danger col-sm-12">
-                                {% for message in messages %}
-                                    <p>{{ message }}</p>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                      </form>
+
+                            {% if messages %}
+                                <div class="alert alert-danger col-sm-12">
+                                    {% for message in messages %}
+                                        <p>{{ message }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </form>
+
+
                       <div class="col-sm-12 text-center mt-3">
                           <p>Already have an account? <a href="{% url 'login' %}" class="text-primary">Sign in here</a></p>
                       </div>
