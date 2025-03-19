@@ -354,7 +354,7 @@ def createVehicleInfo(request, cus_id):
         idv_value = request.POST.get("idv_value", "").strip() or None
         policy_type = request.POST.get("policy_type", "").strip()
         policy_duration = request.POST.get("policy_duration", "").strip()
-        addons = request.POST.get("add_ons", "").strip()
+        addons = request.POST.get("addons", "").strip()
 
         if vehicle_info:
             # Update existing vehicle info
@@ -419,14 +419,27 @@ def showQuotation(request, cus_id):
 
     members = Users.objects.filter(role_id=2, activation_status='1') if request.user.role_id == 1 else Users.objects.none()
 
-    # Fetch customer details
     customer = get_object_or_404(QuotationCustomer, customer_id=cus_id)
+    vehicle_info = VehicleInfo.objects.filter(customer_id=cus_id).first()
+
+    ADDONS_MAP = {
+        "1": "Zero Depreciation",
+        "2": "Roadside Assistance",
+        "3": "Engine Protection"
+    }
+    addons_list = vehicle_info.addons.split(",") if vehicle_info.addons else []
+
+    # Convert add-on IDs to names using ADDONS_MAP
+    addon_names = [ADDONS_MAP.get(addon.strip(), "Unknown Add-on") for addon in addons_list]
 
     return render(request, 'quote-management/show-quotation-info.html', {
         'products': products,
         'members': members,
         'cus_id': cus_id,
-        'customer': customer
+        'vehicle_info': vehicle_info,
+        'addons_map': ADDONS_MAP,
+        'customer': customer,
+        'addon_names': addon_names,  # Pass formatted add-ons list
     })
 
 
@@ -437,11 +450,24 @@ def downloadQuotationPdf(request, cus_id):
     wkhtml_path = os.getenv('WKHTML_PATH', r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
     config = pdfkit.configuration(wkhtmltopdf=wkhtml_path)
 
+    # Fetch customer and vehicle details
+    customer = get_object_or_404(QuotationCustomer, customer_id=cus_id)
+    vehicle_info = VehicleInfo.objects.filter(customer_id=cus_id).first()
+
+    # Add-ons mapping
+    ADDONS_MAP = {
+        "1": "Zero Depreciation",
+        "2": "Roadside Assistance",
+        "3": "Engine Protection"
+    }
+    addons_list = vehicle_info.addons.split(",") if vehicle_info and vehicle_info.addons else []
+    addon_names = [ADDONS_MAP.get(addon.strip(), "Unknown Add-on") for addon in addons_list]
+
     # Data to pass to the template
     context = {
-        "customer_id": cus_id,
-        "customer_name": "John Doe",
-        "quotation_amount": "₹10,000",
+        "customer": customer,
+        "vehicle_info": vehicle_info,
+        "addon_names": addon_names,
         "logo_url": request.build_absolute_uri(static('dist/img/logo.png'))
     }
 

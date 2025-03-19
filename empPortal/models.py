@@ -89,7 +89,7 @@ class VehicleInfo(models.Model):
     idv_value = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     policy_type = models.CharField(max_length=50, null=True, blank=True)
     policy_duration = models.CharField(max_length=50, null=True, blank=True)
-    addons = models.TextField(null=True, blank=True)
+    addons = models.CharField(max_length=50, null=True, blank=True)
     active = models.BooleanField(default=True)  # 1 for active, 0 for inactive
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
