@@ -46,28 +46,29 @@
                 <p>Customers</p>
               </a>
             </li>
-            <li class="nav-item {% if request.path|slice:':7' == '/motor/' %} menu-is-opening menu-open {% endif %}">
+            <li class="nav-item {% if '/motor/' in request.path or '/health/' in request.path %} menu-is-opening menu-open {% endif %}">
               <a href="#" class="nav-link">
                   <svg class="sidbarmenu-svg">
                       <use xlink:href="#quote-mgt-icon"></use>
                   </svg>
                   <p>Quote Management <i class="fas fa-angle-right right"></i></p>
               </a>
-              <ul class="nav nav-treeview" {% if request.path|slice:':7' == '/motor/' %} style="display: block;" {% else %} style="display: none;" {% endif %}>
+              <ul class="nav nav-treeview" {% if '/motor/' in request.path or '/health/' in request.path %} style="display: block;" {% else %} style="display: none;" {% endif %}>
                   <li class="nav-item">
-                      <a href="{% url 'quote-management' %}" class="nav-link {% if request.path|slice:':7' == '/motor/' %} active {% endif %}">
+                      <a href="{% url 'quote-management' %}" class="nav-link {% if '/motor/' in request.path %} active {% endif %}">
                           <i class="nav-icon fa-solid fa-car"></i>
                           <p> Motor </p>
                       </a>
                   </li>
                   <li class="nav-item">
-                      <a href="#" class="nav-link">
+                      <a href="{% url 'health-quote-management' %}" class="nav-link {% if '/health/' in request.path %} active {% endif %}">
                           <i class="nav-icon fa-solid fa-heart-pulse"></i>
                           <p> Health </p>
                       </a>
                   </li>
               </ul>
           </li>
+          
           
           
             <li class="nav-item">

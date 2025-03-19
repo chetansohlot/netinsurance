@@ -2,7 +2,7 @@ from django.urls import path, include
 from . import views,export
 from . import views
 from . import authenticationView
-from .controller import commissions, profile, members, customers, quoteManagement, homeManagement
+from .controller import commissions, profile, members, customers, quoteManagement, healthQuoteManagement, homeManagement
 
 motor_patterns = [
     path('quote-management/', quoteManagement.index, name='quote-management'),
@@ -13,6 +13,17 @@ motor_patterns = [
     path('quote-management/<str:customer_id>/', quoteManagement.create_or_edit, name='quote-management-edit'),
     path('quote-management/create-quote-vehicle-info/<str:cus_id>/', quoteManagement.createVehicleInfo, name='create-vehicle-info'),
     path('quote-management/show-quotation-info/<str:cus_id>/', quoteManagement.showQuotation, name='show-quotation-info'),
+]
+
+health_patterns = [
+    path('quote-management/', healthQuoteManagement.index, name='health-quote-management'),
+    path('fetch-customer/', healthQuoteManagement.fetch_customer, name='health-fetch-customer'),
+    path('fetch-vehicle-info/', healthQuoteManagement.fetch_vehicle_info, name='health-fetch-vehicle-info'),
+    path('download-quotation-pdf/<str:cus_id>/', healthQuoteManagement.downloadQuotationPdf, name='health-download-quotation-pdf'),
+    path('quote-management/create-quote', healthQuoteManagement.create_or_edit, name='health-quote-management-create'),
+    path('quote-management/<str:customer_id>/', healthQuoteManagement.create_or_edit, name='health-quote-management-edit'),
+    path('quote-management/create-quote-vehicle-info/<str:cus_id>/', healthQuoteManagement.createVehicleInfo, name='health-create-vehicle-info'),
+    path('quote-management/show-quotation-info/<str:cus_id>/', healthQuoteManagement.showQuotation, name='health-show-quotation-info'),
 ]
 
 urlpatterns = [
@@ -43,6 +54,7 @@ urlpatterns = [
     path('store-customer/', customers.store, name='store-customer'),
 
     path('motor/', include(motor_patterns)),
+    path('health/', include(health_patterns)),
     
     path('commissions/', commissions.commissions, name='commissions'),
     path('add-commission/', commissions.create, name='add-commission'),
