@@ -175,6 +175,18 @@ def register_view(request):
 
     return render(request, 'authentication/register.html')
 
+def check_email(request):
+    if request.method == "POST":
+        email = request.POST.get("email", "").strip()
+        print(f"Checking email: {email}")  # Debugging
+
+        exists = Users.objects.filter(email=email).exists()
+        print(f"Exists in DB: {exists}")  # Debugging
+
+        return JsonResponse({"exists": exists})
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
 
 def login_mobile_view(request):
     if request.user.is_authenticated:
