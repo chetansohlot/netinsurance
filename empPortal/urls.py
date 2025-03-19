@@ -1,8 +1,19 @@
-from django.urls import path
+from django.urls import path, include
 from . import views,export
 from . import views
 from . import authenticationView
 from .controller import commissions, profile, members, customers, quoteManagement, homeManagement
+
+motor_patterns = [
+    path('quote-management/', quoteManagement.index, name='quote-management'),
+    path('fetch-customer/', quoteManagement.fetch_customer, name='fetch-customer'),
+    path('fetch-vehicle-info/', quoteManagement.fetch_vehicle_info, name='fetch-vehicle-info'),
+    path('download-quotation-pdf/<str:cus_id>/', quoteManagement.downloadQuotationPdf, name='download-quotation-pdf'),
+    path('quote-management/create-quote', quoteManagement.create_or_edit, name='quote-management-create'),
+    path('quote-management/<str:customer_id>/', quoteManagement.create_or_edit, name='quote-management-edit'),
+    path('quote-management/create-quote-vehicle-info/<str:cus_id>/', quoteManagement.createVehicleInfo, name='create-vehicle-info'),
+    path('quote-management/show-quotation-info/<str:cus_id>/', quoteManagement.showQuotation, name='show-quotation-info'),
+]
 
 urlpatterns = [
     path("login", authenticationView.login_view, name="login"),
@@ -31,15 +42,8 @@ urlpatterns = [
     path('add-customer/', customers.create, name='add-customer'),
     path('store-customer/', customers.store, name='store-customer'),
 
-    path('quote-management/', quoteManagement.index, name='quote-management'),
-    path('fetch-customer/', quoteManagement.fetch_customer, name='fetch-customer'),
-    path('fetch-vehicle-info/', quoteManagement.fetch_vehicle_info, name='fetch-vehicle-info'),
-    path('download-quotation-pdf/<str:cus_id>/', quoteManagement.downloadQuotationPdf, name='download-quotation-pdf'),
-    path('quote-management/create-quote', quoteManagement.create_or_edit, name='quote-management-create'),
-    path('quote-management/<str:customer_id>/', quoteManagement.create_or_edit, name='quote-management-edit'),
-    path('quote-management/create-quote-vehicle-info/<str:cus_id>/', quoteManagement.createVehicleInfo, name='create-vehicle-info'),
-    path('quote-management/show-quotation-info/<str:cus_id>/', quoteManagement.showQuotation, name='show-quotation-info'),
-
+    path('motor/', include(motor_patterns)),
+    
     path('commissions/', commissions.commissions, name='commissions'),
     path('add-commission/', commissions.create, name='add-commission'),
     path('store-commission/', commissions.store, name='store-commission'),
@@ -85,3 +89,4 @@ urlpatterns = [
     path('commission-report/', export.commission_report, name='commission-report'),
 
 ] 
+
