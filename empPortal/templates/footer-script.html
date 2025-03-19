@@ -5,6 +5,37 @@
 <script src="{% static 'dist/js/bootstrap.bundle.js' %}"></script>
 <!-- AdminLTE App -->
 <script src="{% static 'dist/js/adminlte.min.js' %}"></script>
+
+<!-- Include Tom Select -->
+<link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+      document.querySelectorAll(".tomselect").forEach(function (el) {
+          let maxItems = 3; // Maximum allowed selections
+          let ts = new TomSelect(el, {
+              plugins: ['remove_button'],
+              create: false,
+              persist: false,
+              hideSelected: false,
+              maxItems: maxItems,
+              placeholder: "Select up to " + maxItems + " options",
+              onItemAdd: function() {
+                  if (this.items.length >= maxItems) {
+                      this.control_input.disabled = true;
+                  }
+              },
+              onItemRemove: function() {
+                  if (this.items.length < maxItems) {
+                      this.control_input.disabled = false;
+                  }
+              }
+          });
+      });
+  });
+</script>
+
 <!-- Search Filter Show-->
 <script type="text/javascript">
   $(document).ready(function(){

@@ -248,6 +248,24 @@
                                       </select>
                                   </div>
                               </div>
+                                                            
+                                <div class="col-sm-6 col-md-3">
+                                    <div class="form-group">
+                                        <label class="form-lbl">Policy Companies</label>
+                                        <select class="form-field tomselect" name="policy_companies[]" id="policy_companies" multiple>
+                                            <option value="1" {% if "1" in selected_policy_companies %}selected{% endif %}>Icici</option>
+                                            <option value="2" {% if "2" in selected_policy_companies %}selected{% endif %}>Hdfc</option>
+                                            <option value="3" {% if "3" in selected_policy_companies %}selected{% endif %}>Tata</option>
+                                            <option value="4" {% if "4" in selected_policy_companies %}selected{% endif %}>Bajaj Allianz</option>
+                                            <option value="5" {% if "5" in selected_policy_companies %}selected{% endif %}>Reliance General</option>
+                                            <option value="6" {% if "6" in selected_policy_companies %}selected{% endif %}>SBI General</option>
+                                            <option value="7" {% if "7" in selected_policy_companies %}selected{% endif %}>New India Assurance</option>
+                                            <option value="8" {% if "8" in selected_policy_companies %}selected{% endif %}>Oriental Insurance</option>
+                                            <option value="9" {% if "9" in selected_policy_companies %}selected{% endif %}>United India Insurance</option>
+                                            <option value="10" {% if "10" in selected_policy_companies %}selected{% endif %}>Future Generali</option>
+                                        </select>
+                                    </div>
+                                </div>
                           </div>
                       </div>
                   </div>

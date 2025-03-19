@@ -319,14 +319,20 @@ def createVehicleInfo(request, cus_id):
         ]
         
         members = Users.objects.filter(role_id=2, activation_status='1') if request.user.role_id == 1 else Users.objects.none()
+        if vehicle_info:
+            selected_policy_companies = vehicle_info.policy_companies.split(',') if vehicle_info.policy_companies else []
+        else:
+            selected_policy_companies = []
 
         return render(request, 'quote-management/create-vehicle-info.html', {
             'products': products,
             'members': members,
             'cus_id': cus_id,
             'customer': customer,
-            'vehicle_info': vehicle_info  # Pass existing data if available
+            'vehicle_info': vehicle_info,  # Existing data
+            'selected_policy_companies': selected_policy_companies  # List for template
         })
+
 
     elif request.method == "POST":
         def parse_date(date_str):
@@ -355,6 +361,9 @@ def createVehicleInfo(request, cus_id):
         policy_type = request.POST.get("policy_type", "").strip()
         policy_duration = request.POST.get("policy_duration", "").strip()
         addons = request.POST.get("addons", "").strip()
+        
+        policy_companies = request.POST.getlist("policy_companies[]")  # Returns a list
+        policy_companies_str = ",".join(policy_companies)  # Convert list to string
 
         if vehicle_info:
             # Update existing vehicle info
@@ -375,6 +384,8 @@ def createVehicleInfo(request, cus_id):
             vehicle_info.policy_type = policy_type
             vehicle_info.policy_duration = policy_duration
             vehicle_info.addons = addons
+            vehicle_info.policy_companies = policy_companies_str 
+
             vehicle_info.active = True
             vehicle_info.save()
             messages.success(request, "Vehicle information updated successfully!")
@@ -399,6 +410,7 @@ def createVehicleInfo(request, cus_id):
                 policy_type=policy_type,
                 policy_duration=policy_duration,
                 addons=addons,
+                policy_companies=policy_companies_str,
                 active=True,
             )
             messages.success(request, "Vehicle information added successfully!")
