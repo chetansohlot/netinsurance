@@ -30,6 +30,7 @@ urlpatterns = [
     path("login", authenticationView.login_view, name="login"),
     path("login-mobile", authenticationView.login_mobile_view, name="login-mobile"),
     path("check-email/", authenticationView.check_email, name="check-email"),
+    path("check-mobile/", authenticationView.check_mobile, name="check-mobile"),
     path("register", authenticationView.register_view, name="register"),
     path("verify-otp", authenticationView.verify_otp_view, name="verify-otp"),
     path("forget-password", authenticationView.forget_pass_view, name="forget-password"),

@@ -187,6 +187,18 @@ def check_email(request):
 
     return JsonResponse({"error": "Invalid request"}, status=400)
 
+def check_mobile(request):
+    if request.method == "POST":
+        mobile = request.POST.get("mobile", "").strip()
+        print(f"Checking mobile: {mobile}")  # Debugging
+
+        exists = Users.objects.filter(phone=mobile).exists()
+        print(f"Exists in DB: {exists}")  # Debugging
+
+        return JsonResponse({"exists": exists})
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
 
 def login_mobile_view(request):
     if request.user.is_authenticated:

@@ -84,7 +84,21 @@
                 required: true,
                 digits: true,
                 minlength: 10,
-                maxlength: 10
+                maxlength: 10,
+                remote: {
+                    url: "/check-mobile/", // Django view to check email
+                    type: "POST",
+                    data: {
+                        mobile: function () {
+                            return $("#mobile").val();
+                        },
+                        csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val()
+                    },
+                    dataFilter: function (response) {
+                        var data = JSON.parse(response);
+                        return data.exists ? "false" : "true"; // 'false' means email is taken
+                    }
+                }
             },
             password: {
                 required: true,
@@ -108,7 +122,8 @@
                 required: "Please enter your mobile number",
                 digits: "Only numbers allowed",
                 minlength: "Must be 10 digits",
-                maxlength: "Must be 10 digits"
+                maxlength: "Must be 10 digits",
+                remote: "This mobile is already registered."
             },
             password: {
                 required: "Please enter your password",
