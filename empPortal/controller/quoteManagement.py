@@ -356,6 +356,7 @@ def createVehicleInfo(request, cus_id):
         chassis_number = request.POST.get("chassis_number", "").strip()
         engine_number = request.POST.get("engine_number", "").strip()
         claim_history = request.POST.get("claim_history", "").strip()
+        ncb = request.POST.get("ncb", "").strip()
         ncb_percentage = request.POST.get("ncb_percentage", "").strip() or None
         idv_value = request.POST.get("idv_value", "").strip() or None
         policy_type = request.POST.get("policy_type", "").strip()
@@ -379,6 +380,7 @@ def createVehicleInfo(request, cus_id):
             vehicle_info.chassis_number = chassis_number
             vehicle_info.engine_number = engine_number
             vehicle_info.claim_history = claim_history
+            vehicle_info.ncb = ncb
             vehicle_info.ncb_percentage = ncb_percentage
             vehicle_info.idv_value = idv_value
             vehicle_info.policy_type = policy_type
@@ -405,6 +407,7 @@ def createVehicleInfo(request, cus_id):
                 chassis_number=chassis_number,
                 engine_number=engine_number,
                 claim_history=claim_history,
+                ncb=ncb,
                 ncb_percentage=ncb_percentage,
                 idv_value=idv_value,
                 policy_type=policy_type,

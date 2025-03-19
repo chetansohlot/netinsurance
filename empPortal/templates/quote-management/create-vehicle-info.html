@@ -212,15 +212,24 @@
                                 </div>
                                 
               
-                              <div class="col-sm-6 col-md-3">
-                                  <div class="form-group">
-                                      <label class="form-lbl">Claim History (Last Year)</label>
-                                      <select class="form-field" name="claim_history">
-                                          <option value="Yes" {% if vehicle_info.claim_history == "Yes" %}selected{% endif %}>Yes</option>
-                                          <option value="No" {% if vehicle_info.claim_history == "No" %}selected{% endif %}>No</option>
-                                      </select>
-                                  </div>
-                              </div>
+                                <div class="col-sm-6 col-md-3">
+                                    <div class="form-group">
+                                        <label class="form-lbl">Claim History (Last Year)</label>
+                                        <select class="form-field" name="claim_history">
+                                            <option value="Yes" {% if vehicle_info.claim_history == "Yes" %}selected{% endif %}>Yes</option>
+                                            <option value="No" {% if vehicle_info.claim_history == "No" %}selected{% endif %}>No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-md-3">
+                                    <div class="form-group">
+                                        <label class="form-lbl">NCB</label>
+                                        <select class="form-field" name="ncb">
+                                            <option value="Yes" {% if vehicle_info.ncb == "Yes" %}selected{% endif %}>Yes</option>
+                                            <option value="No" {% if vehicle_info.ncb == "No" %}selected{% endif %}>No</option>
+                                        </select>
+                                    </div>
+                                </div>
               
                               <div class="col-sm-6 col-md-3">
                                   <div class="form-group">

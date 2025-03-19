@@ -85,6 +85,7 @@ class VehicleInfo(models.Model):
     chassis_number = models.CharField(max_length=50, null=True, blank=True)
     engine_number = models.CharField(max_length=50, null=True, blank=True)
     claim_history = models.CharField(max_length=10, choices=[("Yes", "Yes"), ("No", "No")], null=True, blank=True)
+    ncb = models.CharField(max_length=10, choices=[("Yes", "Yes"), ("No", "No")], default="No", null=True, blank=True)
     ncb_percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
     idv_value = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     policy_type = models.CharField(max_length=50, null=True, blank=True)

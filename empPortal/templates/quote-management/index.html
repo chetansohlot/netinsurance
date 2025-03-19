@@ -207,7 +207,7 @@
                             <table class="table table-design table-trlink quote-table-w">
                                 <thead class="table-thead-bg-light table-header-fix">
                                     <tr>
-                                        <th width="200">Quote Customer Id</th>
+                                        <!-- <th width="200">Quote Customer Id</th> -->
                                         <th width="250">Customer Name</th>
                                         <th width="250">Registration Number</th>
                                         <th width="200">Vehicle Type</th>
@@ -226,7 +226,7 @@
                                 <tbody>
                                     {% for quotation in quotations %}
                                     <tr>
-                                        <td>{{ quotation.customer_id }}</td>
+                                        <!-- <td>{{ quotation.customer_id }}</td> -->
                                         <td>{{ quotation.name_as_per_pan|default:"N/A" }}</td>
                                         <td>
                                             <a 
