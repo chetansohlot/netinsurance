@@ -13,7 +13,7 @@
 13. pip install tools
 
 or 
-pip install django requests python-magic openai pymysql python-dotenv fastapi PyMuPDF pandas faker openpyxl fitz frontend tools pdfkit
+pip install django requests python-magic openai pymysql python-dotenv fastapi PyMuPDF pandas faker openpyxl watchdog frontend tools pdfkit
 
 
 
