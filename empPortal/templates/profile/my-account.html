@@ -499,97 +499,124 @@
                                     </div>
                                 </div>
                             </div>
+                            <style>
+                                .preview-img {
+                                    width: 50px;
+                                    height: 50px;
+                                    object-fit: cover;
+                                    transition: transform 0.2s ease-in-out;
+                                    cursor: pointer;
+                                }
 
+                                .preview-img:hover {
+                                    transform: scale(1.2);
+                                }
+
+                            </style>
 
                             <!-- /.tab-pane -->
+                            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css">
+                            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                            <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
+
                             <div class="tab-pane" id="personal-detail-tab">
-                              <!-- Professional Detials -->
-                              <div class="row mt-3">
-                                
-                                <div class="col-md-12">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <h3 class="card-hding pt-3">Documents</h3>
-                                        <button type="button" class="dashboard-addbtn" data-toggle="modal" data-target="#uploadDocumentModal">Upload Documents</button>
-                                    </div>    
+                                <div class="row mt-3">
+                                    <div class="col-md-12">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <h3 class="card-hding pt-3">Documents</h3>
+                                            <button type="button" class="dashboard-addbtn" data-toggle="modal" data-target="#uploadDocumentModal">Upload Documents</button>
+                                        </div>    
+                                    </div>
+                            
+                                    {% if docs %}
+                                    <!-- Aadhaar Card -->
+                                    <div class="col-6 col-sm-6 col-md-6 col-lg-6">
+                                        <div class="family-info-card">
+                                            <div class="row">
+                                                <div class="col-auto">
+                                                    <div class="nametag">
+                                                        <a href="{{ docs.aadhaar_card_front.url }}" data-lightbox="aadhaar-set" data-title="Aadhaar Card Front">
+                                                            <img class="preview-img" src="{{ docs.aadhaar_card_front.url }}" alt="Aadhaar Front" onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';">
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <h4 class="card-hding mb-0 pb-0">Aadhaar Card</h4>
+                                                    <div class="d-flex">
+                                                        <a href="{{ docs.aadhaar_card_front.url }}" data-lightbox="aadhaar-set" class="wrap-small text-gray"><i class="fas fa-eye"></i> View Front</a>
+                                                        <a href="{{ docs.aadhaar_card_back.url }}" data-lightbox="aadhaar-set" class="wrap-small text-gray ml-3"><i class="fas fa-eye"></i> View Back</a>
+                                                    </div>  
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                            
+                                    <!-- PAN Card -->
+                                    <div class="col-6 col-sm-6 col-md-6 col-lg-6">
+                                        <div class="family-info-card">
+                                            <div class="row">
+                                                <div class="col-auto">
+                                                    <div class="nametag">
+                                                        <a href="{{ docs.upload_pan.url }}" data-lightbox="pan-card" data-title="PAN Card">
+                                                            <img class="preview-img" src="{{ docs.upload_pan.url }}" alt="PAN Card" onerror="this.onerror=null; this.src='/static/dist/img/pan-card.webp';">
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <h4 class="card-hding mb-0 pb-0">PAN Card</h4>
+                                                    <a href="{{ docs.upload_pan.url }}" data-lightbox="pan-card" class="wrap-small text-gray"><i class="fas fa-eye"></i> View Document</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                            
+                                    <!-- Cancel Cheque -->
+                                    <div class="col-6 col-sm-6 col-md-6 col-lg-6">
+                                        <div class="family-info-card">
+                                            <div class="row">
+                                                <div class="col-auto">
+                                                    <div class="nametag">
+                                                        <a href="{{ docs.upload_cheque.url }}" data-lightbox="cheque" data-title="Cancel Cheque">
+                                                            <img class="preview-img" src="{{ docs.upload_cheque.url }}" alt="Cheque"onerror="this.src='{% static 'dist/img/cancel-cheque.jpg' %}';"
+                                                            >
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <h4 class="card-hding mb-0 pb-0">Cancel Cheque</h4>
+                                                    <a href="{{ docs.upload_cheque.url }}" data-lightbox="cheque" class="wrap-small text-gray"><i class="fas fa-eye"></i> View Document</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                            
+                                    <!-- 10th Marksheet -->
+                                    <div class="col-6 col-sm-6 col-md-6 col-lg-6">
+                                        <div class="family-info-card">
+                                            <div class="row">
+                                                <div class="col-auto">
+                                                    <div class="nametag">
+                                                        <a href="{{ docs.tenth_marksheet.url }}" data-lightbox="marksheet" data-title="10th Marksheet">
+                                                            <img class="preview-img" src="{{ docs.tenth_marksheet.url }}" alt="10th Marksheet" onerror="this.onerror=null; this.src='/static/dist/img/default-marksheet.jpg';">
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <h4 class="card-hding mb-0 pb-0">Tenth Marksheet</h4>
+                                                    <a href="{{ docs.tenth_marksheet.url }}" data-lightbox="marksheet" class="wrap-small text-gray"><i class="fas fa-eye"></i> View Document</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                            
+                                    {% else %}
+                                    <div class="col-12">
+                                        <p class="text-muted text-center">No documents uploaded yet.</p>
+                                    </div>
+                                    {% endif %}
                                 </div>
-                                <div class="col-6 col-sm-6 col-md-6 col-lg-6">
-                                  <div class="family-info-card">
-                                    <div class="row">
-                                      <div class="col-auto">
-                                        <div class="nametag">
-                                          <img src="{% static 'dist/img/aadhar-front.jpg' %}" alt="">
-                                        </div>
-                                      </div>
-                                      <div class="col">
-                                        <h4 class="card-hding mb-0 pb-0">Aadhaar Card</h4>
-                                        <div class="d-flex">
-                                          <a href="#" class="wrap-small text-gray"><i class="fas fa-eye"></i> View Front </a>
-                                          <a href="#" class="wrap-small text-gray ml-3"><i class="fas fa-eye"></i> View Back </a>
-                                        </div>  
-                                      </div>
-                                    </div>
-                                    <div class="row">
-                                      <div class="col-sm-12">
-                                        <hr>
-                                        <div class="ml-3 pl-1">
-                                          <p class="wrap-prgh font-weight-bold mb-0 pb-0">Aadhaar Number</p>
-                                          <p class="wrap-small">7693 9033 1234</p>
-                                        </div>  
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div class="col-6 col-sm-6 col-md-6 col-lg-6">
-                                  <div class="family-info-card">
-                                    <div class="row">
-                                      <div class="col-auto">
-                                        <div class="nametag">
-                                          <img src="{% static 'dist/img/pan-card.webp' %}" alt="">
-                                        </div>
-                                      </div>
-                                      <div class="col">
-                                        <h4 class="card-hding mb-0 pb-0">PAN Card</h4>
-                                        <a href="#" class="wrap-small text-gray"><i class="fas fa-eye"></i> View Document</a>
-                                      </div>
-                                    </div>
-                                    <div class="row">
-                                      <div class="col-sm-12">
-                                        <hr>
-                                        <div class="ml-3 pl-1">
-                                          <p class="wrap-prgh font-weight-bold mb-0 pb-0">PAN Number</p>
-                                          <p class="wrap-small text-uppercase">BAXPK6214K</p>
-                                        </div>  
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div class="col-6 col-sm-6 col-md-6 col-lg-6">
-                                    <div class="family-info-card">
-                                      <div class="row">
-                                        <div class="col-auto">
-                                          <div class="nametag">
-                                            <img src="{% static 'dist/img/cancel-cheque.jpg' %}" alt="">
-                                          </div>
-                                        </div>
-                                        <div class="col">
-                                          <h4 class="card-hding mb-0 pb-0">Cancel Cheque</h4>
-                                          <a href="#" class="wrap-small text-gray"><i class="fas fa-eye"></i> View Document</a>
-                                        </div>
-                                      </div>
-                                      <div class="row">
-                                        <div class="col-sm-12">
-                                          <hr>
-                                          <div class="ml-3 pl-1">
-                                            <p class="wrap-prgh font-weight-bold mb-0 pb-0">Cheque Number</p>
-                                            <p class="wrap-small">12345578</p>
-                                          </div>  
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                              </div>
-                              <!-- /.Professional Detials -->
                             </div>
+                            
                             <!-- upload document modal-->
                             <div class="modal fade" id="uploadDocumentModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
                                 <div class="modal-dialog modal-lg">
@@ -599,13 +626,16 @@
                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
                                         </div>
                                         <div class="modal-body">
-                                            <form name="bank-form" id="bank-form" method="POST" action="">
+                                            
+                                            <form name="bank-form" id="bank-form" method="POST" enctype="multipart/form-data" action="{% url 'upload_documents' %}">
+                                                {% csrf_token %}
+                                            
+                                                <input type="hidden" name="user_id" value="{{ request.user.id }}">
                                                 <div class="row">
                                                     <div class="col-md-4">
                                                         <div class="mb-3">
                                                             <label class="form-lbl">Aadhaar Number</label>
-                                                            <input type="text" class="form-field" name="aadhaar_number"
-                                                              placeholder="Aadhaar Number"  value="">
+                                                            <input type="text" class="form-field" name="aadhaar_number" placeholder="Aadhaar Number" required>
                                                         </div>
                                                     </div>
                                                     <div class="col-md">
@@ -613,67 +643,62 @@
                                                             <div class="col-6">
                                                                 <div class="mb-3">
                                                                     <label class="form-lbl">Aadhaar Card Front</label>
-                                                                    <input type="file" class="form-field" name="aadhaar_card_front" value="">
+                                                                    <input type="file" class="form-field" name="aadhaar_card_front" required>
                                                                 </div>
                                                             </div>
                                                             <div class="col-6">
                                                                 <div class="mb-3">
                                                                     <label class="form-lbl">Aadhaar Card Back</label>
-                                                                    <input type="file" class="form-field" name="aadhaar_card_back" value="">
+                                                                    <input type="file" class="form-field" name="aadhaar_card_back" required>
                                                                 </div>
                                                             </div>
                                                         </div>        
                                                     </div>
-                                                    <div class="col-md-auto">
-                                                        <label class="d-none d-md-block form-lbl">&nbsp;</label>
-                                                        <div class="d-flex justify-content-end">
-                                                            <button id="bank-btn-sub" type="button" class="form-submit-btn bg-success">Upload</button>
-                                                        </div> 
-                                                    </div>
                                                 </div>
+                                            
                                                 <div class="row">
                                                     <div class="col-md-4">
                                                         <div class="mb-3">
                                                             <label class="form-lbl">PAN Number</label>
-                                                            <input type="text" class="form-field" name="pan_number"
-                                                              placeholder="PAN Number"  value="">
+                                                            <input type="text" class="form-field" name="pan_number" placeholder="PAN Number" required>
                                                         </div>
                                                     </div>
                                                     <div class="col-md">
                                                         <div class="mb-3">
                                                             <label class="form-lbl">Upload PAN</label>
-                                                            <input type="file" class="form-field" name="upload_pan" value="">
+                                                            <input type="file" class="form-field" name="upload_pan" required>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-auto">
-                                                        <label class="d-none d-md-block form-lbl">&nbsp;</label>
-                                                        <div class="d-flex justify-content-end">
-                                                            <button id="bank-btn-sub" type="button" class="form-submit-btn bg-success">Upload</button>
-                                                        </div> 
-                                                    </div>
                                                 </div>  
+                                            
                                                 <div class="row">
                                                     <div class="col-md-4">
                                                         <div class="mb-3">
                                                             <label class="form-lbl">Cheque Number</label>
-                                                            <input type="text" class="form-field" name="cheque_number"
-                                                              placeholder="Cheque Number"  value="">
+                                                            <input type="text" class="form-field" name="cheque_number" placeholder="Cheque Number" required>
                                                         </div>
                                                     </div>
                                                     <div class="col-md">
                                                         <div class="mb-3">
                                                             <label class="form-lbl">Upload Cheque</label>
-                                                            <input type="file" class="form-field" name="upload_cheque" value="">
+                                                            <input type="file" class="form-field" name="upload_cheque" required>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-auto">
-                                                        <label class="d-none d-md-block form-lbl">&nbsp;</label>
-                                                        <div class="d-flex justify-content-end">
-                                                            <button id="bank-btn-sub" type="button" class="form-submit-btn bg-success">Upload</button>
-                                                        </div> 
+                                                </div>
+                                            
+                                                <!-- 10th Marksheet Upload -->
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        <div class="mb-3">
+                                                            <label class="form-lbl">Tenth Marksheet</label>
+                                                            <input type="file" class="form-field" name="tenth_marksheet" required>
+                                                        </div>
                                                     </div>
-                                                </div>     
+                                                </div>  
+                                            
+                                                <button type="submit" class="btn btn-success">Upload</button>
                                             </form>
+                                            
                                         </div>
                                     </div>
                                 </div>

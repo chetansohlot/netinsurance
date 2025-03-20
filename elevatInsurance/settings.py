@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+import platform
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -126,17 +127,28 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-if os.getenv("APPLY_STATIC", "False") == "True":
-    STATIC_URL = 'static/'
+# Detect if running on Windows
+IS_WINDOWS = platform.system() == "Windows"
+
+# Check if APPLY_STATIC is set to "True" (defaults to False if not set)
+APPLY_STATIC = os.getenv("APPLY_STATIC", "False") == "True"
+
+if APPLY_STATIC or IS_WINDOWS:  # Windows (Development)
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+    STATIC_URL = '/static/'
     STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
     MEDIA_URL = "/media/"
-    MEDIA_ROOT = BASE_DIR / "media"
-else:
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'empPortal', 'media')  # Windows-friendly path
+
+else:  # Linux (Production with Nginx)
     STATIC_URL = '/empPortal/static/'
     STATIC_ROOT = '/usr/share/nginx/html/netinsurance/empPortal/static/'
-    MEDIA_URL = "/media/"
-    MEDIA_ROOT = '/usr/share/nginx/html/netinsurance/media/'
+
+    MEDIA_URL = "/empPortal/media/"
+    MEDIA_ROOT = '/usr/share/nginx/html/netinsurance/empPortal/media/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

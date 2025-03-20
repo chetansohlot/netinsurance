@@ -3,6 +3,8 @@ from . import views,export
 from . import views
 from . import authenticationView
 from .controller import commissions, profile, members, customers, quoteManagement, healthQuoteManagement, homeManagement
+from django.conf import settings
+from django.conf.urls.static import static
 
 motor_patterns = [
     path('quote-management/', quoteManagement.index, name='quote-management'),
@@ -44,6 +46,7 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
 
     path('my-account/', profile.myAccount, name='my-account'),
+    path('upload-documents/', profile.upload_documents, name='upload_documents'),
     path('store-bank-data/', profile.storeOrUpdateBankDetails, name='store-bank-data'),
     path('update-user-details/', profile.update_user_details, name='update-user-details'),
 
@@ -105,3 +108,6 @@ urlpatterns = [
 
 ] 
 
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

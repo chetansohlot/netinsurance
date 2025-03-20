@@ -296,27 +296,24 @@ class UserFiles(models.Model):
 
     # def __str__(self):
     #     return f"Commission {self.id} - Insurer {self.member_id}"
-
-
-class PersonalDocument(models.Model):
-    FILE_TYPES = [
-        ('aadhaar_front', 'Aadhaar Front'),
-        ('aadhaar_back', 'Aadhaar Back'),
-        ('pan', 'PAN Card'),
-        ('cheque', 'Cheque'),
-        ('tenth_marksheet', '10th Marksheet'),
-    ]
-
-    user_id = models.IntegerField()  # Without ForeignKey, just an integer
-    file_type = models.CharField(max_length=20, choices=FILE_TYPES)
-    file_link = models.CharField(max_length=255)
+class DocumentUpload(models.Model):
+    user_id = models.IntegerField()  # Reference to user
+    aadhaar_number = models.CharField(max_length=12, unique=True)
+    aadhaar_card_front = models.FileField(upload_to='aadhaar/')
+    aadhaar_card_back = models.FileField(upload_to='aadhaar/')
+    pan_number = models.CharField(max_length=10, unique=True)
+    upload_pan = models.FileField(upload_to='pan/')
+    cheque_number = models.CharField(max_length=20, unique=True)
+    upload_cheque = models.FileField(upload_to='cheque/')
+    tenth_marksheet = models.FileField(upload_to='marksheets/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.file_type} for User {self.user_id}"
+        return f"Documents for User {self.user_id}"
 
     class Meta:
-        db_table = 'personal_documents'
+        db_table = 'documents_upload'
+
 
 
 class UnprocessedPolicyFiles(models.Model):

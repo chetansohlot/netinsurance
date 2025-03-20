@@ -4,9 +4,9 @@ from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.template import loader
-from ..models import Commission,Users, PersonalDocument
+from ..models import Commission,Users, DocumentUpload
 from empPortal.model import BankDetails
-
+from ..forms import DocumentUploadForm
 from django.contrib.auth import authenticate, login ,logout
 from django.core.files.storage import FileSystemStorage
 import re
@@ -42,6 +42,8 @@ def myAccount(request):
         user_details = Users.objects.get(id=request.user.id)  # Fetching the user's details
         bank_details = BankDetails.objects.filter(user_id=request.user.id).first()  # Fetching bank details
 
+        # Get or create document instance for user
+        docs = DocumentUpload.objects.filter(user_id=request.user.id).first()
         # Fetch commissions for the specific member
         query = """
             SELECT c.*, u.first_name, u.last_name, c.product_id
@@ -73,7 +75,8 @@ def myAccount(request):
             'user_details': user_details,
             'bank_details': bank_details,
             'products': products,
-            'commissions': commissions_list  # Fixed variable name
+            'commissions': commissions_list , 
+            'docs': docs  
         })
     else:
         return redirect('login')
@@ -122,4 +125,37 @@ def storeOrUpdateBankDetails(request):
         return redirect('my-account')
 
     # If not a POST request, redirect to my-account
+    return redirect('my-account')
+
+def upload_documents(request):
+    if request.method == "POST":
+        form = DocumentUploadForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            user_id = request.user.id  # Get the current user ID
+
+            # Get or create document instance for user
+            existing_doc, created = DocumentUpload.objects.get_or_create(user_id=user_id)
+
+            # Update fields if new files are uploaded
+            file_fields = ['aadhaar_card_front', 'aadhaar_card_back', 'upload_pan', 'upload_cheque', 'tenth_marksheet']
+            files_uploaded = False
+
+            for field in file_fields:
+                uploaded_file = request.FILES.get(field)
+                if uploaded_file:
+                    setattr(existing_doc, field, uploaded_file)
+                    files_uploaded = True
+
+            if files_uploaded:
+                existing_doc.save()
+                messages.success(request, "Documents uploaded successfully!")
+            else:
+                messages.warning(request, "No new files were uploaded.")
+
+            return redirect('upload_documents')
+
+        else:
+            messages.error(request, f"Error uploading documents: {form.errors}")
+
     return redirect('my-account')
