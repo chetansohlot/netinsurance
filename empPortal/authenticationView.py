@@ -25,61 +25,67 @@ OPENAI_API_KEY = settings.OPENAI_API_KEY
 
 app = FastAPI()
 
-
 def login_view(request):
+    # If user is authenticated, redirect to dashboard
+    from_otp_verification = request.GET.get('from_otp', 'false') == 'true'
+    # Initialize variable
+    mobile_no_user = ""
+
     if request.user.is_authenticated:
-        return redirect('dashboard')
-    else:
-        if request.method == 'POST': 
-            login_via = request.POST.get('loginvia', '').strip()
-            email = request.POST.get('email', '').strip()
-            mobile = request.POST.get('mobile', '').strip()
-            remember_me = request.POST.get('rememberme', '').strip()
-            password = request.POST.get('password', '').strip()
-            login_via = '1'
-            # Validation Errors
-            if not login_via:
-                messages.error(request, 'Login via field is required')
+        mobile_no_user = request.user.phone  # Store user phone for OTP login
+        if not from_otp_verification:
+            return redirect('dashboard')  # Redirect if user is already logged in and not coming from OTP
 
-            if login_via == '1':  # Login via Email
-                if not email:
-                    messages.error(request, 'Email is required')
-                elif not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email):
-                    messages.error(request, 'Invalid email format')
-                elif not Users.objects.filter(email=email).exists():
-                    messages.error(request, 'This email is invalid')
+    # Logout user if they navigated back from OTP page
+    if from_otp_verification and request.user.is_authenticated:
+        logout(request)
 
-            elif login_via == 'Mobile':  # Login via Mobile
-                if not mobile:
-                    messages.error(request, 'Mobile is required')
-                elif not mobile.isdigit():
-                    messages.error(request, 'Mobile No must contain only numbers')
-                elif mobile[0] <= '5':
-                    messages.error(request, 'Invalid Mobile No')
-                elif len(mobile) != 10:
-                    messages.error(request, 'Mobile No must be of 10 digits')
-                elif not Users.objects.filter(phone=mobile).exists():
-                    messages.error(request, 'This mobile number is not registered with us.')
+    # Check if login is coming from OTP verification
+    if request.method == 'POST' and from_otp_verification == 'false':
+        # Fetch login method and credentials
+        login_via = request.POST.get('loginvia', '').strip()
+        email = request.POST.get('email', '').strip()
+        mobile = request.POST.get('mobile', '').strip()
+        password = request.POST.get('password', '').strip()
+        remember_me = request.POST.get('rememberme', '').strip()
 
-            # Password Validation
-            if not password:
-                messages.error(request, 'Password is required.')
+        # Input validation
+        if login_via == '1':  # Login via Email
+            if not email:
+                messages.error(request, 'Email is required')
+            elif not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email):
+                messages.error(request, 'Invalid email format')
+            elif not Users.objects.filter(email=email).exists():
+                messages.error(request, 'This email is not registered.')
 
-            # Redirect if there are errors
-            if list(messages.get_messages(request)):  
-                return redirect(request.META.get('HTTP_REFERER', '/'))
+        elif login_via == 'Mobile':  # Login via Mobile
+            if not mobile:
+                messages.error(request, 'Mobile number is required')
+            elif not mobile.isdigit() or len(mobile) != 10:
+                messages.error(request, 'Invalid mobile number')
+            elif not Users.objects.filter(phone=mobile).exists():
+                messages.error(request, 'This mobile number is not registered.')
 
-            # Fetch User Data
-            username = email if login_via == "1" else mobile
-            user = authenticate(request, username=username, password=password)
-            if user:
-                login(request, user)
-                return redirect('dashboard')
-            else:
-                messages.error(request, 'Invalid credentials')
-                return redirect(request.META.get('HTTP_REFERER', '/'))
+        if not password:
+            messages.error(request, 'Password is required.')
 
-        return render(request, 'authentication/login.html')
+        # If there are validation errors, reload the page
+        if messages.get_messages(request):
+            return redirect(request.META.get('HTTP_REFERER', '/'))
+
+        # Authenticate user
+        username = email if login_via == "1" else mobile
+        user = authenticate(request, username=username, password=password)
+        if user:
+            login(request, user)
+            return redirect('dashboard')
+        else:
+            messages.error(request, 'Invalid credentials')
+            return redirect(request.META.get('HTTP_REFERER', '/'))
+
+    return render(request, 'authentication/login.html', {"from_otp_verification": from_otp_verification, 
+                                                         "mobile_no": mobile_no_user})
+
     
 def register_view(request):
     if request.user.is_authenticated:
@@ -257,7 +263,7 @@ def login_mobile_view(request):
             user.is_login_available = 0  # Set is_login_available to 0
             user.save(update_fields=['is_login_available'])  # Save only this field
             login(request, user)  # Log in without password
-            return redirect('verify-otp')
+            return redirect('mobile-verify-otp')
 
         messages.error(request, 'Login failed. Please try again.')
         return redirect(request.META.get('HTTP_REFERER', '/'))
@@ -512,3 +518,52 @@ def verify_otp_view(request):
         # return redirect('dashboard')
 
     return render(request, 'authentication/verify-otp.html')
+
+
+def mobile_verify_otp_view(request):
+    if request.user.is_authenticated and request.method != 'POST':
+        if request.user.is_login_available == 0:
+            return render(request, 'authentication/mobile-verify-otp.html')
+        elif request.user.is_active == 1:
+            return redirect('dashboard')
+
+    if request.method == 'POST':
+
+        request.user.is_login_available = 1
+        request.user.is_active = 1
+        request.user.save()
+        return redirect('my-account')
+
+        # Extract form data
+        # email = request.POST.get('email', '').strip()
+        # otp = request.POST.get('otp', '').strip()
+
+        # if not email:
+        #     messages.error(request, 'Please enter your email address.')
+        # elif not Users.objects.filter(email=email).exists():
+        #     messages.error(request, 'This email is not registered.')
+
+        # if not otp:
+        #     messages.error(request, 'Please enter the OTP.')
+        # else:
+        #     stored_otp = cache.get(f'otp_{email}')  # Fetch stored OTP from cache
+        #     if not stored_otp:
+        #         messages.error(request, 'OTP has expired. Please request a new one.')
+        #     elif otp != stored_otp:
+        #         messages.error(request, 'Invalid OTP. Please try again.')
+
+        # # Redirect if there are validation errors
+        # if messages.get_messages(request):
+        #     return redirect(request.META.get('HTTP_REFERER', '/'))
+
+        # # If OTP is valid, activate the user
+        # user = Users.objects.get(email=email)
+        # user.is_active = True
+        # user.save()
+
+        # # Log in the user
+        # login(request, user)
+        # messages.success(request, 'OTP verified successfully. Welcome!')
+        # return redirect('dashboard')
+
+    return render(request, 'authentication/mobile-verify-otp.html')

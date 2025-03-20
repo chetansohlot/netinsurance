@@ -27,18 +27,23 @@
                                   <label class="signup-form-lbl">Login Via <span class="asterisk">*</span></label>                        
                                   <div class="signup-gender-box">
                                     <div class="signup-radio-btn-area">
-                                      <input type="radio" name="loginvia" class="signup-radio-button" id="login_via_email" value="1" checked="checked">
-                                      <label for="login_via_email">Email</label>
+                                        <input type="radio" name="loginvia" class="signup-radio-button" 
+                                               id="login_via_email" value="1" 
+                                               {% if not from_otp_verification %}checked="checked"{% endif %}>
+                                        <label for="login_via_email">Email</label>
                                     </div>
                                     <div class="signup-radio-btn-area">
-                                      <input type="radio" name="loginvia" class="signup-radio-button" value="Mobile" id="login_via_mobile" onchange="toggleLoginSection()">
-                                      <label for="login_via_mobile">Mobile</label>
+                                        <input type="radio" name="loginvia" class="signup-radio-button" value="Mobile" 
+                                               id="login_via_mobile" onchange="toggleLoginSection()" 
+                                               {% if from_otp_verification %}checked="checked"{% endif %}>
+                                        <label for="login_via_mobile">Mobile</label>
                                     </div>
-                                  </div>   
+                                </div>
+                                  
                                 </div>  
                               </div>
                             </div>
-                            <div id="email-login">
+                            <div id="email-login" {% if from_otp_verification %}style="display: none;"{% endif %}>
                               <form action="{% url 'login' %}" method="post" autocomplete="off">
                                   {% csrf_token %}
                               
@@ -96,14 +101,14 @@
                                   </div>
                               </form>
                             </div>    
-                            <div id="mobile-login" style="display:none;">
+                            <div id="mobile-login" {% if from_otp_verification %}style="display: block;"{% else %}style="display: none;"{% endif %}>
                               <form action="{% url 'login-mobile' %}" method="post" autocomplete="off">
                                 {% csrf_token %}
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="signup-form-group">
                                             <label class="signup-form-lbl">Enter 10-Digit Mobile Number <span class="asterisk">*</span></label>                        
-                                            <input type="text" name="mobile" class="signup-form-field" placeholder="Mobile Number" />
+                                            <input type="text" value="{{ mobile_no }}" name="mobile" class="signup-form-field" placeholder="Mobile Number" />
                                             <span class="error mobile_err"></span>
                                         </div>   
                                     </div>

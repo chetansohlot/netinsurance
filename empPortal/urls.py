@@ -33,6 +33,7 @@ urlpatterns = [
     path("check-mobile/", authenticationView.check_mobile, name="check-mobile"),
     path("register", authenticationView.register_view, name="register"),
     path("verify-otp", authenticationView.verify_otp_view, name="verify-otp"),
+    path("mobile-verify-otp", authenticationView.mobile_verify_otp_view, name="mobile-verify-otp"),
     path("forget-password", authenticationView.forget_pass_view, name="forget-password"),
     path("reset-password", authenticationView.reset_pass_view, name="reset-password"),
     path("email-verify-otp", authenticationView.email_verify_otp, name="email-verify-otp"),
