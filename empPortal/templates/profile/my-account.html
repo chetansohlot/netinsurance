@@ -546,143 +546,111 @@
                                     </div>
                             
                                     {% if docs %}
-                                    <!-- Aadhaar Card -->
-                                    <div class="col-6 col-sm-6 col-md-6 col-lg-6">
-                                        <div class="family-info-card">
-                                            <div class="row">
-                                                <div class="col-auto">
-                                                    <div class="nametag">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>File</th>
+                                                    <th>File Type</th>
+                                                    <th>Doc ID</th>
+                                                    <th>Updated At</th>
+                                                    <th>Status</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Aadhaar Card Front -->
+                                                <tr>
+                                                    <td>
                                                         <a href="{{ docs.aadhaar_card_front.url }}" data-lightbox="aadhaar-set" data-title="Aadhaar Card Front">
                                                             <img class="preview-img" id="aadhaar_card_front_preview" src="{{ docs.aadhaar_card_front.url }}" 
-                                                                alt="Aadhaar Front" onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';">
+                                                                alt="Aadhaar Front" onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';" width="80">
                                                         </a>
-                                                    </div>
-                                                </div>
-                                                <div class="col">
-                                                    <h4 class="card-hding mb-0 pb-0">Aadhaar Card Front</h4>
-                                                    
-                                                    <!-- Upload Icon -->
-                                                    <label for="aadhaar_card_front" class="upload-icon">
-                                                        <i class="fas fa-upload"></i> Choose Image
-                                                    </label>
-                                                    
-                                                    <!-- Hidden File Input -->
-                                                    <input type="file" id="aadhaar_card_front" class="form-control d-none" 
-                                                        onchange="uploadDocument('aadhaar_card_front')">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-6 col-sm-6 col-md-6 col-lg-6">
-                                        <div class="family-info-card">
-                                            <div class="row">
-                                                <div class="col-auto">
-                                                    <div class="nametag">
-                                                        <a href="{{ docs.aadhaar_card_back.url }}" data-lightbox="aadhaar-set" data-title="Aadhaar Card Front">
+                                                    </td>
+                                                    <td>Aadhaar Card Front</td>
+                                                    <td>{{ docs.aadhaar_number|default:"-" }}</td>
+                                                    <td>{{ docs.aadhaar_card_front_updated_at|date:"Y-m-d H:i:s" }}</td>
+                                                    <td>{{ docs.aadhaar_status|default:"Pending" }}</td>
+                                                    <td>
+                                                        <label for="aadhaar_card_front" class="btn btn-sm btn-warning">Edit</label>
+                                                        <input type="file" id="aadhaar_card_front" class="d-none" onchange="uploadDocument('aadhaar_card_front')">
+                                                    </td>
+                                                </tr>
+                            
+                                                <!-- Aadhaar Card Back -->
+                                                <tr>
+                                                    <td>
+                                                        <a href="{{ docs.aadhaar_card_back.url }}" data-lightbox="aadhaar-set" data-title="Aadhaar Card Back">
                                                             <img class="preview-img" id="aadhaar_card_back_preview" src="{{ docs.aadhaar_card_back.url }}" 
-                                                                alt="Aadhaar Front" onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';">
+                                                                alt="Aadhaar Back" onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';" width="80">
                                                         </a>
-                                                    </div>
-                                                </div>
-                                                <div class="col">
-                                                    <h4 class="card-hding mb-0 pb-0">Aadhaar Card Back</h4>
-                                                    
-                                                    <!-- Upload Icon -->
-                                                    <label for="aadhaar_card_back" class="upload-icon">
-                                                        <i class="fas fa-upload"></i> Choose Image
-                                                    </label>
-                                                    
-                                                    <!-- Hidden File Input -->
-                                                    <input type="file" id="aadhaar_card_back" class="form-control d-none" 
-                                                        onchange="uploadDocument('aadhaar_card_back')">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="col-6 col-sm-6 col-md-6 col-lg-6">
-                                        <div class="family-info-card">
-                                            <div class="row">
-                                                <div class="col-auto">
-                                                    <div class="nametag">
-                                                        <a href="{{ docs.upload_pan.url }}" data-lightbox="aadhaar-set" data-title="Aadhaar Card Front">
+                                                    </td>
+                                                    <td>Aadhaar Card Back</td>
+                                                    <td>{{ docs.aadhaar_number|default:"-" }}</td>
+                                                    <td>{{ docs.aadhaar_card_back_updated_at|date:"Y-m-d H:i:s" }}</td>
+                                                    <td>{{ docs.aadhaar_status|default:"Pending" }}</td>
+                                                    <td>
+                                                        <label for="aadhaar_card_back" class="btn btn-sm btn-warning">Edit</label>
+                                                        <input type="file" id="aadhaar_card_back" class="d-none" onchange="uploadDocument('aadhaar_card_back')">
+                                                    </td>
+                                                </tr>
+                            
+                                                <!-- Pan Card -->
+                                                <tr>
+                                                    <td>
+                                                        <a href="{{ docs.upload_pan.url }}" data-lightbox="pan-set" data-title="Pan Card">
                                                             <img class="preview-img" id="upload_pan_preview" src="{{ docs.upload_pan.url }}" 
-                                                                alt="Aadhaar Front" onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';">
+                                                                alt="Pan Card" onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';" width="80">
                                                         </a>
-                                                    </div>
-                                                </div>
-                                                <div class="col">
-                                                    <h4 class="card-hding mb-0 pb-0">Pan Card</h4>
-                                                    
-                                                    <!-- Upload Icon -->
-                                                    <label for="upload_pan" class="upload-icon">
-                                                        <i class="fas fa-upload"></i> Choose Image
-                                                    </label>
-                                                    
-                                                    <!-- Hidden File Input -->
-                                                    <input type="file" id="upload_pan" class="form-control d-none" 
-                                                        onchange="uploadDocument('upload_pan')">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="col-6 col-sm-6 col-md-6 col-lg-6">
-                                        <div class="family-info-card">
-                                            <div class="row">
-                                                <div class="col-auto">
-                                                    <div class="nametag">
-                                                        <a href="{{ docs.upload_cheque.url }}" data-lightbox="aadhaar-set" data-title="Aadhaar Card Front">
+                                                    </td>
+                                                    <td>PAN Card</td>
+                                                    <td>{{ docs.pan_number|default:"-" }}</td>
+                                                    <td>{{ docs.upload_pan_updated_at|date:"Y-m-d H:i:s" }}</td>
+                                                    <td>{{ docs.pan_status|default:"Pending" }}</td>
+                                                    <td>
+                                                        <label for="upload_pan" class="btn btn-sm btn-warning">Edit</label>
+                                                        <input type="file" id="upload_pan" class="d-none" onchange="uploadDocument('upload_pan')">
+                                                    </td>
+                                                </tr>
+                            
+                                                <!-- Cancelled Cheque -->
+                                                <tr>
+                                                    <td>
+                                                        <a href="{{ docs.upload_cheque.url }}" data-lightbox="cheque-set" data-title="Cancelled Cheque">
                                                             <img class="preview-img" id="upload_cheque_preview" src="{{ docs.upload_cheque.url }}" 
-                                                                alt="Aadhaar Front" onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';">
+                                                                alt="Cheque" onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';" width="80">
                                                         </a>
-                                                    </div>
-                                                </div>
-                                                <div class="col">
-                                                    <h4 class="card-hding mb-0 pb-0">Cancelled Cheque</h4>
-                                                    
-                                                    <!-- Upload Icon -->
-                                                    <label for="upload_cheque" class="upload-icon">
-                                                        <i class="fas fa-upload"></i> Choose Image
-                                                    </label>
-                                                    
-                                                    <!-- Hidden File Input -->
-                                                    <input type="file" id="upload_cheque" class="form-control d-none" 
-                                                        onchange="uploadDocument('upload_cheque')">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
+                                                    </td>
+                                                    <td>Cancelled Cheque</td>
+                                                    <td>{{ docs.cheque_number|default:"-" }}</td>
+                                                    <td>{{ docs.upload_cheque_updated_at|date:"Y-m-d H:i:s" }}</td>
+                                                    <td>{{ docs.cheque_status|default:"Pending" }}</td>
+                                                    <td>
+                                                        <label for="upload_cheque" class="btn btn-sm btn-warning">Edit</label>
+                                                        <input type="file" id="upload_cheque" class="d-none" onchange="uploadDocument('upload_cheque')">
+                                                    </td>
+                                                </tr>
                             
-                                    <div class="col-6 col-sm-6 col-md-6 col-lg-6">
-                                        <div class="family-info-card">
-                                            <div class="row">
-                                                <div class="col-auto">
-                                                    <div class="nametag">
-                                                        <a href="{{ docs.tenth_marksheet.url }}" data-lightbox="aadhaar-set" data-title="Aadhaar Card Front">
+                                                <!-- 10th Marksheet -->
+                                                <tr>
+                                                    <td>
+                                                        <a href="{{ docs.tenth_marksheet.url }}" data-lightbox="marksheet-set" data-title="10th Marksheet">
                                                             <img class="preview-img" id="tenth_marksheet_preview" src="{{ docs.tenth_marksheet.url }}" 
-                                                                alt="Aadhaar Front" onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';">
+                                                                alt="10th Marksheet" onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';" width="80">
                                                         </a>
-                                                    </div>
-                                                </div>
-                                                <div class="col">
-                                                    <h4 class="card-hding mb-0 pb-0">10th Marksheet</h4>
-                                                    
-                                                    <!-- Upload Icon -->
-                                                    <label for="tenth_marksheet" class="upload-icon">
-                                                        <i class="fas fa-upload"></i> Choose Image
-                                                    </label>
-                                                    
-                                                    <!-- Hidden File Input -->
-                                                    <input type="file" id="tenth_marksheet" class="form-control d-none" 
-                                                        onchange="uploadDocument('tenth_marksheet')">
-                                                </div>
-                                            </div>
-                                        </div>
+                                                    </td>
+                                                    <td>10th Marksheet</td>
+                                                    <td>{{ docs.tenth_marksheet_doc_id|default:"-" }}</td>
+                                                    <td>{{ docs.tenth_marksheet_updated_at|date:"Y-m-d H:i:s" }}</td>
+                                                    <td>{{ docs.marksheet_status|default:"Pending" }}</td>
+                                                    <td>
+                                                        <label for="tenth_marksheet" class="btn btn-sm btn-warning">Edit</label>
+                                                        <input type="file" id="tenth_marksheet" class="d-none" onchange="uploadDocument('tenth_marksheet')">
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
-                            
                             
                                     {% else %}
                                     <div class="col-12">
