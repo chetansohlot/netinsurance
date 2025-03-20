@@ -298,6 +298,27 @@ class UserFiles(models.Model):
     #     return f"Commission {self.id} - Insurer {self.member_id}"
 
 
+class PersonalDocument(models.Model):
+    FILE_TYPES = [
+        ('aadhaar_front', 'Aadhaar Front'),
+        ('aadhaar_back', 'Aadhaar Back'),
+        ('pan', 'PAN Card'),
+        ('cheque', 'Cheque'),
+        ('tenth_marksheet', '10th Marksheet'),
+    ]
+
+    user_id = models.IntegerField()  # Without ForeignKey, just an integer
+    file_type = models.CharField(max_length=20, choices=FILE_TYPES)
+    file_link = models.CharField(max_length=255)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.file_type} for User {self.user_id}"
+
+    class Meta:
+        db_table = 'personal_documents'
+
+
 class UnprocessedPolicyFiles(models.Model):
     policy_document = models.CharField(max_length=255)
     bulk_log_id = models.IntegerField()

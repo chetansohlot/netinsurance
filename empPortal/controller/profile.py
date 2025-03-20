@@ -4,7 +4,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.template import loader
-from ..models import Commission,Users
+from ..models import Commission,Users, PersonalDocument
 from empPortal.model import BankDetails
 
 from django.contrib.auth import authenticate, login ,logout
