@@ -73,15 +73,22 @@
                                         </div>
                                       </div>
                               
-                                      {% if messages %}
-                                        <div class="col-sm-12">
-                                          <div class="alert alert-danger w-100 mb-0">
-                                              {% for message in messages %}
-                                                  <p class="mb-0">{{ message }}</p>
-                                              {% endfor %}
-                                          </div>
-                                        </div>  
-                                      {% endif %}
+                                      
+          {% if messages %}
+          <div class="col-sm-12">
+              {% for message in messages %}
+                  <div class="alert 
+                      {% if message.tags == 'success' %}alert-success
+                      {% elif message.tags == 'error' %}alert-danger
+                      {% elif message.tags == 'warning' %}alert-warning
+                      {% elif message.tags == 'info' %}alert-info
+                      {% else %}alert-secondary{% endif %}
+                      w-100 mb-0">
+                      <p class="mb-0">{{ message }}</p>
+                  </div>
+              {% endfor %}
+          </div>  
+      {% endif %}
                               
                                       <div class="col-sm-12">
                                           <button type="submit" class="signup-submit-btn mt-5 w-100">Login</button>
@@ -101,15 +108,22 @@
                                         </div>   
                                     </div>
                             
-                                    {% if messages %}
-                                      <div class="col-md-12">
-                                        <div class="alert alert-danger w-100 mb-0">
-                                            {% for message in messages %}
-                                                <p class="mb-0">{{ message }}</p>
-                                            {% endfor %}
-                                        </div>
-                                      </div>  
-                                    {% endif %}
+                                    
+          {% if messages %}
+          <div class="col-sm-12">
+              {% for message in messages %}
+                  <div class="alert 
+                      {% if message.tags == 'success' %}alert-success
+                      {% elif message.tags == 'error' %}alert-danger
+                      {% elif message.tags == 'warning' %}alert-warning
+                      {% elif message.tags == 'info' %}alert-info
+                      {% else %}alert-secondary{% endif %}
+                      w-100 mb-0">
+                      <p class="mb-0">{{ message }}</p>
+                  </div>
+              {% endfor %}
+          </div>  
+      {% endif %}
                             
                                     <div class="col-sm-12">
                                         <button type="submit" class="signup-submit-btn mt-5 w-100">Login with OTP</button>
