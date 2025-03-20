@@ -865,45 +865,64 @@
             {% include 'footer-script.html' %}
             
         <script>
-            
-            function uploadDocument(documentType) {
+           
+    // Function to handle document upload with SweetAlert confirmation
+    function uploadDocument(documentType) {
         let fileInput = document.getElementById(documentType);
         let file = fileInput.files[0];
 
         if (!file) return;
 
-        let formData = new FormData();
-        formData.append("document_file", file);
-        formData.append("document_type", documentType);
-        
-        $.ajax({
-            url: "/update-document/",
-            type: "POST",
-            data: formData,
-            processData: false,
-            contentType: false,
-            headers: {
-                "X-CSRFToken": getCookie("csrftoken") 
-            },
-            success: function (response) {
-                if (response.new_image_url) {
-                    // Update the preview image
-                    let previewImg = document.getElementById(documentType + "_preview");
-                    previewImg.src = response.new_image_url;
-                    previewImg.onerror = null;
+        // Show SweetAlert confirmation
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You are about to upload this image.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, upload it!',
+            cancelButtonText: 'Cancel',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                let formData = new FormData();
+                formData.append("document_file", file);
+                formData.append("document_type", documentType);
+                
+                // Make the AJAX request to upload the document
+                $.ajax({
+                    url: "/update-document/",
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    headers: {
+                        "X-CSRFToken": getCookie("csrftoken") 
+                    },
+                    success: function (response) {
+                        if (response.new_image_url) {
+                            // Update the preview image
+                            let previewImg = document.getElementById(documentType + "_preview");
+                            previewImg.src = response.new_image_url;
+                            previewImg.onerror = null;
 
-                    // Update the lightbox link
-                    // let lightboxLink = document.getElementById(documentType + "_lightbox");
-                    // lightboxLink.href = response.new_image_url;
+                            // Show success message after upload
+                            Swal.fire({
+                                title: 'Document Uploaded!',
+                                text: 'Your document has been uploaded successfully.',
+                                icon: 'success',
+                                showConfirmButton: false,
+                                timer: 2000 // Show for 1.5 seconds
+                            });
 
-                    // Force a reload after a short delay to ensure updates are visible
-                    setTimeout(function() {
-                        location.reload();
-                    }, 500);
-                }
-            },
-            error: function (xhr) {
-                console.error(xhr.responseJSON.error);
+                            // Refresh the page after 1 second delay
+                            setTimeout(function() {
+                                location.reload();
+                            }, 2000);  // Delay for 1 second
+                        }
+                    },
+                    error: function (xhr) {
+                        console.error(xhr.responseJSON.error);
+                    }
+                });
             }
         });
     }
