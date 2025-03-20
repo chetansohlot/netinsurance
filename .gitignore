@@ -3,6 +3,7 @@
 *.pyc
 config/settings_local.py
 elevateInsurance/settings.py
+/empPortal/media
 
 
 # Ignore compiled Python files
