@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import update_session_auth_hash
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib import messages
 from django.template import loader
 from ..models import Commission,Users, DocumentUpload
@@ -24,6 +24,10 @@ from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.db import connection
 
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+
+from django.views.decorators.csrf import csrf_exempt
 from pprint import pprint 
 
 OPENAI_API_KEY = settings.OPENAI_API_KEY
@@ -56,6 +60,14 @@ def myAccount(request):
             cursor.execute(query, [request.user.id])
             commissions_list = dictfetchall(cursor)
 
+
+        document_fields = [
+            ("aadhaar_card_front", "Aadhaar Card Front", "aadhar-front.jpg"),
+            ("aadhaar_card_back", "Aadhaar Card Back", "aadhar-back.jpg"),
+            ("upload_pan", "PAN Card", "pan-card.webp"),
+            ("upload_cheque", "Cancelled Cheque", "cancel-cheque.jpg"),
+            ("tenth_marksheet", "10th Marksheet", "default-marksheet.jpg"),
+        ]
         # Define available products
         products = [
             {'id': 1, 'name': 'Motor'},
@@ -76,6 +88,7 @@ def myAccount(request):
             'bank_details': bank_details,
             'products': products,
             'commissions': commissions_list , 
+            'document_fields': document_fields , 
             'docs': docs  
         })
     else:
@@ -177,3 +190,42 @@ def upload_documents(request):
                     messages.error(request, f"{field.replace('_', ' ').title()}: {error}")
 
     return redirect('my-account')
+
+
+def update_document(request):
+    if request.method == "POST" and request.FILES.get("document_file"):
+        user_id = request.user.id  # Get current user ID
+        document_type = request.POST.get("document_type")  # e.g., 'aadhaar_card_front'
+
+        if document_type not in ["aadhaar_card_front", "aadhaar_card_back", "upload_pan", "upload_cheque", "tenth_marksheet"]:
+            return JsonResponse({"error": "Invalid document type"}, status=400)
+
+        uploaded_file = request.FILES["document_file"]
+
+        # Validate file size (Max: 5MB)
+        if uploaded_file.size > 5 * 1024 * 1024:
+            return JsonResponse({"error": f"{document_type.replace('_', ' ').title()} exceeds 5MB size limit."}, status=400)
+
+        # Validate file type
+        allowed_types = ["image/jpeg", "image/png", "application/pdf"]
+        if uploaded_file.content_type not in allowed_types:
+            return JsonResponse({"error": f"{document_type.replace('_', ' ').title()} must be a JPG, PNG, or PDF file."}, status=400)
+
+        # Get or create the user's document record
+        user_doc, created = DocumentUpload.objects.get_or_create(user_id=user_id)
+
+        # Save the new file
+        setattr(user_doc, document_type, uploaded_file)
+        user_doc.save()
+        # Get the correct URL for the uploaded file
+        document_field = getattr(user_doc, document_type, None)
+
+        if document_field and hasattr(document_field, "url"):
+            new_image_url = request.build_absolute_uri(document_field.url)
+        else:
+            new_image_url = None  # Handle case where file isn't uploaded
+
+
+        return JsonResponse({"message": f"{document_type.replace('_', ' ').title()} updated successfully!", "new_image_url": new_image_url})
+    
+    return JsonResponse({"error": "Invalid request"}, status=400)

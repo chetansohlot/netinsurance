@@ -511,6 +511,23 @@
                                 .preview-img:hover {
                                     transform: scale(1.2);
                                 }
+                                .upload-icon {
+                                    display: inline-block;
+                                    cursor: pointer;
+                                    background: #007bff;
+                                    color: #fff;
+                                    padding: 6px 12px;
+                                    border-radius: 5px;
+                                    font-size: 14px;
+                                    margin-top: 8px;
+                                }
+                                .upload-icon i {
+                                    margin-right: 5px;
+                                }
+                                .upload-icon:hover {
+                                    background: #0056b3;
+                                }
+
 
                             </style>
 
@@ -536,78 +553,136 @@
                                                 <div class="col-auto">
                                                     <div class="nametag">
                                                         <a href="{{ docs.aadhaar_card_front.url }}" data-lightbox="aadhaar-set" data-title="Aadhaar Card Front">
-                                                            <img class="preview-img" src="{{ docs.aadhaar_card_front.url }}" alt="Aadhaar Front" onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';">
+                                                            <img class="preview-img" id="aadhaar_card_front_preview" src="{{ docs.aadhaar_card_front.url }}" 
+                                                                alt="Aadhaar Front" onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';">
                                                         </a>
                                                     </div>
                                                 </div>
                                                 <div class="col">
-                                                    <h4 class="card-hding mb-0 pb-0">Aadhaar Card</h4>
-                                                    <div class="d-flex">
-                                                        <a href="{{ docs.aadhaar_card_front.url }}" data-lightbox="aadhaar-set" class="wrap-small text-gray"><i class="fas fa-eye"></i> View Front</a>
-                                                        <a href="{{ docs.aadhaar_card_back.url }}" data-lightbox="aadhaar-set" class="wrap-small text-gray ml-3"><i class="fas fa-eye"></i> View Back</a>
-                                                    </div>  
+                                                    <h4 class="card-hding mb-0 pb-0">Aadhaar Card Front</h4>
+                                                    
+                                                    <!-- Upload Icon -->
+                                                    <label for="aadhaar_card_front" class="upload-icon">
+                                                        <i class="fas fa-upload"></i> Choose Image
+                                                    </label>
+                                                    
+                                                    <!-- Hidden File Input -->
+                                                    <input type="file" id="aadhaar_card_front" class="form-control d-none" 
+                                                        onchange="uploadDocument('aadhaar_card_front')">
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                            
-                                    <!-- PAN Card -->
+
                                     <div class="col-6 col-sm-6 col-md-6 col-lg-6">
                                         <div class="family-info-card">
                                             <div class="row">
                                                 <div class="col-auto">
                                                     <div class="nametag">
-                                                        <a href="{{ docs.upload_pan.url }}" data-lightbox="pan-card" data-title="PAN Card">
-                                                            <img class="preview-img" src="{{ docs.upload_pan.url }}" alt="PAN Card" onerror="this.onerror=null; this.src='/static/dist/img/pan-card.webp';">
+                                                        <a href="{{ docs.aadhaar_card_back.url }}" data-lightbox="aadhaar-set" data-title="Aadhaar Card Front">
+                                                            <img class="preview-img" id="aadhaar_card_back_preview" src="{{ docs.aadhaar_card_back.url }}" 
+                                                                alt="Aadhaar Front" onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';">
                                                         </a>
                                                     </div>
                                                 </div>
                                                 <div class="col">
-                                                    <h4 class="card-hding mb-0 pb-0">PAN Card</h4>
-                                                    <a href="{{ docs.upload_pan.url }}" data-lightbox="pan-card" class="wrap-small text-gray"><i class="fas fa-eye"></i> View Document</a>
+                                                    <h4 class="card-hding mb-0 pb-0">Aadhaar Card Back</h4>
+                                                    
+                                                    <!-- Upload Icon -->
+                                                    <label for="aadhaar_card_back" class="upload-icon">
+                                                        <i class="fas fa-upload"></i> Choose Image
+                                                    </label>
+                                                    
+                                                    <!-- Hidden File Input -->
+                                                    <input type="file" id="aadhaar_card_back" class="form-control d-none" 
+                                                        onchange="uploadDocument('aadhaar_card_back')">
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                            
-                                    <!-- Cancel Cheque -->
+                                    
                                     <div class="col-6 col-sm-6 col-md-6 col-lg-6">
                                         <div class="family-info-card">
                                             <div class="row">
                                                 <div class="col-auto">
                                                     <div class="nametag">
-                                                        <a href="{{ docs.upload_cheque.url }}" data-lightbox="cheque" data-title="Cancel Cheque">
-                                                            <img class="preview-img" src="{{ docs.upload_cheque.url }}" alt="Cheque"onerror="this.src='{% static 'dist/img/cancel-cheque.jpg' %}';"
-                                                            >
+                                                        <a href="{{ docs.upload_pan.url }}" data-lightbox="aadhaar-set" data-title="Aadhaar Card Front">
+                                                            <img class="preview-img" id="upload_pan_preview" src="{{ docs.upload_pan.url }}" 
+                                                                alt="Aadhaar Front" onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';">
                                                         </a>
                                                     </div>
                                                 </div>
                                                 <div class="col">
-                                                    <h4 class="card-hding mb-0 pb-0">Cancel Cheque</h4>
-                                                    <a href="{{ docs.upload_cheque.url }}" data-lightbox="cheque" class="wrap-small text-gray"><i class="fas fa-eye"></i> View Document</a>
+                                                    <h4 class="card-hding mb-0 pb-0">Pan Card</h4>
+                                                    
+                                                    <!-- Upload Icon -->
+                                                    <label for="upload_pan" class="upload-icon">
+                                                        <i class="fas fa-upload"></i> Choose Image
+                                                    </label>
+                                                    
+                                                    <!-- Hidden File Input -->
+                                                    <input type="file" id="upload_pan" class="form-control d-none" 
+                                                        onchange="uploadDocument('upload_pan')">
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                            
-                                    <!-- 10th Marksheet -->
+                                    
                                     <div class="col-6 col-sm-6 col-md-6 col-lg-6">
                                         <div class="family-info-card">
                                             <div class="row">
                                                 <div class="col-auto">
                                                     <div class="nametag">
-                                                        <a href="{{ docs.tenth_marksheet.url }}" data-lightbox="marksheet" data-title="10th Marksheet">
-                                                            <img class="preview-img" src="{{ docs.tenth_marksheet.url }}" alt="10th Marksheet" onerror="this.onerror=null; this.src='/static/dist/img/default-marksheet.jpg';">
+                                                        <a href="{{ docs.upload_cheque.url }}" data-lightbox="aadhaar-set" data-title="Aadhaar Card Front">
+                                                            <img class="preview-img" id="upload_cheque_preview" src="{{ docs.upload_cheque.url }}" 
+                                                                alt="Aadhaar Front" onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';">
                                                         </a>
                                                     </div>
                                                 </div>
                                                 <div class="col">
-                                                    <h4 class="card-hding mb-0 pb-0">Tenth Marksheet</h4>
-                                                    <a href="{{ docs.tenth_marksheet.url }}" data-lightbox="marksheet" class="wrap-small text-gray"><i class="fas fa-eye"></i> View Document</a>
+                                                    <h4 class="card-hding mb-0 pb-0">Cancelled Cheque</h4>
+                                                    
+                                                    <!-- Upload Icon -->
+                                                    <label for="upload_cheque" class="upload-icon">
+                                                        <i class="fas fa-upload"></i> Choose Image
+                                                    </label>
+                                                    
+                                                    <!-- Hidden File Input -->
+                                                    <input type="file" id="upload_cheque" class="form-control d-none" 
+                                                        onchange="uploadDocument('upload_cheque')">
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+
+                            
+                                    <div class="col-6 col-sm-6 col-md-6 col-lg-6">
+                                        <div class="family-info-card">
+                                            <div class="row">
+                                                <div class="col-auto">
+                                                    <div class="nametag">
+                                                        <a href="{{ docs.tenth_marksheet.url }}" data-lightbox="aadhaar-set" data-title="Aadhaar Card Front">
+                                                            <img class="preview-img" id="tenth_marksheet_preview" src="{{ docs.tenth_marksheet.url }}" 
+                                                                alt="Aadhaar Front" onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';">
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <h4 class="card-hding mb-0 pb-0">10th Marksheet</h4>
+                                                    
+                                                    <!-- Upload Icon -->
+                                                    <label for="tenth_marksheet" class="upload-icon">
+                                                        <i class="fas fa-upload"></i> Choose Image
+                                                    </label>
+                                                    
+                                                    <!-- Hidden File Input -->
+                                                    <input type="file" id="tenth_marksheet" class="form-control d-none" 
+                                                        onchange="uploadDocument('tenth_marksheet')">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                            
                             
                                     {% else %}
                                     <div class="col-12">
@@ -803,25 +878,85 @@
       </script>
 <script>
     function saveChanges() {
-        document.getElementById('accountHolderName').innerText = document.getElementById('editAccountHolderName').value;
-        document.getElementById('reEnterAccountNumber').innerText = document.getElementById('editReEnterAccountNumber').value;
-        document.getElementById('accountNumber').innerText = document.getElementById('editAccountNumber').value;
-        document.getElementById('ifscCode').innerText = document.getElementById('editIfscCode').value;
-        document.getElementById('city').innerText = document.getElementById('editCity').value;
-        document.getElementById('state').innerText = document.getElementById('editState').value;
-    
-        // Close Modal
-        var modal = new bootstrap.Modal(document.getElementById('editModal'));
-        modal.hide();
+                document.getElementById('accountHolderName').innerText = document.getElementById('editAccountHolderName').value;
+                document.getElementById('reEnterAccountNumber').innerText = document.getElementById('editReEnterAccountNumber').value;
+                document.getElementById('accountNumber').innerText = document.getElementById('editAccountNumber').value;
+                document.getElementById('ifscCode').innerText = document.getElementById('editIfscCode').value;
+                document.getElementById('city').innerText = document.getElementById('editCity').value;
+                document.getElementById('state').innerText = document.getElementById('editState').value;
+            
+                // Close Modal
+                var modal = new bootstrap.Modal(document.getElementById('editModal'));
+                modal.hide();
+            }
+            </script>
+                {% include "footer.html" %}
+            </div>
+            <!-- ./wrapper -->
+            
+            {% include 'footer-script.html' %}
+            
+        <script>
+            
+            function uploadDocument(documentType) {
+        let fileInput = document.getElementById(documentType);
+        let file = fileInput.files[0];
+
+        if (!file) return;
+
+        let formData = new FormData();
+        formData.append("document_file", file);
+        formData.append("document_type", documentType);
+        
+        $.ajax({
+            url: "/update-document/",
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken") 
+            },
+            success: function (response) {
+                if (response.new_image_url) {
+                    // Update the preview image
+                    let previewImg = document.getElementById(documentType + "_preview");
+                    previewImg.src = response.new_image_url;
+                    previewImg.onerror = null;
+
+                    // Update the lightbox link
+                    let lightboxLink = document.getElementById(documentType + "_lightbox");
+                    lightboxLink.href = response.new_image_url;
+
+                    // Force a reload after a short delay to ensure updates are visible
+                    setTimeout(function() {
+                        location.reload();
+                    }, 500);
+                }
+            },
+            error: function (xhr) {
+                console.error(xhr.responseJSON.error);
+            }
+        });
     }
+
+    // Function to get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+            let cookies = document.cookie.split(";");
+            for (let i = 0; i < cookies.length; i++) {
+                let cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === name + "=") {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
     </script>
-        {% include "footer.html" %}
-    </div>
-    <!-- ./wrapper -->
-    
-    {% include 'footer-script.html' %}
-    
-    
     
     
     </body>

@@ -299,13 +299,13 @@ class UserFiles(models.Model):
 class DocumentUpload(models.Model):
     user_id = models.IntegerField()  # Reference to user
     aadhaar_number = models.CharField(max_length=12, unique=True)
-    aadhaar_card_front = models.FileField(upload_to='aadhaar/')
-    aadhaar_card_back = models.FileField(upload_to='aadhaar/')
+    aadhaar_card_front = models.FileField(upload_to='documents/')
+    aadhaar_card_back = models.FileField(upload_to='documents/')
     pan_number = models.CharField(max_length=10, unique=True)
-    upload_pan = models.FileField(upload_to='pan/')
+    upload_pan = models.FileField(upload_to='documents/')
     cheque_number = models.CharField(max_length=20, unique=True)
-    upload_cheque = models.FileField(upload_to='cheque/')
-    tenth_marksheet = models.FileField(upload_to='marksheets/')
+    upload_cheque = models.FileField(upload_to='documents/')
+    tenth_marksheet = models.FileField(upload_to='documents/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

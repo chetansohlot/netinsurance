@@ -20,3 +20,13 @@ def get_year(value):
         if match:
             return match.group(1)  # Extracts the year (YYYY)
     return ""  # Return an empty string if parsing fails
+
+@register.filter
+def get_attr(obj, attr_name):
+    """Safely gets an attribute from an object."""
+    return getattr(obj, attr_name, "")
+
+@register.filter
+def attr(obj, field_name):
+    """Returns the attribute of an object dynamically."""
+    return getattr(obj, field_name, "")
