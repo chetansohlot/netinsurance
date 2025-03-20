@@ -26,46 +26,72 @@
                                 <div class="col-md-6">
                                     <div class="signup-form-group">
                                         <label class="signup-form-lbl">Full Name <span class="asterisk">*</span></label>
-                                        <input type="text" name="full_name" class="signup-form-field" placeholder="As per Aadhaar Card">
+                                        <input type="text" name="full_name" value="{{ request.user.user_name }}" class="signup-form-field" placeholder="As per Aadhaar Card">
                                     </div>    
                                 </div>
 
                                 <div class="col-md-6">
-                                    <div class="signup-form-group">
-                                        <label class="signup-form-lbl">Gender <span class="asterisk">*</span></label>
-                                        <div class="signup-gender-box">
-                                            <div class="signup-radio-btn-area">
-                                                <input type="radio" name="gender" class="signup-radio-button" value="1" id="male" checked>
-                                                <label for="male">Male</label>
-                                            </div>
-                                            <div class="signup-radio-btn-area">
-                                                <input type="radio" name="gender" class="signup-radio-button" value="2" id="female">
-                                                <label for="female">Female</label>
-                                            </div>
-                                        </div>   
-                                    </div>  
-                                </div>
+                                  <div class="signup-form-group">
+                                      <label class="signup-form-lbl">Gender <span class="asterisk">*</span></label>
+                                      <div class="signup-gender-box">
+                                          <div class="signup-radio-btn-area">
+                                              <input type="radio" name="gender" class="signup-radio-button" value="1" id="male"
+                                                  {% if request.user.gender == 1 %} checked {% elif not request.user.gender %} checked {% endif %}>
+                                              <label for="male">Male</label>
+                                          </div>
+                                          <div class="signup-radio-btn-area">
+                                              <input type="radio" name="gender" class="signup-radio-button" value="2" id="female"
+                                                  {% if request.user.gender == 2 %} checked {% endif %}>
+                                              <label for="female">Female</label>
+                                          </div>
+                                      </div>   
+                                  </div>  
+                              </div>
 
                                 <div class="col-md-6">
                                     <div class="signup-form-group">
                                         <label class="signup-form-lbl">Enter Your Email <span class="asterisk">*</span></label>                        
-                                        <input type="text" name="email" id="email" class="signup-form-field" placeholder="Email Id">
+                                        <input type="text" name="email" value="{{ request.user.email }}" id="email" class="signup-form-field" placeholder="Email Id">
                                     </div>    
                                 </div>
 
                                 <div class="col-md-6">
                                     <div class="signup-form-group">
                                         <label class="signup-form-lbl">Enter 10-Digit Mobile Number <span class="asterisk">*</span></label>
-                                        <input type="text" name="mobile" id="mobile" class="signup-form-field" placeholder="Register Mobile Number">
+                                        <input type="text" name="mobile" value="{{ request.user.phone }}" id="mobile" class="signup-form-field" placeholder="Register Mobile Number">
                                     </div>    
                                 </div>
-
                                 <div class="col-md-6">
-                                    <div class="signup-form-group">
-                                        <label class="signup-form-lbl">Enter Password <span class="asterisk">*</span></label>
-                                        <input type="password" name="password" class="signup-form-field" placeholder="Enter Password">
-                                    </div>    
-                                </div>
+                                  <div class="signup-form-group">
+                                      <label class="signup-form-lbl">Enter Password <span class="asterisk">*</span></label>
+                                      <input 
+                                          type="password" 
+                                          id="password" 
+                                          name="password" 
+                                          class="signup-form-field" 
+                                          placeholder="Enter Password"
+                                          value="" 
+                                          autocomplete="new-password" 
+                                          onfocus="this.removeAttribute('readonly');" 
+                                          readonly>
+                                  </div>    
+                              </div>
+                              
+                              <div class="col-md-6">
+                                  <div class="signup-form-group">
+                                      <label class="signup-form-lbl">Confirm Password <span class="asterisk">*</span></label>
+                                      <input 
+                                          type="password" 
+                                          name="confirm_password" 
+                                          class="signup-form-field" 
+                                          placeholder="Confirm Password"
+                                          value="" 
+                                          autocomplete="new-password" 
+                                          onfocus="this.removeAttribute('readonly');" 
+                                          readonly>
+                                  </div>    
+                              </div>
+                              
 
                                 <div class="col-sm-12 mt-5">
                                     <div class="signup-terms">

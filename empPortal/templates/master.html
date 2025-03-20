@@ -104,6 +104,11 @@
                 required: true,
                 minlength: 6
             },
+            confirm_password: {
+                required: true,
+                minlength: 6,
+                equalTo: "#password" // Ensures confirm_password matches password
+            },
             terms: {
                 required: true
             }
@@ -128,6 +133,11 @@
             password: {
                 required: "Please enter your password",
                 minlength: "Password must be at least 6 characters long"
+            },
+            confirm_password: {
+                required: "Please confirm your password",
+                minlength: "Password must be at least 6 characters long",
+                equalTo: "Passwords do not match"
             },
             terms: {
                 required: "You must agree to the Terms & Conditions"
