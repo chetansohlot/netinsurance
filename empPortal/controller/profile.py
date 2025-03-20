@@ -127,6 +127,7 @@ def storeOrUpdateBankDetails(request):
     # If not a POST request, redirect to my-account
     return redirect('my-account')
 
+
 def upload_documents(request):
     if request.method == "POST":
         form = DocumentUploadForm(request.POST, request.FILES)
@@ -139,23 +140,40 @@ def upload_documents(request):
 
             # Update fields if new files are uploaded
             file_fields = ['aadhaar_card_front', 'aadhaar_card_back', 'upload_pan', 'upload_cheque', 'tenth_marksheet']
-            files_uploaded = False
+            files_uploaded = []
+            errors = []
 
             for field in file_fields:
                 uploaded_file = request.FILES.get(field)
                 if uploaded_file:
+                    # Validate file size (e.g., max 5MB)
+                    if uploaded_file.size > 5 * 1024 * 1024:
+                        errors.append(f"{field.replace('_', ' ').title()} exceeds 5MB size limit.")
+                        continue
+                    
+                    # Validate file type (optional, adjust as needed)
+                    allowed_types = ['image/jpeg', 'image/png', 'application/pdf']
+                    if uploaded_file.content_type not in allowed_types:
+                        errors.append(f"{field.replace('_', ' ').title()} must be a JPG, PNG, or PDF file.")
+                        continue
+
                     setattr(existing_doc, field, uploaded_file)
-                    files_uploaded = True
+                    files_uploaded.append(field.replace('_', ' ').title())
 
             if files_uploaded:
                 existing_doc.save()
-                messages.success(request, "Documents uploaded successfully!")
-            else:
+                messages.success(request, f"Successfully uploaded: {', '.join(files_uploaded)}")
+            if errors:
+                for error in errors:
+                    messages.error(request, error)
+            if not files_uploaded and not errors:
                 messages.warning(request, "No new files were uploaded.")
 
             return redirect('upload_documents')
 
         else:
-            messages.error(request, f"Error uploading documents: {form.errors}")
+            for field, error_messages in form.errors.items():
+                for error in error_messages:
+                    messages.error(request, f"{field.replace('_', ' ').title()}: {error}")
 
     return redirect('my-account')
