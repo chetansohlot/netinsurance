@@ -138,8 +138,7 @@ def storeOrUpdateBankDetails(request):
         return redirect('my-account')
 
     # If not a POST request, redirect to my-account
-    return redirect('my-account')
-
+    
 
 def upload_documents(request):
     if request.method == "POST":
@@ -147,6 +146,9 @@ def upload_documents(request):
 
         if form.is_valid():
             user_id = request.user.id  # Get the current user ID
+            aadhaar_number = form.cleaned_data.get('aadhaar_number')
+            pan_number = form.cleaned_data.get('pan_number')
+            cheque_number = form.cleaned_data.get('cheque_number')
 
             # Get or create document instance for user
             existing_doc, created = DocumentUpload.objects.get_or_create(user_id=user_id)
@@ -155,6 +157,11 @@ def upload_documents(request):
             file_fields = ['aadhaar_card_front', 'aadhaar_card_back', 'upload_pan', 'upload_cheque', 'tenth_marksheet']
             files_uploaded = []
             errors = []
+
+            # Update document fields
+            existing_doc.aadhaar_number = aadhaar_number
+            existing_doc.pan_number = pan_number
+            existing_doc.cheque_number = cheque_number
 
             for field in file_fields:
                 uploaded_file = request.FILES.get(field)
@@ -190,6 +197,7 @@ def upload_documents(request):
                     messages.error(request, f"{field.replace('_', ' ').title()}: {error}")
 
     return redirect('my-account')
+
 
 
 def update_document(request):
