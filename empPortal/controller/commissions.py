@@ -227,9 +227,14 @@ def update_commission(request):
         )
 
         messages.success(request, action_message)
-        return redirect('member-view', user_id=commission.member_id)
+
+        user_details = Users.objects.get(id=commission.member_id)
+
+        # Redirect based on role_id
+        if user_details.role_id == 1:
+            return redirect("my-account")
+        else:
+            return redirect("member-view", user_id=commission.member_id)
 
     messages.error(request, "Invalid request method.")
     return redirect("members")
-
-
