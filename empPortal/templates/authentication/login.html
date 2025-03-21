@@ -44,7 +44,8 @@
                               </div>
                             </div>
                             <div id="email-login" {% if from_otp_verification %}style="display: none;"{% endif %}>
-                              <form action="{% url 'login' %}" method="post" autocomplete="off">
+                              <form id="login-form" action="{% url 'login' %}" method="post" autocomplete="off">
+
                                   {% csrf_token %}
                               
                                   <div class="row">

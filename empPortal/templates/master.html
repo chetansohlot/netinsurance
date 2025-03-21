@@ -472,5 +472,63 @@
     });
 </script>
 
+<script>
+    $(document).ready(function () {
+        console.log("jQuery Loaded:", !!window.jQuery);
+        console.log("jQuery Validate Loaded:", typeof $.fn.validate !== "undefined");
+
+        $("#login-form").validate({
+            rules: {
+                email: {
+                    required: true,
+                    email: true
+                },
+                password: {
+                    required: true,
+                    minlength: 6
+                }
+            },
+            messages: {
+                email: {
+                    required: "Please enter your email",
+                    email: "Enter a valid email (e.g., email@domain.com)"
+                },
+                password: {
+                    required: "Please enter your password",
+                    minlength: "Password must be at least 6 characters long"
+                }
+            },
+            errorElement: "span",
+            errorPlacement: function (error, element) {
+                error.addClass("text-danger small");
+                error.insertAfter(element);
+            },
+            submitHandler: function (form) {
+                form.submit();
+            }
+        });
+
+        // Prevent submission if form is invalid
+        $(".signup-submit-btn").click(function () {
+            if ($("#login-form").valid()) {
+                $("#login-form").submit();
+            }
+        });
+
+        // Show/Hide Password
+        $(".showhide-password").click(function () {
+            let passwordField = $("#login_password_id");
+            let icon = $(this).find("i");
+            if (passwordField.attr("type") === "password") {
+                passwordField.attr("type", "text");
+                icon.removeClass("fa-eye").addClass("fa-eye-slash");
+            } else {
+                passwordField.attr("type", "password");
+                icon.removeClass("fa-eye-slash").addClass("fa-eye");
+            }
+        });
+    });
+</script>
+
 
 </html>
