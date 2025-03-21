@@ -14,6 +14,7 @@ from pathlib import Path
 import os
 import platform
 from dotenv import load_dotenv
+from empPortal.utils import dd  # Ensure utils.py is loaded on startup
 
 load_dotenv()
 

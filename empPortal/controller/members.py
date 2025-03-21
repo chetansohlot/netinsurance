@@ -55,8 +55,6 @@ def memberView(request, user_id):
         bank_details = BankDetails.objects.filter(user_id=user_id).first()
 
         docs = DocumentUpload.objects.filter(user_id=user_id).first()
-
-
         # Fetch commissions for the specific member
         query = """
             SELECT c.*, u.first_name, u.last_name, c.product_id
