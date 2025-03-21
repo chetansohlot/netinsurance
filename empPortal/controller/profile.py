@@ -10,6 +10,7 @@ from ..forms import DocumentUploadForm
 from django.contrib.auth import authenticate, login ,logout
 from django.core.files.storage import FileSystemStorage
 import re
+from django.db import IntegrityError
 import requests
 from fastapi import FastAPI, File, UploadFile
 import fitz
@@ -116,29 +117,53 @@ def update_user_details(request):
 def storeOrUpdateBankDetails(request):
     if request.method == "POST":
         user_id = request.user.id  # Get the logged-in user's ID
-        
-        # Check if the bank details already exist for this user
-        bank_details, created = BankDetails.objects.get_or_create(user_id=user_id)
-        
-        # Update the bank details
-        bank_details.account_holder_name = request.POST.get('account_holder_name')
-        bank_details.re_enter_account_number = request.POST.get('re_enter_account_number')
-        bank_details.account_number = request.POST.get('account_number')
-        bank_details.ifsc_code = request.POST.get('ifsc_code')
-        bank_details.city = request.POST.get('city')
-        bank_details.state = request.POST.get('state')
-        
-        # Save the updated or newly created bank details
-        bank_details.save()
+        account_number = request.POST.get('account_number')
 
-        # Show success message
-        messages.success(request, "Bank details have been updated successfully.")
+        try:
+            # Check if bank details already exist for the user
+            bank_details, created = BankDetails.objects.get_or_create(user_id=user_id)
+
+            # Check if another user has the same account number
+            if BankDetails.objects.filter(account_number=account_number).exclude(user_id=user_id).exists():
+                messages.error(request, "This account number is already registered with another user.")
+                return redirect('my-account')
+
+            # Update the bank details
+            bank_details.account_holder_name = request.POST.get('account_holder_name')
+            bank_details.re_enter_account_number = request.POST.get('re_enter_account_number')
+            bank_details.account_number = account_number
+            bank_details.ifsc_code = request.POST.get('ifsc_code')
+            bank_details.city = request.POST.get('city')
+            bank_details.state = request.POST.get('state')
+
+            # Save changes
+            bank_details.save()
+            messages.success(request, "Bank details have been updated successfully.")
         
-        # Redirect to the my-account page after saving the details
+        except IntegrityError:
+            messages.error(request, "An error occurred while saving your bank details. Please try again.")
+        
         return redirect('my-account')
 
     # If not a POST request, redirect to my-account
     
+def check_account_number(request):
+    if request.method == "POST":
+        account_number = request.POST.get("account_number", "").strip()
+        print(f"Checking account number: {account_number}")  # Debugging
+
+        if request.user.is_authenticated:
+            user_bank = BankDetails.objects.filter(user_id=request.user.id).first()
+            if user_bank and user_bank.account_number == account_number:
+                return JsonResponse({"exists": False})  # Allow current user to keep the same account number
+
+        exists = BankDetails.objects.filter(account_number=account_number).exists()
+        print(f"Exists in DB: {exists}")  # Debugging
+
+        return JsonResponse({"exists": exists})
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
 
 def upload_documents(request):
     if request.method == "POST":

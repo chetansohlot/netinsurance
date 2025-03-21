@@ -490,7 +490,7 @@
                                                     </div>
                                                     <div class="col-md-12">    
                                                         <div class="d-flex justify-content-end">
-                                                            <button id="bank-btn-sub" type="button" class="form-submit-btn">Save Changes</button>
+                                                            <button id="bank-btn-sub" type="submit" class="form-submit-btn">Save Changes</button>
                                                         </div>    
                                                     </div>    
                                                 </div>        
@@ -567,7 +567,7 @@
                                                     <td>Aadhaar Card Front</td>
                                                     <td>{{ docs.aadhaar_number|default:"-" }}</td>
                                                     <td>{{ docs.aadhaar_card_front_updated_at|date:"Y-m-d H:i:s" }}</td>
-                                                    <td>{{ docs.aadhaar_status|default:"Pending" }}</td>
+                                                    <td>{{ docs.aadhaar_card_front_status|default:"Pending" }}</td>
                                                     <td>
                                                         <label for="aadhaar_card_front" class="btn btn-sm btn-warning">Edit</label>
                                                         <input type="file" id="aadhaar_card_front" class="d-none" onchange="uploadDocument('aadhaar_card_front')">
@@ -585,7 +585,7 @@
                                                     <td>Aadhaar Card Back</td>
                                                     <td>{{ docs.aadhaar_number|default:"-" }}</td>
                                                     <td>{{ docs.aadhaar_card_back_updated_at|date:"Y-m-d H:i:s" }}</td>
-                                                    <td>{{ docs.aadhaar_status|default:"Pending" }}</td>
+                                                    <td>{{ docs.aadhaar_card_back_status|default:"Pending" }}</td>
                                                     <td>
                                                         <label for="aadhaar_card_back" class="btn btn-sm btn-warning">Edit</label>
                                                         <input type="file" id="aadhaar_card_back" class="d-none" onchange="uploadDocument('aadhaar_card_back')">
@@ -603,7 +603,7 @@
                                                     <td>PAN Card</td>
                                                     <td>{{ docs.pan_number|default:"-" }}</td>
                                                     <td>{{ docs.upload_pan_updated_at|date:"Y-m-d H:i:s" }}</td>
-                                                    <td>{{ docs.pan_status|default:"Pending" }}</td>
+                                                    <td>{{ docs.upload_pan_status|default:"Pending" }}</td>
                                                     <td>
                                                         <label for="upload_pan" class="btn btn-sm btn-warning">Edit</label>
                                                         <input type="file" id="upload_pan" class="d-none" onchange="uploadDocument('upload_pan')">
@@ -621,7 +621,7 @@
                                                     <td>Cancelled Cheque</td>
                                                     <td>{{ docs.cheque_number|default:"-" }}</td>
                                                     <td>{{ docs.upload_cheque_updated_at|date:"Y-m-d H:i:s" }}</td>
-                                                    <td>{{ docs.cheque_status|default:"Pending" }}</td>
+                                                    <td>{{ docs.upload_cheque_status|default:"Pending" }}</td>
                                                     <td>
                                                         <label for="upload_cheque" class="btn btn-sm btn-warning">Edit</label>
                                                         <input type="file" id="upload_cheque" class="d-none" onchange="uploadDocument('upload_cheque')">
@@ -639,7 +639,7 @@
                                                     <td>10th Marksheet</td>
                                                     <td>{{ docs.tenth_marksheet_doc_id|default:"-" }}</td>
                                                     <td>{{ docs.tenth_marksheet_updated_at|date:"Y-m-d H:i:s" }}</td>
-                                                    <td>{{ docs.marksheet_status|default:"Pending" }}</td>
+                                                    <td>{{ docs.tenth_marksheet_status|default:"Pending" }}</td>
                                                     <td>
                                                         <label for="tenth_marksheet" class="btn btn-sm btn-warning">Edit</label>
                                                         <input type="file" id="tenth_marksheet" class="d-none" onchange="uploadDocument('tenth_marksheet')">

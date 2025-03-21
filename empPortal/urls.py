@@ -49,6 +49,8 @@ urlpatterns = [
     path('upload-documents/', profile.upload_documents, name='upload_documents'),
     path("update-document/", profile.update_document, name="update_document"),
     path('store-bank-data/', profile.storeOrUpdateBankDetails, name='store-bank-data'),
+    path("check-account-number/", profile.check_account_number, name="check-account-number"),
+
     path('update-user-details/', profile.update_user_details, name='update-user-details'),
 
     path("update-doc-status/", members.update_doc_status, name="update-doc-status"),  
