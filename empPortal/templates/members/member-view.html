@@ -440,25 +440,32 @@
                                             display: block;
                                         }
                                     </style>
-                                    
                                     <div class="col-6 col-sm-6 col-md-6 col-lg-6">
                                         <div class="family-info-card">
                                             <div class="row align-items-center">
                                                 <div class="col-auto">
                                                     <div class="nametag">
-                                                        <a href="{{ docs.upload_cheque.url }}" data-lightbox="cheque-set" data-title="Cancelled Cheque">
-                                                            <img class="preview-img img-fluid" id="upload_cheque_preview" 
-                                                                src="{{ docs.upload_cheque.url }}" 
-                                                                alt="Cancelled Cheque" 
-                                                                onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';">
-                                                        </a>
+                                                        {% if docs.upload_cheque %}
+                                                            <a href="{{ docs.upload_cheque.url }}" data-lightbox="cheque-set" data-title="Cancelled Cheque">
+                                                                <img class="preview-img img-fluid" id="upload_cheque_preview" 
+                                                                    src="{{ docs.upload_cheque.url }}" 
+                                                                    alt="Cancelled Cheque" 
+                                                                    onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';">
+                                                            </a>
+                                                        {% else %}
+                                                            <img class="preview-img img-fluid" src="/static/dist/img/aadhar-front.jpg" alt="Cancelled Cheque">
+                                                        {% endif %}
                                                     </div>
                                                 </div>
                                                 <div class="col">
                                                     <h4 class="card-hding mb-0 pb-0">Cancelled Cheque</h4>
-                                                    <a href="{{ docs.upload_cheque.url }}" class="wrap-small text-gray" target="_blank">
-                                                        <i class="fas fa-eye"></i> View Document
-                                                    </a>
+                                                    {% if docs.upload_cheque %}
+                                                        <a href="{{ docs.upload_cheque.url }}" class="wrap-small text-gray" target="_blank">
+                                                            <i class="fas fa-eye"></i> View Document
+                                                        </a>
+                                                    {% else %}
+                                                        <p class="text-muted">No cheque uploaded</p>
+                                                    {% endif %}
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -472,6 +479,7 @@
                                             </div>
                                         </div>
                                     </div>
+                                    
                                     
                                     
                                     
@@ -584,7 +592,18 @@
                                                     <td>Aadhaar Card front</td>
                                                     <td>{{ docs.aadhaar_number|default:"-" }}</td>
                                                     <td>{{ docs.aadhaar_card_front_updated_at|date:"Y-m-d H:i:s" }}</td>
-                                                    <td>{{ docs.aadhaar_card_front_status|default:"Pending" }}</td>
+                                                    <td>
+                                                        {% if docs.aadhaar_card_front_status == "Approved" %}
+                                                            <span class="text-success">Approved</span>
+                                                        {% elif docs.aadhaar_card_front_status == "Rejected" %}
+                                                            <span class="text-danger">Rejected</span>
+                                                        {% else %}
+                                                            <span class="text-warning">Pending</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    
+                                                    {% if docs.aadhaar_card_front_status != "Approved" and docs.aadhaar_card_front_status != "Rejected" %}
+
                                                     <td>
                                                         <select class="form-control form-control-sm" onchange="updateStatus('aadhaar_card_front', this.value, '{{ docs.id }}')">
                                                             <option value="Pending" {% if docs.aadhaar_card_front_status == 'Pending' %}selected{% endif %}>Pending</option>
@@ -592,6 +611,8 @@
                                                             <option value="Rejected" {% if docs.aadhaar_card_front_status == 'Rejected' %}selected{% endif %}>Rejected</option>
                                                         </select>
                                                     </td>
+                                                    {% endif %}
+
                                                 </tr>
                             
                                                 <!-- Aadhaar Card Back -->
@@ -605,7 +626,17 @@
                                                     <td>Aadhaar Card Back</td>
                                                     <td>{{ docs.aadhaar_number|default:"-" }}</td>
                                                     <td>{{ docs.aadhaar_card_back_updated_at|date:"Y-m-d H:i:s" }}</td>
-                                                    <td>{{ docs.aadhaar_card_back_status|default:"Pending" }}</td>
+                                                    <td>
+                                                        {% if docs.aadhaar_card_back_status == "Approved" %}
+                                                            <span class="text-success">Approved</span>
+                                                        {% elif docs.aadhaar_card_back_status == "Rejected" %}
+                                                            <span class="text-danger">Rejected</span>
+                                                        {% else %}
+                                                            <span class="text-warning">Pending</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    {% if docs.aadhaar_card_back_status != "Approved" and docs.aadhaar_card_back_status != "Rejected" %}
+
                                                     <td>
                                                         <select class="form-control form-control-sm" onchange="updateStatus('aadhaar_card_back', this.value, '{{ docs.id }}')">
                                                             <option value="Pending" {% if docs.aadhaar_card_back_status == 'Pending' %}selected{% endif %}>Pending</option>
@@ -613,6 +644,8 @@
                                                             <option value="Rejected" {% if docs.aadhaar_card_back_status == 'Rejected' %}selected{% endif %}>Rejected</option>
                                                         </select>
                                                     </td>
+                                                    {% endif %}
+
                                                 </tr>
                             
                                                 <!-- Pan Card -->
@@ -626,7 +659,17 @@
                                                     <td>PAN Card</td>
                                                     <td>{{ docs.pan_number|default:"-" }}</td>
                                                     <td>{{ docs.upload_pan_updated_at|date:"Y-m-d H:i:s" }}</td>
-                                                    <td>{{ docs.upload_pan_status|default:"Pending" }}</td>
+                                                    <td>
+                                                        {% if docs.upload_pan_status == "Approved" %}
+                                                            <span class="text-success">Approved</span>
+                                                        {% elif docs.upload_pan_status == "Rejected" %}
+                                                            <span class="text-danger">Rejected</span>
+                                                        {% else %}
+                                                            <span class="text-warning">Pending</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    {% if docs.upload_pan_status != "Approved" and docs.upload_pan_status != "Rejected" %}
+
                                                     <td>
                                                         <select class="form-control form-control-sm" onchange="updateStatus('upload_pan', this.value, '{{ docs.id }}')">
                                                             <option value="Pending" {% if docs.upload_pan_status == 'Pending' %}selected{% endif %}>Pending</option>
@@ -634,6 +677,8 @@
                                                             <option value="Rejected" {% if docs.upload_pan_status == 'Rejected' %}selected{% endif %}>Rejected</option>
                                                         </select>
                                                     </td>
+                                                    {% endif %}
+
                                                 </tr>
                             
                                                 <!-- Cancelled Cheque -->
@@ -647,7 +692,17 @@
                                                     <td>Cancelled Cheque</td>
                                                     <td>{{ docs.cheque_number|default:"-" }}</td>
                                                     <td>{{ docs.upload_cheque_updated_at|date:"Y-m-d H:i:s" }}</td>
-                                                    <td>{{ docs.upload_cheque_status|default:"Pending" }}</td>
+                                                    <td>
+                                                        {% if docs.upload_cheque_status == "Approved" %}
+                                                            <span class="text-success">Approved</span>
+                                                        {% elif docs.upload_cheque_status == "Rejected" %}
+                                                            <span class="text-danger">Rejected</span>
+                                                        {% else %}
+                                                            <span class="text-warning">Pending</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    {% if docs.upload_cheque_status != "Approved" and docs.upload_cheque_status != "Rejected" %}
+
                                                     <td>
                                                         <select class="form-control form-control-sm" onchange="updateStatus('upload_cheque', this.value, '{{ docs.id }}')">
                                                             <option value="Pending" {% if docs.upload_cheque_status == 'Pending' %}selected{% endif %}>Pending</option>
@@ -655,6 +710,8 @@
                                                             <option value="Rejected" {% if docs.upload_cheque_status == 'Rejected' %}selected{% endif %}>Rejected</option>
                                                         </select>
                                                     </td>
+                                                    {% endif %}
+
                                                 </tr>
                             
                                                 <!-- 10th Marksheet -->
@@ -668,7 +725,17 @@
                                                     <td>10th Marksheet</td>
                                                     <td>{{ docs.tenth_marksheet_doc_id|default:"-" }}</td>
                                                     <td>{{ docs.tenth_marksheet_updated_at|date:"Y-m-d H:i:s" }}</td>
-                                                    <td>{{ docs.tenth_marksheet_status|default:"Pending" }}</td>
+                                                    <td>
+                                                        {% if docs.tenth_marksheet_status == "Approved" %}
+                                                            <span class="text-success">Approved</span>
+                                                        {% elif docs.tenth_marksheet_status == "Rejected" %}
+                                                            <span class="text-danger">Rejected</span>
+                                                        {% else %}
+                                                            <span class="text-warning">Pending</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    {% if docs.tenth_marksheet_status != "Approved" and docs.tenth_marksheet_status != "Rejected" %}
+
                                                     <td>
                                                         <select class="form-control form-control-sm" onchange="updateStatus('tenth_marksheet', this.value, '{{ docs.id }}')">
                                                             <option value="Pending" {% if docs.tenth_marksheet_status == 'Pending' %}selected{% endif %}>Pending</option>
@@ -676,6 +743,8 @@
                                                             <option value="Rejected" {% if docs.tenth_marksheet_status == 'Rejected' %}selected{% endif %}>Rejected</option>
                                                         </select>
                                                     </td>
+                                                    {% endif %}
+
                                                 </tr>
                                             </tbody>
                                         </table>

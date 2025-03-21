@@ -567,11 +567,23 @@
                                                     <td>Aadhaar Card Front</td>
                                                     <td>{{ docs.aadhaar_number|default:"-" }}</td>
                                                     <td>{{ docs.aadhaar_card_front_updated_at|date:"Y-m-d H:i:s" }}</td>
-                                                    <td>{{ docs.aadhaar_card_front_status|default:"Pending" }}</td>
                                                     <td>
-                                                        <label for="aadhaar_card_front" class="btn btn-sm btn-warning">Edit</label>
-                                                        <input type="file" id="aadhaar_card_front" class="d-none" onchange="uploadDocument('aadhaar_card_front')">
+                                                        {% if docs.aadhaar_card_front_status == "Approved" %}
+                                                            <span class="text-success">Approved</span>
+                                                        {% elif docs.aadhaar_card_front_status == "Rejected" %}
+                                                            <span class="text-danger">Rejected</span>
+                                                        {% else %}
+                                                            <span class="text-warning">Pending</span>
+                                                        {% endif %}
                                                     </td>
+                                                    
+                                                    {% if docs.aadhaar_card_front_status != "Approved" %}
+                                                        <td>
+                                                            <label for="aadhaar_card_front" class="btn btn-sm btn-warning">Edit</label>
+                                                            <input type="file" id="aadhaar_card_front" class="d-none" onchange="uploadDocument('aadhaar_card_front')">
+                                                        </td>
+                                                    {% endif %}
+
                                                 </tr>
                             
                                                 <!-- Aadhaar Card Back -->
@@ -585,11 +597,23 @@
                                                     <td>Aadhaar Card Back</td>
                                                     <td>{{ docs.aadhaar_number|default:"-" }}</td>
                                                     <td>{{ docs.aadhaar_card_back_updated_at|date:"Y-m-d H:i:s" }}</td>
-                                                    <td>{{ docs.aadhaar_card_back_status|default:"Pending" }}</td>
+                                                    <td>
+                                                        {% if docs.aadhaar_card_back_status == "Approved" %}
+                                                            <span class="text-success">Approved</span>
+                                                        {% elif docs.aadhaar_card_back_status == "Rejected" %}
+                                                            <span class="text-danger">Rejected</span>
+                                                        {% else %}
+                                                            <span class="text-warning">Pending</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    {% if docs.aadhaar_card_back_status != "Approved" %}
+
                                                     <td>
                                                         <label for="aadhaar_card_back" class="btn btn-sm btn-warning">Edit</label>
                                                         <input type="file" id="aadhaar_card_back" class="d-none" onchange="uploadDocument('aadhaar_card_back')">
                                                     </td>
+                                                    {% endif %}
+
                                                 </tr>
                             
                                                 <!-- Pan Card -->
@@ -603,11 +627,22 @@
                                                     <td>PAN Card</td>
                                                     <td>{{ docs.pan_number|default:"-" }}</td>
                                                     <td>{{ docs.upload_pan_updated_at|date:"Y-m-d H:i:s" }}</td>
-                                                    <td>{{ docs.upload_pan_status|default:"Pending" }}</td>
+                                                    <td>
+                                                        {% if docs.upload_pan_status == "Approved" %}
+                                                            <span class="text-success">Approved</span>
+                                                        {% elif docs.upload_pan_status == "Rejected" %}
+                                                            <span class="text-danger">Rejected</span>
+                                                        {% else %}
+                                                            <span class="text-warning">Pending</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    {% if docs.upload_pan_status != "Approved" %}
                                                     <td>
                                                         <label for="upload_pan" class="btn btn-sm btn-warning">Edit</label>
                                                         <input type="file" id="upload_pan" class="d-none" onchange="uploadDocument('upload_pan')">
                                                     </td>
+                                                    {% endif %}
+
                                                 </tr>
                             
                                                 <!-- Cancelled Cheque -->
@@ -621,11 +656,22 @@
                                                     <td>Cancelled Cheque</td>
                                                     <td>{{ docs.cheque_number|default:"-" }}</td>
                                                     <td>{{ docs.upload_cheque_updated_at|date:"Y-m-d H:i:s" }}</td>
-                                                    <td>{{ docs.upload_cheque_status|default:"Pending" }}</td>
+                                                    <td>
+                                                        {% if docs.upload_cheque_status == "Approved" %}
+                                                            <span class="text-success">Approved</span>
+                                                        {% elif docs.upload_cheque_status == "Rejected" %}
+                                                            <span class="text-danger">Rejected</span>
+                                                        {% else %}
+                                                            <span class="text-warning">Pending</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    {% if docs.upload_cheque_status != "Approved" %}
                                                     <td>
                                                         <label for="upload_cheque" class="btn btn-sm btn-warning">Edit</label>
                                                         <input type="file" id="upload_cheque" class="d-none" onchange="uploadDocument('upload_cheque')">
                                                     </td>
+                                                    {% endif %}
+
                                                 </tr>
                             
                                                 <!-- 10th Marksheet -->
@@ -639,11 +685,22 @@
                                                     <td>10th Marksheet</td>
                                                     <td>{{ docs.tenth_marksheet_doc_id|default:"-" }}</td>
                                                     <td>{{ docs.tenth_marksheet_updated_at|date:"Y-m-d H:i:s" }}</td>
-                                                    <td>{{ docs.tenth_marksheet_status|default:"Pending" }}</td>
+                                                    <td>
+                                                        {% if docs.tenth_marksheet_status == "Approved" %}
+                                                            <span class="text-success">Approved</span>
+                                                        {% elif docs.tenth_marksheet_status == "Rejected" %}
+                                                            <span class="text-danger">Rejected</span>
+                                                        {% else %}
+                                                            <span class="text-warning">Pending</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    {% if docs.tenth_marksheet_status != "Approved" %}
                                                     <td>
                                                         <label for="tenth_marksheet" class="btn btn-sm btn-warning">Edit</label>
                                                         <input type="file" id="tenth_marksheet" class="d-none" onchange="uploadDocument('tenth_marksheet')">
                                                     </td>
+                                                    {% endif %}
+
                                                 </tr>
                                             </tbody>
                                         </table>
