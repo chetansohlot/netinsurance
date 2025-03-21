@@ -51,6 +51,7 @@ urlpatterns = [
     path('store-bank-data/', profile.storeOrUpdateBankDetails, name='store-bank-data'),
     path('update-user-details/', profile.update_user_details, name='update-user-details'),
 
+    path("update-doc-status/", members.update_doc_status, name="update-doc-status"),  
     path('members/', members.members, name='members'),
     path('/member/member-view/<str:user_id>',members.memberView, name='member-view'),
     path('/member/activate-user/<str:user_id>',members.activateUser, name='activate-user'),

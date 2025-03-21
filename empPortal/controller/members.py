@@ -1,12 +1,14 @@
 from django.http import HttpResponse
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import update_session_auth_hash
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib import messages
 from django.template import loader
-from ..models import Commission,Users
+from ..models import Commission,Users, DocumentUpload
 from empPortal.model import BankDetails
+from ..forms import DocumentUploadForm
 
+from django.utils.timezone import now
 from django.contrib.auth import authenticate, login ,logout
 from django.core.files.storage import FileSystemStorage
 import re
@@ -52,6 +54,9 @@ def memberView(request, user_id):
         user_details = Users.objects.get(id=user_id)
         bank_details = BankDetails.objects.filter(user_id=user_id).first()
 
+        docs = DocumentUpload.objects.filter(user_id=user_id).first()
+
+
         # Fetch commissions for the specific member
         query = """
             SELECT c.*, u.first_name, u.last_name, c.product_id
@@ -82,6 +87,7 @@ def memberView(request, user_id):
         return render(request, 'members/member-view.html', {
             'user_details': user_details,
             'bank_details': bank_details,
+            'docs': docs,
             'commissions': commissions_list,  # Fixed variable name
             'products': products  # Fixed variable name
         })
@@ -172,3 +178,44 @@ def storeOrUpdateBankDetails(request):
 
     # If not a POST request, redirect to my-account
     return redirect('my-account')
+
+
+def update_doc_status(request):
+    if request.method == "POST":
+        
+        try:
+            data = json.loads(request.body)  # Correct way to get JSON data
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON data"}, status=400)
+        
+        doc_type = data.get("docType")
+        status = data.get("status")
+        doc_id = data.get("docId")
+
+        # Validate inputs
+        if not doc_type or not status or not doc_id:
+            return JsonResponse({"error": "Missing required parameters"}, status=400)
+
+        # Check if status is valid
+        valid_statuses = ["Pending", "Approved", "Rejected"]
+        if status not in valid_statuses:
+            return JsonResponse({"error": "Invalid status"}, status=400)
+
+        # Fetch the document record
+        document = get_object_or_404(DocumentUpload, id=doc_id)
+
+        # Check if the requested document type exists in the model
+        status_field = f"{doc_type}_status"
+        updated_at_field = f"{doc_type}_updated_at"
+
+        if not hasattr(document, status_field) or not hasattr(document, updated_at_field):
+            return JsonResponse({"error": "Invalid document type"}, status=400)
+
+        # Update status and timestamp
+        setattr(document, status_field, status)
+        setattr(document, updated_at_field, now())
+        document.save()
+
+        return JsonResponse({"success": True, "message": f"Status updated to {status}!"})
+    
+    return JsonResponse({"error": "Invalid request method"}, status=405)
