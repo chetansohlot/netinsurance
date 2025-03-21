@@ -270,7 +270,7 @@ def forget_pass_view(request):
 
             # Redirect if there are errors
             if list(messages.get_messages(request)):  
-                return redirect(request.META.get('HTTP_REFERER', '/'))
+                return render(request, 'authentication/reset-password.html')
 
         # Fetch User and Log Them In
             user = Users.objects.filter(email=email).first()
