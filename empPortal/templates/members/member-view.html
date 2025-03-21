@@ -17,15 +17,22 @@
         <div class="content-wrapper white-bg">
             <div class="content-header header-content-bg mb-0">
               <div class="container-fluid">
-                {% if messages %}
-                    <div class="alert alert-danger">
-                        <ul>
-                            {% for message in messages %}
-                                <li>{{ message }}</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                {% endif %}
+                
+          {% if messages %}
+          <div class="col-sm-12">
+              {% for message in messages %}
+                  <div class="alert 
+                      {% if message.tags == 'success' %}alert-success
+                      {% elif message.tags == 'error' %}alert-danger
+                      {% elif message.tags == 'warning' %}alert-warning
+                      {% elif message.tags == 'info' %}alert-info
+                      {% else %}alert-secondary{% endif %}
+                      w-100 mb-0">
+                      <p class="mb-0">{{ message }}</p>
+                  </div>
+              {% endfor %}
+          </div>  
+      {% endif %}
                 <div class="row justify-content-between justify-content-sm-start pb-4">
                   <div class="col col-sm-4">
                     <!-- <h1 class="admin-title m-0 py-2">View Member </h1> -->
