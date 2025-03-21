@@ -39,32 +39,20 @@ def login_view(request):
     # Logout user if they navigated back from OTP page
     if from_otp_verification and request.user.is_authenticated:
         logout(request)
-
     # Check if login is coming from OTP verification
-    if request.method == 'POST' and from_otp_verification == 'false':
+    if request.method == 'POST' and not from_otp_verification:
+
         # Fetch login method and credentials
-        login_via = request.POST.get('loginvia', '').strip()
         email = request.POST.get('email', '').strip()
-        mobile = request.POST.get('mobile', '').strip()
         password = request.POST.get('password', '').strip()
-        remember_me = request.POST.get('rememberme', '').strip()
 
         # Input validation
-        if login_via == '1':  # Login via Email
-            if not email:
-                messages.error(request, 'Email is required')
-            elif not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email):
-                messages.error(request, 'Invalid email format')
-            elif not Users.objects.filter(email=email).exists():
-                messages.error(request, 'This email is not registered.')
-
-        elif login_via == 'Mobile':  # Login via Mobile
-            if not mobile:
-                messages.error(request, 'Mobile number is required')
-            elif not mobile.isdigit() or len(mobile) != 10:
-                messages.error(request, 'Invalid mobile number')
-            elif not Users.objects.filter(phone=mobile).exists():
-                messages.error(request, 'This mobile number is not registered.')
+        if not email:
+            messages.error(request, 'Email is required')
+        elif not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email):
+            messages.error(request, 'Invalid email format')
+        elif not Users.objects.filter(email=email).exists():
+            messages.error(request, 'This email is not registered.')
 
         if not password:
             messages.error(request, 'Password is required.')
@@ -74,8 +62,7 @@ def login_view(request):
             return redirect(request.META.get('HTTP_REFERER', '/'))
 
         # Authenticate user
-        username = email if login_via == "1" else mobile
-        user = authenticate(request, username=username, password=password)
+        user = authenticate(request, username=email, password=password)
         if user:
             login(request, user)
             return redirect('dashboard')
