@@ -565,7 +565,10 @@
                                                         </a>
                                                     </td>
                                                     <td>Aadhaar Card Front</td>
-                                                    <td>{{ docs.aadhaar_number|default:"-" }}</td>
+                                                    <td>
+                                                        {{ docs.aadhaar_number|default:"-" }} 
+                                                        <i class="fa-solid fa-pen-to-square text-primary" style="cursor: pointer;" onclick="openEditModal('{{ docs.aadhaar_number|default:'' }}')"></i>
+                                                    </td>
                                                     <td>{{ docs.aadhaar_card_front_updated_at|date:"Y-m-d H:i:s" }}</td>
                                                     <td>
                                                         {% if docs.aadhaar_card_front_status == "Approved" %}
@@ -625,7 +628,11 @@
                                                         </a>
                                                     </td>
                                                     <td>PAN Card</td>
-                                                    <td>{{ docs.pan_number|default:"-" }}</td>
+                                                    <td>
+                                                        {{ docs.pan_number|default:"-" }} 
+                                                        <i class="fa-solid fa-pen-to-square text-primary" style="cursor: pointer;" onclick="openEditPanModal('{{ docs.pan_number|default:'' }}')"></i>
+                                                    </td>
+                                                    
                                                     <td>{{ docs.upload_pan_updated_at|date:"Y-m-d H:i:s" }}</td>
                                                     <td>
                                                         {% if docs.upload_pan_status == "Approved" %}
@@ -654,7 +661,10 @@
                                                         </a>
                                                     </td>
                                                     <td>Cancelled Cheque</td>
-                                                    <td>{{ docs.cheque_number|default:"-" }}</td>
+                                                    <td>
+                                                        {{ docs.cheque_number|default:"-" }} 
+                                                        <i class="fa-solid fa-pen-to-square text-primary" style="cursor: pointer;" onclick="openEditChequeModal('{{ docs.cheque_number|default:'' }}')"></i>
+                                                    </td>
                                                     <td>{{ docs.upload_cheque_updated_at|date:"Y-m-d H:i:s" }}</td>
                                                     <td>
                                                         {% if docs.upload_cheque_status == "Approved" %}
@@ -713,7 +723,78 @@
                                     {% endif %}
                                 </div>
                             </div>
-                            
+                            <!-- MODAL  --> 
+                             <!-- Edit Document Modal -->
+                            <div class="modal fade" id="editDocumentModal" tabindex="-1" aria-labelledby="editDocumentModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="editDocumentModalLabel">Edit Document Number</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form id="editDocumentForm">
+                                                <input type="hidden" name="user_id" id="user_id" value="{{ request.user.id }}">
+                                                <input type="hidden" name="document_type" id="document_type">
+                                                
+                                                <div class="mb-3">
+                                                    <label for="document_number" class="form-label">Document Number</label>
+                                                    <input type="text" class="form-control" id="document_number" name="document_number">
+                                                </div>
+                                                <button type="button" class="btn btn-primary" onclick="updateDocument()">Save Changes</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                             <!-- Edit Document Modal -->
+                            <div class="modal fade" id="editDocumentModal" tabindex="-1" aria-labelledby="editDocumentModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="editDocumentModalLabel">Edit Document Number</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form id="editDocumentForm">
+                                                <input type="hidden" name="user_id" id="user_id" value="{{ request.user.id }}">
+                                                <input type="hidden" name="document_type" id="document_type">
+                                                
+                                                <div class="mb-3">
+                                                    <label for="document_number" class="form-label">Document Number</label>
+                                                    <input type="text" class="form-control" id="document_number" name="document_number">
+                                                </div>
+                                                <button type="button" class="btn btn-primary" onclick="updateDocument()">Save Changes</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                             <!-- Edit Aadhaar Number Modal -->
+                            <div class="modal fade" id="editAadhaarModal" tabindex="-1" aria-labelledby="editAadhaarModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="editAadhaarModalLabel">Edit Aadhaar Number</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form id="editAadhaarForm">
+                                                <input type="hidden" name="user_id" id="user_id" value="{{ request.user.id }}">
+                                                <div class="mb-3">
+                                                    <label for="aadhaar_number" class="form-label">Aadhaar Number</label>
+                                                    <input type="text" class="form-control" id="aadhaar_number" name="aadhaar_number" value="{{ docs.aadhaar_number|default:'' }}">
+                                                </div>
+                                                <button type="button" class="btn btn-primary" onclick="updateAadhaar()">Save Changes</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                             <!-- MODAL  -->
                             <!-- upload document modal-->
                             <div class="modal fade" id="uploadDocumentModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
                                 <div class="modal-dialog modal-lg">
@@ -998,7 +1079,58 @@
     }
 
     </script>
-    
+    <script>
+        // Open modal for Aadhaar, PAN, or Cheque Number
+function openEditModal(currentNumber, type) {
+    document.getElementById("document_number").value = currentNumber;
+    document.getElementById("document_type").value = type;
+    var myModal = new bootstrap.Modal(document.getElementById('editDocumentModal'));
+    myModal.show();
+}
+
+// Functions for each document type
+function openEditAadhaarModal(currentNumber) {
+    openEditModal(currentNumber, 'aadhaar');
+}
+
+function openEditPanModal(currentNumber) {
+    openEditModal(currentNumber, 'pan');
+}
+
+function openEditChequeModal(currentNumber) {
+    openEditModal(currentNumber, 'cheque');
+}
+
+// AJAX function to update document number
+function updateDocument() {
+    var userId = document.getElementById("user_id").value;
+    var docType = document.getElementById("document_type").value;
+    var docNumber = document.getElementById("document_number").value;
+
+    fetch('/update-document/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'  // CSRF Token
+        },
+        body: JSON.stringify({
+            user_id: userId,
+            document_type: docType,
+            document_number: docNumber
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload(); // Reload to reflect changes
+        } else {
+            alert("Failed to update document number.");
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+    </script>
     
     </body>
 
