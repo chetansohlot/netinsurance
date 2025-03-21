@@ -506,6 +506,12 @@ def verify_otp_view(request):
 
     return render(request, 'authentication/verify-otp.html')
 
+def reSendOtp_View(request):
+    
+    messages.success(request, 'OTP Re-send successfully!')
+
+    return render(request, 'authentication/verify-otp.html')
+
 
 def mobile_verify_otp_view(request):
     if request.user.is_authenticated and request.method != 'POST':
