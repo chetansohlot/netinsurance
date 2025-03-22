@@ -48,6 +48,7 @@ urlpatterns = [
 
 
     path('franchise-management/', Franchises.index, name='franchise-management'),
+    path('franchise-management/', Franchises.create_or_edit, name='franchise-management'),
     path('branch-management/', Branches.index, name='branch-management'),
 
 

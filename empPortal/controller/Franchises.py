@@ -29,3 +29,8 @@ def index(request):
     return render(request, 'franchises/index.html')
 
 
+def create_or_edit(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+        
+    return render(request, 'franchises/create.html')
