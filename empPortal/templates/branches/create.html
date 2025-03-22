@@ -122,14 +122,6 @@
                                 value="{{ branch.pincode|default_if_none:'' }}">
                         </div>
                 
-                        <!-- Status -->
-                        <div class="form-group col-md-6">
-                            <label for="status">Status</label>
-                            <select class="form-control" name="status" id="status">
-                                <option value="Active" {% if branch.status == "Active" %}selected{% endif %}>Active</option>
-                                <option value="Inactive" {% if branch.status == "Inactive" %}selected{% endif %}>Inactive</option>
-                            </select>
-                        </div>
                     </div>
                 
                     <!-- Submit Button -->

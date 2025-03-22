@@ -62,7 +62,6 @@ def create_or_edit(request, branch_id=None):
         city = request.POST.get("city", "").strip()
         state = request.POST.get("state", "").strip()
         pincode = request.POST.get("pincode", "").strip()
-        status = request.POST.get("status", "Active").strip()
 
         if branch:
             # Update existing record
@@ -74,7 +73,6 @@ def create_or_edit(request, branch_id=None):
             branch.city = city
             branch.state = state
             branch.pincode = pincode
-            branch.status = status
             branch.updated_at = now()
             branch.save()
 
@@ -92,7 +90,6 @@ def create_or_edit(request, branch_id=None):
                 city=city,
                 state=state,
                 pincode=pincode,
-                status=status,
                 created_at=now(),
                 updated_at=now(),
             )
