@@ -55,98 +55,104 @@
                         </div>  
                     {% endif %}
 
-                    <form autocomplete="off" id="franchiseForm" name="franchiseForm" action="/add-franchise/" method="post">
+                    <form autocomplete="off" id="franchiseForm" name="franchiseForm"
+                        action="{% if franchise %}{% url 'franchise-management-edit' franchise.id %}{% else %}{% url 'franchise-management-create' %}{% endif %}"
+                        method="post">
                         {% csrf_token %}
-                    
+
                         <div class="row">
                             <!-- Franchise Name -->
                             <div class="form-group col-md-6">
                                 <label for="name">Franchise Name</label>
                                 <input type="text" class="form-control" name="name" id="name" 
-                                       placeholder="Enter Franchise Name" required maxlength="255">
+                                    placeholder="Enter Franchise Name" required maxlength="255"
+                                    value="{{ franchise.name|default_if_none:'' }}">
                             </div>
-                    
+
                             <!-- Contact Person -->
                             <div class="form-group col-md-6">
                                 <label for="contact_person">Contact Person</label>
                                 <input type="text" class="form-control" name="contact_person" id="contact_person" 
-                                       placeholder="Enter Contact Person" required maxlength="255">
+                                    placeholder="Enter Contact Person" required maxlength="255"
+                                    value="{{ franchise.contact_person|default_if_none:'' }}">
                             </div>
-                    
+
                             <!-- Mobile Number -->
                             <div class="form-group col-md-6">
                                 <label for="mobile">Mobile</label>
                                 <input type="tel" class="form-control" name="mobile" id="mobile" 
-                                       placeholder="Enter Mobile Number" required pattern="[0-9]{10}">
+                                    placeholder="Enter Mobile Number" required pattern="[0-9]{10}"
+                                    value="{{ franchise.mobile|default_if_none:'' }}">
                             </div>
-                    
+
                             <!-- Email -->
                             <div class="form-group col-md-6">
                                 <label for="email">Email</label>
                                 <input type="email" class="form-control" name="email" id="email" 
-                                       placeholder="Enter Email" required maxlength="255">
+                                    placeholder="Enter Email" required maxlength="255"
+                                    value="{{ franchise.email|default_if_none:'' }}">
                             </div>
-                    
+
                             <!-- Address -->
                             <div class="form-group col-md-12">
                                 <label for="address">Address</label>
                                 <textarea class="form-control" name="address" id="address" 
-                                          placeholder="Enter Full Address" rows="2"></textarea>
+                                        placeholder="Enter Full Address" rows="2">{{ franchise.address|default_if_none:'' }}</textarea>
                             </div>
-                    
+
                             <!-- City -->
                             <div class="form-group col-md-4">
                                 <label for="city">City</label>
-                                <input type="text" class="form-control" name="city" id="city" placeholder="Enter City">
+                                <input type="text" class="form-control" name="city" id="city" placeholder="Enter City"
+                                    value="{{ franchise.city|default_if_none:'' }}">
                             </div>
-                    
+
                             <!-- State -->
                             <div class="form-group col-md-4">
                                 <label for="state">State</label>
-                                <input type="text" class="form-control" name="state" id="state" placeholder="Enter State">
+                                <input type="text" class="form-control" name="state" id="state" placeholder="Enter State"
+                                    value="{{ franchise.state|default_if_none:'' }}">
                             </div>
-                    
+
                             <!-- Pincode -->
                             <div class="form-group col-md-4">
                                 <label for="pincode">Pincode</label>
                                 <input type="text" class="form-control" name="pincode" id="pincode" 
-                                       placeholder="Enter Pincode" pattern="[0-9]{6}">
+                                    placeholder="Enter Pincode" pattern="[0-9]{6}"
+                                    value="{{ franchise.pincode|default_if_none:'' }}">
                             </div>
-                    
+
                             <!-- GST Number -->
                             <div class="form-group col-md-6">
                                 <label for="gst_number">GST Number</label>
                                 <input type="text" class="form-control" name="gst_number" id="gst_number" 
-                                       placeholder="Enter GST Number" maxlength="20">
+                                    placeholder="Enter GST Number" maxlength="20"
+                                    value="{{ franchise.gst_number|default_if_none:'' }}">
                             </div>
-                    
+
                             <!-- PAN Number -->
                             <div class="form-group col-md-6">
                                 <label for="pan_number">PAN Number</label>
                                 <input type="text" class="form-control" name="pan_number" id="pan_number" 
-                                       placeholder="Enter PAN Number" maxlength="10">
+                                    placeholder="Enter PAN Number" maxlength="10"
+                                    value="{{ franchise.pan_number|default_if_none:'' }}">
                             </div>
-                    
+
                             <!-- Registration Number -->
                             <div class="form-group col-md-6">
                                 <label for="registration_no">Registration Number</label>
                                 <input type="text" class="form-control" name="registration_no" id="registration_no" 
-                                       placeholder="Enter Registration Number" maxlength="50">
-                            </div>
-                    
-                            <!-- Status -->
-                            <div class="form-group col-md-6">
-                                <label for="status">Status</label>
-                                <select class="form-control" name="status" id="status">
-                                    <option value="Active">Active</option>
-                                    <option value="Inactive">Inactive</option>
-                                </select>
+                                    placeholder="Enter Registration Number" maxlength="50"
+                                    value="{{ franchise.registration_no|default_if_none:'' }}">
                             </div>
                         </div>
-                    
+
                         <!-- Submit Button -->
-                        <button type="submit" class="btn btn-primary mt-3">Add Franchise</button>
+                        <button type="submit" class="btn btn-primary mt-3">
+                            {% if franchise %}Update Franchise{% else %}Add Franchise{% endif %}
+                        </button>
                     </form>
+
                     
                   </div>
                   <div id="loader" class="form-loader" style="display: none;">

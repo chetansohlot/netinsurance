@@ -275,7 +275,41 @@ class Users(AbstractBaseUser):
             return 'Inactive'
         else :
             return 'N/A'
+
+class Franchises(models.Model):
+    name = models.CharField(max_length=255, verbose_name="Franchise Name")
+    contact_person = models.CharField(max_length=255, verbose_name="Contact Person")
+    mobile = models.CharField(max_length=15, verbose_name="Mobile")
+    email = models.EmailField(max_length=255, unique=True, verbose_name="Email")
+    address = models.TextField(null=True, blank=True, verbose_name="Address")
+    city = models.CharField(max_length=100, null=True, blank=True, verbose_name="City")
+    state = models.CharField(max_length=100, null=True, blank=True, verbose_name="State")
+    pincode = models.CharField(max_length=10, null=True, blank=True, verbose_name="Pincode")
+    gst_number = models.CharField(max_length=20, unique=True, null=True, blank=True, verbose_name="GST Number")
+    pan_number = models.CharField(max_length=10, unique=True, null=True, blank=True, verbose_name="PAN Number")
+    registration_no = models.CharField(max_length=50, unique=True, null=True, blank=True, verbose_name="Registration Number")
     
+    STATUS_CHOICES = [
+        ('Active', 'Active'),
+        ('Inactive', 'Inactive'),
+    ]
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Active', verbose_name="Status")
+
+    created_at = models.DateTimeField(default=timezone.now, verbose_name="Created At")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Updated At")
+
+    class Meta:
+        db_table = 'franchises'
+        verbose_name = "Franchise"
+        verbose_name_plural = "Franchises"
+
+    def __str__(self):
+        return self.name
+
+    def status_type(self):
+        return "Active" if self.status == "Active" else "Inactive"
+
+
 class UserFiles(models.Model):
     user = models.ForeignKey('Users', on_delete=models.CASCADE, related_name='files')
     file_url = models.CharField(max_length=255, null=True, blank=True)  
