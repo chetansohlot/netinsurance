@@ -18,6 +18,7 @@ from django.forms.models import model_to_dict
 import json
 from django.utils.timezone import now
 from django.core.paginator import Paginator
+import helpers  
 
 def dictfetchall(cursor):
     "Returns all rows from a cursor as a dict"
@@ -48,6 +49,7 @@ def create_or_edit(request, franchise_id=None):
         franchise = get_object_or_404(Franchises, id=franchise_id)
 
     if request.method == "GET":
+            
         return render(request, 'franchises/create.html', {
             'franchise': franchise  # Pass existing data if editing
         })
@@ -65,7 +67,7 @@ def create_or_edit(request, franchise_id=None):
         gst_number = request.POST.get("gst_number", "").strip() or None
         pan_number = request.POST.get("pan_number", "").strip() or None
         registration_no = request.POST.get("registration_no", "").strip() or None
-
+        
         if franchise:
             # Update existing record
             franchise.name = name
