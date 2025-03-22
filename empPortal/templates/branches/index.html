@@ -1,7 +1,7 @@
 {% extends 'master.html' %}
 
 {% block title %}
-Franchise
+Branches
 {% endblock %}
   
 {% block content %}
@@ -20,12 +20,12 @@ Franchise
               <div class="row pt-2 pb-5">
                 <div class="col-sm-6">
                   <div class="d-flex align-items-center">
-                  <h1 class="admin-title m-0 pt-2">Franchise</h1>
+                  <h1 class="admin-title m-0 pt-2">Branches</h1>
                   </div>
                 </div>
                 <div class="col-sm-6">
                   <div class="d-flex justify-content-end">
-                    <a href="{% url 'franchise-management-create' %}" class="breadcrump-addbtn"><i class="fas fa-plus"></i> Add Entity</a>
+                    <a href="{% url 'branch-management-create' %}" class="breadcrump-addbtn"><i class="fas fa-plus"></i> Add Branch</a>
                   </div>
                 </div>
               </div>
@@ -60,7 +60,7 @@ Franchise
                           <div class="col">
                             
                             <p class="card-text">
-                              Actice Franchise
+                              Actice Branch
                             </p>
                             <h5 class="card-title card-number">6</h5>
                           </div>
@@ -82,7 +82,7 @@ Franchise
                           <div class="col">
                             
                             <p class="card-text">
-                              Deactive Franchise
+                              Deactive Branch
                             </p>
                             <h5 class="card-title card-number">3</h5>
                           </div>
@@ -104,7 +104,7 @@ Franchise
                           <div class="col">
                             
                             <p class="card-text">
-                              Pending Franchise
+                              Pending Branch
                             </p>
                             <h5 class="card-title card-number">0</h5>
                           </div>
@@ -154,7 +154,7 @@ Franchise
                             <div class="table-search-area">
                               <form>
                                 <select class="table-select-field">
-                                  <option value="">Franchise Name</option>
+                                  <option value="">Branch Name</option>
                                   <option value="">Mobile Number</option>
                                   <option value="">Email ID</option>
                                   <option value="">Contact No</option>
@@ -203,7 +203,7 @@ Franchise
                                             <input type="checkbox" id="checkall" class="table-chk">
                                             <label for="checkall"></label>
                                         </th>
-                                        <th>Franchise Name</th>
+                                        <th>Branch Name</th>
                                         <th>Contact Person</th>
                                         <th>Mobile</th>
                                         <th>Email</th>
@@ -215,41 +215,42 @@ Franchise
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for franchise in page_obj %}
+                                    {% for branch in page_obj %}
                                     <tr>
                                         <td>
-                                            <input type="checkbox" id="check{{ franchise.id }}" class="table-chk">
-                                            <label for="check{{ franchise.id }}"></label>
+                                            <input type="checkbox" id="check{{ branch.id }}" class="table-chk">
+                                            <label for="check{{ branch.id }}"></label>
                                         </td>
                                         <td>
-                                            <a href="{% url 'franchise-management-edit' franchise_id=franchise.id %}" class="trlink">
-                                                {{ franchise.name }}
-                                                <span class="text-gray d-block small">#{{ franchise.id }}</span>
+                                            <a href="{% url 'branch-management-edit' branch_id=branch.id %}" class="trlink">
+                                                {{ branch.branch_name|default:"N/A" }}
+                                                <span class="text-gray d-block small">#{{ branch.id }}</span>
                                             </a>
                                         </td>
-                                        <td>{{ franchise.contact_person }}</td>
-                                        <td>{{ franchise.mobile }}</td>
-                                        <td>{{ franchise.email }}</td>
-                                        <td>{{ franchise.city }}</td>
-                                        <td>{{ franchise.state }}</td>
+                                        <td>{{ branch.contact_person|default:"-" }}</td>
+                                        <td>{{ branch.mobile|default:"-" }}</td>
+                                        <td>{{ branch.email|default:"-" }}</td>
+                                        <td>{{ branch.city|default:"-" }}</td>
+                                        <td>{{ branch.state|default:"-" }}</td>
                                         <td>
-                                            <span class="badge {% if franchise.status == 'Active' %}bg-success{% else %}bg-danger{% endif %}">
-                                                {{ franchise.status }}
+                                            <span class="badge {% if branch.status == 'Active' %}bg-success{% else %}bg-danger{% endif %}">
+                                                {{ branch.status }}
                                             </span>
                                         </td>
                                         <td>
-                                            <i class="fas fa-clock text-primary"></i> {{ franchise.updated_at|date:"d M Y, H:i:s" }} <br>
-                                            <i class="fas fa-calendar-alt text-secondary"></i> {{ franchise.created_at|date:"d M Y, H:i:s" }}
+                                            <i class="fas fa-clock text-primary"></i> {{ branch.updated_at|date:"d M Y, H:i:s" }} <br>
+                                            <i class="fas fa-calendar-alt text-secondary"></i> {{ branch.created_at|date:"d M Y, H:i:s" }}
                                         </td>
                                         <td>
-                                            <a href="{% url 'franchise-management-edit' franchise_id=franchise.id %}" class="btn btn-xs btn-warning">
-                                                <i class="fas fa-edit"></i> 
+                                            <a href="{% url 'branch-management-edit' branch_id=branch.id %}" class="btn btn-xs btn-warning">
+                                                <i class="fas fa-edit"></i>
                                             </a>
                                         </td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
+                            
                         </div>
                       </div>
                     </div>

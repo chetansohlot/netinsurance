@@ -52,7 +52,8 @@ urlpatterns = [
     path('franchise-management/<str:franchise_id>/', Franchises.create_or_edit, name='franchise-management-edit'),
 
     path('branch-management/', Branches.index, name='branch-management'),
-
+    path('branch-management/create-branch', Branches.create_or_edit, name='branch-management-create'),
+    path('branch-management/<str:branch_id>/', Branches.create_or_edit, name='branch-management-edit'),
 
     path('my-account/', profile.myAccount, name='my-account'),
     path('upload-documents/', profile.upload_documents, name='upload_documents'),
