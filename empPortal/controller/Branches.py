@@ -54,7 +54,6 @@ def create_or_edit(request, branch_id=None):
     
     elif request.method == "POST":
         # Extract form data
-        franchise_id = request.POST.get("franchise_id", "").strip() or None
         branch_name = request.POST.get("branch_name", "").strip()
         contact_person = request.POST.get("contact_person", "").strip()
         mobile = request.POST.get("mobile", "").strip()
@@ -67,7 +66,6 @@ def create_or_edit(request, branch_id=None):
 
         if branch:
             # Update existing record
-            branch.franchise_id = franchise_id
             branch.branch_name = branch_name
             branch.contact_person = contact_person
             branch.mobile = mobile
@@ -86,7 +84,6 @@ def create_or_edit(request, branch_id=None):
         else:
             # Create new record
             new_branch = Branch.objects.create(
-                franchise_id=franchise_id,
                 branch_name=branch_name,
                 contact_person=contact_person,
                 mobile=mobile,
