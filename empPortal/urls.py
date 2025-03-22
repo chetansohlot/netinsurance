@@ -2,7 +2,7 @@ from django.urls import path, include
 from . import views,export
 from . import views
 from . import authenticationView
-from .controller import commissions, profile, members, customers, quoteManagement, healthQuoteManagement, homeManagement
+from .controller import commissions, profile, Franchises, Branches, members, customers, quoteManagement, healthQuoteManagement, homeManagement
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -45,6 +45,11 @@ urlpatterns = [
     path('user-and-roles/', views.userAndRoles, name='user-and-roles'),
     path('', homeManagement.index, name='home-index'),
     path('dashboard/', views.dashboard, name='dashboard'),
+
+
+    path('franchise-management/', Franchises.index, name='franchise-management'),
+    path('branch-management/', Branches.index, name='branch-management'),
+
 
     path('my-account/', profile.myAccount, name='my-account'),
     path('upload-documents/', profile.upload_documents, name='upload_documents'),

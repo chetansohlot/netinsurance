@@ -87,7 +87,29 @@
                 <p>User & Roles</p>
               </a>
             </li>
-            
+            <li class="nav-item {% if '/franchise/' in request.path or '/branch/' in request.path or '/user-roles/' in request.path %} menu-is-opening menu-open {% endif %}">
+              <a href="#" class="nav-link">
+                  <svg class="sidbarmenu-svg">
+                    <use xlink:href="#view-policy" />
+                  </svg>
+                  <p>Master <i class="fas fa-angle-right right"></i></p>
+              </a>
+              <ul class="nav nav-treeview" {% if '/franchise/' in request.path or '/branch/' in request.path or '/user-roles/' in request.path %} style="display: block;" {% else %} style="display: none;" {% endif %}>
+                  <li class="nav-item">
+                      <a href="{% url 'franchise-management' %}" class="nav-link {% if '/franchise/' in request.path %} active {% endif %}">
+                          <i class="nav-icon fa-solid fa-building"></i>
+                          <p>Franchise/Entity</p>
+                      </a>
+                  </li>
+                  <li class="nav-item">
+                      <a href="{% url 'branch-management' %}" class="nav-link {% if '/branch/' in request.path %} active {% endif %}">
+                          <i class="nav-icon fa-solid fa-code-branch"></i>
+                          <p>Branch</p>
+                      </a>
+                  </li>
+              </ul>
+          </li>
+          
             <li class="nav-item">
               <a href="#" class="nav-link {% if request.path == '/commission-report/' %} active {% endif %}">
                 <svg class="sidbarmenu-svg">
