@@ -19,6 +19,7 @@ pip install django requests python-magic openai pymysql python-dotenv fastapi Py
 create "static" folder in root directory
 
 simple start = python manage.py runserver
-watchdog = watchmedo auto-restart --pattern="*.py" --recursive -- python manage.py runserver
+watchdog = watchmedo auto-restart --patterns="*.py;*.html;*.css" --recursive -- python manage.py runserver
+
 
 wkhtmltopdf = /usr/local/bin/wkhtmltopdf

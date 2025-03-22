@@ -316,6 +316,14 @@ body {
     top: 1px;
 }
 
+.sidbarmenuu-svg {
+    width: 30px;
+    height: 25px;
+    fill: #000;
+    margin-right: 0px;
+    position: relative;
+    top: 1px;
+}
 .headermenu-svg {
     width: 25px;
     height: 25px;
