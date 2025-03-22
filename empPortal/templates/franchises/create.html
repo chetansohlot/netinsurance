@@ -3,7 +3,7 @@
 {% load static %}
 
 {% block title %}
-    Edit Role - ({{ role_data.roleGenID }})
+    Create Franchise
 {% endblock %}
 
 {% block content %}
@@ -22,7 +22,7 @@
             <div class="row py-2">
               <div class="col-sm-6">
                 <div class="d-flex align-items-center">
-                  <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Edit Role</a>
+                  <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Create Franchise</a>
                 </div>
               </div>
             </div>
@@ -38,31 +38,116 @@
               <div class="col-sm-12">  
                 <div class="card box-shadow-none p-md-5 p-3">
                   <div class="card-body px-0 pb-0 pt-0">
-                    {% if messages %}
-                      <div class="alert alert-danger">
-                        {% for message in messages %}
-                          <p>{{ message }}</p>
-                        {% endfor %}
-                      </div>
+                    
+                        {% if messages %}
+                        <div class="col-sm-12">
+                            {% for message in messages %}
+                                <div class="alert 
+                                    {% if message.tags == 'success' %}alert-success
+                                    {% elif message.tags == 'error' %}alert-danger
+                                    {% elif message.tags == 'warning' %}alert-warning
+                                    {% elif message.tags == 'info' %}alert-info
+                                    {% else %}alert-secondary{% endif %}
+                                    w-100 mb-0">
+                                    <p class="mb-0">{{ message }}</p>
+                                </div>
+                            {% endfor %}
+                        </div>  
                     {% endif %}
 
-                    <form autocomplete="off" id="myForm" name="updateRole" action="/update-role/" method="post">
+                    <form autocomplete="off" id="franchiseForm" name="franchiseForm" action="/add-franchise/" method="post">
                         {% csrf_token %}
-                      
-                        <input type="hidden" class="form-control" name="role_id" id="role_id" value="{{ role_data.id }}">
-
-                        <div class="form-group col-sm-6">
-                            <label for="role_name">Role Name</label>
-                            <input type="text" class="form-control" name="role_name" id="role_name" placeholder="User Role" value="{{ role_data.roleName }}">
+                    
+                        <div class="row">
+                            <!-- Franchise Name -->
+                            <div class="form-group col-md-6">
+                                <label for="name">Franchise Name</label>
+                                <input type="text" class="form-control" name="name" id="name" 
+                                       placeholder="Enter Franchise Name" required maxlength="255">
+                            </div>
+                    
+                            <!-- Contact Person -->
+                            <div class="form-group col-md-6">
+                                <label for="contact_person">Contact Person</label>
+                                <input type="text" class="form-control" name="contact_person" id="contact_person" 
+                                       placeholder="Enter Contact Person" required maxlength="255">
+                            </div>
+                    
+                            <!-- Mobile Number -->
+                            <div class="form-group col-md-6">
+                                <label for="mobile">Mobile</label>
+                                <input type="tel" class="form-control" name="mobile" id="mobile" 
+                                       placeholder="Enter Mobile Number" required pattern="[0-9]{10}">
+                            </div>
+                    
+                            <!-- Email -->
+                            <div class="form-group col-md-6">
+                                <label for="email">Email</label>
+                                <input type="email" class="form-control" name="email" id="email" 
+                                       placeholder="Enter Email" required maxlength="255">
+                            </div>
+                    
+                            <!-- Address -->
+                            <div class="form-group col-md-12">
+                                <label for="address">Address</label>
+                                <textarea class="form-control" name="address" id="address" 
+                                          placeholder="Enter Full Address" rows="2"></textarea>
+                            </div>
+                    
+                            <!-- City -->
+                            <div class="form-group col-md-4">
+                                <label for="city">City</label>
+                                <input type="text" class="form-control" name="city" id="city" placeholder="Enter City">
+                            </div>
+                    
+                            <!-- State -->
+                            <div class="form-group col-md-4">
+                                <label for="state">State</label>
+                                <input type="text" class="form-control" name="state" id="state" placeholder="Enter State">
+                            </div>
+                    
+                            <!-- Pincode -->
+                            <div class="form-group col-md-4">
+                                <label for="pincode">Pincode</label>
+                                <input type="text" class="form-control" name="pincode" id="pincode" 
+                                       placeholder="Enter Pincode" pattern="[0-9]{6}">
+                            </div>
+                    
+                            <!-- GST Number -->
+                            <div class="form-group col-md-6">
+                                <label for="gst_number">GST Number</label>
+                                <input type="text" class="form-control" name="gst_number" id="gst_number" 
+                                       placeholder="Enter GST Number" maxlength="20">
+                            </div>
+                    
+                            <!-- PAN Number -->
+                            <div class="form-group col-md-6">
+                                <label for="pan_number">PAN Number</label>
+                                <input type="text" class="form-control" name="pan_number" id="pan_number" 
+                                       placeholder="Enter PAN Number" maxlength="10">
+                            </div>
+                    
+                            <!-- Registration Number -->
+                            <div class="form-group col-md-6">
+                                <label for="registration_no">Registration Number</label>
+                                <input type="text" class="form-control" name="registration_no" id="registration_no" 
+                                       placeholder="Enter Registration Number" maxlength="50">
+                            </div>
+                    
+                            <!-- Status -->
+                            <div class="form-group col-md-6">
+                                <label for="status">Status</label>
+                                <select class="form-control" name="status" id="status">
+                                    <option value="Active">Active</option>
+                                    <option value="Inactive">Inactive</option>
+                                </select>
+                            </div>
                         </div>
-                        
-                        <div class="form-group col-sm-6">
-                            <label for="description">Description</label>
-                            <input type="text" class="form-control" name="description" id="description" placeholder="Description" value="{{ role_data.roleDescription }}">
-                        </div>
-
-                        <button type="submit" class="btn btn-primary">Edit Role</button>
+                    
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-primary mt-3">Add Franchise</button>
                     </form>
+                    
                   </div>
                   <div id="loader" class="form-loader" style="display: none;">
                     <div>

@@ -25,7 +25,7 @@ Franchises
                 </div>
                 <div class="col-sm-6">
                   <div class="d-flex justify-content-end">
-                    <a href="{% url 'add-commission' %}" class="breadcrump-addbtn"><i class="fas fa-plus"></i> Add Entity</a>
+                    <a href="{% url 'franchise-management-create' %}" class="breadcrump-addbtn"><i class="fas fa-plus"></i> Add Entity</a>
                   </div>
                 </div>
               </div>
@@ -125,15 +125,22 @@ Franchises
           <!-- /.content-header -->
       
                       <!-- Display error messages -->
-                      {% if messages %}
-                          <div class="alert alert-danger">
-                              <ul>
-                                  {% for message in messages %}
-                                      <li>{{ message }}</li>
-                                  {% endfor %}
-                              </ul>
-                          </div>
-                      {% endif %}
+                      
+                    {% if messages %}
+                    <div class="col-sm-12">
+                        {% for message in messages %}
+                            <div class="alert 
+                                {% if message.tags == 'success' %}alert-success
+                                {% elif message.tags == 'error' %}alert-danger
+                                {% elif message.tags == 'warning' %}alert-warning
+                                {% elif message.tags == 'info' %}alert-info
+                                {% else %}alert-secondary{% endif %}
+                                w-100 mb-0">
+                                <p class="mb-0">{{ message }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>  
+                {% endif %}
           <!-- Main content -->
           <div class="content">
             <div class="container-fluid">
