@@ -18,31 +18,70 @@
                       <img src="{% static 'home/assets/image/logo.png' %}" alt="" class="singup-logo">
                             
                     <h1 class="signup-hding">Email Verification</h1>
-                    <p class="signup-prgh text-secondary"><small>Enter the OTP Sent to vinod.kumar@netleafinfosoft.com <a href="#"><i class="fa-solid fa-pen-to-square"></i></a></small></p>
-                    
-                <form action="{% url 'reset-password' %}" method="post" autocomplete="off">
-                  {% csrf_token %}
-                      <div class="row">
+                    <p class="signup-prgh text-secondary"><small>Enter the OTP Sent to {{ request.user.email }} <a href="{% url 'forget-password' %}"><i class="fa-solid fa-pen-to-square"></i></a></small></p>
+                  <form action="{% url 'email-verify-otp' %}" method="post" autocomplete="off">
+                    {% csrf_token %}
+                    <div class="row">
                         <div class="col-md-6">
-                          <div class="signup-form-group">
-                            <label class="signup-form-lbl">Enter OTP <span class="asterisk">*</span></label>                        
-                            <!-- <input type="text" name="" class="signup-form-field" placeholder="Enter Your OTP"> -->
-                            <div class="d-flex mt-4">
-                              <input type="text" name="" class="otp-field" maxlength="1">
-                              <input type="text" name="" class="otp-field" maxlength="1">
-                              <input type="text" name="" class="otp-field" maxlength="1">
-                              <input type="text" name="" class="otp-field" maxlength="1">
+                            <div class="signup-form-group">
+                                <label class="signup-form-lbl">Enter OTP <span class="asterisk">*</span></label>
+                                
+                                <!-- Hidden Input to Store OTP -->
+                                <input type="hidden" name="otp" id="otp-input">
+
+                                <div class="d-flex mt-4">
+                                    <input type="text" class="otp-field" maxlength="1" oninput="moveToNext(this, 0)">
+                                    <input type="text" class="otp-field" maxlength="1" oninput="moveToNext(this, 1)">
+                                    <input type="text" class="otp-field" maxlength="1" oninput="moveToNext(this, 2)">
+                                    <input type="text" class="otp-field" maxlength="1" oninput="moveToNext(this, 3)">
+                                </div>
                             </div>
-                          </div>    
                         </div>
+
                         <div class="w-100"></div>
+
                         <div class="col-md-6 mt-5">
-                          <p class="signup-prgh text-secondary small mb-2">Don't receive the OTP yet? <a href="#" class="signup-prgh text-decoration-none">Resend OTP</a></p>
-                          <button type="submit" class="signup-submit-btn">Verify & Login</button>
+                            <p class="signup-prgh text-secondary small mb-2">
+                                Don't receive the OTP yet? 
+                                <a href="{% url 'forget-resend-otp' %}" class="signup-prgh text-decoration-none">Resend OTP</a>
+                            </p>
+                            <button type="submit" class="signup-submit-btn">Verify & Login</button>
                         </div>
-                      </div>
-                      
-                    </form>
+                        
+                        {% if messages %}
+                        <div class="col-sm-12">
+                            {% for message in messages %}
+                                <div class="alert 
+                                    {% if message.tags == 'success' %}alert-success
+                                    {% elif message.tags == 'error' %}alert-danger
+                                    {% elif message.tags == 'warning' %}alert-warning
+                                    {% elif message.tags == 'info' %}alert-info
+                                    {% else %}alert-secondary{% endif %}
+                                    w-100 mb-0">
+                                    <p class="mb-0">{{ message }}</p>
+                                </div>
+                            {% endfor %}
+                        </div>  
+                    {% endif %}
+                    </div>
+                </form>
+
+                <!-- JavaScript for Auto-Focus & OTP Input -->
+                <script>
+                    function moveToNext(field, index) {
+                        let otpFields = document.querySelectorAll(".otp-field");
+                        let otpInput = document.getElementById("otp-input");
+
+                        if (field.value.length === 1 && index < otpFields.length - 1) {
+                            otpFields[index + 1].focus();
+                        }
+
+                        let otpValue = "";
+                        otpFields.forEach(input => otpValue += input.value);
+                        otpInput.value = otpValue;
+                    }
+                </script>
+
                     </div>
                 </div>
                 <div class="col-lg-4">

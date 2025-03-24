@@ -42,6 +42,7 @@ urlpatterns = [
     path("reset-password", authenticationView.reset_pass_view, name="reset-password"),
     path("email-verify-otp", authenticationView.email_verify_otp, name="email-verify-otp"),
     path("resend-otp", authenticationView.verify_otp_view, name="resend-otp"),
+    path("forget-resend-otp", authenticationView.forgetReSendOtp_View, name="forget-resend-otp"),
     path("register-resend-otp", authenticationView.registerReSendOtp_View, name="register-resend-otp"),
     
     path('user-and-roles/', views.userAndRoles, name='user-and-roles'),
