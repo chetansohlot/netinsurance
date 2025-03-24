@@ -529,6 +529,120 @@
         });
     });
 </script>
+<script>
+    $(document).ready(function () {
+    console.log("jQuery Loaded:", !!window.jQuery);
+    console.log("jQuery Validate Loaded:", typeof $.fn.validate !== "undefined");
 
+    $("#franchiseForm").validate({
+        rules: {
+            name: {
+                required: true,
+                minlength: 3,
+                maxlength: 255
+            },
+            contact_person: {
+                required: true,
+                minlength: 3,
+                maxlength: 255
+            },
+            mobile: {
+                required: true,
+                digits: true,
+                minlength: 10,
+                maxlength: 10
+            },
+            email: {
+                required: true,
+                email: true
+            },
+            address: {
+                required: true,
+                minlength: 5
+            },
+            city: {
+                required: true
+            },
+            state: {
+                required: true
+            },
+            pincode: {
+                required: true,
+                digits: true,
+                minlength: 6,
+                maxlength: 6
+            },
+            gst_number: {
+                required: true,
+                maxlength: 20
+            },
+            pan_number: {
+                required: true,
+                maxlength: 10
+            },
+            registration_no: {
+                required: true,
+                maxlength: 50
+            }
+        },
+        messages: {
+            name: {
+                required: "Please enter the franchise name",
+                minlength: "Name must be at least 3 characters long"
+            },
+            contact_person: {
+                required: "Please enter the contact person's name",
+                minlength: "Name must be at least 3 characters long"
+            },
+            mobile: {
+                required: "Please enter the mobile number",
+                digits: "Only numbers are allowed",
+                minlength: "Must be exactly 10 digits",
+                maxlength: "Must be exactly 10 digits"
+            },
+            email: {
+                required: "Please enter an email",
+                email: "Enter a valid email"
+            },
+            address: {
+                required: "Please enter the full address",
+                minlength: "Address must be at least 5 characters long"
+            },
+            city: {
+                required: "Please enter the city"
+            },
+            state: {
+                required: "Please enter the state"
+            },
+            pincode: {
+                required: "Please enter the pincode",
+                digits: "Only numbers allowed",
+                minlength: "Must be exactly 6 digits",
+                maxlength: "Must be exactly 6 digits"
+            },
+            gst_number: {
+                required: "Please enter the GST number",
+                maxlength: "Maximum 20 characters allowed"
+            },
+            pan_number: {
+                required: "Please enter the PAN number",
+                maxlength: "Maximum 10 characters allowed"
+            },
+            registration_no: {
+                required: "Please enter the registration number",
+                maxlength: "Maximum 50 characters allowed"
+            }
+        },
+        errorElement: "div",
+        errorPlacement: function (error, element) {
+            error.addClass("text-danger");
+            error.insertAfter(element);
+        },
+        submitHandler: function (form) {
+            form.submit();
+        }
+    });
+});
+</script>
 
 </html>

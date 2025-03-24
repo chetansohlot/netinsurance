@@ -174,6 +174,7 @@ def upload_documents(request):
             aadhaar_number = form.cleaned_data.get('aadhaar_number')
             pan_number = form.cleaned_data.get('pan_number')
             cheque_number = form.cleaned_data.get('cheque_number')
+            role_no = form.cleaned_data.get('role_no')
 
             # Get or create document instance for user
             existing_doc, created = DocumentUpload.objects.get_or_create(user_id=user_id)
@@ -187,6 +188,7 @@ def upload_documents(request):
             existing_doc.aadhaar_number = aadhaar_number
             existing_doc.pan_number = pan_number
             existing_doc.cheque_number = cheque_number
+            existing_doc.role_no = role_no
 
             for field in file_fields:
                 uploaded_file = request.FILES.get(field)
@@ -262,3 +264,40 @@ def update_document(request):
         return JsonResponse({"message": f"{document_type.replace('_', ' ').title()} updated successfully!", "new_image_url": new_image_url})
     
     return JsonResponse({"error": "Invalid request"}, status=400)
+
+
+def update_document_id(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            user_id = data.get("user_id")
+            document_type = data.get("document_type")
+            document_number = data.get("document_number")
+
+            # Fetch the document entry for the user
+            document = DocumentUpload.objects.filter(user_id=user_id).first()
+
+            if not document:
+                return JsonResponse({"success": False, "message": "Document not found."}, status=404)
+
+            # Update the respective document field
+            if document_type == "aadhaar":
+                document.aadhaar_number = document_number
+            elif document_type == "pan":
+                document.pan_number = document_number
+            elif document_type == "cheque":
+                document.cheque_number = document_number
+            elif document_type == "role":
+                document.role_no = document_number
+            else:
+                return JsonResponse({"success": False, "message": "Invalid document type."}, status=400)
+
+            document.save()
+            return JsonResponse({"success": True, "message": "Document number updated successfully."})
+
+        except json.JSONDecodeError:
+            return JsonResponse({"success": False, "message": "Invalid JSON format."}, status=400)
+        except Exception as e:
+            return JsonResponse({"success": False, "message": str(e)}, status=500)
+
+    return JsonResponse({"success": False, "message": "Invalid request method."}, status=405)

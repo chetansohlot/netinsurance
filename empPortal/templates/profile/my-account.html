@@ -567,7 +567,7 @@
                                                     <td>Aadhaar Card Front</td>
                                                     <td>
                                                         {{ docs.aadhaar_number|default:"-" }} 
-                                                        <i class="fa-solid fa-pen-to-square text-primary" style="cursor: pointer;" onclick="openEditModal('{{ docs.aadhaar_number|default:'' }}')"></i>
+                                                        <i class="fa-solid fa-pen-to-square text-primary" style="cursor: pointer;" onclick="openEditAadhaarModal('{{ docs.aadhaar_number|default:'' }}')"></i>
                                                     </td>
                                                     <td>{{ docs.aadhaar_card_front_updated_at|date:"Y-m-d H:i:s" }}</td>
                                                     <td>
@@ -693,7 +693,10 @@
                                                         </a>
                                                     </td>
                                                     <td>10th Marksheet</td>
-                                                    <td>{{ docs.tenth_marksheet_doc_id|default:"-" }}</td>
+                                                    <td>
+                                                        {{ docs.role_no|default:"-" }} 
+                                                        <i class="fa-solid fa-pen-to-square text-primary" style="cursor: pointer;" onclick="openEditRoleNoModal('{{ docs.role_no|default:'' }}')"></i>
+                                                    </td>
                                                     <td>{{ docs.tenth_marksheet_updated_at|date:"Y-m-d H:i:s" }}</td>
                                                     <td>
                                                         {% if docs.tenth_marksheet_status == "Approved" %}
@@ -867,6 +870,12 @@
                                                 <!-- 10th Marksheet Upload -->
                                                 <div class="row">
                                                     <div class="col-md-4">
+                                                        <div class="mb-3">
+                                                            <label class="form-lbl">Role No</label>
+                                                            <input type="text" class="form-field" name="role_no" placeholder="Role No" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md">
                                                         <div class="mb-3">
                                                             <label class="form-lbl">Tenth Marksheet</label>
                                                             <input type="file" class="form-field" name="tenth_marksheet" required>
@@ -1100,18 +1109,24 @@ function openEditPanModal(currentNumber) {
 function openEditChequeModal(currentNumber) {
     openEditModal(currentNumber, 'cheque');
 }
+function openEditRoleNoModal(currentNumber) {
+    openEditModal(currentNumber, 'role');
+}
 
-// AJAX function to update document number
+function getCSRFToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]').value;
+}
+
 function updateDocument() {
     var userId = document.getElementById("user_id").value;
     var docType = document.getElementById("document_type").value;
     var docNumber = document.getElementById("document_number").value;
 
-    fetch('/update-document/', {
+    fetch('/update-document-id/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': '{{ csrf_token }}'  // CSRF Token
+            'X-CSRFToken': getCSRFToken() // Get CSRF token dynamically
         },
         body: JSON.stringify({
             user_id: userId,
@@ -1124,7 +1139,7 @@ function updateDocument() {
         if (data.success) {
             location.reload(); // Reload to reflect changes
         } else {
-            alert("Failed to update document number.");
+            alert("Failed to update document number: " + data.message);
         }
     })
     .catch(error => console.error('Error:', error));

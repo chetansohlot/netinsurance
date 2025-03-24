@@ -58,6 +58,7 @@ urlpatterns = [
     path('my-account/', profile.myAccount, name='my-account'),
     path('upload-documents/', profile.upload_documents, name='upload_documents'),
     path("update-document/", profile.update_document, name="update_document"),
+    path("update-document-id/", profile.update_document_id, name="update_document_id"),
     path('store-bank-data/', profile.storeOrUpdateBankDetails, name='store-bank-data'),
     path("check-account-number/", profile.check_account_number, name="check-account-number"),
 

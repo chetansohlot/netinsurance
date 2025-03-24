@@ -405,6 +405,7 @@ class DocumentUpload(models.Model):
         null=True,
         blank=True
     )
+    role_no = models.CharField(max_length=20, null=True, blank=True)
     tenth_marksheet = models.FileField(upload_to='documents/')
     tenth_marksheet_updated_at = models.DateTimeField(null=True, blank=True)
     tenth_marksheet_status = models.CharField(
