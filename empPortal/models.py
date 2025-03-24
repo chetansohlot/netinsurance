@@ -232,7 +232,11 @@ class Users(AbstractBaseUser):
     activation_status = models.CharField(max_length=10)
     last_name = models.CharField(max_length=255)
     email = models.CharField(max_length=255, unique=True)
+    email_otp = models.CharField(max_length=10, null=True, blank=True)
+    email_verified = models.BooleanField(default=False)
     phone = models.BigIntegerField(null=True, blank=True)
+    phone_otp = models.CharField(max_length=10, null=True, blank=True)
+    phone_verified = models.BooleanField(default=False)
     gender = models.PositiveSmallIntegerField(null=True, blank=True) 
     
     dob = models.CharField(max_length=255)

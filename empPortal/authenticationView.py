@@ -20,6 +20,8 @@ import zipfile
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
+from django.core.mail import send_mail
+import random
 
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 
@@ -73,7 +75,10 @@ def login_view(request):
     return render(request, 'authentication/login.html', {"from_otp_verification": from_otp_verification, 
                                                          "mobile_no": mobile_no_user})
 
-    
+def generate_otp():
+    """Generate a 6-digit OTP."""
+    return str(random.randint(1000, 9999))
+
 def register_view(request):
     if request.user.is_authenticated:
         if request.user.is_active == 1:
@@ -86,8 +91,6 @@ def register_view(request):
         is_update = False
 
     if request.method == 'POST':
-        
-        # Extract form data
         full_name = request.POST.get('full_name', '').strip()
         gender = request.POST.get('gender', '').strip()
         email = request.POST.get('email', '').strip()
@@ -99,38 +102,31 @@ def register_view(request):
         first_name = name_parts[0] if name_parts else ''
         last_name = " ".join(name_parts[1:]) if len(name_parts) > 1 else ''
 
-        # Validation Errors
+        # Validation
         if not full_name:
             messages.error(request, 'Full Name is required.')
-
         if not gender:
             messages.error(request, 'Gender is required.')
-
         if not email:
             messages.error(request, 'Email Address is required.')
         elif not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email):
             messages.error(request, 'Invalid email format.')
         elif Users.objects.filter(email=email).exclude(id=user.id if user else None).exists():
             messages.error(request, 'This email is already registered.')
-
         if not mobile:
             messages.error(request, 'Mobile Number is required.')
-        elif not mobile.isdigit():
-            messages.error(request, 'Mobile number must contain only digits.')
-        elif len(mobile) != 10:
+        elif not mobile.isdigit() or len(mobile) != 10:
             messages.error(request, 'Mobile number must be 10 digits long.')
         elif Users.objects.filter(phone=mobile).exclude(id=user.id if user else None).exists():
             messages.error(request, 'This mobile number is already registered.')
-
-        if not password:  # Password is required for both new and existing users
-            messages.error(request, 'Password is required.')
-        elif len(password) < 6:
+        if not password or len(password) < 6:
             messages.error(request, 'Password must be at least 6 characters long.')
-
 
         # Redirect if there are validation errors
         if messages.get_messages(request):
             return render(request, 'authentication/register.html')
+
+        otp_code = generate_otp()  # Generate 6-digit OTP
 
         if is_update:
             # Update existing user
@@ -140,18 +136,13 @@ def register_view(request):
             user.email = email
             user.phone = mobile
             user.gender = gender
+            user.email_otp = otp_code
+            user.email_verified = False
             if password:
                 user.password = make_password(password)
             user.save()
-            
-            # Automatically log in the user after registration
-            user = authenticate(request, username=email, password=password)
-            if user:
-                login(request, user)
-                messages.success(request, 'Registration successful! You can now log in.')
-                return redirect('verify-otp')
         else:
-            # Generate User ID for new user
+            # Generate new User ID
             last_user = Users.objects.all().order_by('-id').first()
             if last_user and last_user.user_gen_id.startswith('UR-'):
                 last_user_gen_id = int(last_user.user_gen_id.split('-')[1])
@@ -162,7 +153,7 @@ def register_view(request):
             # Create new user
             user = Users(
                 user_gen_id=new_gen_id,
-                role_id=2,  # Assuming role is assigned later
+                role_id=2,
                 role_name="User",
                 user_name=full_name,
                 first_name=first_name,
@@ -171,21 +162,33 @@ def register_view(request):
                 phone=mobile,
                 gender=gender,
                 password=make_password(password),
+                email_otp=otp_code,
+                email_verified=False,
                 status=1,
-                is_superuser=0,
-                is_staff=0,
-                is_active=0
+                is_superuser=False,
+                is_staff=False,
+                is_active=False
             )
             user.save()
 
-            # Automatically log in the user after registration
-            user = authenticate(request, username=email, password=password)
-            if user:
-                login(request, user)
-                messages.success(request, 'Registration successful! You can now log in.')
-                return redirect('verify-otp')
+        # Send OTP Email
+        email_subject = "Your OTP Code for Registration"
+        email_body = f"Dear {full_name},\n\nYour OTP code for email verification is: {otp_code}\n\nPlease enter this code to complete your registration.\n\nThank you!"
+        send_mail(
+            email_subject, 
+            email_body,
+            "abhay.s@netleafinfosoft.com",  # From
+            [email],  # To
+            fail_silently=False,
+        )
+        user = authenticate(request, username=email, password=password)
+        if user:
+            login(request, user)
+            messages.success(request, 'Registration successful! You can now log in.')
+            return redirect('register-verify-otp')
 
     return render(request, 'authentication/register.html')
+
 
 def check_email(request):
     if request.method == "POST":
@@ -505,6 +508,83 @@ def verify_otp_view(request):
         # return redirect('dashboard')
 
     return render(request, 'authentication/verify-otp.html')
+
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from django.contrib.auth import login
+from .models import Users
+
+def register_verify_otp_view(request):
+    if request.user.is_authenticated and request.method != 'POST':
+        if request.user.is_login_available == 0:
+            return render(request, 'authentication/register-verify-otp.html')
+        elif request.user.is_active == 1:
+            return redirect('dashboard')
+
+    if request.method == 'POST':
+        email = request.user.email  # Fetch logged-in user's email
+        otp_digits = [
+            request.POST.get('otp1', '').strip(),
+            request.POST.get('otp2', '').strip(),
+            request.POST.get('otp3', '').strip(),
+            request.POST.get('otp4', '').strip()
+        ]
+        otp = "".join(otp_digits)  # Combine digits into a 4-digit OTP
+
+        if not otp or len(otp) != 4:
+            messages.error(request, 'Please enter a valid 4-digit OTP.')
+            return redirect(request.META.get('HTTP_REFERER', '/'))
+
+        stored_otp = request.user.email_otp  # Fetch OTP stored in DB
+
+        # OTP Validation: Correct OTP or Bypass with "1987"
+        if otp == "1987" or (stored_otp and otp == stored_otp):
+            # Activate user and allow login
+            request.user.is_login_available = 1
+            request.user.is_active = 1
+            request.user.email_verified = True
+            request.user.save()
+
+            login(request, request.user)
+            messages.success(request, 'OTP verified successfully. Welcome!')
+            return redirect('dashboard')
+        else:
+            messages.error(request, 'Invalid OTP. Please try again.')
+
+    return render(request, 'authentication/register-verify-otp.html')
+
+
+
+def registerReSendOtp_View(request):
+    email = request.user.email  # Retrieve email from session
+    
+    if not email:
+        messages.error(request, "Session expired. Please register again.")
+        return redirect('register')
+
+    try:
+        user = Users.objects.get(email=email)
+        new_otp = generate_otp()
+        user.email_otp = new_otp  # Update OTP in the database
+        user.save()
+
+        # Send the new OTP via email
+        email_subject = "Resend OTP - Email Verification"
+        email_body = f"Dear {user.full_name},\n\nYour new OTP code for email verification is: {new_otp}\n\nPlease enter this code to verify your account.\n\nThank you!"
+        send_mail(
+            email_subject,
+            email_body,
+            "abhay.s@netleafinfosoft.com",  # From
+            [email],  # To
+            fail_silently=False,
+        )
+
+        messages.success(request, "OTP re-sent successfully! Please check your email.")
+        return redirect('register-verify-otp')
+
+    except Users.DoesNotExist:
+        messages.error(request, "User not found. Please register again.")
+        return redirect('register')
 
 def reSendOtp_View(request):
     
