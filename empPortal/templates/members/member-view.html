@@ -723,7 +723,7 @@
                                                         </a>
                                                     </td>
                                                     <td>10th Marksheet</td>
-                                                    <td>{{ docs.tenth_marksheet_doc_id|default:"-" }}</td>
+                                                    <td>{{ docs.role_no|default:"-" }}</td>
                                                     <td>{{ docs.tenth_marksheet_updated_at|date:"Y-m-d H:i:s" }}</td>
                                                     <td>
                                                         {% if docs.tenth_marksheet_status == "Approved" %}
