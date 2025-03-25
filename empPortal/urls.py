@@ -91,6 +91,7 @@ urlpatterns = [
     path('new-role/', views.newRole, name='new-role'),
     path('insert-role/', views.insertRole, name='insert-role'),
     path('create-user/', views.createUser, name='create-user'),
+    path('get-users-by-role/', views.get_users_by_role, name='get_users_by_role'),
     path('insert-user/', views.insertUser, name='insert-user'),
     path('role/edit/<str:id>',views.editRole, name='edit-role'),
     path('users/edit-user/<str:id>',views.editUser, name='edit-user'),

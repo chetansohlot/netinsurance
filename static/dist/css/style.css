@@ -2493,3 +2493,5 @@ a:hover .dr-pdficon {
 .radio-btn + label { border: 1px solid #000; cursor: pointer; border-radius: 5px; padding: 5px 15px 5px 15px; font-size: 12px; font-weight: 400 !important; margin-right: 8px;  position: relative;}
 .radio-btn:checked + label {background: #FFC9BA; color: #000; }
 .readio-btn + label:before {content: ''; position: absolute; left: 10px; top:10px; width: 8px; height: 8px; border-radius: 50%; border: 1px solid #000;}
+
+.bill-header-logo {   width: 230px; }

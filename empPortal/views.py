@@ -4,7 +4,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.template import loader
-from .models import Roles,Users,PolicyDocument,BulkPolicyLog, UserFiles,UnprocessedPolicyFiles, Commission
+from .models import Roles,Users,PolicyDocument,BulkPolicyLog, Branch, UserFiles,UnprocessedPolicyFiles, Commission
 from django.contrib.auth import authenticate, login ,logout
 from django.core.files.storage import FileSystemStorage
 import re
@@ -118,9 +118,26 @@ def insertRole(request):
 def createUser(request):
     if request.user.is_authenticated:
         roles = Roles.objects.all()
-        return render(request,'create-user.html',{'role_data':roles})
+        branches = Branch.objects.all().order_by('-created_at')
+        return render(request,'create-user.html',{'role_data':roles, 'branches':branches})
     else:
         return redirect('login')
+
+def get_users_by_role(request):
+    if request.method == "GET" and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        role_id = request.GET.get('role_id', '')
+        if role_id and role_id.isdigit():
+            if role_id == '3':  # Check if role_id is 3
+                users = Users.objects.filter(role_id=2).values('id', 'first_name', 'last_name')  # Fetch users with role_id = 2
+                users_list = [
+                    {'id': user['id'], 'full_name': f"{user['first_name']} {user['last_name']} (Branch Manager)".strip()}
+                    for user in users
+                ]
+                return JsonResponse({'users': users_list}, status=200)
+            else:
+                return JsonResponse({'users': []}, status=200)  # Empty list if role_id != 3
+        return JsonResponse({'users': []}, status=200)  # Empty list if no role_id or invalid
+    return JsonResponse({'error': 'Invalid request'}, status=400)
 
 def insertUser(request):
     if request.user.is_authenticated:
@@ -131,6 +148,8 @@ def insertUser(request):
             user_email = request.POST.get('email', '').strip()
             user_phone = request.POST.get('phone', 0).strip()
             role = request.POST.get('role', '').strip()
+            branch = request.POST.get('branch', '').strip()
+            senior = request.POST.get('senior', '').strip()  # New senior field
             password = request.POST.get('password', '').strip()
 
             if not username:
@@ -144,6 +163,8 @@ def insertUser(request):
                 messages.error(request, 'First Name is required')
             elif len(first_name) < 3:
                 messages.error(request, 'First Name must be at least 3 characters long')
+            if not branch or not branch.isdigit():
+                messages.error(request, 'Valid Branch is required')
 
             if last_name and len(last_name) < 3:
                 messages.error(request, 'Last Name must be at least 3 characters long')
@@ -201,7 +222,18 @@ def insertUser(request):
             user_password = user_password
             user_status = 1
 
-            user = Users(user_gen_id=user_gen_id, role_id=user_role_id, role_name=user_role_name, user_name=user_name, first_name=user_first_name, last_name=user_last_name, email=user_email, phone=user_phone, status=user_status, password=user_password)
+            user = Users(
+                user_gen_id=user_gen_id, 
+                role_id=user_role_id, 
+                role_name=user_role_name, 
+                user_name=user_name, 
+                first_name=user_first_name, 
+                last_name=user_last_name, 
+                email=user_email, 
+                phone=user_phone, 
+                status=user_status, 
+                password=user_password
+            )
             user.save()
             
             messages.success(request, "User added successfully.")

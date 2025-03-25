@@ -483,7 +483,7 @@ def downloadQuotationPdf(request, cus_id):
         "customer": customer,
         "vehicle_info": vehicle_info,
         "addon_names": addon_names,
-        "logo_url": request.build_absolute_uri(static('dist/img/logo.png'))
+        "logo_url": request.build_absolute_uri(static('dist/img/logo2.png'))
     }
 
     # Render HTML template with context data

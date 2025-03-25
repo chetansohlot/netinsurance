@@ -2504,8 +2504,8 @@ a:hover .dr-pdficon {
 .chkbox-btn:checked + label:after {content: '\f00c'; font-family:"Font Awesome 6 Free"; font-weight: 900; color:#f15e33; position: absolute; left: 13px; top:6px; width: 10px; height: 10px; }
 .chkbox-btn:checked + label:before {border-color: #f15e33;}
 
+.bill-header-logo {   width: 230px; }
 
-.bill-header-logo {width:180px;}
 .invoice-to {
     font-weight: 700;
     text-align: left;

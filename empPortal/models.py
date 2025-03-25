@@ -247,6 +247,8 @@ class Users(AbstractBaseUser):
 
     role = models.ForeignKey(Roles, on_delete=models.CASCADE, null=True)
     role_name = models.CharField(max_length=255)
+    branch_id = models.IntegerField(null=True, blank=True)
+    senior_id = models.IntegerField(null=True, blank=True)
     status = models.IntegerField(default=1)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
