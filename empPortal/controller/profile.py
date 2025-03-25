@@ -248,7 +248,6 @@ def update_document(request):
 
         # Get or create the user's document record
         user_doc, created = DocumentUpload.objects.get_or_create(user_id=user_id)
-
         # Save the new file
         setattr(user_doc, document_type, uploaded_file)
         user_doc.save()
