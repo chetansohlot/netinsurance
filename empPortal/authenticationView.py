@@ -547,7 +547,7 @@ def register_verify_otp_view(request):
 
             login(request, request.user)
             messages.success(request, 'OTP verified successfully. Welcome!')
-            return redirect('dashboard')
+            return redirect('my-account')
         else:
             messages.error(request, 'Invalid OTP. Please try again.')
 

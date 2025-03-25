@@ -92,23 +92,35 @@ def memberView(request, user_id):
     else:
         return redirect('login')
 
-    
 def activateUser(request, user_id):
     if request.user.is_authenticated:
-        with connection.cursor() as cursor:
-            cursor.execute(
-                "UPDATE users SET activation_status = %s WHERE id = %s",
-                ['1', user_id]
-            )
+        docs = DocumentUpload.objects.filter(user_id=user_id).first()
+        
+        # Check if all required documents are approved
+        if (
+            docs and
+            docs.aadhaar_card_front_status == 'Approved' and
+            docs.aadhaar_card_back_status == 'Approved' and
+            docs.upload_pan_status == 'Approved' and
+            docs.upload_cheque_status == 'Approved' and
+            docs.tenth_marksheet_status == 'Approved'
+        ):
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    "UPDATE users SET activation_status = %s WHERE id = %s",
+                    ['1', user_id]
+                )
 
-        # Display success message
-        messages.success(request, 'User account has been activated successfully!')
-
+            # Display success message
+            messages.success(request, 'User account has been activated successfully!')
+        else:
+            messages.error(request, 'User cannot be activated. Please ensure all required documents are approved.')
 
         # Redirect back to the member view page after activation
         return redirect('member-view', user_id=user_id)
     else:
         return redirect('login')
+
 
 
     
