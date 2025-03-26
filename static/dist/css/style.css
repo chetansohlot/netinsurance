@@ -294,7 +294,7 @@ body {
     width: 100px;
     height: auto;
 }
-.main-sidebar, .main-sidebar::before {width: 240px;}
+.main-sidebar, .main-sidebar::before {width: 210px;}
 [class*=sidebar-dark-] .sidebar a {
     color: #343a40;
 }
@@ -1701,7 +1701,7 @@ a:hover .dr-pdficon {
     }
 
     .counter-img-card .card-body {
-        padding: 30px 20px;
+        padding: 16px 20px;
     }
 
     .cardcount-img {
@@ -2311,11 +2311,11 @@ a:hover .dr-pdficon {
 .form-loader {position:fixed;left:0px; top:0px; right:0; bottom:0; display: flex; align-items: center; justify-content: center; background-color: rgba(0, 0, 0, 0.05); background-color: rgba(253, 248, 248, 0.6);   backdrop-filter: blur(1px); z-index:9999;}
 
 @media (min-width: 768px) {
-    body:not(.sidebar-mini-md):not(.sidebar-mini-xs):not(.layout-top-nav) .content-wrapper, body:not(.sidebar-mini-md):not(.sidebar-mini-xs):not(.layout-top-nav) .main-footer, body:not(.sidebar-mini-md):not(.sidebar-mini-xs):not(.layout-top-nav) .main-header {margin-left: 240px;  }
+    body:not(.sidebar-mini-md):not(.sidebar-mini-xs):not(.layout-top-nav) .content-wrapper, body:not(.sidebar-mini-md):not(.sidebar-mini-xs):not(.layout-top-nav) .main-footer, body:not(.sidebar-mini-md):not(.sidebar-mini-xs):not(.layout-top-nav) .main-header {margin-left: 210px;  }
 }
 @media (min-width: 992px) {
     .sidebar-mini.sidebar-collapse .main-sidebar.sidebar-focused, .sidebar-mini.sidebar-collapse .main-sidebar:hover {
-    width: 240px;
+    width: 210px;
     }
 }
 
@@ -2495,3 +2495,5 @@ a:hover .dr-pdficon {
 .readio-btn + label:before {content: ''; position: absolute; left: 10px; top:10px; width: 8px; height: 8px; border-radius: 50%; border: 1px solid #000;}
 
 .bill-header-logo {   width: 230px; }
+
+.nav .nav-treeview li a > p{}
