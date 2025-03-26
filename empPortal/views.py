@@ -59,8 +59,8 @@ def addMember(request):
 def userAndRoles(request):
     if request.user.is_authenticated:
         roles = Roles.objects.all()
-        users = Users.objects.all()
-        return render(request,'user-and-roles.html',{'role_data':roles,'user_data':users})
+        users = Users.objects.exclude(role_id=1)  # Exclude users with role_id = 1
+        return render(request, 'user-and-roles.html', {'role_data': roles, 'user_data': users})
     else:
         return redirect('login')
 
@@ -220,6 +220,8 @@ def insertUser(request):
             user_email = user_email
             user_phone = user_phone
             user_password = user_password
+            branch_id = branch
+            senior_id = senior
             user_status = 1
 
             user = Users(
@@ -231,6 +233,8 @@ def insertUser(request):
                 last_name=user_last_name, 
                 email=user_email, 
                 phone=user_phone, 
+                branch_id=branch_id, 
+                senior_id=senior_id, 
                 status=user_status, 
                 password=user_password
             )
@@ -250,12 +254,23 @@ def editRole(request,id):
         return render(request,'edit-role.html',{'role_data':role_data})
     else:
         return redirect('login')
-
-def editUser(request,id):
+    
+def editUser(request, id):
     if request.user.is_authenticated:
         role_data = Roles.objects.all()
+        branches = Branch.objects.all().order_by('branch_name')
         user_data = Users.objects.filter(user_gen_id=id).first()
-        return render(request,'edit-user.html',{'user_data':user_data,'role_data':role_data})
+
+        senior_users = []  # Default empty list
+        if user_data and user_data.role_id == 3:  
+            senior_users = Users.objects.filter(role_id=2).values('id', 'first_name', 'last_name')
+
+        return render(request, 'edit-user.html', {
+            'user_data': user_data,
+            'role_data': role_data,
+            'branches': branches,
+            'senior_users': senior_users
+        })
     else:
         return redirect('login')
 
@@ -312,13 +327,15 @@ def updateUser(request):
     if request.user.is_authenticated:
         if request.method == "POST":
             user_id = request.POST.get('user_id', '').strip()
-            
+
             if not user_id:
-                messages.error(request,'Something Went Wrong. Kindly contact to administrator')
-            
+                messages.error(request, 'Something Went Wrong. Kindly contact the administrator')
+
             first_name = request.POST.get('first_name', '').strip()
             last_name = request.POST.get('last_name', '').strip()
             role_id = request.POST.get('role', '').strip()
+            branch_id = request.POST.get('branch', '').strip()
+            senior_id = request.POST.get('senior', '').strip()
 
             if not first_name:
                 messages.error(request, 'First Name is required')
@@ -330,30 +347,31 @@ def updateUser(request):
 
             if not role_id:
                 messages.error(request, 'Role is required')
-                
+
+            if not branch_id:
+                messages.error(request, 'Branch is required')
+
             if messages.get_messages(request):
                 return redirect(request.META.get('HTTP_REFERER', '/'))
 
             role_data = Roles.objects.filter(id=role_id).first()
-            role_name = role_data.roleName
-            
+            role_name = role_data.roleName if role_data else ''
+
             user_data = Users.objects.filter(id=user_id).first()
-            
+
             if user_data is not None:
                 user_data.role_id = role_id
                 user_data.role_name = role_name
                 user_data.first_name = first_name
                 user_data.last_name = last_name
+                user_data.branch_id = branch_id
+                user_data.senior_id = senior_id  # Update senior_id
                 user_data.save()
-                
-                # if request.FILES.getlist('files'):
-                #     for file in request.FILES.getlist('files'):
-                #         UserFiles.objects.create(user=user_data, file=file)
 
                 messages.success(request, "User updated successfully.")
                 return redirect('user-and-roles')
-            else:       
-                messages.error(request, 'Data Not Found. Kinldy connect to admin department')
+            else:
+                messages.error(request, 'Data Not Found. Kindly connect to admin department')
                 return redirect('user-and-roles')
         else:
             messages.error(request, 'Invalid URL')

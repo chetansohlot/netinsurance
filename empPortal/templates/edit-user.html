@@ -115,15 +115,42 @@ Add Members
                               <span class="error phone_err"></span>
                           </div>
                   
-                          <!-- Role -->
+                            <div class="form-group col-sm-6">
+                              <label for="branch">Branch</label>
+                              <select class="form-control" name="branch" id="branch">
+                                  <option value="">Select Branch</option>
+                                  {% if branches %}
+                                      {% for branch in branches %}
+                                          <option value="{{ branch.id }}" {% if branch.id|stringformat:"s" == user_data.branch_id|stringformat:"s" %}selected{% endif %}>
+                                            {{ branch.branch_name }}
+                                          </option>
+                                      {% endfor %}
+                                  {% endif %}
+                              </select>
+                          </div>
+                                                    
                           <div class="form-group col-sm-6">
                               <label for="role">Role</label>
                               <select class="form-control" name="role" id="role">
                                   <option value="">Select Role</option>
                                   {% if role_data %}
                                       {% for rl in role_data %}
-                                          <option value="{{ rl.id }}" {% if rl.id == user_data.role_id %}selected{% endif %}>
-                                              {{ rl.roleName }}
+                                          <option value="{{ rl.id }}" {% if rl.id|stringformat:"s" == user_data.role_id|stringformat:"s" %}selected{% endif %}>
+                                            {{ rl.roleName }}
+                                          </option>
+                                      {% endfor %}
+                                  {% endif %}
+                              </select>
+                          </div>
+                          <!-- Role -->
+                          <div class="form-group col-sm-6">
+                            <label for="senior">Select Senior</label>
+                              <select class="form-control" name="senior" id="senior">
+                                  <option value="">Select Senior</option>
+                                  {% if senior_users %}
+                                      {% for senior in senior_users %}
+                                          <option value="{{ senior.id }}" {% if senior.id|stringformat:"s" == user_data.senior_id|stringformat:"s" %}selected{% endif %}>
+                                            {{ senior.first_name }} {{ senior.last_name }}
                                           </option>
                                       {% endfor %}
                                   {% endif %}
@@ -141,7 +168,7 @@ Add Members
                       </div> {% endcomment %}
                   
                       <!-- Submit Button -->
-                      <button type="submit" class="btn btn-primary">Save Role</button>
+                      <button type="submit" class="btn btn-primary">Save User</button>
                   </form>
                   
                   </div>
@@ -166,5 +193,41 @@ Add Members
           document.getElementById("loader").style.display = "flex";
       });
     </script>
+    
+<script>
+    $(document).ready(function() {
+        $('#role').change(function() {
+            var roleId = $(this).val();
+            var userSelect = $('#senior');
+
+            if (roleId) {
+                $.ajax({
+                    url: "{% url 'get_users_by_role' %}",
+                    type: 'GET',
+                    data: { 'role_id': roleId },
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                    success: function(response) {
+                        userSelect.empty();
+                        userSelect.append('<option value="">Select User</option>');
+                        if (response.users && response.users.length > 0) {
+                            $.each(response.users, function(index, user) {
+                                userSelect.append(
+                                    `<option value="${user.id}" ${user.id == "{{ user_data.senior_id }}" ? 'selected' : ''}>${user.full_name}</option>`
+                                );
+                            });
+                        } else {
+                            userSelect.append('<option value="">No users available</option>');
+                        }
+                    },
+                    error: function() {
+                        alert('Error fetching users');
+                    }
+                });
+            } else {
+                userSelect.empty().append('<option value="">Select User</option>');
+            }
+        });
+    });
+</script>
 </body>
 {% endblock %}
