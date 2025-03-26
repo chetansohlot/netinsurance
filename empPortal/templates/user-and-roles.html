@@ -64,6 +64,7 @@ Users and Roles
                             <th>User Details</th>
                             <th>Phone</th>
                             <th>Role Name</th>
+                            <th>Senior</th>
                             <th>User Status</th>
                             <th>Action</th>
                           </tr>
@@ -73,7 +74,8 @@ Users and Roles
                             <tr>
                               <td>{{ user.full_name }}<span class="text-gray d-block small">{{ user.email }}</span></td>
                               <td>{{ user.phone }}</td>
-                              <td>{{ user.role_names }}</td>
+                              <td>{{ user.role_name }}</td>
+                              <td>{{ user.senior_name }}</td>
                               <td>
                                 <span class="{% if user.status == 1 %}text-success{% elif user.status == 2 %}text-danger{% else %}text-info{% endif %} tooltip-sec" data-title="Click To Change Status">
                                   <form action="{% url 'edit-user-status' %}" method="POST">

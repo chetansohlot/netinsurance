@@ -55,14 +55,44 @@ def addMember(request):
         return render(request,'add-member.html')
     else:
         return redirect('login')
-
+    
 def userAndRoles(request):
     if request.user.is_authenticated:
         roles = Roles.objects.all()
-        users = Users.objects.exclude(role_id=1)  # Exclude users with role_id = 1
-        return render(request, 'user-and-roles.html', {'role_data': roles, 'user_data': users})
+        
+        # Exclude users with role_id = 1 and ensure valid users
+        users = Users.objects.exclude(role_id=1).select_related('role')
+
+        # Create a list of users with their respective senior's name
+        user_list = []
+        for user in users:
+            senior_name = "N/A"  # Default value if no senior is found
+            
+            # Ensure senior_id is valid (not None, not empty, not zero)
+            if user.senior_id and str(user.senior_id).strip() not in ["", "None", "null"]:
+                senior = Users.objects.filter(id=user.senior_id).first()
+                if senior:
+                    senior_name = f"{senior.first_name} {senior.last_name}"
+            
+            user_list.append({
+                'id': user.id if user.id else '',
+                'user_gen_id': user.user_gen_id if user.user_gen_id else '',  # Ensure it's not None
+                'full_name': f"{user.first_name} {user.last_name}",
+                'email': user.email,
+                'phone': user.phone,
+                'role_name': user.role_name,
+                'status': user.status,
+                'senior_name': senior_name  # Include senior's name or "N/A"
+            })
+
+        return render(request, 'user-and-roles.html', {
+            'role_data': roles,
+            'user_data': user_list
+        })
     else:
         return redirect('login')
+
+
 
 def newRole(request):
     if request.user.is_authenticated:
