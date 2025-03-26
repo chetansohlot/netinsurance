@@ -219,6 +219,7 @@
                         
                         <ul class="nav nav-pills profile-tab">
                             <li class="nav-item text-bold"><a class="nav-link active" href="#membership-tab" data-toggle="tab">Payout Details</a></li>
+                            <li class="nav-item text-bold"><a class="nav-link" href="#allocation-tab" data-toggle="tab">Allocation </a></li>
                             <li class="nav-item text-bold"><a class="nav-link" href="#organisation-tab" data-toggle="tab">Bank Details </a></li>
                             <li class="nav-item text-bold"><a class="nav-link" href="#personal-detail-tab" data-toggle="tab">Documents</a></li>
                         </ul>
@@ -348,6 +349,87 @@
                                       </div>
                                   </div>
                               </div>
+                            </div>
+
+                            <div class="tab-pane" id="allocation-tab">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="d-flex justify-content-end mb-3">
+                                            <button type="button" class="dashboard-addbtn" data-toggle="modal" data-target="#editAllocation">Edit</button>
+                                        </div>    
+                                    </div>
+                                </div>
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Type</th>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Contact No</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Branch</td>
+                                            <td>N/A</td>
+                                            <td>N/A</td>
+                                            <td>N/A</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Branch Manager</td>
+                                            <td>N/A</td>
+                                            <td>N/A</td>
+                                            <td>N/A</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Sales Manager</td>
+                                            <td>N/A</td>
+                                            <td>N/A</td>
+                                            <td>N/A</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="modal fade" id="editAllocation" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="editModalLabel">Edit Allocation</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form id="bank-form" method="POST" action="{% url 'store-allocation' %}">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="agent_member_id" value="{{ user_details.id }}">
+                                                <div class="form-group">
+                                                    <label for="branch">Branch</label>
+                                                    <select id="branch" name="branch" class="form-control">
+                                                        <option value="">Select Branch</option>
+                                                        {% for branch in branches %}
+                                                            <option value="{{ branch.id }}">{{ branch.branch_name }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="branch_manager">Branch Manager</label>
+                                                    <select id="branch_manager" name="branch_manager" class="form-control">
+                                                        <option value="">Select Branch Manager</option>
+                                                        <!-- Options will be populated via AJAX -->
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="sales_manager">Sales Manager</label>
+                                                    <select id="sales_manager" name="sales_manager" class="form-control">
+                                                        <option value="">Select Sales Manager</option>
+                                                        <!-- Options will be populated via AJAX -->
+                                                    </select>
+                                                </div>
+
+                                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="tab-pane" id="organisation-tab">
@@ -958,7 +1040,50 @@
             });
         }
     </script>
-    
+    <script>
+        document.getElementById('branch').addEventListener('change', function() {
+            var branchId = this.value;
+            var branchManagerSelect = document.getElementById('branch_manager');
+            var salesManagerSelect = document.getElementById('sales_manager');
+
+            // Reset Branch Manager and Sales Manager dropdowns
+            branchManagerSelect.innerHTML = '<option value="">Select Branch Manager</option>';
+            salesManagerSelect.innerHTML = '<option value="">Select Sales Manager</option>';
+
+            if (branchId) {
+                fetch(`/get-branch-managers/?branch_id=${branchId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.branch_managers.forEach(function(manager) {
+                            var option = new Option(manager.full_name, manager.id);
+                            branchManagerSelect.add(option);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching branch managers:', error));
+            }
+        });
+
+        document.getElementById('branch_manager').addEventListener('change', function() {
+            var branchManagerId = this.value;
+            var salesManagerSelect = document.getElementById('sales_manager');
+
+            // Reset Sales Manager dropdown
+            salesManagerSelect.innerHTML = '<option value="">Select Sales Manager</option>';
+
+            if (branchManagerId) {
+                fetch(`/get-sales-managers/?branch_manager_id=${branchManagerId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.sales_managers.forEach(function(manager) {
+                            var option = new Option(manager.full_name, manager.id);
+                            salesManagerSelect.add(option);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching sales managers:', error));
+            }
+        });
+
+    </script>
     
     
     

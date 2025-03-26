@@ -63,6 +63,11 @@ urlpatterns = [
     path("update-document/", profile.update_document, name="update_document"),
     path("update-document-id/", profile.update_document_id, name="update_document_id"),
     path('store-bank-data/', profile.storeOrUpdateBankDetails, name='store-bank-data'),
+    path('store-allocation/', profile.storeOrUpdateBankDetails, name='store-allocation'),
+    
+    path('get-branch-managers/', members.get_branch_managers, name='get_branch_managers'),
+    path('get-sales-managers/', members.get_sales_managers, name='get_sales_managers'),
+
     path("check-account-number/", profile.check_account_number, name="check-account-number"),
 
     path('update-user-details/', profile.update_user_details, name='update-user-details'),

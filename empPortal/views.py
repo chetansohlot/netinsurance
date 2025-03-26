@@ -4,7 +4,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.template import loader
-from .models import Roles,Users,PolicyDocument,BulkPolicyLog, Branch, UserFiles,UnprocessedPolicyFiles, Commission
+from .models import Roles,Users,PolicyDocument,BulkPolicyLog, Branch, UserFiles,UnprocessedPolicyFiles, Commission, Branch
 from django.contrib.auth import authenticate, login ,logout
 from django.core.files.storage import FileSystemStorage
 import re
@@ -171,6 +171,11 @@ def get_users_by_role(request):
 
 def insertUser(request):
     if request.user.is_authenticated:
+        
+        if request.user.role_id != 1:
+            messages.error(request, "You do not have permission to add users.")
+            return redirect('user-and-roles')  # Redirect unauthorized users
+        
         if request.method == "POST":
             username = request.POST.get('username', '').strip()
             first_name = request.POST.get('first_name', '').strip()
@@ -182,6 +187,11 @@ def insertUser(request):
             senior = request.POST.get('senior', '').strip()  # New senior field
             password = request.POST.get('password', '').strip()
 
+
+            if role == '1':
+                messages.error(request, "You cannot create a user with this role Admin.")
+                return redirect(request.META.get('HTTP_REFERER', '/'))
+            
             if not username:
                 messages.error(request, 'Username is required')
             elif len(username) < 3:
@@ -367,6 +377,10 @@ def updateUser(request):
             branch_id = request.POST.get('branch', '').strip()
             senior_id = request.POST.get('senior', '').strip()
 
+            if role_id == '1':
+                messages.error(request, "You cannot update a user with this role Admin.")
+                return redirect(request.META.get('HTTP_REFERER', '/'))
+            
             if not first_name:
                 messages.error(request, 'First Name is required')
             elif len(first_name) < 3:

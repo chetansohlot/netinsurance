@@ -4,7 +4,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib import messages
 from django.template import loader
-from ..models import Commission,Users, DocumentUpload
+from ..models import Commission,Users, DocumentUpload, Branch
 from empPortal.model import BankDetails
 from ..forms import DocumentUploadForm
 
@@ -41,9 +41,13 @@ def dictfetchall(cursor):
 def members(request):
     if request.user.is_authenticated:
         if request.user.role_id == 1:
-            users = Users.objects.filter(role_id=2)
+            # Define the list of role IDs to filter
+            # role_ids = [2, 3, 4]
+            role_ids = [4]
+            # Filter users whose role_id is in the specified list
+            users = Users.objects.filter(role_id__in=role_ids)
         else:
-            users = Users.objects.none()
+            users = Users.objects.none()  # Return an empty queryset for unauthorized users
         return render(request, 'members/members.html', {'users': users})
     else:
         return redirect('login')
@@ -82,15 +86,31 @@ def memberView(request, user_id):
             product_id = commission.get('product_id')
             commission['product_name'] = product_dict.get(int(product_id), 'Unknown') if product_id is not None else 'Unknown'
 
+        branches = Branch.objects.all().order_by('-created_at')
+
         return render(request, 'members/member-view.html', {
             'user_details': user_details,
             'bank_details': bank_details,
             'docs': docs,
+            'branches': branches,
             'commissions': commissions_list,  # Fixed variable name
             'products': products  # Fixed variable name
         })
     else:
         return redirect('login')
+    
+    
+def get_branch_managers(request):
+    branch_id = request.GET.get('branch_id')
+    branch_managers = Users.objects.filter(branch_id=branch_id, role_id=2).values('id', 'first_name', 'last_name')
+    managers_list = [{'id': manager['id'], 'full_name': f"{manager['first_name']} {manager['last_name']}"} for manager in branch_managers]
+    return JsonResponse({'branch_managers': managers_list})
+
+def get_sales_managers(request):
+    branch_manager_id = request.GET.get('branch_manager_id')
+    sales_managers = Users.objects.filter(senior_id=branch_manager_id, role_id=3).values('id', 'first_name', 'last_name')
+    sales_list = [{'id': manager['id'], 'full_name': f"{manager['first_name']} {manager['last_name']}"} for manager in sales_managers]
+    return JsonResponse({'sales_managers': sales_list})
 
 def activateUser(request, user_id):
     if request.user.is_authenticated:

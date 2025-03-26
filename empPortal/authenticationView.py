@@ -153,7 +153,7 @@ def register_view(request):
             # Create new user
             user = Users(
                 user_gen_id=new_gen_id,
-                role_id=2,
+                role_id=4,
                 role_name="User",
                 user_name=full_name,
                 first_name=first_name,
