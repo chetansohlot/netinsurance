@@ -2496,4 +2496,16 @@ a:hover .dr-pdficon {
 
 .bill-header-logo {   width: 230px; }
 
-.nav .nav-treeview li a > p{}
+.breadcrump {
+    margin: 2px 0 5px 0;
+    padding: 0;
+    display: flex;
+}
+
+.breadcrump li {
+    list-style: none;
+    font-size: 11px;
+    color: #999;
+}
+.breadcrump li a {color:#000;}
+.breadcrump li > i {padding:0 6px 0 5px;}
