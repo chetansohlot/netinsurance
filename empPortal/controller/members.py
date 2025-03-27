@@ -220,12 +220,14 @@ def activationPdf(request,user_id):
     config = pdfkit.configuration(wkhtmltopdf=wkhtml_path)
     customer = Users.objects.get(id=user_id)
 
+    training_pdf_path = os.path.join(settings.MEDIA_ROOT, f'training/Training_Material_Elevate_Insurance_V1.0.pdf')
+
     context = {
         "user": customer,
         "support_email": "support@elevate.com",
         "company_website": "https://pos.elevateinsurance.in/",
         "sub_broker_test_url": "https://pos.elevateinsurance.in/",
-        "training_material_url": "https://pos.elevateinsurance.in/",
+        "training_material_url": training_pdf_path,
         "support_number": +918887779999,
         "logo_url": request.build_absolute_uri(static('dist/img/logo2.png'))
     }
@@ -272,6 +274,10 @@ def activateUser(request, user_id):
 
             user = get_object_or_404(Users, id=user_id)
             user_email = user.email
+            training_pdf_path = os.path.join(settings.MEDIA_ROOT, f'training/Training_Material_Elevate_Insurance_V1.0.pdf')
+            training_pdf_path = os.path.join(settings.MEDIA_ROOT, 'training/Training_Material_Elevate_Insurance_V1.0.pdf')
+
+            training_material_url = request.build_absolute_uri(settings.MEDIA_URL + 'training/Training_Material_Elevate_Insurance_V1.0.pdf')
 
             # Render email HTML template
             email_body = render_to_string('members/activation-email.html', {
@@ -280,7 +286,7 @@ def activateUser(request, user_id):
                 "support_email": "support@elevate.com",
                 "company_website": "https://pos.elevateinsurance.in/",
                 "sub_broker_test_url": "https://pos.elevateinsurance.in/",
-                "training_material_url": "https://pos.elevateinsurance.in/",
+                "training_material_url": training_material_url,
                 "support_number": +918887779999,
             })
 
@@ -292,12 +298,20 @@ def activateUser(request, user_id):
             email = EmailMessage(subject, email_body, from_email, recipient_list)
             email.content_subtype = "html"  # Set content type to HTML
 
-            # Generate and attach PDF
-            pdf_path = activationPdf(request, user_id)
-            if pdf_path and os.path.exists(pdf_path):
-                email.attach_file(pdf_path)
+
+
+            # Attach file if it exists
+            if os.path.exists(training_pdf_path):
+                email.attach_file(training_pdf_path)
             else:
-                logger.error("PDF generation failed or file not found. Skipping attachment.")
+                logger.error(f"Training PDF not found: {training_pdf_path}")
+                
+            # Generate and attach PDF
+            # pdf_path = activationPdf(request, user_id)
+            # if pdf_path and os.path.exists(pdf_path):
+            #     email.attach_file(pdf_path)
+            # else:
+            #     logger.error("PDF generation failed or file not found. Skipping attachment.")
 
             email.send()
             messages.success(request, "User account has been activated successfully!")

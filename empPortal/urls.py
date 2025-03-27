@@ -2,7 +2,7 @@ from django.urls import path, include
 from . import views,export
 from . import views
 from . import authenticationView
-from .controller import commissions, profile, Franchises, Branches, members, customers, quoteManagement, healthQuoteManagement, homeManagement
+from .controller import commissions, profile, helpAndSupport, leads, sellMotor, sellHealth, sellTerm, Franchises, Branches, members, customers, quoteManagement, healthQuoteManagement, homeManagement
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -84,6 +84,27 @@ urlpatterns = [
     path('/member/member-view/<str:user_id>',members.memberView, name='member-view'),
     path('/member/activate-user/<str:user_id>',members.activateUser, name='activate-user'),
     path('update-commission/', commissions.update_commission, name='update-commission'),
+
+    # LEADS 
+    path('leads-mgt/', leads.index, name='leads-mgt'),
+    # LEADS 
+
+    # sell-online 
+    path('sell/motor', sellMotor.index, name='sell-motor'),
+    path('sell/health', sellHealth.index, name='sell-health'),
+    path('sell/term', sellTerm.index, name='sell-term'),
+    # sell-online 
+
+    # REPORTS 
+    # REPORTS 
+
+
+    # HELP-SUPPORT 
+    path('help-and-support', helpAndSupport.index, name='help'),
+    # HELP-SUPPORT 
+
+    # MY-ACCOUNT 
+    # MY-ACCOUNT 
 
     path('customers/', customers.customers, name='customers'),
     path('add-customer/', customers.create, name='add-customer'),

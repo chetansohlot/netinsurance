@@ -144,7 +144,7 @@
             </li>
           {% else %}
           <li class="nav-item">
-            <a href="{% url 'members' %}" class="nav-link {% if request.path == '/members/' %} active {% endif %}">
+            <a href="{% url 'leads-mgt' %}" class="nav-link {% if request.path == '/leads-mgt/' %} active {% endif %}">
               <svg class="sidbarmenu-svg">
                 <use xlink:href="#members" />
               </svg>
@@ -185,40 +185,41 @@
                 <p>Post Policies Mgt</p>
               </a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item {% if '/sell/motor' in request.path or '/sell/health' in request.path or '/sell/term' in request.path %} menu-is-opening menu-open {% endif %}">
               <a href="#" class="nav-link">
                 <svg class="sidbarmenu-svg">
-                  <use xlink:href="#commission-icon" />
+                  <use xlink:href="#commission-icon"></use>
                 </svg>
-                <p>Sell Online  <i class="fas fa-angle-right right"></i></p>
+                <p>Sell Online <i class="fas fa-angle-right right"></i></p>
               </a>
-              <ul class="nav nav-treeview">
-                 <li class="nav-item">
-                  <a href="#" class="nav-link ">
+              <ul class="nav nav-treeview" {% if '/sell/motor' in request.path or '/sell/health' in request.path or '/sell/term' in request.path %} style="display: block;" {% else %} style="display: none;" {% endif %}>
+                <li class="nav-item">
+                  <a href="{% url 'sell-motor' %}" class="nav-link {% if '/sell/motor' in request.path %} active {% endif %}">
                     <svg class="sidbarmenu-svg">
-                      <use xlink:href="#car-icon" />
+                      <use xlink:href="#car-icon"></use>
                     </svg>
-                    <p> Motor  </p>
+                    <p>Motor</p>
                   </a>
-                 </li>
-                 <li class="nav-item">
-                  <a href="#" class="nav-link">
+                </li>
+                <li class="nav-item">
+                  <a href="{% url 'sell-health' %}" class="nav-link {% if '/sell/health' in request.path %} active {% endif %}">
                     <svg class="sidbarmenu-svg">
-                      <use xlink:href="#health-icon" />
+                      <use xlink:href="#health-icon"></use>
                     </svg>
-                    <p> Health  </p>
+                    <p>Health</p>
                   </a>
-                 </li>
-                 <li class="nav-item">
-                  <a href="#" class="nav-link ">
+                </li>
+                <li class="nav-item">
+                  <a href="{% url 'sell-term' %}" class="nav-link {% if '/sell/term' in request.path %} active {% endif %}">
                     <svg class="sidbarmenu-svg">
-                      <use xlink:href="#term-icon" />
+                      <use xlink:href="#term-icon"></use>
                     </svg>
-                    <p> Term  </p>
+                    <p>Term</p>
                   </a>
-                 </li>
+                </li>
               </ul>
             </li>
+            
             <li class="nav-item">
               <a href="#" class="nav-link {% if request.path == '/commission-report/' %} active {% endif %}">
                 <svg class="sidbarmenu-svg">
@@ -236,7 +237,7 @@
               </ul>
             </li>
             <li class="nav-item">
-              <a href="#" class="nav-link">
+              <a href="{% url 'help' %}" class="nav-link  {% if request.path == '/help-and-support' %} active {% endif %}">
                 <svg class="sidbarmenu-svg">
                   <use xlink:href="#setting-icon" />
                 </svg>
