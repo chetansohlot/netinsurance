@@ -7,12 +7,15 @@
     <div class="content-header header-content-bg">
         <div class="container-fluid ">
         <div class="row pt-2 pb-2">
-            <div class="col-sm-6">
-            <div class="d-flex align-items-center">
-            <h1 class="admin-title m-0 pt-2">Health Quote Management</h1>
+            <div class="col-sm-8">
+                <h1 class="admin-title m-0 pt-2">Health Quote Management</h1>
+                <ul class="breadcrump">
+                    <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
+                    <li> <a href="#">Quote Management</a> <i class="fas fa-chevron-right"></i></li>
+                    <li>Health</li>
+                </ul>
             </div>
-            </div>
-            <div class="col-sm-6">
+            <div class="col-sm-4">
             <div class="d-flex justify-content-end">
                 <a href="{% url 'quote-management-create' %}" class="breadcrump-addbtn"><i class="fas fa-plus"></i> Create Quote </a>
             </div>

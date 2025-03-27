@@ -2532,4 +2532,5 @@ a:hover .dr-pdficon {
     font-size: 11px;
     color: #999;
 }
+.breadcrump li a {color:#000;}
 .breadcrump li > i {padding:0 6px 0 5px;}
