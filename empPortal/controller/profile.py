@@ -114,6 +114,29 @@ def update_user_details(request):
         messages.success(request, "User details updated successfully!")
         return redirect('my-account')  # Redirect back to the user profile page
 
+
+
+def storeAllocation(request):
+    if request.method == 'POST':
+        user_id = request.POST.get('agent_member_id')
+        branch_id = request.POST.get('branch')
+        sales_manager_id = request.POST.get('sales_manager')
+
+        if not branch_id or not sales_manager_id:
+            messages.error(request, "Branch and Sales Manager cannot be empty.")
+            return redirect('member-view', user_id=user_id)
+
+        user = get_object_or_404(Users, id=user_id)
+        user.branch_id = branch_id
+        user.senior_id = sales_manager_id  # Store sales_manager_id in senior_id
+        user.save()
+
+        messages.success(request, "Branch and Sales Manager assigned successfully!")
+        return redirect('member-view', user_id=user_id)
+    
+    messages.error(request, "Invalid request method.")
+    return redirect('member-view', user_id=user_id)
+
 def storeOrUpdateBankDetails(request):
     if request.method == "POST":
         user_id = request.user.id  # Get the logged-in user's ID

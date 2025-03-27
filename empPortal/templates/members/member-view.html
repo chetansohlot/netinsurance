@@ -359,36 +359,37 @@
                                         </div>    
                                     </div>
                                 </div>
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th>Type</th>
-                                            <th>Name</th>
-                                            <th>Email</th>
-                                            <th>Contact No</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>Branch</td>
-                                            <td>N/A</td>
-                                            <td>N/A</td>
-                                            <td>N/A</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Branch Manager</td>
-                                            <td>N/A</td>
-                                            <td>N/A</td>
-                                            <td>N/A</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Sales Manager</td>
-                                            <td>N/A</td>
-                                            <td>N/A</td>
-                                            <td>N/A</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Type</th>
+                                                <th>Name</th>
+                                                <th>Email</th>
+                                                <th>Contact No</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Branch</td>
+                                                <td>{{ branch.branch_name|default:"N/A" }}</td>
+                                                <td>{{ branch.email|default:"N/A" }}</td>
+                                                <td>{{ branch.mobile|default:"N/A" }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Branch Manager</td>
+                                                <td>{{ branch_manager.full_name|default:"N/A" }}</td>
+                                                <td>{{ branch_manager.email|default:"N/A" }}</td>
+                                                <td>{{ branch_manager.phone|default:"N/A" }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Sales Manager</td>
+                                                <td>{{ sales_manager.full_name|default:"N/A" }}</td>
+                                                <td>{{ sales_manager.email|default:"N/A" }}</td>
+                                                <td>{{ sales_manager.phone|default:"N/A" }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                
                             </div>
                             <div class="modal fade" id="editAllocation" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
                                 <div class="modal-dialog">

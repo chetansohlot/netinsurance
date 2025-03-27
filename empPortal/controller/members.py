@@ -172,11 +172,26 @@ def memberView(request, user_id):
 
         branches = Branch.objects.all().order_by('-created_at')
 
+        branch = None
+        if user_details.branch_id:
+            branch = Branch.objects.filter(id=user_details.branch_id).first()
+                
+        senior = None
+        if user_details.senior_id:
+            senior = Users.objects.filter(id=user_details.senior_id).first()
+
+        manager = None
+        if senior.senior_id:
+            manager = Users.objects.filter(id=senior.senior_id).first()
+
         return render(request, 'members/member-view.html', {
             'user_details': user_details,
             'bank_details': bank_details,
             'docs': docs,
             'branches': branches,
+            'sales_manager': senior,
+            'branch': branch,
+            'branch_manager': manager,
             'commissions': commissions_list,  # Fixed variable name
             'products': products  # Fixed variable name
         })
