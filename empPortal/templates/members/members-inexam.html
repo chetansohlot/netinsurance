@@ -1,7 +1,7 @@
 {% extends 'master.html' %}
 
 {% block title %}
-    Requested Agent
+    In-Exam Agent
 {% endblock %}
   
 {% block content %}
@@ -21,7 +21,7 @@
               <div class="row pt-2 pb-2">
                 <div class="col-sm-6">
                   <div class="d-flex align-items-center">
-                  <h1 class="admin-title m-0 pt-2">Requested Agent</h1>
+                  <h1 class="admin-title m-0 pt-2">In-Exam Agent</h1>
                   </div>
                 </div>
                 <div class="col-sm-6">
@@ -165,7 +165,7 @@
                           </div>
                         </div>
 
-                        {% include "components/members/member-list-tab.html" with requested="true" %}
+                        {% include "components/members/member-list-tab.html" with inexam="true" %}
 
                         {% include "components/members/member-list.html" %}
                       </div>

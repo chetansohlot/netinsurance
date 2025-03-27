@@ -1,0 +1,20 @@
+<ul class="nav nav-pills profile-tab">
+    <li class="nav-item text-bold">
+        <a class="nav-link {% if requested %}active{% endif %}" href="{% url 'members' %}">Requested</a>
+    </li>
+    <li class="nav-item text-bold">
+        <a class="nav-link {% if inprocess %}active{% endif %}" href="{% url 'members_inprocess' %}">In Process</a>
+    </li>
+    <li class="nav-item text-bold">
+        <a class="nav-link {% if intraining %}active{% endif %}" href="{% url 'members_intraining' %}">In Training</a>
+    </li>
+    <li class="nav-item text-bold">
+        <a class="nav-link {% if inexam %}active{% endif %}" href="{% url 'members_inexam' %}">In Exam</a>
+    </li>
+    <li class="nav-item text-bold">
+        <a class="nav-link {% if activated %}active{% endif %}" href="{% url 'members_activated' %}">Activated</a>
+    </li>
+    <li class="nav-item text-bold">
+        <a class="nav-link {% if rejected %}active{% endif %}" href="{% url 'members_rejected' %}">Rejected</a>
+    </li>
+</ul>

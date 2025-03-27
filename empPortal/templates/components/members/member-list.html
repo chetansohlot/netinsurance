@@ -1,0 +1,61 @@
+
+{% load static %}
+
+<div class="table-responsive table-ht">
+    <table class="table table-design table-trlink">
+      <thead class="table-thead-bg-light table-header-fix">
+        <tr>
+          <th width="10">
+            <input type="checkbox" name="" id="checkall" class="table-chk">
+            <label for="checkall"></label>
+          </th>
+          <th>Name / Employee ID</th>
+          <th>Contact Details</th>
+          <th>Membership Plan(s)</th>
+          <th>Member Status</th>
+          <th width="50"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+          <tr>
+            <td>
+              <input type="checkbox" name="" id="check{{ user.id }}" class="table-chk">
+              <label for="check{{ user.id }}"></label>
+            </td>
+            <td>
+              <a href="{% url 'member-view' user_id=user.id %}" class="trlink">{{ user.full_name }} 
+                <span class="text-gray d-block small">{{ user.user_gen_id }}</span>
+              </a>
+            </td>
+            <td>
+              {{ user.phone }} 
+              <span class="text-gray d-block small">{{ user.email }}</span>
+            </td>
+            <td>{{ user.role_names }} <span class="text-gray d-block small">{{ user.status_type }}</span></td>
+            <td>
+              {% if user.activation_status == '1' %}
+                <p class="text-success">Active</p>
+              {% else %}
+                <p class="text-danger">Inactive</p>
+              {% endif %}
+              <span class="text-gray d-block small">{{ user.created_at|date:"d M 'y H:i:s" }} - Present</span>
+            </td>
+            <td>
+              <div class="dropdown">
+                <img src="{% static 'dist/img/svg/menu-dot-vr.svg' %}" alt="" class="table-doticon" data-toggle="dropdown" aria-expanded="false">
+                <ul class="dropdown-menu table-dropdown-menu">
+                  <li><a class="dropdown-item" href="{% url 'member-view' user_id=user.id %}">View member</a></li>
+                </ul>
+              </div>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="7" class="text-center">No users found</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  

@@ -7,7 +7,8 @@ from django.template import loader
 from ..models import Commission,Users, DocumentUpload, Branch
 from empPortal.model import BankDetails
 from ..forms import DocumentUploadForm
-
+from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 from django.utils.timezone import now
 from django.contrib.auth import authenticate, login ,logout
 from django.core.files.storage import FileSystemStorage
@@ -25,7 +26,11 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.db import connection
-
+import logging
+logger = logging.getLogger(__name__)
+import os
+import pdfkit
+from django.template.loader import render_to_string
 from pprint import pprint 
 
 OPENAI_API_KEY = settings.OPENAI_API_KEY
@@ -44,13 +49,92 @@ def members(request):
             # Define the list of role IDs to filter
             # role_ids = [2, 3, 4]
             role_ids = [4]
+
+            # Filter and order users by updated_at descending
+            users = Users.objects.filter(role_id__in=role_ids).order_by('-updated_at')
+        else:
+            users = Users.objects.none()  # Return an empty queryset for unauthorized users
+        
+        return render(request, 'members/members.html', {'users': users})
+    else:
+        return redirect('login')
+
+    
+def members_inprocess(request):
+    if request.user.is_authenticated:
+        if request.user.role_id == 1:
+            # Define the list of role IDs to filter
+            # role_ids = [2, 3, 4]
+            role_ids = [4]
             # Filter users whose role_id is in the specified list
             users = Users.objects.filter(role_id__in=role_ids)
         else:
             users = Users.objects.none()  # Return an empty queryset for unauthorized users
-        return render(request, 'members/members.html', {'users': users})
+        return render(request, 'members/members-inprocess.html', {'users': users})
     else:
         return redirect('login')
+    
+    
+def members_intraining(request):
+    if request.user.is_authenticated:
+        if request.user.role_id == 1:
+            # Define the list of role IDs to filter
+            # role_ids = [2, 3, 4]
+            role_ids = [4]
+            # Filter users whose role_id is in the specified list
+            users = Users.objects.filter(role_id__in=role_ids)
+        else:
+            users = Users.objects.none()  # Return an empty queryset for unauthorized users
+        return render(request, 'members/members-intraining.html', {'users': users})
+    else:
+        return redirect('login')
+    
+    
+def members_inexam(request):
+    if request.user.is_authenticated:
+        if request.user.role_id == 1:
+            # Define the list of role IDs to filter
+            # role_ids = [2, 3, 4]
+            role_ids = [4]
+            # Filter users whose role_id is in the specified list
+            users = Users.objects.filter(role_id__in=role_ids)
+        else:
+            users = Users.objects.none()  # Return an empty queryset for unauthorized users
+        return render(request, 'members/members-inexam.html', {'users': users})
+    else:
+        return redirect('login')
+    
+    
+def members_activated(request):
+    if request.user.is_authenticated:
+        if request.user.role_id == 1:
+            # Define the list of role IDs to filter
+            # role_ids = [2, 3, 4]
+            role_ids = [4]
+            # Filter users whose role_id is in the specified list
+            users = Users.objects.filter(role_id__in=role_ids)
+        else:
+            users = Users.objects.none()  # Return an empty queryset for unauthorized users
+        return render(request, 'members/members-activated.html', {'users': users})
+    else:
+        return redirect('login')
+    
+    
+def members_rejected(request):
+    if request.user.is_authenticated:
+        if request.user.role_id == 1:
+            # Define the list of role IDs to filter
+            # role_ids = [2, 3, 4]
+            role_ids = [4]
+            # Filter users whose role_id is in the specified list
+            users = Users.objects.filter(role_id__in=role_ids)
+        else:
+            users = Users.objects.none()  # Return an empty queryset for unauthorized users
+        return render(request, 'members/members-rejected.html', {'users': users})
+    else:
+        return redirect('login')
+    
+
     
 def memberView(request, user_id):
     if request.user.is_authenticated:
@@ -112,36 +196,109 @@ def get_sales_managers(request):
     sales_list = [{'id': manager['id'], 'full_name': f"{manager['first_name']} {manager['last_name']}"} for manager in sales_managers]
     return JsonResponse({'sales_managers': sales_list})
 
+# LATEST CODE  
+from django.templatetags.static import static  # ✅ Import static
+
+def activationPdf(request,user_id):
+    """Generate a PDF for the user and return the file path."""
+    wkhtml_path = os.getenv('WKHTML_PATH', r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
+    config = pdfkit.configuration(wkhtmltopdf=wkhtml_path)
+    customer = Users.objects.get(id=user_id)
+
+    context = {
+        "user": customer,
+        "support_email": "support@elevate.com",
+        "company_website": "https://pos.elevateinsurance.in/",
+        "sub_broker_test_url": "https://pos.elevateinsurance.in/",
+        "training_material_url": "https://pos.elevateinsurance.in/",
+        "support_number": +918887779999,
+        "logo_url": request.build_absolute_uri(static('dist/img/logo2.png'))
+    }
+
+    html_content = render_to_string("members/activation-pdf.html", context)
+
+    options = {
+        'enable-local-file-access': '',
+        'page-size': 'A4',
+        'encoding': "UTF-8",
+    }
+
+    pdf_path = os.path.join(settings.MEDIA_ROOT, f'account_activation_{user_id}.pdf')
+
+    try:
+        pdfkit.from_string(html_content, pdf_path, configuration=config, options=options)
+        return pdf_path
+    except Exception as e:
+        print(f"PDF generation failed: {e}")
+        return None  # Return None if PDF generation fails
+
 def activateUser(request, user_id):
-    if request.user.is_authenticated:
-        docs = DocumentUpload.objects.filter(user_id=user_id).first()
-        
-        # Check if all required documents are approved
-        if (
-            docs and
-            docs.aadhaar_card_front_status == 'Approved' and
-            docs.aadhaar_card_back_status == 'Approved' and
-            docs.upload_pan_status == 'Approved' and
-            docs.upload_cheque_status == 'Approved' and
-            docs.tenth_marksheet_status == 'Approved'
-        ):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    # Fetch user documents
+    docs = DocumentUpload.objects.filter(user_id=user_id).first()
+
+    # Ensure all required documents are approved before activating the user
+    if docs and all([
+        docs.aadhaar_card_front_status == 'Approved',
+        docs.aadhaar_card_back_status == 'Approved',
+        docs.upload_pan_status == 'Approved',
+        docs.upload_cheque_status == 'Approved',
+        docs.tenth_marksheet_status == 'Approved'
+    ]):
+        try:
+            # Update user activation status in the database
             with connection.cursor() as cursor:
                 cursor.execute(
                     "UPDATE users SET activation_status = %s WHERE id = %s",
                     ['1', user_id]
                 )
 
-            # Display success message
-            messages.success(request, 'User account has been activated successfully!')
-        else:
-            messages.error(request, 'User cannot be activated. Please ensure all required documents are approved.')
+            user = get_object_or_404(Users, id=user_id)
+            user_email = user.email
 
-        # Redirect back to the member view page after activation
-        return redirect('member-view', user_id=user_id)
+            # Render email HTML template
+            email_body = render_to_string('members/activation-email.html', {
+                'user': user,
+                "logo_url": request.build_absolute_uri(static('dist/img/logo2.png')),
+                "support_email": "support@elevate.com",
+                "company_website": "https://pos.elevateinsurance.in/",
+                "sub_broker_test_url": "https://pos.elevateinsurance.in/",
+                "training_material_url": "https://pos.elevateinsurance.in/",
+                "support_number": +918887779999,
+            })
+
+            # Prepare and send activation confirmation email
+            subject = 'Account Activated Successfully'
+            from_email = settings.DEFAULT_FROM_EMAIL
+            recipient_list = [user_email]
+
+            email = EmailMessage(subject, email_body, from_email, recipient_list)
+            email.content_subtype = "html"  # Set content type to HTML
+
+            # Generate and attach PDF
+            pdf_path = activationPdf(request, user_id)
+            if pdf_path and os.path.exists(pdf_path):
+                email.attach_file(pdf_path)
+            else:
+                logger.error("PDF generation failed or file not found. Skipping attachment.")
+
+            email.send()
+            messages.success(request, "User account has been activated successfully!")
+
+        except Exception as e:
+            logger.error(f"Error activating user: {e}")
+            messages.error(request, "An error occurred during activation.")
     else:
-        return redirect('login')
+        messages.error(request, "User cannot be activated. Please ensure all required documents are approved.")
+
+    # Redirect to the member view page
+    return redirect('member-view', user_id=user_id)
 
 
+
+# LATEST CODE
 
     
 

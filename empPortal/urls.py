@@ -73,7 +73,14 @@ urlpatterns = [
     path('update-user-details/', profile.update_user_details, name='update-user-details'),
 
     path("update-doc-status/", members.update_doc_status, name="update-doc-status"),  
-    path('members/', members.members, name='members'),
+
+    path('members/requested', members.members, name='members'),
+    path('members/in-process', members.members_inprocess, name='members_inprocess'),
+    path('members/in-training', members.members_intraining, name='members_intraining'),
+    path('members/in-exam', members.members_inexam, name='members_inexam'),
+    path('members/activated', members.members_activated, name='members_activated'),
+    path('members/rejected', members.members_rejected, name='members_rejected'),
+
     path('/member/member-view/<str:user_id>',members.memberView, name='member-view'),
     path('/member/activate-user/<str:user_id>',members.activateUser, name='activate-user'),
     path('update-commission/', commissions.update_commission, name='update-commission'),
