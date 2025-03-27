@@ -20,57 +20,156 @@
           <!-- Main content -->
           <div class="content">
             <div class="container-fluid">
-              <div class="row pt-4">
-                <div class="col-xs-6 col-sm-4 col-md-4">
-                  <a href="#">
-                    <div class="card counter-img-card counter-active-card ">
-                      <div class="card-body">
-                        <div class="row">
-                          <div class="col">
-                            <p class="card-text text-dark">
-                              Total Policies Sold
-                            </p>
-                            <h5 class="card-title card-number">325</h5>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </a>  
-                </div>  
-                <div class="col-xs-6 col-sm-4 col-md-4">
-                  <a href="#">
-                    <div class="card counter-img-card counter-deactive-card ">
-                      <div class="card-body">
-                        <div class="row">
-                          <div class="col">
-                            <p class="card-text text-dark">
-                              Total Revenue
-                            </p>
-                            <h5 class="card-title card-number"> <i class="fa-solid fa-indian-rupee-sign"></i>1430000</h5>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </a>  
-                </div>  
-                <div class="col-xs-6 col-sm-4 col-md-4">
-                  <a href="#">
-                    <div class="card counter-img-card counter-pending-card ">
-                      <div class="card-body">
-                        <div class="row">
-                          <div class="col">
-                            <p class="card-text text-dark">
-                              Current Payout
-                            </p>
-                            <h5 class="card-title card-number"><i class="fa-solid fa-indian-rupee-sign"></i>500000</h5>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </a>  
-                </div>  
-              </div>
+              
               <div class="row">
+                <div class="col-sm-12 col-md-12 mb-3">
+                  <div class="card h-100 mb-0">
+                    <div class="card-body">
+                      <div class="row">
+                        <div class="col-xs-6 col-sm-4 col-md-4">
+                          <a href="#">
+                            <div class="card counter-img-card counter-active-card ">
+                              <div class="card-body">
+                                <div class="row">
+                                  <div class="col">
+                                    <p class="card-text text-dark">
+                                      Total Policies Sold
+                                    </p>
+                                    <h5 class="card-title card-number">325</h5>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </a>  
+                        </div>  
+                        <div class="col-xs-6 col-sm-4 col-md-4">
+                          <a href="#">
+                            <div class="card counter-img-card counter-deactive-card ">
+                              <div class="card-body">
+                                <div class="row">
+                                  <div class="col">
+                                    <p class="card-text text-dark">
+                                      Total Revenue
+                                    </p>
+                                    <h5 class="card-title card-number"> <i class="fa-solid fa-indian-rupee-sign"></i>1430000</h5>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </a>  
+                        </div>  
+                        <div class="col-xs-6 col-sm-4 col-md-4">
+                          <a href="#">
+                            <div class="card counter-img-card counter-pending-card ">
+                              <div class="card-body">
+                                <div class="row">
+                                  <div class="col">
+                                    <p class="card-text text-dark">
+                                      Current Payout
+                                    </p>
+                                    <h5 class="card-title card-number"><i class="fa-solid fa-indian-rupee-sign"></i>500000</h5>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </a>  
+                        </div>  
+                      </div>
+                      <div class="row">
+                          <div class="col-6 col-sm-6">
+                            <h5 class="card-hding mb-0">Insurer-wise Policies Sold</h5>
+                          </div>
+                      </div>
+                      <div class="table-responsive dashboard-table-ht">
+                        <table class="table table-design">
+                          <thead class="table-thead-bg-light">
+                            <tr>
+                              <th>Insurer</th>
+                              <th>Policy Sold</th>
+                              <th>Revenue</th>
+                              <th>Pending Payments</th>
+                              <th>Received Payments</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td>ICICI</td>
+                              <td>120</td>
+                              <td><i class="fa-solid fa-indian-rupee-sign"></i>500000</td>
+                              <td><i class="fa-solid fa-indian-rupee-sign"></i>150000</td>
+                              <td><i class="fa-solid fa-indian-rupee-sign"></i>350000</td>
+                            </tr>
+                            <tr>
+                              <td>HDFC</td>
+                              <td>95</td>
+                              <td><i class="fa-solid fa-indian-rupee-sign"></i>500000</td>
+                              <td><i class="fa-solid fa-indian-rupee-sign"></i>150000</td>
+                              <td><i class="fa-solid fa-indian-rupee-sign"></i>350000</td>
+                            </tr>
+                            <tr>
+                              <td>SBI</td>
+                              <td>110</td>
+                              <td><i class="fa-solid fa-indian-rupee-sign"></i>500000</td>
+                              <td><i class="fa-solid fa-indian-rupee-sign"></i>150000</td>
+                              <td><i class="fa-solid fa-indian-rupee-sign"></i>350000</td>
+                            </tr>
+                            
+                          </tbody>
+                        </table>
+                      </div>
+                       <div class="row">
+                        <div class="col-6 col-sm-6">
+                          <h5 class="card-hding mb-0">Payment Status</h5>
+                        </div>
+                         <div class="col-6 col-sm-6">
+                          <div class="d-flex justify-content-end">
+                            <a href="#" class="dashboard-addbtn"><i class="fa-solid fa-download"></i> Export</a>
+                          </div>  
+                        </div>
+                      </div>
+                      <div class="table-responsive dashboard-table-ht">
+                        <table class="table table-design">
+                          <thead class="table-thead-bg-light">
+                            <tr>
+                              <th>Insurer</th>
+                              <th>Policy Sold</th>
+                              <th>Revenue</th>
+                              <th>Pending Payments</th>
+                              <th>Received Payments</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td>ICICI</td>
+                              <td>120</td>
+                              <td><i class="fa-solid fa-indian-rupee-sign"></i>500000</td>
+                              <td><i class="fa-solid fa-indian-rupee-sign"></i>150000</td>
+                              <td><i class="fa-solid fa-indian-rupee-sign"></i>350000</td>
+                            </tr>
+                            <tr>
+                              <td>HDFC</td>
+                              <td>95</td>
+                              <td><i class="fa-solid fa-indian-rupee-sign"></i>500000</td>
+                              <td><i class="fa-solid fa-indian-rupee-sign"></i>150000</td>
+                              <td><i class="fa-solid fa-indian-rupee-sign"></i>350000</td>
+                            </tr>
+                            <tr>
+                              <td>SBI</td>
+                              <td>110</td>
+                              <td><i class="fa-solid fa-indian-rupee-sign"></i>500000</td>
+                              <td><i class="fa-solid fa-indian-rupee-sign"></i>150000</td>
+                              <td><i class="fa-solid fa-indian-rupee-sign"></i>350000</td>
+                            </tr>
+                            
+                          </tbody>
+                        </table>
+                      </div>
+                      <div class="d-flex justify-content-center">
+                        <a href="#" class="dashboard-btn-outline"> View More Details</a>
+                      </div> 
+                    </div>
+                  </div>
+                </div>
                 <!-- <div class="col-sm-6 col-md-6 mb-3">  
                   <div class="card h-100 mb-0">
                     <div class="card-body">
@@ -146,113 +245,6 @@
                     </div>
                   </div>
                 </div> -->
-                <div class="col-sm-12 col-md-12 mb-3">
-                  <div class="card h-100 mb-0">
-                    <div class="card-body">
-                      <div class="row">
-                          <div class="col-6 col-sm-6">
-                            <h5 class="card-hding mb-0">Insurer-wise Policies Sold</h5>
-                          </div>
-                        </div>
-                        <div class="table-responsive dashboard-table-ht">
-                          <table class="table table-design">
-                            <thead class="table-thead-bg-light">
-                              <tr>
-                                <th>Insurer</th>
-                                <th>Policy Sold</th>
-                                <th>Revenue</th>
-                                <th>Pending Payments</th>
-                                <th>Received Payments</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr>
-                                <td>ICICI</td>
-                                <td>120</td>
-                                <td><i class="fa-solid fa-indian-rupee-sign"></i>500000</td>
-                                <td><i class="fa-solid fa-indian-rupee-sign"></i>150000</td>
-                                <td><i class="fa-solid fa-indian-rupee-sign"></i>350000</td>
-                              </tr>
-                              <tr>
-                                <td>HDFC</td>
-                                <td>95</td>
-                                <td><i class="fa-solid fa-indian-rupee-sign"></i>500000</td>
-                                <td><i class="fa-solid fa-indian-rupee-sign"></i>150000</td>
-                                <td><i class="fa-solid fa-indian-rupee-sign"></i>350000</td>
-                              </tr>
-                              <tr>
-                                <td>SBI</td>
-                                <td>110</td>
-                                <td><i class="fa-solid fa-indian-rupee-sign"></i>500000</td>
-                                <td><i class="fa-solid fa-indian-rupee-sign"></i>150000</td>
-                                <td><i class="fa-solid fa-indian-rupee-sign"></i>350000</td>
-                              </tr>
-                              
-                            </tbody>
-                          </table>
-                        </div>
-                        <!-- <div class="d-flex justify-content-center">
-                          <a href="#" class="dashboard-btn-outline"> View More Details</a>
-                        </div>  -->
-                    </div>
-                  </div>
-                </div>
-                <div class="col-sm-12 col-md-12 mb-3">
-                  <div class="card h-100 mb-0">
-                    <div class="card-body">
-                      <div class="row">
-                          <div class="col-6 col-sm-6">
-                            <h5 class="card-hding mb-0">Payment Status</h5>
-                          </div>
-                           <div class="col-6 col-sm-6">
-                            <div class="d-flex justify-content-end">
-                              <a href="#" class="dashboard-addbtn"><i class="fa-solid fa-download"></i> Export</a>
-                            </div>  
-                          </div>
-                        </div>
-                        <div class="table-responsive dashboard-table-ht">
-                          <table class="table table-design">
-                            <thead class="table-thead-bg-light">
-                              <tr>
-                                <th>Insurer</th>
-                                <th>Policy Sold</th>
-                                <th>Revenue</th>
-                                <th>Pending Payments</th>
-                                <th>Received Payments</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr>
-                                <td>ICICI</td>
-                                <td>120</td>
-                                <td><i class="fa-solid fa-indian-rupee-sign"></i>500000</td>
-                                <td><i class="fa-solid fa-indian-rupee-sign"></i>150000</td>
-                                <td><i class="fa-solid fa-indian-rupee-sign"></i>350000</td>
-                              </tr>
-                              <tr>
-                                <td>HDFC</td>
-                                <td>95</td>
-                                <td><i class="fa-solid fa-indian-rupee-sign"></i>500000</td>
-                                <td><i class="fa-solid fa-indian-rupee-sign"></i>150000</td>
-                                <td><i class="fa-solid fa-indian-rupee-sign"></i>350000</td>
-                              </tr>
-                              <tr>
-                                <td>SBI</td>
-                                <td>110</td>
-                                <td><i class="fa-solid fa-indian-rupee-sign"></i>500000</td>
-                                <td><i class="fa-solid fa-indian-rupee-sign"></i>150000</td>
-                                <td><i class="fa-solid fa-indian-rupee-sign"></i>350000</td>
-                              </tr>
-                              
-                            </tbody>
-                          </table>
-                        </div>
-                        <div class="d-flex justify-content-center">
-                          <a href="#" class="dashboard-btn-outline"> View More Details</a>
-                        </div> 
-                    </div>
-                  </div>
-                </div>
                 <div class="col-sm-12 col-md-12">  
                     <div class="card">
                       <div class="card-body">
