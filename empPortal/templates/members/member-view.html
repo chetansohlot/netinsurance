@@ -78,6 +78,12 @@
                                 </div>  
                                 <div class="profile-info-divider"></div>
                                 <ul class="member-detail-list">
+                                    
+                                    <li>
+                                        <img src="{% static 'dist/img/svg/birthday_ic.svg' %}" alt="">
+                                        <span class="list">Pan No</span>
+                                        <span class="list-output">{{ docs.pan_number|default:"N/A" }}</span>
+                                    </li>
                                     <li>
                                         <img src="{% static 'dist/img/svg/gender_ic.svg' %}" alt="">
                                         <span class="list">Gender</span>

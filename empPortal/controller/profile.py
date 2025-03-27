@@ -4,7 +4,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib import messages
 from django.template import loader
-from ..models import Commission,Users, DocumentUpload
+from ..models import Commission,Users,Branch, DocumentUpload
 from empPortal.model import BankDetails
 from ..forms import DocumentUploadForm
 from django.contrib.auth import authenticate, login ,logout
@@ -84,10 +84,25 @@ def myAccount(request):
             product_id = commission.get('product_id')
             commission['product_name'] = product_dict.get(int(product_id), 'Unknown') if product_id is not None else 'Unknown'
 
+        branch = None
+        if user_details.branch_id:
+            branch = Branch.objects.filter(id=user_details.branch_id).first()
+                
+        senior = None
+        if user_details.senior_id:
+            senior = Users.objects.filter(id=user_details.senior_id).first()
+
+        manager = None
+        if senior.senior_id:
+            manager = Users.objects.filter(id=senior.senior_id).first()
+
         return render(request, 'profile/my-account.html', {
             'user_details': user_details,
             'bank_details': bank_details,
             'products': products,
+            'sales_manager': senior,
+            'branch': branch,
+            'branch_manager': manager,
             'commissions': commissions_list , 
             'document_fields': document_fields , 
             'docs': docs  

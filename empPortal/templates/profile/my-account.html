@@ -73,6 +73,13 @@
                                 </div>  
                                 <div class="profile-info-divider"></div>
                                 <ul class="member-detail-list">
+                                     
+
+                                    <li>
+                                        <img src="{% static 'dist/img/svg/birthday_ic.svg' %}" alt="">
+                                        <span class="list">Pan No</span>
+                                        <span class="list-output">{{ docs.pan_number|default:"N/A" }}</span>
+                                    </li>
                                     <li>
                                         <img src="{% static 'dist/img/svg/gender_ic.svg' %}" alt="">
                                         <span class="list">Gender</span>
@@ -214,6 +221,7 @@
                         
                         <ul class="nav nav-pills profile-tab">
                             <li class="nav-item text-bold"><a class="nav-link active" href="#membership-tab" data-toggle="tab">Payout Details</a></li>
+                            <li class="nav-item text-bold"><a class="nav-link" href="#allocation-tab" data-toggle="tab">Allocation </a></li>
                             <li class="nav-item text-bold"><a class="nav-link" href="#organisation-tab" data-toggle="tab">Bank Details </a></li>
                             <li class="nav-item text-bold"><a class="nav-link" href="#personal-detail-tab" data-toggle="tab">Documents</a></li>
                         </ul>
@@ -221,6 +229,40 @@
                         <!-- /.card-header -->
                         <div class="card-body">
                           <div class="tab-content tab-scrollbar">
+                            
+                            <div class="tab-pane" id="allocation-tab">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Type</th>
+                                                <th>Name</th>
+                                                <th>Email</th>
+                                                <th>Contact No</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Branch</td>
+                                                <td>{{ branch.branch_name|default:"N/A" }}</td>
+                                                <td>{{ branch.email|default:"N/A" }}</td>
+                                                <td>{{ branch.mobile|default:"N/A" }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Branch Manager</td>
+                                                <td>{{ branch_manager.full_name|default:"N/A" }}</td>
+                                                <td>{{ branch_manager.email|default:"N/A" }}</td>
+                                                <td>{{ branch_manager.phone|default:"N/A" }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Sales Manager</td>
+                                                <td>{{ sales_manager.full_name|default:"N/A" }}</td>
+                                                <td>{{ sales_manager.email|default:"N/A" }}</td>
+                                                <td>{{ sales_manager.phone|default:"N/A" }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                
+                            </div>
                             <div class="active tab-pane" id="membership-tab">
                               
                               {% if request.user.role_id == 1 %}

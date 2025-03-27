@@ -87,8 +87,19 @@
                                 <div class="col-sm-6 col-md-3">
                                     <div class="form-group">
                                         <label class="form-lbl">Quote Date</label>
-                                        <input class="form-field" type="date" name="quote_date" placeholder="Quote Date" 
-                                               value="{{ quotation.quote_date|date:'Y-m-d' }}">
+                                        <input class="form-field" type="date" name="quote_date" placeholder="Quote Date"
+                                            value="{{ quotation.quote_date|default:today|date:'Y-m-d' }}"
+                                            id="quote_date">
+                                            
+                                        <script>
+                                        document.addEventListener("DOMContentLoaded", function () {
+                                            var dateInput = document.getElementById("quote_date");
+                                            if (!dateInput.value) {
+                                                let today = new Date().toISOString().split('T')[0];
+                                                dateInput.value = today;
+                                            }
+                                        });
+                                        </script>
                                     </div>
                                 </div>
                                 <div class="col-sm-6 col-md-3">
