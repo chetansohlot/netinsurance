@@ -16,6 +16,7 @@ from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.forms.models import model_to_dict
 import json
+from datetime import date
 
 def dictfetchall(cursor):
     "Returns all rows from a cursor as a dict"
@@ -179,10 +180,11 @@ def create_or_edit(request, customer_id=None):
             members = Users.objects.filter(role_id=2, activation_status='1')
         else:
             members = Users.objects.none()
-
+        today = date.today()
         return render(request, 'quote-management/create.html', {
             'products': products,
             'members': members,
+            'today': today,
             'quotation': quotation  # Pass existing data if editing
         })
     
