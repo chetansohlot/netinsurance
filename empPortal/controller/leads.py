@@ -48,3 +48,9 @@ def index(request):
         return render(request, 'leads/index.html')
     else:
         return redirect('login')
+
+def create(request):
+    if request.user.is_authenticated:
+        return render(request, 'leads/create.html')
+    else:
+        return redirect('login')

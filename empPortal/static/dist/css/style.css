@@ -2520,7 +2520,12 @@ a:hover .dr-pdficon {
     margin-bottom: 15px;
 }
 .table-header thead tr td {padding:4px 0px;}
-
+.box-design  {
+    box-shadow: 0px 0px 12px #ccc;
+    background-color: #fff;
+    padding:15px;
+    border-radius: 10px;
+}
 .breadcrump {
     margin: 2px 0 5px 0;
     padding: 0;
@@ -2534,3 +2539,4 @@ a:hover .dr-pdficon {
 }
 .breadcrump li a {color:#000;}
 .breadcrump li > i {padding:0 6px 0 5px;}
+.journey-svg {width: 50px; height: 50px; fill: #000; margin:auto; position: relative; top: 1px;}

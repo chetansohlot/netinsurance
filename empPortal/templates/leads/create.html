@@ -1,7 +1,7 @@
 {% extends 'master.html' %}
 
 {% block title %}
-    Leads Mgt.
+    Create Lead
 {% endblock %}
   
 {% block content %}
@@ -20,15 +20,15 @@
             <div class="container-fluid ">
               <div class="row pt-2 pb-2">
                 <div class="col-sm-6">
-                  <h1 class="admin-title m-0 pt-2">Leads Mgt.</h1>
+                  <h1 class="admin-title m-0 pt-2">Create Lead</h1>
                   <ul class="breadcrump">
                     <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
-                    <li>Leads Mgt.</li>
+                    <li>Create Lead</li>
                   </ul>
                 </div>
                 <div class="col-sm-6">
                   <div class="d-flex justify-content-end">
-                    <a href="{% url 'leads-mgt-create' %}" class="breadcrump-addbtn"><i class="fas fa-plus"></i> Add Agent</a>
+                    <a href="{% url 'add-members' %}" class="breadcrump-addbtn"><i class="fas fa-plus"></i> Add Agent</a>
                   </div>
                 </div>
               </div>

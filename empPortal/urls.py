@@ -87,6 +87,7 @@ urlpatterns = [
 
     # LEADS 
     path('leads-mgt/', leads.index, name='leads-mgt'),
+    path('leads-mgt/create', leads.create, name='leads-mgt-create'),
     # LEADS 
 
     # sell-online 
