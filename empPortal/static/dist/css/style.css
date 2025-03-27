@@ -2540,3 +2540,20 @@ a:hover .dr-pdficon {
 .breadcrump li a {color:#000;}
 .breadcrump li > i {padding:0 6px 0 5px;}
 .journey-svg {width: 50px; height: 50px; fill: #000; margin:auto; position: relative; top: 1px;}
+
+/* Contact us */
+.contact-area {background: #fff; border-radius: 10px; padding:10px 10px; margin-bottom: 30px; box-shadow: 0 3px 8px rgb(204 204 204 / 50%); display: flex; align-items: center; justify-content: space-between;}
+.contact-area-h {background: #fff; border-radius: 10px; min-height: 145px; margin-bottom: 30px; box-shadow: 0 3px 8px rgb(204 204 204 / 50%); padding: 20px; }
+.cnt-area {list-style: none; font-size: 13px; margin-right: 0px; display: flex; align-items: center; color: #999;}
+.cnt-icon {width: 36px; height: 36px; font-size: 24px; border-radius: 4px;   margin-right: 0px; display: flex; align-items: center; justify-content: center; }
+.cnt-txt {font-size: 12px; font-weight: 500; padding-left: 10px; color: #000; display: block;}
+.cnt-desc {font-size: 13px; font-weight: 400; display: block;}
+.cnt-bg1 { background: #fff9e0; color: #ff991f;}
+.cnt-bg2 { background: #edeaff; color: #7968d5;}
+.cnt-bg3 { background: #e3fcef; color: #4cc85c;}
+.cnt-rite-icon { color: #2c9eff; font-size: 14px; }
+.cnt-adr {font-size: 14px; font-weight: 400; padding-left: 10px; color: #000; display: block;}
+
+.table-border-line {border:1px solid #c2c2c2 !important;}
+.table-border-line tbody tr:not(:last-child) td {border-bottom:1px solid #c2c2c2 !important;}
+.table-border-line tbody tr td:not(:last-child) {border-right:1px solid #c2c2c2 !important;}

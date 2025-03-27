@@ -1,7 +1,7 @@
 {% extends 'master.html' %}
 
 {% block title %}
-    Leads Mgt.
+    Help Support
 {% endblock %}
   
 {% block content %}
@@ -20,91 +20,12 @@
             <div class="container-fluid ">
               <div class="row pt-2 pb-2">
                 <div class="col-sm-6">
-                  <h1 class="admin-title m-0 pt-2">Leads Mgt.</h1>
+                  <h1 class="admin-title m-0 pt-2">Help Support</h1>
                   <ul class="breadcrump">
                     <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
-                    <li>Leads Mgt.</li>
+                    <li>Help Support</li>
                   </ul>
                 </div>
-                <div class="col-sm-6">
-                  <div class="d-flex justify-content-end">
-                    <a href="{% url 'add-members' %}" class="breadcrump-addbtn"><i class="fas fa-plus"></i> Add Agent</a>
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-xs-6 col-sm-4 col-md-3">
-                  <a href="#">
-                    <div class="card counter-img-card active">
-                      <div class="card-body">
-                        <div class="row">
-                          <div class="col">
-                            
-                            <p class="card-text">
-                              Total Leads
-                            </p>
-                            <h5 class="card-title card-number">14</h5>
-                          </div>
-                          
-                        </div>
-                      </div>
-                    </div>
-                  </a>   
-                </div>  
-                <div class="col-xs-6 col-sm-4 col-md-3">
-                  <a href="#">
-                    <div class="card counter-img-card counter-active-card ">
-                      <div class="card-body">
-                        <div class="row">
-                          <div class="col">
-                            
-                            <p class="card-text">
-                              Active Leads
-                            </p>
-                            <h5 class="card-title card-number">6</h5>
-                          </div>
-                          
-                        </div>
-                      </div>
-                    </div>
-                  </a>  
-                </div>  
-                <div class="col-xs-6 col-sm-4 col-md-3">
-                  <a href="#">
-                    <div class="card counter-img-card counter-deactive-card ">
-                      <div class="card-body">
-                        <div class="row">
-                          <div class="col">
-                            
-                            <p class="card-text">
-                              Deactive Leads
-                            </p>
-                            <h5 class="card-title card-number">3</h5>
-                          </div>
-                          
-                        </div>
-                      </div>
-                    </div>
-                  </a>  
-                </div>  
-                <div class="col-xs-6 col-sm-4 col-md-3">
-                  <a href="#">
-                    <div class="card counter-img-card counter-pending-card ">
-                      <div class="card-body">
-                        <div class="row">
-                          <div class="col">
-                            
-                            <p class="card-text">
-                              Pending Leads
-                            </p>
-                            <h5 class="card-title card-number">0</h5>
-                          </div>
-                          
-                        </div>
-                      </div>
-                    </div>
-                  </a>  
-                </div>  
               </div>
       
             </div>
@@ -119,84 +40,81 @@
                 <div class="col-sm-12 col-md-12">  
                     <div class="card box-shadow-none">
                       <div class="card-body px-0 pb-0">
-                        <div class="row">
-                          <div class="col-md-6">
-                            <div class="table-search-area">
-                              <form>
-                                <select class="table-select-field">
-                                  <option value="">Lead ID</option>
-                                  <option value="">Employee ID</option>
-                                  <option value="">Mobile Number</option>
-                                  <option value="">Email ID</option>
-                                  <option value="">Membership ID</option>
-                                </select>
-                                <input type="text" name="" class="table-search-field" placeholder="Search">
-                                <button type="submit" class="table-search-btn">
-                                  <img src="{% static 'dist/img/svg/search-icon.svg' %}" alt="">
-                                </button>
-                              </form>
-                            </div>
+                        <div class="row pb-3">
+                          <div class="col-md-4">
+                              <a href="tel:+91-9990724365">
+                                  <div class="contact-area">
+                                      <div class="cnt-area">
+                                          <div class="cnt-icon cnt-bg1">
+                                              <i class="fas fa-phone-volume"></i>
+                                          </div>
+                                          <span class="cnt-txt">Call Us : +91-9990724365</span>
+                                      </div>
+                                      <span class="cnt-rite-icon"><i class="fas fa-chevron-right"></i></span>
+                                  </div>
+                              </a>
                           </div>
-                          <div class="col-md-6">
-                            <div class=" d-flex justify-content-end">
-                              <div class="dropdown">
-                                <div class="shorting-select"  data-toggle="dropdown" aria-expanded="false">
-                                  <img src="{% static 'dist/img/svg/shorting-icon.svg' %}" alt="">
-                                  <span>Short</span>
-                                  <img src="{% static 'dist/img/svg/down-arrow-icon.svg' %}" alt="" class="change-arrow">
-                                </div>
-                                <form action="">
-                                  <ul class="dropdown-menu shorting-dropdown-menu">
-                                    <p class="border-bottom pb-1 title2">Short</p>
-                                    <li><input type="radio" name="shorting" id="name-a_z"> <label for="name-a_z">Name A &gt; Z</label></li>
-                                    <li><input type="radio" name="shorting" id="name-z_a"> <label for="name-z_a">Name Z &lt; A</label></li>
-                                    <li><input type="radio" name="shorting" id="recently_activated"> <label for="recently_activated">Recently Activated</label></li>
-                                    <li><input type="radio" name="shorting" id="recently_deactivated"> <label for="recently_deactivated">Recently Deactivated</label></li>
-                                    <div class="d-flex justify-content-center border-top pt-3 mt-2 pb-2">
-                                      <button type="submit" class="dashboard-addbtn w-100">Apply</button>
-                                    </div>   
-                                  </ul>
-                                </form>
-                              </div>  
-                              <div class="shorting-select" data-toggle="modal" data-target="#modal-filter">
-                                <img src="{% static 'dist/img/svg/filter-icon.svg' %}" alt="">
-                                <span>Filter</span>
-                                <img src="{% static 'dist/img/svg/down-arrow-icon.svg' %}" alt="" class="change-arrow">
-                              </div>
-                            </div>  
+                          <div class="col-md-4">
+                              <a href="mailto: info@elevateinsurance.in">
+                                  <div class="contact-area">
+                                      <div class="cnt-area">
+                                          <div class="cnt-icon cnt-bg2">
+                                              <i class="far fa-comment-dots"></i>
+                                          </div>
+                                          <span class="cnt-txt">Email Us : info@elevateinsurance.in</span>
+                                      </div>
+                                      <span class="cnt-rite-icon"><i class="fas fa-chevron-right"></i></span>
+                                  </div>
+                              </a>
+                          </div>
+                          <div class="col-md-4">
+                              <a href="https://web.whatsapp.com/send/?phone=+91-9990724365" target="_blank">
+                                  <div class="contact-area">
+                                      <div class="cnt-area">
+                                          <div class="cnt-icon cnt-bg3">
+                                              <i class="fab fa-whatsapp"></i>
+                                          </div>
+                                          <span class="cnt-txt">Connect on Whatsapp</span>
+                                      </div>
+                                      <span class="cnt-rite-icon"><i class="fas fa-chevron-right"></i></span>
+                                  </div>
+                              </a>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-sm-12">
+                            <div class="table-responsive table-ht">
+                              <table class="table table-design table-border-line">
+                              
+                                <tbody>
+                                  <tr>
+                                    <td class="table-thead-bg-light"><strong>Branch</strong></td>
+                                    <td>Delhi</td>
+                                    <td>9876543210</td>
+                                    <td>vinod@netleafinfosoft.com</td>
+                                  </tr>
+                                  <tr>
+                                    <td class="table-thead-bg-light"><strong>Manager</strong></td>
+                                    <td>Abhay Singh</td>
+                                    <td>9876543210</td>
+                                    <td>abhay@netleafinfosoft.com</td>
+                                  </tr>
+                                  <tr>
+                                    <td class="table-thead-bg-light"><strong>Sales Manager</strong></td>
+                                    <td>Ravinesh</td>
+                                    <td>9876543210</td>
+                                    <td>ravinesh@netleafinfosoft.com</td>
+                                  </tr>
+                                  
+                                </tbody>
+                              </table>
+                            </div>
                           </div>
                         </div>
 
                         
                       </div>
                     </div>
-                    <div class="bottom-fix-pagination">
-                      <div class="d-flex">
-                        <ul class="pagination">
-                          <li class="page-item">
-                            <a class="page-link" href="#" aria-label="Previous">
-                              <span aria-hidden="true">&laquo;</span>
-                              <span class="sr-only">Previous</span>
-                            </a>
-                          </li>
-                          <li class="page-item"><a class="page-link" href="#">1</a></li>
-                          <li class="page-item"><a class="page-link" href="#">2</a></li>
-                          <li class="page-item"><a class="page-link" href="#">3</a></li>
-                          <li class="page-item">
-                            <a class="page-link" href="#" aria-label="Next">
-                              <span aria-hidden="true">&raquo;</span>
-                              <span class="sr-only">Next</span>
-                            </a>
-                          </li>
-                        </ul>
-                        <select class="pagination-dropdown">
-                          <option>10 / Page</option>
-                          <option>20 / Page</option>
-                          <option>50 / Page</option>
-                          <option>100 / Page</option>
-                        </select>
-                      </div>  
-                    </div>  
                   </div>
                 </div>
               </div>  
