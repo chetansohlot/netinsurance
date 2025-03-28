@@ -35,37 +35,112 @@
           <!-- Main content -->
           <div class="content">
             <div class="container-fluid">
-              <div class="row">
-                
-                <div class="col-sm-12 col-md-12">  
-                    <div class="card box-shadow-none">
-                      <div class="card-body px-0 pb-0">
-                        <div class="row mt-2 sell-now-main-gen-insu"> 
-                          <div class="col-lg-2 sell-gen-car">
-                             <div class="box-design text-center ">
-                                <svg class="journey-svg">
-                                  <use xlink:href="#car-icon" />
-                                </svg>
-                               <p>Car</p>
-                               <a href="{% url 'create-motor' %}" class="dashboard-btn-outline mt-2 d-inline-block">Start Journey</a>
+              <div class="row justify-content-between align-items-center pt-2">
+                <div class="col-lg-7">
+                  <h1 class="banner-hding mt-4">Motor Insurance</h1>
+                  <h2 class="banner-subhding">Compare & Buy Best Fit Car Insurance </h2>
+                  <div class="row">
+                    <div class="col-md-8">
+                      <form action="{% url 'create-motor' %}">
+                        <div class="form-box mt-4">
+                          <div class="position-relative">
+                            <input type="text" name="" class="form-field" placeholder="Enter Vehicle Number">
+                            <button type="submit" class="form-btn2">View Quote</button>
+                          </div>
+                        </div>
+                        <p class="wrap-prgh"><small>By clicking, I agree to <a href="#">terms & conditions</a> and <a href="#">privacy policy</a>.</small></p>
+                      </form>
+                    </div>
+                  </div>  
+                  
+                </div>
+                <div class="col-lg-5 order-first order-lg-last">
+                  <img src="{% static 'dist/img/svg/car-driving.svg' %}"   class="align-items-center img-fluid" >
+                </div>
+              </div>
+              <div class="row align-items-center justify-content-between">
+                <div class="col-sm-12 col-md-5">
+                  <img src="{% static 'dist/img/svg/car-crash.svg' %}"   class="align-items-center img-fluid" >
+                </div>
+                <div class="col-sm-12 col-md-6">
+                  <h2 class="wrap-hding pb-3">What is Car Insurance?</h2>
+                  <p class="wrap-prgh">
+                    Car insurance, also known as motor or auto insurance, safeguards you financially in the event of your vehicle being damaged due to accidents, natural disasters, or theft.<br><br>
+            
+                    A Comprehensive Car Insurance Policy ensures you're covered against losses from unexpected incidents. It also includes third-party liability coverage, ensuring compliance with legal requirements.<br><br>
+            
+                    Whether you need new car insurance or comprehensive coverage, Elevate Insurance offers a range of policies. We provide private car insurance, third-party car insurance, comprehensive car insurance, and own-damage car insurance online, all at competitive premiums. Experience a hassle-free car insurance renewal process with Elevate Insurance.
+                  </p>
+                </div>
+              </div>
+              <div class="hiw-bg px-4">
+                <div class="row pb-5 align-items-center justify-content-between">
+                  <div class="col-lg-12 col-md-12">
+                    <h2 class="wrap-hding text-center pb-5">Benefits of Motor Insurance</h2>
+                  </div>
+                  <div class="col-md-12">
+                    <div class="row justify-content-center">
+                      <div class="col-lg-4 col-md-6 mb-3">
+                        <div class="hiw-box-area bg-white h-100">
+                          <div class="row">
+                            <div class="col-12">
+                              <div class="hiw-circle">
+                                <img src="{% static 'dist/img/icons/damage.png' %}">
+                              </div>
+                              <h3 class="hiw-box-hding text-center pb-2">Financial Protection Against Damages</h3>  
+                              <p class="hiw-box-prgh text-center">Covers the cost of repairs and replacements if your car is damaged due to accidents, theft, fire, vandalism, or natural disasters, minimizing your out-of-pocket expenses. </p>  
                             </div>
                           </div>
-                          <div class="col-lg-2 sell-gen-car">
-                            <div class="box-design text-center">
-                             <svg class="journey-svg">
-                                <use xlink:href="#bike-icon" />
-                             </svg>
-                             <p>Two Wheeler</p>
-                             <a href="#" class="dashboard-btn-outline mt-2 d-inline-block">Start Journey</a>
+                        </div>
+                      </div>
+                      <div class="col-lg-4 col-md-6 mb-3">
+                        <div class="hiw-box-area bg-white h-100">
+                          <div class="row">
+                            <div class="col-12">
+                              <div class="hiw-circle">
+                                <img src="{% static 'dist/img/icons/professional.png' %}">
+                              </div>
+                              <h3 class="hiw-box-hding text-center pb-2">Third-Party Liability Coverage</h3>  
+                              <p class="hiw-box-prgh text-center">Legally mandatory for driving in India, it safeguards you from financial and legal liabilities if your car causes injury to someone or damages their vehicle or property.</p>  
                             </div>
-                           </div>
-                          <div class="col-lg-2 sell-gen-car">
-                            <div class="box-design text-center">
-                              <svg class="journey-svg">
-                                <use xlink:href="#truck-icon" />
-                              </svg>
-                               <p>Commercial</p>
-                               <a href="#" class="dashboard-btn-outline mt-2 d-inline-block">Start Journey</a>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-lg-4 col-md-6 mb-3">
+                        <div class="hiw-box-area bg-white h-100">
+                          <div class="row">
+                            <div class="col-12">
+                              <div class="hiw-circle">
+                                <img src="{% static 'dist/img/icons/accident.png' %}">
+                              </div>
+                              <h3 class="hiw-box-hding text-center pb-2">Personal Accident Cover</h3>  
+                              <p class="hiw-box-prgh text-center">Offers financial protection for the owner-driver in case of injury, disability, or death due to an accident, helping cover medical expenses and loss of income.</p>  
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-lg-4 col-md-6 mb-3">
+                        <div class="hiw-box-area bg-white h-100">
+                          <div class="row">
+                            <div class="col-12">
+                              <div class="hiw-circle">
+                                <img src="{% static 'dist/img/icons/bonus.png' %}">
+                              </div>
+                              <h3 class="hiw-box-hding text-center pb-2">No Claim Bonus (NCB)</h3>  
+                              <p class="hiw-box-prgh text-center">YRewards you with lower renewal costs for not making any claims during the policy term, allowing you to save money over time./p> 
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-lg-4 col-md-6 mb-3">
+                        <div class="hiw-box-area bg-white h-100">
+                          <div class="row">
+                            <div class="col-12">
+                              <div class="hiw-circle">
+                                <img src="{% static 'dist/img/icons/sell.png' %}">
+                              </div>
+                              <h3 class="hiw-box-hding text-center pb-2">Cashless Repairs at Partner Garages</h3>  
+                              <p class="hiw-box-prgh text-center">Enables cashless repairs at network garages, with the insurer directly covering the costs with the repair center.</p> 
                             </div>
                           </div>
                         </div>
@@ -73,8 +148,53 @@
                     </div>
                   </div>
                 </div>
-              </div>  
-            </div>
+              </div>
+              <div class="row pb-5 align-items-center justify-content-between">
+                <div class="col-lg-12 col-md-12">
+                  <h2 class="wrap-hding text-center pb-3">How to Buy/Renew Motor Insurance Online?</h2>
+                  <p class="wrap-prgh text-center pb-4">The process of buying or renewing a Motor insurance online is quite simple and easy. Here’s how you can easily do it for your four-wheeler with us.</p>
+                </div>
+              </div>
+              <div class="row justify-content-center">
+                <div class="col-md-4">
+                  <div class="hiw-box-area">
+                    <div class="hiw-first-arrow ">
+                      <img src="{% static 'dist/img/icons/arrow-down.png' %}">
+                    </div>
+                    <div class="hiw-circle">
+                      <img src="{% static 'dist/img/icons/contact-form.png' %}">
+                      <span class="hiw-circle-step">01</span>
+                    </div>
+                    <p class="wrap-title text-center">Fill Your Car Details</p>
+                    <p class="wrap-prgh text-center">Provide car details such as its make, model, etc, to see car insurance price offered by top insurance providers in India.</p>
+                  </div>  
+                </div>
+                <div class="col-md-4">
+                  <div class="hiw-box-area px-5">
+                    <div class="hiw-sec-arrow ">
+                      <img src="{% static 'dist/img/icons/arrow-up.png' %}">
+                    </div>
+                    <div class="hiw-circle">
+                      <img src="{% static 'dist/img/icons/ab-testing.png' %}">
+                      <span class="hiw-circle-step">02</span>
+                    </div>
+                    <p class="wrap-title text-center">Compare Car Insurance Quotes</p>
+                    <p class="wrap-prgh text-center">Select the plan which fits your budget & requirements best, out of all the available car insurance plans.</p>
+                  </div>  
+                </div>
+                <div class="col-md-4">
+                  <div class="hiw-box-area">
+                    <div class="hiw-circle">
+                      <img src="{% static 'dist/img/icons/payment-method.png' %}">
+                      <span class="hiw-circle-step">03</span>
+                    </div>
+                    <p class="wrap-title text-center">Make Payment Online</p>
+                    <p class="wrap-prgh text-center">Select the plan which fits your budget & requirements best, out of all the available car insurance plans.</p>
+                  </div>  
+                </div>
+              </div>
+            </div>  
+          </div>
             
           </div>
           
