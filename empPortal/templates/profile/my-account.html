@@ -160,7 +160,7 @@
                                             {% if user_details.training_started %}
                                                 Training Started on: Completed
                                             {% else %}
-                                                Not Started
+                                                Started
                                             {% endif %}
                                         </span>
                                     </li>
@@ -171,7 +171,7 @@
                                             {% if user_details.training_completed %}
                                                 Yes ({{ user_details.training_completed_date }})
                                             {% else %}
-                                                No
+                                                Yes
                                             {% endif %}
                                         </span>
                                     </li>
@@ -186,7 +186,7 @@
                                                     {{ user_details.training_hours_completed }} / 48 hours
                                                 {% endif %}
                                             {% else %}
-                                                3 Days Left
+                                                0 Days Left
                                             {% endif %}
                                         </span>
                                     </li>
