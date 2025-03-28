@@ -30,3 +30,11 @@ def get_attr(obj, attr_name):
 def attr(obj, field_name):
     """Returns the attribute of an object dynamically."""
     return getattr(obj, field_name, "")
+
+@register.filter
+def get_index(sequence, index):
+    """Custom filter to get an item from a list using its index."""
+    try:
+        return sequence[index]
+    except (IndexError, TypeError):
+        return ""

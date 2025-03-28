@@ -94,6 +94,14 @@ DATABASES = {
     }
 }
 
+# settings.py
+
+# settings.py
+MYOPERATOR_API_KEY = os.getenv('MYOPERATOR_API_KEY', 'MYOPERATOR_API_KEY')
+MYOPERATOR_SENDER_ID = os.getenv('MYOPERATOR_SENDER_ID', 'MYOPERATOR_SENDER_ID')
+MYOPERATOR_SMS_URL = "https://sms.myoperator.biz/V2/http-customize-api.php"
+
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

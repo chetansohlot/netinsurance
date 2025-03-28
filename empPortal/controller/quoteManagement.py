@@ -449,11 +449,56 @@ def showQuotation(request, cus_id):
     # Convert add-on IDs to names using ADDONS_MAP
     addon_names = [ADDONS_MAP.get(addon.strip(), "Unknown Add-on") for addon in addons_list]
 
+    if vehicle_info:
+        selected_policy_companies = vehicle_info.policy_companies.split(',') if vehicle_info.policy_companies else []
+    else:
+        selected_policy_companies = []
+    INSURER_MAP = {
+        "1": "Bajaj Allianz",
+        "2": "Reliance General",
+        "3": "SBI General",
+        "4": "New India Assurance",
+        "5": "Oriental Insurance",
+        "6": "United India Insurance",
+        "7": "Future Generali",
+        "8": "IFFCO Tokio",
+        "9": "Cholamandalam MS",
+        "10": "Kotak Mahindra",
+    }
+    
+    selected_policy_companies_names = [INSURER_MAP[comp_id] for comp_id in selected_policy_companies if comp_id in INSURER_MAP]
+
+    plan_names = ["Comprehensive Plan A", "Comprehensive Secure", "Auto Secure Plan"]
+    premium_amounts = ["INR12,500", "INR11,800", "INR13,200"]
+    policy_types = ["Comprehensive", "Comprehensive", "Comprehensive"]
+    idv = ["INR5,00,000", "INR4,80,000", "INR5,20,000"]
+    ncb_discount = ["20%", "25%", "18%"]
+    own_damage_premium = ["INR7,500", "INR7,000", "INR8,000"]
+    third_party_premium = ["INR4,500", "INR4,800", "INR5,200"]
+    addons = ["Zero Dep, Roadside Assist", "Zero Dep, Engine Protect", "Zero Dep, Key Replacement"]
+    claim_ratio = ["95%", "93%", "97%"]
+    garage_network = ["5000+", "4500+", "5500+"]
+    tenure = ["1 Year", "1 Year", "1 Year"]
+    deductibles = ["INR1,000", "INR750", "INR1,500"]
+
     return render(request, 'quote-management/show-quotation-info.html', {
         'products': products,
         'members': members,
         'cus_id': cus_id,
         'vehicle_info': vehicle_info,
+        'selected_policy_companies': selected_policy_companies_names,
+        'plan_names': plan_names,
+        'premium_amounts': premium_amounts,
+        'policy_types': policy_types,
+        'idv': idv,
+        'ncb_discount': ncb_discount,
+        'own_damage_premium': own_damage_premium,
+        'third_party_premium': third_party_premium,
+        'addons': addons,
+        'claim_ratio': claim_ratio,
+        'garage_network': garage_network,
+        'tenure': tenure,
+        'deductibles': deductibles,
         'addons_map': ADDONS_MAP,
         'customer': customer,
         'addon_names': addon_names,  # Pass formatted add-ons list

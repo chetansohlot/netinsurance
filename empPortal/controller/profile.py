@@ -38,6 +38,20 @@ OPENAI_API_KEY = settings.OPENAI_API_KEY
 
 app = FastAPI()
 
+# views.py
+from django.http import JsonResponse
+from ..utils import send_sms_post
+
+
+
+def send_sms_view(request):
+    phone_number = request.GET.get("number", "918709620029")  # Default for testing
+    message = request.GET.get("message", "Hello! This is a test SMS.")
+
+    response = send_sms_post(phone_number, message)  # or send_sms_post(phone_number, message)
+
+    return JsonResponse(response)
+
 
 def dictfetchall(cursor):
     "Returns all rows from a cursor as a dict"
@@ -46,6 +60,7 @@ def dictfetchall(cursor):
 
 def myAccount(request):
     if request.user.is_authenticated:
+        # send_sms_view(request)
         # Fetch user and bank details for the logged-in user
         user_details = Users.objects.get(id=request.user.id)  # Fetching the user's details
         bank_details = BankDetails.objects.filter(user_id=request.user.id).first()  # Fetching bank details
