@@ -124,16 +124,16 @@
                                         <span class="list-output">{{ user_details.address }}</span>
                                     </li>
                                     <li>
-                                        <img src="{% static 'dist/img/svg/certificate.svg' %}" alt="">
+                                        <img src="{% static 'dist/img/svg/certificate2.svg' %}" alt="">
                                         <span class="list">Download Certificate</span>
                                         <span class="list-output">
-                                            <a href="{% url 'download-certificate' user_details.id %}" class="btn btn-primary btn-sm" download>
-                                                Download Certificate
+                                            <a href="{% url 'download-certificate' user_details.id %}" class="btn btn-primary btn-xs" download>
+                                                <i class="fa-solid fa-download"></i>
                                             </a>
                                         </span>
                                     </li>
                                     <li>
-                                        <img src="{% static 'dist/img/svg/status.svg' %}" alt="">
+                                        <img src="{% static 'dist/img/svg/user-status.svg' %}" alt="">
                                         <span class="list">User Status</span>
                                         <span class="list-output">
                                             {% if user_details.activation_status == "1" %}
@@ -154,7 +154,7 @@
                                         <span class="list-output">87 (Qualified)</span>
                                     </li>
                                     <li>
-                                        <img src="{% static 'dist/img/svg/training.svg' %}" alt="">
+                                        <img src="{% static 'dist/img/svg/training-status.svg' %}" alt="">
                                         <span class="list">Training Status</span>
                                         <span class="list-output">
                                             {% if user_details.training_started %}
@@ -165,7 +165,7 @@
                                         </span>
                                     </li>
                                     <li>
-                                        <img src="{% static 'dist/img/svg/completed.svg' %}" alt="">
+                                        <img src="{% static 'dist/img/svg/training-completed.svg' %}" alt="">
                                         <span class="list">Training Completed</span>
                                         <span class="list-output">
                                             {% if user_details.training_completed %}
