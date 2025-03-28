@@ -96,8 +96,9 @@ def myAccount(request):
             senior = Users.objects.filter(id=user_details.senior_id).first()
 
         manager = None
-        if senior.senior_id:
+        if senior and senior.senior_id:  # Ensure senior is not None before accessing senior_id
             manager = Users.objects.filter(id=senior.senior_id).first()
+
 
         return render(request, 'profile/my-account.html', {
             'user_details': user_details,
