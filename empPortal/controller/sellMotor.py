@@ -48,3 +48,51 @@ def index(request):
         return render(request, 'sell/motor/index.html')
     else:
         return redirect('login')
+
+def createMotorInsurance(request):
+    if request.user.is_authenticated:
+        return render(request, 'sell/motor/motor-insurance.html')
+    else:
+        return redirect('login')
+    
+def createMotorDetails(request):
+    if request.user.is_authenticated:
+        return render(request, 'sell/motor/motor-details.html')
+    else:
+        return redirect('login')
+    
+def createMotorQuote(request):
+    if request.user.is_authenticated:
+        return render(request, 'sell/motor/motor-quote.html')
+    else:
+        return redirect('login')
+    
+def createMotorProposalBasicDetails(request):
+    if request.user.is_authenticated:
+        return render(request, 'sell/motor/motor-proposal-basic-details.html')
+    else:
+        return redirect('login')
+    
+def createMotorProposalNomineeDetails(request):
+    if request.user.is_authenticated:
+        return render(request, 'sell/motor/motor-proposal-nominee-details.html')
+    else:
+        return redirect('login')
+    
+def createMotorProposalAddressDetails(request):
+    if request.user.is_authenticated:
+        return render(request, 'sell/motor/motor-proposal-address-details.html')
+    else:
+        return redirect('login')
+    
+def createMotorProposalVehicleDetails(request):
+    if request.user.is_authenticated:
+        return render(request, 'sell/motor/motor-proposal-vehicle-details.html')
+    else:
+        return redirect('login')
+    
+def createMotorProposalSummary(request):
+    if request.user.is_authenticated:
+        return render(request, 'sell/motor/motor-proposal-summary.html')
+    else:
+        return redirect('login')

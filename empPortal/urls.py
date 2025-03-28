@@ -90,11 +90,22 @@ urlpatterns = [
     path('leads-mgt/create', leads.create, name='leads-mgt-create'),
     # LEADS 
 
-    # sell-online 
-    path('sell/motor', sellMotor.index, name='sell-motor'),
+    # SELL-ONLINE 
+        # MOTOR
+        path('sell/motor', sellMotor.index, name='sell-motor'),
+        path('sell/motor/motor-insurance', sellMotor.createMotorInsurance, name='create-motor-insurance'),
+        path('sell/motor/motor-details', sellMotor.createMotorDetails, name='create-motor'),
+        path('sell/motor/motor-proposal-basic-details', sellMotor.createMotorProposalBasicDetails, name='create-motor-proposal-basic'),
+        path('sell/motor/motor-quote', sellMotor.createMotorQuote, name='create-motor-quote'),
+        path('sell/motor/motor-proposal-nominee-details', sellMotor.createMotorProposalNomineeDetails, name='create-motor-proposal-nominee'),
+        path('sell/motor/motor-proposal-address-details', sellMotor.createMotorProposalAddressDetails, name='create-motor-proposal-address'),
+        path('sell/motor/motor-proposal-vehicle-details', sellMotor.createMotorProposalVehicleDetails, name='create-motor-proposal-vehicle'),
+        path('sell/motor/motor-proposal-summary', sellMotor.createMotorProposalSummary, name='create-motor-proposal-summary'),
+        # MOTOR
+
     path('sell/health', sellHealth.index, name='sell-health'),
     path('sell/term', sellTerm.index, name='sell-term'),
-    # sell-online 
+    # SELL-ONLINE 
 
     # REPORTS 
     # REPORTS 
