@@ -249,6 +249,11 @@
                     </div>
                   </div>
                 </div> -->
+
+                {% comment %} HERE  {% endcomment %}
+
+                {% if request.user.role_id != 4 %}
+
                 <div class="col-sm-12 col-md-12">  
                     <div class="card">
                       <div class="card-body">
@@ -314,6 +319,9 @@
                       </div>
                   </div>
                 </div>
+                
+                {% endif %}
+                {% comment %} HERE  {% endcomment %}
                 <div class="col-sm-6 col-md-6">  
                   <div class="card">
                     <div class="card-body">
