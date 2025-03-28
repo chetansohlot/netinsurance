@@ -172,6 +172,7 @@ def memberView(request, user_id):
 
         branches = Branch.objects.all().order_by('-created_at')
 
+        
         branch = None
         if user_details.branch_id:
             branch = Branch.objects.filter(id=user_details.branch_id).first()
@@ -181,7 +182,7 @@ def memberView(request, user_id):
             senior = Users.objects.filter(id=user_details.senior_id).first()
 
         manager = None
-        if senior.senior_id:
+        if senior and senior.senior_id:  # Ensure senior is not None before accessing senior_id
             manager = Users.objects.filter(id=senior.senior_id).first()
 
         return render(request, 'members/member-view.html', {
