@@ -62,19 +62,20 @@
                                 <a href="javascript:void(0)" data-toggle="modal" data-target="#editUserModal" class="float-right"><i class="fas fa-edit"></i></a>
                                 <img src="{% static 'dist/img/svg/profile-avatar-male.svg' %}" alt="" class="card-profile-img">
                                 <h3 class="profile-username text-center">{{ user_details.first_name }} {{ user_details.last_name }}</h3>
+                                
                                 <div class="d-flex justify-content-center mt-2">
-                                  {% if user_details.role_id != 1 %}
-                                    {% if user_details.activation_status == '1' %}
-                                        <p class="text-success">Active</p>
-                                    {% else %}
-                                        <p class="text-danger">Inactive</p>
+                                    {% if user_details.role_id != 1 %}
+                                        {% if user_details.activation_status == '1' %}
+                                            <p class="text-success">Active</p>
+                                        {% else %}
+                                            <p class="text-danger">Inactive</p>
+                                        {% endif %}
                                     {% endif %}
-                                  {% endif %}
-                                </div>  
+                                </div>
+                    
                                 <div class="profile-info-divider"></div>
+                    
                                 <ul class="member-detail-list">
-                                     
-
                                     <li>
                                         <img src="{% static 'dist/img/svg/birthday_ic.svg' %}" alt="">
                                         <span class="list">Pan No</span>
@@ -122,11 +123,67 @@
                                         <span class="list">Communication Address</span>
                                         <span class="list-output">{{ user_details.address }}</span>
                                     </li>
+                                    <li>
+                                        <img src="{% static 'dist/img/svg/certificate.svg' %}" alt="">
+                                        <span class="list">Download Certificate</span>
+                                        <span class="list-output">
+                                            <a href="{{ user_details.certificate_url }}" class="btn btn-primary btn-sm" download>
+                                                Download Certificate
+                                            </a>
+                                        </span>
+                                    </li>
+                                    <li>
+                                        <img src="{% static 'dist/img/svg/status.svg' %}" alt="">
+                                        <span class="list">User Status</span>
+                                        <span class="list-output">{{ user_details.current_status }}</span>
+                                    </li>
+                                    <li>
+                                        <img src="{% static 'dist/img/svg/exam.svg' %}" alt="">
+                                        <span class="list">Exam Score & Status</span>
+                                        <span class="list-output">{{ user_details.exam_score }} ({{ user_details.exam_status }})</span>
+                                    </li>
+                                    <li>
+                                        <img src="{% static 'dist/img/svg/training.svg' %}" alt="">
+                                        <span class="list">Training Status</span>
+                                        <span class="list-output">
+                                            {% if user_details.training_started %}
+                                                Training Started on: {{ user_details.training_start_date }}
+                                            {% else %}
+                                                Not Started
+                                            {% endif %}
+                                        </span>
+                                    </li>
+                                    <li>
+                                        <img src="{% static 'dist/img/svg/completed.svg' %}" alt="">
+                                        <span class="list">Training Completed</span>
+                                        <span class="list-output">
+                                            {% if user_details.training_completed %}
+                                                Yes ({{ user_details.training_completed_date }})
+                                            {% else %}
+                                                No
+                                            {% endif %}
+                                        </span>
+                                    </li>
+                                    <li>
+                                        <img src="{% static 'dist/img/svg/timer.svg' %}" alt="">
+                                        <span class="list">Training Time Counter</span>
+                                        <span class="list-output">
+                                            {% if user_details.training_started %}
+                                                {% if user_details.training_completed %}
+                                                    Completed in {{ user_details.training_duration }} hours
+                                                {% else %}
+                                                    {{ user_details.training_hours_completed }} / 48 hours
+                                                {% endif %}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </span>
+                                    </li>
                                 </ul>
-                    
                             </div>
                         </div>
                     </div>
+                    
                     
                     <!-- Edit Modal -->
                     <div class="modal fade modaldesign" id="editUserModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">

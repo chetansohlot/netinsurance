@@ -84,30 +84,30 @@
                         <div class="row">
                           <div class="col-sm-12">
                             <div class="table-responsive table-ht">
-                              <table class="table table-design table-border-line">
                               
+                              <table class="table table-design table-border-line">
                                 <tbody>
-                                  <tr>
-                                    <td class="table-thead-bg-light"><strong>Branch</strong></td>
-                                    <td>Delhi</td>
-                                    <td>9876543210</td>
-                                    <td>vinod@netleafinfosoft.com</td>
-                                  </tr>
-                                  <tr>
-                                    <td class="table-thead-bg-light"><strong>Manager</strong></td>
-                                    <td>Abhay Singh</td>
-                                    <td>9876543210</td>
-                                    <td>abhay@netleafinfosoft.com</td>
-                                  </tr>
-                                  <tr>
-                                    <td class="table-thead-bg-light"><strong>Sales Manager</strong></td>
-                                    <td>Ravinesh</td>
-                                    <td>9876543210</td>
-                                    <td>ravinesh@netleafinfosoft.com</td>
-                                  </tr>
-                                  
+                                    <tr>
+                                        <td class="table-thead-bg-light"><strong>Branch</strong></td>
+                                        <td>{{ branch.branch_name|default:"N/A" }}</td>
+                                        <td>{{ branch.mobile|default:"N/A" }}</td>
+                                        <td>{{ branch.email|default:"N/A" }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="table-thead-bg-light"><strong>Manager</strong></td>
+                                        <td>{{ branch_manager.full_name|default:"N/A" }}</td>
+                                        <td>{{ branch_manager.phone|default:"N/A" }}</td>
+                                        <td>{{ branch_manager.email|default:"N/A" }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="table-thead-bg-light"><strong>Sales Manager</strong></td>
+                                        <td>{{ sales_manager.full_name|default:"N/A" }}</td>
+                                        <td>{{ sales_manager.phone|default:"N/A" }}</td>
+                                        <td>{{ sales_manager.email|default:"N/A" }}</td>
+                                    </tr>
                                 </tbody>
-                              </table>
+                            </table>
+                            
                             </div>
                           </div>
                         </div>

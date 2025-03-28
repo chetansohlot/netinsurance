@@ -45,6 +45,25 @@ def dictfetchall(cursor):
 
 def index(request):
     if request.user.is_authenticated:
-        return render(request, 'help-and-support/index.html')
+        user_details = Users.objects.get(id=request.user.id)  # Fetching the user's details
+
+        branch = None
+        if user_details.branch_id:
+            branch = Branch.objects.filter(id=user_details.branch_id).first()
+                
+        senior = None
+        if user_details.senior_id:
+            senior = Users.objects.filter(id=user_details.senior_id).first()
+
+        manager = None
+        if senior.senior_id:
+            manager = Users.objects.filter(id=senior.senior_id).first()
+            
+        return render(request, 'help-and-support/index.html', {
+            'user_details': user_details,
+            'sales_manager': senior,
+            'branch': branch,
+            'branch_manager': manager,
+        })
     else:
         return redirect('login')
