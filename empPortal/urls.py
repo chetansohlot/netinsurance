@@ -59,6 +59,8 @@ urlpatterns = [
     path('branch-management/<str:branch_id>/', Branches.create_or_edit, name='branch-management-edit'),
 
     path('my-account/', profile.myAccount, name='my-account'),
+    path('download-certificate-pdf/<str:cus_id>/', profile.downloadCertificatePdf, name='download-certificate'),
+
     path('upload-documents/', profile.upload_documents, name='upload_documents'),
     path("update-document/", profile.update_document, name="update_document"),
     path("update-document-id/", profile.update_document_id, name="update_document_id"),
@@ -102,6 +104,18 @@ urlpatterns = [
         path('sell/motor/motor-proposal-vehicle-details', sellMotor.createMotorProposalVehicleDetails, name='create-motor-proposal-vehicle'),
         path('sell/motor/motor-proposal-summary', sellMotor.createMotorProposalSummary, name='create-motor-proposal-summary'),
         # MOTOR
+
+
+        # MOTOR 4W
+        path('motor/4w/motor-insurance', sellMotor.create4wMotorInsurance, name='create-4w-motor-insurance'),
+        path('motor/4w/motor-details', sellMotor.create4wMotorDetails, name='create-4w-motor'),
+        path('motor/4w/motor-proposal-basic-details', sellMotor.create4wMotorProposalBasicDetails, name='create-4w-motor-proposal-basic'),
+        path('motor/4w/motor-quote', sellMotor.create4wMotorQuote, name='create-4w-motor-quote'),
+        path('motor/4w/motor-proposal-nominee-details', sellMotor.create4wMotorProposalNomineeDetails, name='create-4w-motor-proposal-nominee'),
+        path('motor/4w/motor-proposal-address-details', sellMotor.create4wMotorProposalAddressDetails, name='create-4w-motor-proposal-address'),
+        path('motor/4w/motor-proposal-vehicle-details', sellMotor.create4wMotorProposalVehicleDetails, name='create-4w-motor-proposal-vehicle'),
+        path('motor/4w/motor-proposal-summary', sellMotor.create4wMotorProposalSummary, name='create-4w-motor-proposal-summary'),
+        # MOTOR 4W
 
     path('sell/health', sellHealth.index, name='sell-health'),
     path('sell/term', sellTerm.index, name='sell-term'),

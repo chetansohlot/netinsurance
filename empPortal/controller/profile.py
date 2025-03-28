@@ -30,6 +30,9 @@ from django.core.files.base import ContentFile
 
 from django.views.decorators.csrf import csrf_exempt
 from pprint import pprint 
+import pdfkit
+from django.templatetags.static import static  # ✅ Import static
+from django.template.loader import render_to_string
 
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 
@@ -338,3 +341,39 @@ def update_document_id(request):
             return JsonResponse({"success": False, "message": str(e)}, status=500)
 
     return JsonResponse({"success": False, "message": "Invalid request method."}, status=405)
+
+
+
+def downloadCertificatePdf(request, cus_id):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    wkhtml_path = os.getenv('WKHTML_PATH', r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
+    config = pdfkit.configuration(wkhtmltopdf=wkhtml_path)
+
+    # Fetch customer and vehicle details
+    user_details = Users.objects.get(id=cus_id)  # Fetching the user's details
+
+    # Data to pass to the template
+    context = {
+        "user_details": user_details,
+        "logo_url": request.build_absolute_uri(static('dist/img/logo2.png'))
+    }
+
+    # Render HTML template with context data
+    html_content = render_to_string("profile/broker-certificate.html", context)
+
+    options = {
+        'enable-local-file-access': '',
+        'page-size': 'A4',
+        'encoding': "UTF-8",
+    }
+
+    # Generate PDF from HTML content
+    pdf = pdfkit.from_string(html_content, False, configuration=config, options=options)
+
+    # Create HTTP response with PDF as an attachment
+    response = HttpResponse(pdf, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="quotation_{cus_id}.pdf"'
+
+    return response

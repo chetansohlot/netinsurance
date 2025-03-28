@@ -127,7 +127,7 @@
                                         <img src="{% static 'dist/img/svg/certificate.svg' %}" alt="">
                                         <span class="list">Download Certificate</span>
                                         <span class="list-output">
-                                            <a href="{{ user_details.certificate_url }}" class="btn btn-primary btn-sm" download>
+                                            <a href="{% url 'download-certificate' user_details.id %}" class="btn btn-primary btn-sm" download>
                                                 Download Certificate
                                             </a>
                                         </span>

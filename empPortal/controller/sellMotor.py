@@ -96,3 +96,51 @@ def createMotorProposalSummary(request):
         return render(request, 'sell/motor/motor-proposal-summary.html')
     else:
         return redirect('login')
+
+def create4wMotorInsurance(request):
+    if request.user.is_authenticated:
+        return render(request, 'sell/motor/4w/motor-insurance.html')
+    else:
+        return redirect('login')
+
+def create4wMotorDetails(request):
+    if request.user.is_authenticated:
+        return render(request, 'sell/motor/4w/motor-details.html')
+    else:
+        return redirect('login')
+
+def create4wMotorQuote(request):
+    if request.user.is_authenticated:
+        return render(request, 'sell/motor/4w/motor-quote.html')
+    else:
+        return redirect('login')
+
+def create4wMotorProposalBasicDetails(request):
+    if request.user.is_authenticated:
+        return render(request, 'sell/motor/4w/motor-proposal-basic-details.html')
+    else:
+        return redirect('login')
+
+def create4wMotorProposalNomineeDetails(request):
+    if request.user.is_authenticated:
+        return render(request, 'sell/motor/4w/motor-proposal-nominee-details.html')
+    else:
+        return redirect('login')
+
+def create4wMotorProposalAddressDetails(request):
+    if request.user.is_authenticated:
+        return render(request, 'sell/motor/4w/motor-proposal-address-details.html')
+    else:
+        return redirect('login')
+
+def create4wMotorProposalVehicleDetails(request):
+    if request.user.is_authenticated:
+        return render(request, 'sell/motor/4w/motor-proposal-vehicle-details.html')
+    else:
+        return redirect('login')
+
+def create4wMotorProposalSummary(request):
+    if request.user.is_authenticated:
+        return render(request, 'sell/motor/4w/motor-proposal-summary.html')
+    else:
+        return redirect('login')
