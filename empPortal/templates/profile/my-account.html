@@ -135,19 +135,30 @@
                                     <li>
                                         <img src="{% static 'dist/img/svg/status.svg' %}" alt="">
                                         <span class="list">User Status</span>
-                                        <span class="list-output">{{ user_details.current_status }}</span>
+                                        <span class="list-output">
+                                            {% if user_details.activation_status == "1" %}
+                                                <span class="badge badge-success">Activated</span>
+                                            {% elif user_details.activation_status == "2" %}
+                                                <span class="badge badge-warning">In-Training</span>
+                                            {% elif user_details.activation_status == "3" %}
+                                                <span class="badge badge-info">In-Exam</span>
+                                            {% else %}
+                                                <span class="badge badge-secondary">Requested</span>
+                                            {% endif %}
+                                        </span>
                                     </li>
+                                    
                                     <li>
                                         <img src="{% static 'dist/img/svg/exam.svg' %}" alt="">
                                         <span class="list">Exam Score & Status</span>
-                                        <span class="list-output">{{ user_details.exam_score }} ({{ user_details.exam_status }})</span>
+                                        <span class="list-output">87 (Qualified)</span>
                                     </li>
                                     <li>
                                         <img src="{% static 'dist/img/svg/training.svg' %}" alt="">
                                         <span class="list">Training Status</span>
                                         <span class="list-output">
                                             {% if user_details.training_started %}
-                                                Training Started on: {{ user_details.training_start_date }}
+                                                Training Started on: Completed
                                             {% else %}
                                                 Not Started
                                             {% endif %}
@@ -175,7 +186,7 @@
                                                     {{ user_details.training_hours_completed }} / 48 hours
                                                 {% endif %}
                                             {% else %}
-                                                N/A
+                                                3 Days Left
                                             {% endif %}
                                         </span>
                                     </li>
