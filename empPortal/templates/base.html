@@ -7,6 +7,7 @@
 
     {% load static %}
     {% include 'head.html' %}  <!-- Includes common styles and scripts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 
     <script src="{% static 'dist/js/jquery.min.js' %}"></script>
     <script src="{% static 'dist/js/custom.js' %}"></script>
@@ -47,6 +48,15 @@
         {% include "footer-script.html" %} <!-- Include footer scripts -->
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <script>
+          $(document).ready(function() {
+              {% for message in messages %}
+                  toastr.{{ message.tags }}("{{ message|escapejs }}");
+              {% endfor %}
+          });
+    </script>
     <script>
         document.getElementById("myForm")?.addEventListener("submit", function() {
             document.getElementById("loader").style.display = "flex";
