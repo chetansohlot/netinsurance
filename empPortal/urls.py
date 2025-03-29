@@ -118,6 +118,15 @@ urlpatterns = [
         # MOTOR 4W
 
     path('sell/health', sellHealth.index, name='sell-health'),
+    # HEALTH JOURNEY 
+        path('health/health-insurance', sellHealth.createHealthInsurance, name='create-health-insurance'),
+        path('health/health-quotes', sellHealth.createHealthQuotes, name='create-health-quotes'),
+        path('health/health-proposer', sellHealth.createHealthProposer, name='create-health-proposer'),
+        path('health/health-insured', sellHealth.createHealthInsured, name='create-health-insured'),
+        path('health/health-history', sellHealth.createHealthHistory, name='create-health-history'),
+        path('health/health-summary', sellHealth.createHealthSummary, name='create-health-summary'),
+    # HEALTH JOURNEY 
+
     path('sell/term', sellTerm.index, name='sell-term'),
     # SELL-ONLINE 
 

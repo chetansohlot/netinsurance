@@ -48,3 +48,39 @@ def index(request):
         return render(request, 'sell/health/index.html')
     else:
         return redirect('login')
+    
+def createHealthInsurance(request):
+    if request.user.is_authenticated:
+        return render(request, 'sell/health/health-insurance.html')
+    else:
+        return redirect('login')
+
+def createHealthQuotes(request):
+    if request.user.is_authenticated:
+        return render(request, 'sell/health/health-quotes.html')
+    else:
+        return redirect('login')
+
+def createHealthProposer(request):
+    if request.user.is_authenticated:
+        return render(request, 'sell/health/health-proposer.html')
+    else:
+        return redirect('login')
+
+def createHealthInsured(request):
+    if request.user.is_authenticated:
+        return render(request, 'sell/health/health-insured.html')
+    else:
+        return redirect('login')
+
+def createHealthHistory(request):
+    if request.user.is_authenticated:
+        return render(request, 'sell/health/health-history.html')
+    else:
+        return redirect('login')
+
+def createHealthSummary(request):
+    if request.user.is_authenticated:
+        return render(request, 'sell/health/health-summary.html')
+    else:
+        return redirect('login')
