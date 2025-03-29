@@ -677,7 +677,9 @@
                                                     <td>Aadhaar Card Front</td>
                                                     <td>
                                                         {{ docs.aadhaar_number|default:"-" }} 
-                                                        <i class="fa-solid fa-pen-to-square text-primary" style="cursor: pointer;" onclick="openEditAadhaarModal('{{ docs.aadhaar_number|default:'' }}')"></i>
+                                                        {% if docs.aadhaar_card_front_status != "Approved" %}
+                                                            <i class="fa-solid fa-pen-to-square text-primary" style="cursor: pointer;" onclick="openEditAadhaarModal('{{ docs.aadhaar_number|default:'' }}')"></i>
+                                                        {% endif %}
                                                     </td>
                                                     <td>{{ docs.aadhaar_card_front_updated_at|date:"Y-m-d H:i:s" }}</td>
                                                     <td>
@@ -740,9 +742,10 @@
                                                     <td>PAN Card</td>
                                                     <td>
                                                         {{ docs.pan_number|default:"-" }} 
-                                                        <i class="fa-solid fa-pen-to-square text-primary" style="cursor: pointer;" onclick="openEditPanModal('{{ docs.pan_number|default:'' }}')"></i>
+                                                        {% if docs.upload_pan_status != "Approved" %}
+                                                            <i class="fa-solid fa-pen-to-square text-primary" style="cursor: pointer;" onclick="openEditPanModal('{{ docs.pan_number|default:'' }}')"></i>
+                                                        {% endif %}
                                                     </td>
-                                                    
                                                     <td>{{ docs.upload_pan_updated_at|date:"Y-m-d H:i:s" }}</td>
                                                     <td>
                                                         {% if docs.upload_pan_status == "Approved" %}
@@ -773,7 +776,9 @@
                                                     <td>Cancelled Cheque</td>
                                                     <td>
                                                         {{ docs.cheque_number|default:"-" }} 
-                                                        <i class="fa-solid fa-pen-to-square text-primary" style="cursor: pointer;" onclick="openEditChequeModal('{{ docs.cheque_number|default:'' }}')"></i>
+                                                        {% if docs.upload_cheque_status != "Approved" %}
+                                                            <i class="fa-solid fa-pen-to-square text-primary" style="cursor: pointer;" onclick="openEditChequeModal('{{ docs.cheque_number|default:'' }}')"></i>
+                                                        {% endif %}
                                                     </td>
                                                     <td>{{ docs.upload_cheque_updated_at|date:"Y-m-d H:i:s" }}</td>
                                                     <td>
@@ -805,7 +810,9 @@
                                                     <td>10th Marksheet</td>
                                                     <td>
                                                         {{ docs.role_no|default:"-" }} 
-                                                        <i class="fa-solid fa-pen-to-square text-primary" style="cursor: pointer;" onclick="openEditRoleNoModal('{{ docs.role_no|default:'' }}')"></i>
+                                                        {% if docs.tenth_marksheet_status != "Approved" %}
+                                                            <i class="fa-solid fa-pen-to-square text-primary" style="cursor: pointer;" onclick="openEditRoleNoModal('{{ docs.role_no|default:'' }}')"></i>
+                                                        {% endif %}
                                                     </td>
                                                     <td>{{ docs.tenth_marksheet_updated_at|date:"Y-m-d H:i:s" }}</td>
                                                     <td>

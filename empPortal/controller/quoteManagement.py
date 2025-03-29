@@ -17,6 +17,8 @@ from django.template.loader import render_to_string
 from django.forms.models import model_to_dict
 import json
 from datetime import date
+import requests
+from django.conf import settings
 
 def dictfetchall(cursor):
     "Returns all rows from a cursor as a dict"
@@ -260,6 +262,31 @@ def create_or_edit(request, customer_id=None):
 
 
 
+def fetch_vehicle_details_from_api(registration_number):
+    url = "https://live.zoop.one/api/v1/in/vehicle/rc/advance"
+    ZOOP_APP_ID = os.getenv('ZOOP_APP_ID', "")
+    ZOOP_API_KEY = os.getenv('ZOOP_API_KEY', "")
+
+    headers = {
+        "Content-Type": "application/json",
+        "app-id": ZOOP_APP_ID,
+        "api-key": ZOOP_API_KEY
+    }
+    data = {
+        "mode": "sync",
+        "data": {
+            "vehicle_registration_number": registration_number,
+            "consent": "Y",
+            "consent_text": "I hereby declare my consent agreement for fetching my information via ZOOP API."
+        }
+    }
+    
+    response = requests.post(url, headers=headers, json=data)
+
+    if response.status_code == 200:
+        return response.json()
+    return None
+
 def fetch_vehicle_info(request):
     if request.method == "POST":
         registration_number = request.POST.get("registration_number", "").strip()
@@ -274,17 +301,21 @@ def fetch_vehicle_info(request):
             return redirect("quote-management-create")
 
         customer = get_object_or_404(QuotationCustomer, customer_id=customer_id)
-
         products = [{'id': 1, 'name': 'Motor'}, {'id': 2, 'name': 'Health'}, {'id': 3, 'name': 'Term'}]
         members = Users.objects.filter(role_id=2, activation_status='1') if request.user.role_id == 1 else Users.objects.none()
 
         vehicle_detail = QuotationVehicleDetail.objects.filter(registration_number=registration_number).first()
         vehicle_info = VehicleInfo.objects.filter(customer_id=customer_id).first()
 
-        # Convert model instance to dict
+        if not vehicle_detail:
+            vehicle_data = fetch_vehicle_details_from_api(registration_number)
+            if vehicle_data:
+                vehicle_detail = QuotationVehicleDetail.objects.create(
+                    registration_number=registration_number,
+                    vehicle_details=json.dumps(vehicle_data)
+                )
+        
         vehicle_data = model_to_dict(vehicle_detail) if vehicle_detail else {}
-
-        # Parse vehicle_details JSON if it exists
         vehicle_json = {}
         if vehicle_detail and vehicle_detail.vehicle_details:
             try:
@@ -302,8 +333,9 @@ def fetch_vehicle_info(request):
             'vehicle_detail': vehicle_data,  # Model details
             'vehicle_json': vehicle_json  # Parsed JSON details
         })
-
+    
     return redirect("quote-management-create")
+
 
 def createVehicleInfo(request, cus_id):
     if not request.user.is_authenticated:
