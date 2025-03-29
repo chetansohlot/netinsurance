@@ -676,13 +676,16 @@
                                                             <span class="text-warning">Pending</span>
                                                         {% endif %}
                                                     </td>
-                                                    
+                                                    <td>
                                                     {% if docs.aadhaar_card_front_status != "Approved" %}
-                                                        <td>
                                                             <label for="aadhaar_card_front" class="btn btn-sm btn-warning">Edit</label>
                                                             <input type="file" id="aadhaar_card_front" class="d-none" onchange="uploadDocument('aadhaar_card_front')">
-                                                        </td>
                                                     {% endif %}
+                                                    {% if docs.aadhaar_card_front_status == "Rejected" %}
+                                                        <i class="fas fa-eye text-danger" style="cursor: pointer;" onclick="showRejectNote('{{ docs.aadhaar_card_front_reject_note }}')"></i>
+                                                    {% endif %}
+                                                    </td>
+
 
                                                 </tr>
                             
@@ -706,13 +709,18 @@
                                                             <span class="text-warning">Pending</span>
                                                         {% endif %}
                                                     </td>
-                                                    {% if docs.aadhaar_card_back_status != "Approved" %}
-
                                                     <td>
-                                                        <label for="aadhaar_card_back" class="btn btn-sm btn-warning">Edit</label>
-                                                        <input type="file" id="aadhaar_card_back" class="d-none" onchange="uploadDocument('aadhaar_card_back')">
+                                                        {% if docs.aadhaar_card_back_status != "Approved" %}
+
+                                                            <label for="aadhaar_card_back" class="btn btn-sm btn-warning">Edit</label>
+                                                            <input type="file" id="aadhaar_card_back" class="d-none" onchange="uploadDocument('aadhaar_card_back')">
+                                                        {% endif %}
+                                                        
+                                                        {% if docs.aadhaar_card_back_status == "Rejected" %}
+                                                            <i class="fas fa-eye text-danger" style="cursor: pointer;" onclick="showRejectNote('{{ docs.aadhaar_card_back_reject_note }}')"></i>
+                                                        {% endif %}
                                                     </td>
-                                                    {% endif %}
+
 
                                                 </tr>
                             
@@ -741,13 +749,15 @@
                                                             <span class="text-warning">Pending</span>
                                                         {% endif %}
                                                     </td>
-                                                    {% if docs.upload_pan_status != "Approved" %}
                                                     <td>
-                                                        <label for="upload_pan" class="btn btn-sm btn-warning">Edit</label>
-                                                        <input type="file" id="upload_pan" class="d-none" onchange="uploadDocument('upload_pan')">
+                                                        {% if docs.upload_pan_status != "Approved" %}
+                                                            <label for="upload_pan" class="btn btn-sm btn-warning">Edit</label>
+                                                            <input type="file" id="upload_pan" class="d-none" onchange="uploadDocument('upload_pan')">
+                                                        {% endif %}
+                                                        {% if docs.upload_pan_status == "Rejected" %}
+                                                            <i class="fas fa-eye text-danger" style="cursor: pointer;" onclick="showRejectNote('{{ docs.upload_pan_reject_note }}')"></i>
+                                                        {% endif %}
                                                     </td>
-                                                    {% endif %}
-
                                                 </tr>
                             
                                                 <!-- Cancelled Cheque -->
@@ -775,12 +785,16 @@
                                                             <span class="text-warning">Pending</span>
                                                         {% endif %}
                                                     </td>
-                                                    {% if docs.upload_cheque_status != "Approved" %}
                                                     <td>
-                                                        <label for="upload_cheque" class="btn btn-sm btn-warning">Edit</label>
-                                                        <input type="file" id="upload_cheque" class="d-none" onchange="uploadDocument('upload_cheque')">
+                                                        {% if docs.upload_cheque_status != "Approved" %}
+                                                            <label for="upload_cheque" class="btn btn-sm btn-warning">Edit</label>
+                                                            <input type="file" id="upload_cheque" class="d-none" onchange="uploadDocument('upload_cheque')">
+                                                        {% endif %}
+
+                                                        {% if docs.upload_cheque_status == "Rejected" %}
+                                                            <i class="fas fa-eye text-danger" style="cursor: pointer;" onclick="showRejectNote('{{ docs.upload_cheque_reject_note }}')"></i>
+                                                        {% endif %}
                                                     </td>
-                                                    {% endif %}
 
                                                 </tr>
                             
@@ -809,12 +823,16 @@
                                                             <span class="text-warning">Pending</span>
                                                         {% endif %}
                                                     </td>
-                                                    {% if docs.tenth_marksheet_status != "Approved" %}
                                                     <td>
-                                                        <label for="tenth_marksheet" class="btn btn-sm btn-warning">Edit</label>
-                                                        <input type="file" id="tenth_marksheet" class="d-none" onchange="uploadDocument('tenth_marksheet')">
+                                                        {% if docs.tenth_marksheet_status != "Approved" %}
+                                                            <label for="tenth_marksheet" class="btn btn-sm btn-warning">Edit</label>
+                                                            <input type="file" id="tenth_marksheet" class="d-none" onchange="uploadDocument('tenth_marksheet')">
+                                                        {% endif %}
+
+                                                        {% if docs.tenth_marksheet_status == "Rejected" %}
+                                                            <i class="fas fa-eye text-danger" style="cursor: pointer;" onclick="showRejectNote('{{ docs.tenth_marksheet_reject_note }}')"></i>
+                                                        {% endif %}
                                                     </td>
-                                                    {% endif %}
 
                                                 </tr>
                                             </tbody>
@@ -1160,6 +1178,16 @@
             
             {% include 'footer-script.html' %}
             
+        <script>
+            function showRejectNote(note) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Rejected Reason',
+                    text: note || 'No reason provided',  // Show message if note is empty
+                    confirmButtonColor: '#d33'
+                });
+            }
+            </script>
         <script>
            
     // Function to handle document upload with SweetAlert confirmation
