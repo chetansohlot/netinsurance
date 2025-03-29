@@ -223,64 +223,74 @@ def check_account_number(request):
 
 
 def upload_documents(request):
-    if request.method == "POST":
-        form = DocumentUploadForm(request.POST, request.FILES)
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid request method."}, status=405)
 
-        if form.is_valid():
-            user_id = request.user.id  # Get the current user ID
-            aadhaar_number = form.cleaned_data.get('aadhaar_number')
-            pan_number = form.cleaned_data.get('pan_number')
-            cheque_number = form.cleaned_data.get('cheque_number')
-            role_no = form.cleaned_data.get('role_no')
+    form = DocumentUploadForm(request.POST, request.FILES)
+    
+    if not form.is_valid():
+        return JsonResponse({"error": "Invalid form submission.", "errors": form.errors}, status=400)
 
-            # Get or create document instance for user
-            existing_doc, created = DocumentUpload.objects.get_or_create(user_id=user_id)
+    user_id = request.user.id
+    aadhaar_number = form.cleaned_data.get("aadhaar_number")
+    pan_number = form.cleaned_data.get("pan_number")
+    cheque_number = form.cleaned_data.get("cheque_number")
+    role_no = form.cleaned_data.get("role_no")
 
-            # Update fields if new files are uploaded
-            file_fields = ['aadhaar_card_front', 'aadhaar_card_back', 'upload_pan', 'upload_cheque', 'tenth_marksheet']
-            files_uploaded = []
-            errors = []
+    # Aadhaar validation (12-digit numeric)
+    if aadhaar_number and not re.fullmatch(r"^\d{12}$", aadhaar_number):
+        return JsonResponse({"errors": {"aadhaar_number": "Aadhaar must be exactly 12 digits."}}, status=400)
 
-            # Update document fields
-            existing_doc.aadhaar_number = aadhaar_number
-            existing_doc.pan_number = pan_number
-            existing_doc.cheque_number = cheque_number
-            existing_doc.role_no = role_no
+    # PAN validation (Format: 5 letters, 4 numbers, 1 letter)
+    if pan_number and not re.fullmatch(r"^[A-Z]{5}[0-9]{4}[A-Z]{1}$", pan_number):
+        return JsonResponse({"errors": {"pan_number": "PAN must be in the format ABCDE1234F."}}, status=400)
 
-            for field in file_fields:
-                uploaded_file = request.FILES.get(field)
-                if uploaded_file:
-                    # Validate file size (e.g., max 5MB)
-                    if uploaded_file.size > 5 * 1024 * 1024:
-                        errors.append(f"{field.replace('_', ' ').title()} exceeds 5MB size limit.")
-                        continue
-                    
-                    # Validate file type (optional, adjust as needed)
-                    allowed_types = ['image/jpeg', 'image/png', 'application/pdf']
-                    if uploaded_file.content_type not in allowed_types:
-                        errors.append(f"{field.replace('_', ' ').title()} must be a JPG, PNG, or PDF file.")
-                        continue
+    # Get or create document record for the user
+    existing_doc, created = DocumentUpload.objects.get_or_create(user_id=user_id)
 
-                    setattr(existing_doc, field, uploaded_file)
-                    files_uploaded.append(field.replace('_', ' ').title())
+    file_fields = ["aadhaar_card_front", "aadhaar_card_back", "upload_pan", "upload_cheque", "tenth_marksheet"]
+    allowed_types = ["image/jpeg", "image/png", "application/pdf"]
+    max_file_size = 5 * 1024 * 1024  # 5MB
+    files_uploaded = []
+    errors = {}
 
-            if files_uploaded:
-                existing_doc.save()
-                messages.success(request, f"Successfully uploaded: {', '.join(files_uploaded)}")
-            if errors:
-                for error in errors:
-                    messages.error(request, error)
-            if not files_uploaded and not errors:
-                messages.warning(request, "No new files were uploaded.")
+    # Update document details
+    existing_doc.aadhaar_number = aadhaar_number
+    existing_doc.pan_number = pan_number
+    existing_doc.cheque_number = cheque_number
+    existing_doc.role_no = role_no
 
-            return redirect('upload_documents')
+    # Process file uploads with validation
+    for field in file_fields:
+        uploaded_file = request.FILES.get(field)
+        if uploaded_file:
+            # Validate file size
+            if uploaded_file.size > max_file_size:
+                errors[field] = f"{field.replace('_', ' ').title()} exceeds 5MB size limit."
+                continue
+            
+            # Validate file type
+            if uploaded_file.content_type not in allowed_types:
+                errors[field] = f"{field.replace('_', ' ').title()} must be a JPG, PNG, or PDF file."
+                continue
 
-        else:
-            for field, error_messages in form.errors.items():
-                for error in error_messages:
-                    messages.error(request, f"{field.replace('_', ' ').title()}: {error}")
+            # Save the valid file
+            setattr(existing_doc, field, uploaded_file)
+            files_uploaded.append(field.replace("_", " ").title())
 
-    return redirect('my-account')
+    # If there are validation errors, return them
+    if errors:
+        return JsonResponse({"errors": errors}, status=400)
+
+    # Save only if there are updates
+    if files_uploaded:
+        existing_doc.save()
+        return JsonResponse({
+            "message": f"Successfully uploaded: {', '.join(files_uploaded)}",
+            "reload": True  # Flag for frontend to reload page
+        }, status=200)
+
+    return JsonResponse({"message": "No new files were uploaded."}, status=200)
 
 
 
