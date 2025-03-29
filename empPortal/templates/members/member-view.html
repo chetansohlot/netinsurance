@@ -111,6 +111,73 @@
                                         <span class="list">Communication Address</span>
                                         <span class="list-output">{{ user_details.address }}</span>
                                     </li>
+                                    <li>
+                                        <img src="{% static 'dist/img/svg/certificate2.svg' %}" alt="">
+                                        <span class="list">Download Certificate</span>
+                                        <span class="list-output">
+                                            <a href="{% url 'download-certificate' user_details.id %}" class="btn btn-primary btn-xs" download>
+                                                <i class="fa-solid fa-download"></i>
+                                            </a>
+                                        </span>
+                                    </li>
+                                    <li>
+                                        <img src="{% static 'dist/img/svg/user-status.svg' %}" alt="">
+                                        <span class="list">User Status</span>
+                                        <span class="list-output">
+                                            {% if user_details.activation_status == "1" %}
+                                                <span class="badge badge-success">Activated</span>
+                                            {% elif user_details.activation_status == "2" %}
+                                                <span class="badge badge-warning">In-Training</span>
+                                            {% elif user_details.activation_status == "3" %}
+                                                <span class="badge badge-info">In-Exam</span>
+                                            {% else %}
+                                                <span class="badge badge-secondary">Requested</span>
+                                            {% endif %}
+                                        </span>
+                                    </li>
+                                    
+                                    <li>
+                                        <img src="{% static 'dist/img/svg/exam.svg' %}" alt="">
+                                        <span class="list">Exam Score & Status</span>
+                                        <span class="list-output">87 (Qualified)</span>
+                                    </li>
+                                    <li>
+                                        <img src="{% static 'dist/img/svg/training-status.svg' %}" alt="">
+                                        <span class="list">Training Status</span>
+                                        <span class="list-output">
+                                            {% if user_details.training_started %}
+                                                Training Started on: Completed
+                                            {% else %}
+                                                Started
+                                            {% endif %}
+                                        </span>
+                                    </li>
+                                    <li>
+                                        <img src="{% static 'dist/img/svg/training-completed.svg' %}" alt="">
+                                        <span class="list">Training Completed</span>
+                                        <span class="list-output">
+                                            {% if user_details.training_completed %}
+                                                Yes ({{ user_details.training_completed_date }})
+                                            {% else %}
+                                                Yes
+                                            {% endif %}
+                                        </span>
+                                    </li>
+                                    <li>
+                                        <img src="{% static 'dist/img/svg/timer.svg' %}" alt="">
+                                        <span class="list">Training Time Counter</span>
+                                        <span class="list-output">
+                                            {% if user_details.training_started %}
+                                                {% if user_details.training_completed %}
+                                                    Completed in {{ user_details.training_duration }} hours
+                                                {% else %}
+                                                    {{ user_details.training_hours_completed }} / 48 hours
+                                                {% endif %}
+                                            {% else %}
+                                                0 Days Left
+                                            {% endif %}
+                                        </span>
+                                    </li>
                                 </ul>
                                 <!-- Edit Button -->
                             </div>
