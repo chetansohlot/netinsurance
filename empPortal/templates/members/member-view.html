@@ -743,16 +743,18 @@
                                                         {% endif %}
                                                     </td>
                                                     
-                                                    {% if docs.aadhaar_card_front_status != "Approved" and docs.aadhaar_card_front_status != "Rejected" %}
-
+                                                                                                        
                                                     <td>
-                                                        <select class="form-control form-control-sm" onchange="updateStatus('aadhaar_card_front', this.value, '{{ docs.id }}')">
-                                                            <option value="Pending" {% if docs.aadhaar_card_front_status == 'Pending' %}selected{% endif %}>Pending</option>
-                                                            <option value="Approved" {% if docs.aadhaar_card_front_status == 'Approved' %}selected{% endif %}>Approved</option>
-                                                            <option value="Rejected" {% if docs.aadhaar_card_front_status == 'Rejected' %}selected{% endif %}>Rejected</option>
-                                                        </select>
+                                                        {% if docs.aadhaar_card_front_status != "Approved" and docs.aadhaar_card_front_status != "Rejected" %}
+                                                            <select class="form-control form-control-sm" onchange="updateStatus('aadhaar_card_front', this.value, '{{ docs.id }}')">
+                                                                <option value="Pending" {% if docs.aadhaar_card_front_status == 'Pending' %}selected{% endif %}>Pending</option>
+                                                                <option value="Approved" {% if docs.aadhaar_card_front_status == 'Approved' %}selected{% endif %}>Approved</option>
+                                                                <option value="Rejected" {% if docs.aadhaar_card_front_status == 'Rejected' %}selected{% endif %}>Rejected</option>
+                                                            </select>
+                                                        {% elif docs.aadhaar_card_front_status == "Rejected" %}
+                                                            <i class="fas fa-eye text-danger" style="cursor: pointer;" onclick="showRejectNote('{{ docs.aadhaar_card_front_reject_note }}')"></i>
+                                                        {% endif %}
                                                     </td>
-                                                    {% endif %}
 
                                                 </tr>
                             
@@ -776,16 +778,17 @@
                                                             <span class="text-warning">Pending</span>
                                                         {% endif %}
                                                     </td>
-                                                    {% if docs.aadhaar_card_back_status != "Approved" and docs.aadhaar_card_back_status != "Rejected" %}
-
                                                     <td>
-                                                        <select class="form-control form-control-sm" onchange="updateStatus('aadhaar_card_back', this.value, '{{ docs.id }}')">
-                                                            <option value="Pending" {% if docs.aadhaar_card_back_status == 'Pending' %}selected{% endif %}>Pending</option>
-                                                            <option value="Approved" {% if docs.aadhaar_card_back_status == 'Approved' %}selected{% endif %}>Approved</option>
-                                                            <option value="Rejected" {% if docs.aadhaar_card_back_status == 'Rejected' %}selected{% endif %}>Rejected</option>
-                                                        </select>
+                                                        {% if docs.aadhaar_card_back_status != "Approved" and docs.aadhaar_card_back_status != "Rejected" %}
+                                                            <select class="form-control form-control-sm" onchange="updateStatus('aadhaar_card_back', this.value, '{{ docs.id }}')">
+                                                                <option value="Pending" {% if docs.aadhaar_card_back_status == 'Pending' %}selected{% endif %}>Pending</option>
+                                                                <option value="Approved" {% if docs.aadhaar_card_back_status == 'Approved' %}selected{% endif %}>Approved</option>
+                                                                <option value="Rejected" {% if docs.aadhaar_card_back_status == 'Rejected' %}selected{% endif %}>Rejected</option>
+                                                            </select>
+                                                        {% elif docs.aadhaar_card_back_status == "Rejected" %}
+                                                            <i class="fas fa-eye text-danger" style="cursor: pointer;" onclick="showRejectNote('{{ docs.aadhaar_card_back_reject_note }}')"></i>
+                                                        {% endif %}
                                                     </td>
-                                                    {% endif %}
 
                                                 </tr>
                             
@@ -809,16 +812,17 @@
                                                             <span class="text-warning">Pending</span>
                                                         {% endif %}
                                                     </td>
-                                                    {% if docs.upload_pan_status != "Approved" and docs.upload_pan_status != "Rejected" %}
-
                                                     <td>
-                                                        <select class="form-control form-control-sm" onchange="updateStatus('upload_pan', this.value, '{{ docs.id }}')">
-                                                            <option value="Pending" {% if docs.upload_pan_status == 'Pending' %}selected{% endif %}>Pending</option>
-                                                            <option value="Approved" {% if docs.upload_pan_status == 'Approved' %}selected{% endif %}>Approved</option>
-                                                            <option value="Rejected" {% if docs.upload_pan_status == 'Rejected' %}selected{% endif %}>Rejected</option>
-                                                        </select>
+                                                        {% if docs.upload_pan_status != "Approved" and docs.upload_pan_status != "Rejected" %}
+                                                            <select class="form-control form-control-sm" onchange="updateStatus('upload_pan', this.value, '{{ docs.id }}')">
+                                                                <option value="Pending" {% if docs.upload_pan_status == 'Pending' %}selected{% endif %}>Pending</option>
+                                                                <option value="Approved" {% if docs.upload_pan_status == 'Approved' %}selected{% endif %}>Approved</option>
+                                                                <option value="Rejected" {% if docs.upload_pan_status == 'Rejected' %}selected{% endif %}>Rejected</option>
+                                                            </select>
+                                                        {% elif docs.upload_pan_status == "Rejected" %}
+                                                            <i class="fas fa-eye text-danger" style="cursor: pointer;" onclick="showRejectNote('{{ docs.upload_pan_reject_note }}')"></i>
+                                                        {% endif %}
                                                     </td>
-                                                    {% endif %}
 
                                                 </tr>
                             
@@ -842,16 +846,17 @@
                                                             <span class="text-warning">Pending</span>
                                                         {% endif %}
                                                     </td>
-                                                    {% if docs.upload_cheque_status != "Approved" and docs.upload_cheque_status != "Rejected" %}
-
                                                     <td>
-                                                        <select class="form-control form-control-sm" onchange="updateStatus('upload_cheque', this.value, '{{ docs.id }}')">
-                                                            <option value="Pending" {% if docs.upload_cheque_status == 'Pending' %}selected{% endif %}>Pending</option>
-                                                            <option value="Approved" {% if docs.upload_cheque_status == 'Approved' %}selected{% endif %}>Approved</option>
-                                                            <option value="Rejected" {% if docs.upload_cheque_status == 'Rejected' %}selected{% endif %}>Rejected</option>
-                                                        </select>
+                                                        {% if docs.upload_cheque_status != "Approved" and docs.upload_cheque_status != "Rejected" %}
+                                                            <select class="form-control form-control-sm" onchange="updateStatus('upload_cheque', this.value, '{{ docs.id }}')">
+                                                                <option value="Pending" {% if docs.upload_cheque_status == 'Pending' %}selected{% endif %}>Pending</option>
+                                                                <option value="Approved" {% if docs.upload_cheque_status == 'Approved' %}selected{% endif %}>Approved</option>
+                                                                <option value="Rejected" {% if docs.upload_cheque_status == 'Rejected' %}selected{% endif %}>Rejected</option>
+                                                            </select>
+                                                        {% elif docs.upload_cheque_status == "Rejected" %}
+                                                            <i class="fas fa-eye text-danger" style="cursor: pointer;" onclick="showRejectNote('{{ docs.upload_cheque_reject_note }}')"></i>
+                                                        {% endif %}
                                                     </td>
-                                                    {% endif %}
 
                                                 </tr>
                             
@@ -875,16 +880,18 @@
                                                             <span class="text-warning">Pending</span>
                                                         {% endif %}
                                                     </td>
-                                                    {% if docs.tenth_marksheet_status != "Approved" and docs.tenth_marksheet_status != "Rejected" %}
-
                                                     <td>
-                                                        <select class="form-control form-control-sm" onchange="updateStatus('tenth_marksheet', this.value, '{{ docs.id }}')">
-                                                            <option value="Pending" {% if docs.tenth_marksheet_status == 'Pending' %}selected{% endif %}>Pending</option>
-                                                            <option value="Approved" {% if docs.tenth_marksheet_status == 'Approved' %}selected{% endif %}>Approved</option>
-                                                            <option value="Rejected" {% if docs.tenth_marksheet_status == 'Rejected' %}selected{% endif %}>Rejected</option>
-                                                        </select>
+                                                        {% if docs.tenth_marksheet_status != "Approved" and docs.tenth_marksheet_status != "Rejected" %}
+                                                            <select class="form-control form-control-sm" onchange="updateStatus('tenth_marksheet', this.value, '{{ docs.id }}')">
+                                                                <option value="Pending" {% if docs.tenth_marksheet_status == 'Pending' %}selected{% endif %}>Pending</option>
+                                                                <option value="Approved" {% if docs.tenth_marksheet_status == 'Approved' %}selected{% endif %}>Approved</option>
+                                                                <option value="Rejected" {% if docs.tenth_marksheet_status == 'Rejected' %}selected{% endif %}>Rejected</option>
+                                                            </select>
+                                                        {% elif docs.tenth_marksheet_status == "Rejected" %}
+                                                            <!-- Show Eye Icon if Rejected -->
+                                                            <i class="fas fa-eye text-danger" style="cursor: pointer;" onclick="showRejectNote('{{ docs.tenth_marksheet_reject_note }}')"></i>
+                                                        {% endif %}
                                                     </td>
-                                                    {% endif %}
 
                                                 </tr>
                                             </tbody>
@@ -956,7 +963,16 @@
         <!-- /.content-wrapper -->
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-        
+        <script>
+            function showRejectNote(note) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Rejected Reason',
+                    text: note || 'No reason provided',  // Show message if note is empty
+                    confirmButtonColor: '#d33'
+                });
+            }
+            </script>
         <script>
             // Add event listener to the button
             document.getElementById('activate-btn').addEventListener('click', function() {
