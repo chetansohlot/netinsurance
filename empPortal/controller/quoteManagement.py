@@ -544,11 +544,17 @@ def downloadQuotationPdf(request, cus_id):
     wkhtml_path = os.getenv('WKHTML_PATH', r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
     config = pdfkit.configuration(wkhtmltopdf=wkhtml_path)
 
-    # Fetch customer and vehicle details
+    products = [
+        {'id': 1, 'name': 'Motor'},
+        {'id': 2, 'name': 'Health'},
+        {'id': 3, 'name': 'Term'},
+    ]
+
+    members = Users.objects.filter(role_id=2, activation_status='1') if request.user.role_id == 1 else Users.objects.none()
+
     customer = get_object_or_404(QuotationCustomer, customer_id=cus_id)
     vehicle_info = VehicleInfo.objects.filter(customer_id=cus_id).first()
 
-    # Add-ons mapping
     ADDONS_MAP = {
         "1": "Zero Depreciation",
         "2": "Roadside Assistance",
@@ -557,15 +563,57 @@ def downloadQuotationPdf(request, cus_id):
     addons_list = vehicle_info.addons.split(",") if vehicle_info and vehicle_info.addons else []
     addon_names = [ADDONS_MAP.get(addon.strip(), "Unknown Add-on") for addon in addons_list]
 
-    # Data to pass to the template
+    INSURER_MAP = {
+        "1": "Bajaj Allianz",
+        "2": "Reliance General",
+        "3": "SBI General",
+        "4": "New India Assurance",
+        "5": "Oriental Insurance",
+        "6": "United India Insurance",
+        "7": "Future Generali",
+        "8": "IFFCO Tokio",
+        "9": "Cholamandalam MS",
+        "10": "Kotak Mahindra",
+    }
+    selected_policy_companies = vehicle_info.policy_companies.split(',') if vehicle_info and vehicle_info.policy_companies else []
+    selected_policy_companies_names = [INSURER_MAP[comp_id] for comp_id in selected_policy_companies if comp_id in INSURER_MAP]
+
+    plan_names = ["Comprehensive Plan A", "Comprehensive Secure", "Auto Secure Plan"]
+    premium_amounts = ["INR12,500", "INR11,800", "INR13,200"]
+    policy_types = ["Comprehensive", "Comprehensive", "Comprehensive"]
+    idv = ["INR5,00,000", "INR4,80,000", "INR5,20,000"]
+    ncb_discount = ["20%", "25%", "18%"]
+    own_damage_premium = ["INR7,500", "INR7,000", "INR8,000"]
+    third_party_premium = ["INR4,500", "INR4,800", "INR5,200"]
+    addons = ["Zero Dep, Roadside Assist", "Zero Dep, Engine Protect", "Zero Dep, Key Replacement"]
+    claim_ratio = ["95%", "93%", "97%"]
+    garage_network = ["5000+", "4500+", "5500+"]
+    tenure = ["1 Year", "1 Year", "1 Year"]
+    deductibles = ["INR1,000", "INR750", "INR1,500"]
+
     context = {
         "customer": customer,
         "vehicle_info": vehicle_info,
         "addon_names": addon_names,
-        "logo_url": request.build_absolute_uri(static('dist/img/logo2.png'))
+        "products": products,
+        "members": members,
+        "selected_policy_companies": selected_policy_companies_names,
+        "plan_names": plan_names,
+        "premium_amounts": premium_amounts,
+        "policy_types": policy_types,
+        "idv": idv,
+        "ncb_discount": ncb_discount,
+        "own_damage_premium": own_damage_premium,
+        "third_party_premium": third_party_premium,
+        "addons": addons,
+        "claim_ratio": claim_ratio,
+        "garage_network": garage_network,
+        "tenure": tenure,
+        "deductibles": deductibles,
+        "addons_map": ADDONS_MAP,
+        "logo_url": request.build_absolute_uri(static('dist/img/logo2.png')),
     }
 
-    # Render HTML template with context data
     html_content = render_to_string("quote-management/show-quotation-pdf.html", context)
 
     options = {
@@ -574,14 +622,13 @@ def downloadQuotationPdf(request, cus_id):
         'encoding': "UTF-8",
     }
 
-    # Generate PDF from HTML content
     pdf = pdfkit.from_string(html_content, False, configuration=config, options=options)
 
-    # Create HTTP response with PDF as an attachment
     response = HttpResponse(pdf, content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="quotation_{cus_id}.pdf"'
 
     return response
+
 
     
 def store(request):

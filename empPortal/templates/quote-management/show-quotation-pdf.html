@@ -55,7 +55,9 @@
   <thead>
     <tr>
       <td colspan="2">
+        <center>
           <img src="{{ logo_url }}" alt="" class="bill-header-logo">
+        </center>  
       </td>
     </tr>
     <tr>
@@ -127,6 +129,7 @@
   </thead>
 </table>
 
+{% load custom_filters %}
 
   <table border="0" cellpadding="0" cellspacing="0" class="w-100 table table-design table-bordered">
     <thead class="thead-bg">
@@ -139,123 +142,163 @@
     <tbody>
       <tr>
         <td class="table-thead-bg-light"><strong>Insurer Name</strong></td>
-        <td>ICICI Lombard</td>
-        <td>HDFC Ergo</td>
-        <td>TATA AIG</td>
+        {% for company in selected_policy_companies %}
+            {% if forloop.counter <= 3 %}
+                <td>{{ company }}</td>
+            {% endif %}
+        {% endfor %}
       </tr>
       <tr>
         <td class="table-thead-bg-light"><strong>Plan Name</strong></td>
-        <td>Comprehensive Plan A</td>
-        <td>Comprehensive Secure</td>
-        <td>Auto Secure Plan</td>
+        {% for company in selected_policy_companies %}
+            {% if forloop.counter <= 3 %}
+                <td>{{ plan_names|get_index:forloop.counter0 }}</td>
+            {% endif %}
+        {% endfor %}
       </tr>
       <tr>
         <td class="table-thead-bg-light"><strong>Premium Amount (INR)</strong></td>
-        <td>INR12,500</td>
-        <td>INR11,800</td>
-        <td>INR13,200</td>
+        {% for company in selected_policy_companies %}
+            {% if forloop.counter <= 3 %}
+                <td>{{ premium_amounts|get_index:forloop.counter0 }}</td>
+            {% endif %}
+        {% endfor %}
       </tr>
       <tr>
         <td class="table-thead-bg-light"><strong>Policy Type</strong></td>
-        <td>Comprehensive</td>
-        <td>Comprehensive</td>
-        <td>Comprehensive</td>
+        {% for company in selected_policy_companies %}
+            {% if forloop.counter <= 3 %}
+                <td>{{ policy_types|get_index:forloop.counter0 }}</td>
+            {% endif %}
+        {% endfor %}
       </tr>
       <tr>
         <td class="table-thead-bg-light"><strong>IDV (INR)</strong></td>
-        <td>INR5,00,000</td>
-        <td>INR4,80,000</td>
-        <td>INR5,20,000</td>
+        {% for company in selected_policy_companies %}
+            {% if forloop.counter <= 3 %}
+                <td>{{ idv|get_index:forloop.counter0 }}</td>
+            {% endif %}
+        {% endfor %}
       </tr>
       <tr>
         <td class="table-thead-bg-light"><strong>NCB Discount (%)</strong></td>
-        <td>20%</td>
-        <td>25%</td>
-        <td>18%</td>
+        {% for company in selected_policy_companies %}
+            {% if forloop.counter <= 3 %}
+                <td>{{ ncb_discount|get_index:forloop.counter0 }}</td>
+            {% endif %}
+        {% endfor %}
       </tr>
       <tr>
         <td class="table-thead-bg-light"><strong>Own Damage Premium (INR)</strong></td>
-        <td>INR 7,500</td>
-        <td>INR 7,000</td>
-        <td>INR 8,000</td>
+        {% for company in selected_policy_companies %}
+            {% if forloop.counter <= 3 %}
+                <td>{{ own_damage_premium|get_index:forloop.counter0 }}</td>
+            {% endif %}
+        {% endfor %}
       </tr>
       <tr>
         <td class="table-thead-bg-light"><strong>Third-Party Premium (INR)</strong></td>
-        <td>INR 4,500</td>
-        <td>INR 4,800</td>
-        <td>INR 5,200</td>
+        {% for company in selected_policy_companies %}
+            {% if forloop.counter <= 3 %}
+                <td>{{ third_party_premium|get_index:forloop.counter0 }}</td>
+            {% endif %}
+        {% endfor %}
       </tr>
       <tr>
         <td class="table-thead-bg-light"><strong>Personal Accident Cover (INR)</strong></td>
-        <td>INR 15,00,000</td>
-        <td>INR 15,00,000</td>
-        <td>INR 15,00,000</td>
+        {% for company in selected_policy_companies %}
+            {% if forloop.counter <= 3 %}
+                <td>{{ addons|get_index:forloop.counter0 }}</td>
+            {% endif %}
+        {% endfor %}
       </tr>
       <tr>
         <td class="table-thead-bg-light"><strong>Add-Ons Included</strong></td>
-        <td>Zero Dep, Roadside Assist, Engine Protect</td>
-        <td>Zero Dep, Engine Protect</td>
-        <td>Zero Dep, Consumables Cover, Key Replacement</td>
+        {% for company in selected_policy_companies %}
+            {% if forloop.counter <= 3 %}
+                <td>{{ addons|get_index:forloop.counter0 }}</td>
+            {% endif %}
+        {% endfor %}
       </tr>
       <tr>
         <td class="table-thead-bg-light"><strong>Claim Settlement Ratio (%)</strong></td>
-        <td>95%</td>
-        <td>93%</td>
-        <td>97%</td>
+        {% for company in selected_policy_companies %}
+            {% if forloop.counter <= 3 %}
+                <td>{{ claim_ratio|get_index:forloop.counter0 }}</td>
+            {% endif %}
+        {% endfor %}
       </tr>
       <tr>
         <td class="table-thead-bg-light"><strong>Cashless Garage Network</strong></td>
-        <td>5000+</td>
-        <td>4500+</td>
-        <td>5500+</td>
+        {% for company in selected_policy_companies %}
+            {% if forloop.counter <= 3 %}
+                <td>{{ garage_network|get_index:forloop.counter0 }}</td>
+            {% endif %}
+        {% endfor %}
       </tr>
       <tr>
         <td class="table-thead-bg-light"><strong>Policy Tenure</strong></td>
-        <td>1 Year</td>
-        <td>1 Year</td>
-        <td>1 Year</td>
+        {% for company in selected_policy_companies %}
+            {% if forloop.counter <= 3 %}
+                <td>{{ tenure|get_index:forloop.counter0 }}</td>
+            {% endif %}
+        {% endfor %}
       </tr>
       <tr>
         <td class="table-thead-bg-light"><strong>Roadside Assistance</strong></td>
-        <td>Yes</td>
-        <td>Yes</td>
-        <td>Yes</td>
+        {% for company in selected_policy_companies %}
+            {% if forloop.counter <= 3 %}
+                <td>{{ deductibles|get_index:forloop.counter0 }}</td>
+            {% endif %}
+        {% endfor %}
       </tr>
       <tr>
         <td class="table-thead-bg-light"><strong>NCB Protection</strong></td>
-        <td>Yes</td>
-        <td>Yes</td>
-        <td>Yes</td>
+        {% for company in selected_policy_companies %}
+            {% if forloop.counter <= 3 %}
+                <td>{{ deductibles|get_index:forloop.counter0 }}</td>
+            {% endif %}
+        {% endfor %}
       </tr>
       <tr>
         <td class="table-thead-bg-light"><strong>Engine Protect Cover</strong></td>
-        <td>Yes</td>
-        <td>Yes</td>
-        <td>No</td>
+        {% for company in selected_policy_companies %}
+            {% if forloop.counter <= 3 %}
+                <td>{{ deductibles|get_index:forloop.counter0 }}</td>
+            {% endif %}
+        {% endfor %}
       </tr>
       <tr>
         <td class="table-thead-bg-light"><strong>Consumables Cover</strong></td>
-        <td>Yes</td>
-        <td>No</td>
-        <td>Yes</td>
+        {% for company in selected_policy_companies %}
+            {% if forloop.counter <= 3 %}
+                <td>{{ deductibles|get_index:forloop.counter0 }}</td>
+            {% endif %}
+        {% endfor %}
       </tr>
       <tr>
         <td class="table-thead-bg-light"><strong>Key Replacement Cover</strong></td>
-        <td>Yes</td>
-        <td>Yes</td>
-        <td>Yes</td>
+        {% for company in selected_policy_companies %}
+            {% if forloop.counter <= 3 %}
+                <td>{{ deductibles|get_index:forloop.counter0 }}</td>
+            {% endif %}
+        {% endfor %}
       </tr>
       <tr>
         <td class="table-thead-bg-light"><strong>Deductibles (INR)</strong></td>
-        <td>INR 1,000</td>
-        <td>INR 750</td>
-        <td>INR 1,500</td>
+        {% for company in selected_policy_companies %}
+            {% if forloop.counter <= 3 %}
+                <td>{{ deductibles|get_index:forloop.counter0 }}</td>
+            {% endif %}
+        {% endfor %}
       </tr>
       <tr>
         <td class="table-thead-bg-light"><strong>Additional Benefits</strong></td>
-        <td>Free Vehicle Pickup, Instant Claim Approval</td>
-        <td>Discount on Long-Term Policy</td>
-        <td>24/7 Claim Assistance, Fastest Settlement</td>
+        {% for company in selected_policy_companies %}
+            {% if forloop.counter <= 3 %}
+                <td>{{ deductibles|get_index:forloop.counter0 }}</td>
+            {% endif %}
+        {% endfor %}
       </tr>
     </tbody>
   </table>
