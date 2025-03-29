@@ -992,60 +992,93 @@
     
     {% include 'footer-script.html' %}
     <script>
+        
         function updateStatus(docType, status, docId) {
-            // Show SweetAlert confirmation before updating status
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You are about to update the document status.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, update it!',
-                cancelButtonText: 'Cancel',
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    fetch('/update-doc-status/', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': '{{ csrf_token }}'
-                        },
-                        body: JSON.stringify({ docType: docType, status: status, docId: docId })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            // Show SweetAlert success message
-                            Swal.fire({
-                                title: 'Status Updated!',
-                                text: 'The document status has been updated successfully.',
-                                icon: 'success',
-                                showConfirmButton: false,
-                                timer: 2000 // Auto close after 2 seconds
-                            });
-    
-                            // Refresh the page after a short delay
-                            setTimeout(function () {
-                                location.reload();
-                            }, 2000);
-                        } else {
-                            Swal.fire({
-                                title: 'Error!',
-                                text: 'Failed to update the document status.',
-                                icon: 'error'
-                            });
+            if (status === "Rejected") {
+                // Show a prompt for rejection note
+                Swal.fire({
+                    title: 'Reject Document',
+                    input: 'textarea',
+                    inputLabel: 'Reason for rejection',
+                    inputPlaceholder: 'Enter rejection reason here...',
+                    inputAttributes: {
+                        'aria-label': 'Rejection note'
+                    },
+                    showCancelButton: true,
+                    confirmButtonText: 'Reject',
+                    cancelButtonText: 'Cancel',
+                    preConfirm: (rejectNote) => {
+                        if (!rejectNote) {
+                            Swal.showValidationMessage('Rejection note is required');
                         }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        Swal.fire({
-                            title: 'Error!',
-                            text: 'Something went wrong. Please try again.',
-                            icon: 'error'
-                        });
+                        return rejectNote;
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        sendStatusUpdate(docType, status, docId, result.value);
+                    }
+                });
+            } else {
+                // Proceed with normal status update
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You are about to update the document status.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, update it!',
+                    cancelButtonText: 'Cancel',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        sendStatusUpdate(docType, status, docId, null);
+                    }
+                });
+            }
+        }
+        
+        function sendStatusUpdate(docType, status, docId, rejectNote) {
+            fetch('/update-doc-status/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    docType: docType,
+                    status: status,
+                    docId: docId,
+                    rejectNote: rejectNote  // Send rejection note if available
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Status Updated!',
+                        text: data.message,
+                        icon: 'success',
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+        
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: data.error || 'Failed to update the document status.',
+                        icon: 'error'
                     });
                 }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Something went wrong. Please try again.',
+                    icon: 'error'
+                });
             });
         }
+        
     </script>
     <script>
         document.getElementById('branch').addEventListener('change', function() {

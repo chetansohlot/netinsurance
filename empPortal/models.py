@@ -383,6 +383,7 @@ class DocumentUpload(models.Model):
         null=True,
         blank=True
     )
+    aadhaar_card_front_reject_note = models.CharField(max_length=255, null=True, blank=True)
     aadhaar_card_back = models.FileField(upload_to='documents/')
     aadhaar_card_back_updated_at = models.DateTimeField(null=True, blank=True)
     aadhaar_card_back_status = models.CharField(
@@ -392,6 +393,7 @@ class DocumentUpload(models.Model):
         null=True,
         blank=True
     )
+    aadhaar_card_back_reject_note = models.CharField(max_length=255, null=True, blank=True)
     pan_number = models.CharField(max_length=10, unique=True)
     upload_pan = models.FileField(upload_to='documents/')
     upload_pan_updated_at = models.DateTimeField(null=True, blank=True)
@@ -402,6 +404,7 @@ class DocumentUpload(models.Model):
         null=True,
         blank=True
     )
+    upload_pan_reject_note = models.CharField(max_length=255, null=True, blank=True)
     cheque_number = models.CharField(max_length=20, unique=True)
     upload_cheque = models.FileField(upload_to='documents/')
     upload_cheque_updated_at = models.DateTimeField(null=True, blank=True)
@@ -412,6 +415,7 @@ class DocumentUpload(models.Model):
         null=True,
         blank=True
     )
+    upload_cheque_reject_note = models.CharField(max_length=255, null=True, blank=True)
     role_no = models.CharField(max_length=20, null=True, blank=True)
     tenth_marksheet = models.FileField(upload_to='documents/')
     tenth_marksheet_updated_at = models.DateTimeField(null=True, blank=True)
@@ -422,6 +426,7 @@ class DocumentUpload(models.Model):
         null=True,
         blank=True
     )
+    tenth_marksheet_reject_note = models.CharField(max_length=255, null=True, blank=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

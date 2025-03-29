@@ -397,42 +397,44 @@ def storeOrUpdateBankDetails(request):
     return redirect('my-account')
 
 
+
 def update_doc_status(request):
     if request.method == "POST":
-        
         try:
-            data = json.loads(request.body)  # Correct way to get JSON data
+            data = json.loads(request.body)
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON data"}, status=400)
-        
+
         doc_type = data.get("docType")
         status = data.get("status")
         doc_id = data.get("docId")
+        reject_note = data.get("rejectNote", "")
 
-        # Validate inputs
         if not doc_type or not status or not doc_id:
             return JsonResponse({"error": "Missing required parameters"}, status=400)
 
-        # Check if status is valid
         valid_statuses = ["Pending", "Approved", "Rejected"]
         if status not in valid_statuses:
             return JsonResponse({"error": "Invalid status"}, status=400)
 
-        # Fetch the document record
         document = get_object_or_404(DocumentUpload, id=doc_id)
 
-        # Check if the requested document type exists in the model
         status_field = f"{doc_type}_status"
         updated_at_field = f"{doc_type}_updated_at"
+        reject_note_field = f"{doc_type}_reject_note"
 
         if not hasattr(document, status_field) or not hasattr(document, updated_at_field):
             return JsonResponse({"error": "Invalid document type"}, status=400)
 
-        # Update status and timestamp
         setattr(document, status_field, status)
         setattr(document, updated_at_field, now())
+
+        # Store rejection note if status is Rejected
+        if status == "Rejected" and hasattr(document, reject_note_field):
+            setattr(document, reject_note_field, reject_note)
+
         document.save()
 
         return JsonResponse({"success": True, "message": f"Status updated to {status}!"})
-    
+
     return JsonResponse({"error": "Invalid request method"}, status=405)
