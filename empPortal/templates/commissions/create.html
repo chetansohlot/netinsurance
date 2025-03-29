@@ -41,16 +41,6 @@ Add Commission
                     <form autocomplete="off" id="myForm" name="saveCommission" action="{% url 'store-commission' %}" method="post">
                       {% csrf_token %}
                       
-                      <!-- Display error messages -->
-                      {% if messages %}
-                          <div class="alert alert-danger">
-                              <ul>
-                                  {% for message in messages %}
-                                      <li>{{ message }}</li>
-                                  {% endfor %}
-                              </ul>
-                          </div>
-                      {% endif %}
                   
                       <div class="row">
                           <!-- Member -->

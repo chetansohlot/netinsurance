@@ -25,17 +25,6 @@
                         <form autocomplete="off" id="myForm" action="{% url 'store-commission' %}" method="post">
                             {% csrf_token %}
 
-                            <!-- Error Messages -->
-                            {% if messages %}
-                                <div class="alert alert-danger">
-                                    <ul>
-                                        {% for message in messages %}
-                                            <li>{{ message }}</li>
-                                        {% endfor %}
-                                    </ul>
-                                </div>
-                            {% endif %}
-
                             <div class="row">
                                 <div class="form-group col-md-6">
                                     <label class="form-lbl" for="member">Member</label>

@@ -43,13 +43,7 @@ Policy Management
               <div class="col-sm-12">  
                 <div class="card box-shadow-none p-md-5 p-3">
                   <div class="card-body px-0 pb-0 pt-0">
-                    {% if messages %}
-                      <div class="success success-danger">
-                        {% for message in messages %}
-                          <p>{{ message }}</p>
-                        {% endfor %}
-                      </div>
-                    {% endif %}
+                    
                     <form autocomplete="off" id="myForm" name="browsePolicy" action="{% url 'bulk-browser-policy' %}" method="post" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="row">
