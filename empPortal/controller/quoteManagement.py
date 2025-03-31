@@ -9,7 +9,6 @@ from django.http import JsonResponse
 import pdfkit
 import os
 from django.conf import settings
-import os
 from dotenv import load_dotenv
 from django.templatetags.static import static  # ✅ Import static
 from django.http import HttpResponse
@@ -18,7 +17,13 @@ from django.forms.models import model_to_dict
 import json
 from datetime import date
 import requests
-from django.conf import settings
+from ..utils import store_log
+from django.core.mail import EmailMessage
+import logging
+
+logger = logging.getLogger(__name__)
+
+
 
 def dictfetchall(cursor):
     "Returns all rows from a cursor as a dict"
@@ -314,6 +319,15 @@ def fetch_vehicle_info(request):
                     registration_number=registration_number,
                     vehicle_details=json.dumps(vehicle_data)
                 )
+
+                # Log only when API is hit
+                store_log(
+                    log_type="INFO",
+                    log_for="VAHAN_API",
+                    message=f"Vahan API called for registration number {registration_number}",
+                    user_id=request.user.id if request.user.is_authenticated else None,
+                    ip_address=request.META.get("REMOTE_ADDR", "")
+                )
         
         vehicle_data = model_to_dict(vehicle_detail) if vehicle_detail else {}
         vehicle_json = {}
@@ -335,7 +349,6 @@ def fetch_vehicle_info(request):
         })
     
     return redirect("quote-management-create")
-
 
 def createVehicleInfo(request, cus_id):
     if not request.user.is_authenticated:
@@ -363,10 +376,9 @@ def createVehicleInfo(request, cus_id):
             'members': members,
             'cus_id': cus_id,
             'customer': customer,
-            'vehicle_info': vehicle_info,  # Existing data
-            'selected_policy_companies': selected_policy_companies  # List for template
+            'vehicle_info': vehicle_info,
+            'selected_policy_companies': selected_policy_companies
         })
-
 
     elif request.method == "POST":
         def parse_date(date_str):
@@ -377,7 +389,7 @@ def createVehicleInfo(request, cus_id):
                 messages.error(request, "Invalid date format.")
                 return None
 
-        # Extract and validate form data
+        # Extract and validate form data (existing fields)
         registration_number = request.POST.get("registration_number", "").strip()
         registration_date = parse_date(request.POST.get("registration_date", ""))
         vehicle_type = request.POST.get("vehicle_type", "").strip()
@@ -396,9 +408,30 @@ def createVehicleInfo(request, cus_id):
         policy_type = request.POST.get("policy_type", "").strip()
         policy_duration = request.POST.get("policy_duration", "").strip()
         addons = request.POST.get("addons", "").strip()
-        
-        policy_companies = request.POST.getlist("policy_companies[]")  # Returns a list
-        policy_companies_str = ",".join(policy_companies)  # Convert list to string
+        policy_companies = request.POST.getlist("policy_companies[]")
+        policy_companies_str = ",".join(policy_companies)
+
+        # Extract new fields for Owner Details & Information
+        owner_name = request.POST.get("owner_name", "").strip()
+        father_name = request.POST.get("father_name", "").strip()
+        state_code = request.POST.get("state_code", "").strip()
+        location = request.POST.get("location", "").strip()
+        vehicle_category = request.POST.get("vehicle_category", "").strip()
+        vehicle_class_description = request.POST.get("vehicle_class_description", "").strip()
+        body_type_description = request.POST.get("body_type_description", "").strip()
+        vehicle_color = request.POST.get("vehicle_color", "").strip()
+        vehicle_cubic_capacity = request.POST.get("vehicle_cubic_capacity", "").strip()
+        vehicle_gross_weight = request.POST.get("vehicle_gross_weight", "").strip()
+        vehicle_seating_capacity = request.POST.get("vehicle_seating_capacity", "").strip()
+        vehicle_fuel_description = request.POST.get("vehicle_fuel_description", "").strip()
+        vehicle_owner_number = request.POST.get("vehicle_owner_number", "").strip()
+        rc_expiry_date = parse_date(request.POST.get("rc_expiry_date", ""))
+        rc_pucc_expiry_date = parse_date(request.POST.get("rc_pucc_expiry_date", ""))
+
+        # Extract new fields for Insurer Details & Information
+        insurance_company = request.POST.get("insurance_company", "").strip()
+        insurance_expiry_date = parse_date(request.POST.get("insurance_expiry_date", ""))
+        insurance_policy_number = request.POST.get("insurance_policy_number", "").strip()
 
         if vehicle_info:
             # Update existing vehicle info
@@ -420,7 +453,27 @@ def createVehicleInfo(request, cus_id):
             vehicle_info.policy_type = policy_type
             vehicle_info.policy_duration = policy_duration
             vehicle_info.addons = addons
-            vehicle_info.policy_companies = policy_companies_str 
+            vehicle_info.policy_companies = policy_companies_str
+            
+            # Update new fields
+            vehicle_info.owner_name = owner_name
+            vehicle_info.father_name = father_name
+            vehicle_info.state_code = state_code
+            vehicle_info.location = location
+            vehicle_info.vehicle_category = vehicle_category
+            vehicle_info.vehicle_class_description = vehicle_class_description
+            vehicle_info.body_type_description = body_type_description
+            vehicle_info.vehicle_color = vehicle_color
+            vehicle_info.vehicle_cubic_capacity = vehicle_cubic_capacity
+            vehicle_info.vehicle_gross_weight = vehicle_gross_weight
+            vehicle_info.vehicle_seating_capacity = vehicle_seating_capacity
+            vehicle_info.vehicle_fuel_description = vehicle_fuel_description
+            vehicle_info.vehicle_owner_number = vehicle_owner_number
+            vehicle_info.rc_expiry_date = rc_expiry_date
+            vehicle_info.rc_pucc_expiry_date = rc_pucc_expiry_date
+            vehicle_info.insurance_company = insurance_company
+            vehicle_info.insurance_expiry_date = insurance_expiry_date
+            vehicle_info.insurance_policy_number = insurance_policy_number
 
             vehicle_info.active = True
             vehicle_info.save()
@@ -448,11 +501,29 @@ def createVehicleInfo(request, cus_id):
                 policy_duration=policy_duration,
                 addons=addons,
                 policy_companies=policy_companies_str,
+                # New fields
+                owner_name=owner_name,
+                father_name=father_name,
+                state_code=state_code,
+                location=location,
+                vehicle_category=vehicle_category,
+                vehicle_class_description=vehicle_class_description,
+                body_type_description=body_type_description,
+                vehicle_color=vehicle_color,
+                vehicle_cubic_capacity=vehicle_cubic_capacity,
+                vehicle_gross_weight=vehicle_gross_weight,
+                vehicle_seating_capacity=vehicle_seating_capacity,
+                vehicle_fuel_description=vehicle_fuel_description,
+                vehicle_owner_number=vehicle_owner_number,
+                rc_expiry_date=rc_expiry_date,
+                rc_pucc_expiry_date=rc_pucc_expiry_date,
+                insurance_company=insurance_company,
+                insurance_expiry_date=insurance_expiry_date,
+                insurance_policy_number=insurance_policy_number,
                 active=True,
             )
             messages.success(request, "Vehicle information added successfully!")
         
-
         return redirect(reverse("show-quotation-info", args=[cus_id]))
 
 
@@ -630,6 +701,113 @@ def downloadQuotationPdf(request, cus_id):
     return response
 
 
+def sendQuotationPdfEmail(request, cus_id):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    customer = get_object_or_404(QuotationCustomer, customer_id=cus_id)
+    recipient_email = customer.email_address
+
+    # Generate PDF content using the existing function
+    wkhtml_path = os.getenv('WKHTML_PATH', r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
+    config = pdfkit.configuration(wkhtmltopdf=wkhtml_path)
+
+    products = [
+        {'id': 1, 'name': 'Motor'},
+        {'id': 2, 'name': 'Health'},
+        {'id': 3, 'name': 'Term'},
+    ]
+
+    members = Users.objects.filter(role_id=2, activation_status='1') if request.user.role_id == 1 else Users.objects.none()
+
+    vehicle_info = VehicleInfo.objects.filter(customer_id=cus_id).first()
+
+    ADDONS_MAP = {
+        "1": "Zero Depreciation",
+        "2": "Roadside Assistance",
+        "3": "Engine Protection"
+    }
+    addons_list = vehicle_info.addons.split(",") if vehicle_info and vehicle_info.addons else []
+    addon_names = [ADDONS_MAP.get(addon.strip(), "Unknown Add-on") for addon in addons_list]
+
+    INSURER_MAP = {
+        "1": "Bajaj Allianz",
+        "2": "Reliance General",
+        "3": "SBI General",
+        "4": "New India Assurance",
+        "5": "Oriental Insurance",
+        "6": "United India Insurance",
+        "7": "Future Generali",
+        "8": "IFFCO Tokio",
+        "9": "Cholamandalam MS",
+        "10": "Kotak Mahindra",
+    }
+    selected_policy_companies = vehicle_info.policy_companies.split(',') if vehicle_info and vehicle_info.policy_companies else []
+    selected_policy_companies_names = [INSURER_MAP[comp_id] for comp_id in selected_policy_companies if comp_id in INSURER_MAP]
+
+    plan_names = ["Comprehensive Plan A", "Comprehensive Secure", "Auto Secure Plan"]
+    premium_amounts = ["INR12,500", "INR11,800", "INR13,200"]
+    policy_types = ["Comprehensive", "Comprehensive", "Comprehensive"]
+    idv = ["INR5,00,000", "INR4,80,000", "INR5,20,000"]
+    ncb_discount = ["20%", "25%", "18%"]
+    own_damage_premium = ["INR7,500", "INR7,000", "INR8,000"]
+    third_party_premium = ["INR4,500", "INR4,800", "INR5,200"]
+    addons = ["Zero Dep, Roadside Assist", "Zero Dep, Engine Protect", "Zero Dep, Key Replacement"]
+    claim_ratio = ["95%", "93%", "97%"]
+    garage_network = ["5000+", "4500+", "5500+"]
+    tenure = ["1 Year", "1 Year", "1 Year"]
+    deductibles = ["INR1,000", "INR750", "INR1,500"]
+
+    context = {
+        "customer": customer,
+        "vehicle_info": vehicle_info,
+        "addon_names": addon_names,
+        "products": products,
+        "members": members,
+        "selected_policy_companies": selected_policy_companies_names,
+        "plan_names": plan_names,
+        "premium_amounts": premium_amounts,
+        "policy_types": policy_types,
+        "idv": idv,
+        "ncb_discount": ncb_discount,
+        "own_damage_premium": own_damage_premium,
+        "third_party_premium": third_party_premium,
+        "addons": addons,
+        "claim_ratio": claim_ratio,
+        "garage_network": garage_network,
+        "tenure": tenure,
+        "deductibles": deductibles,
+        "addons_map": ADDONS_MAP,
+        "logo_url": request.build_absolute_uri(static('dist/img/logo2.png')),
+    }
+
+    html_content = render_to_string("quote-management/show-quotation-pdf.html", context)
+
+    options = {
+        'enable-local-file-access': '',
+        'page-size': 'A4',
+        'encoding': "UTF-8",
+    }
+
+    pdf = pdfkit.from_string(html_content, False, configuration=config, options=options)
+
+    # Prepare email
+    # Use the correct attribute for the customer's name.  It's likely to be 'customer.name'
+    subject = f"Quotation for {customer.name_as_per_pan}"  # Change this line
+    from_email = settings.DEFAULT_FROM_EMAIL
+    recipient_list = [recipient_email]
+
+    email = EmailMessage(subject, "Please find your quotation attached.", from_email, recipient_list)
+    email.attach(f"quotation_{cus_id}.pdf", pdf, 'application/pdf')
+
+    try:
+        email.send()
+        messages.success(request, "Quotation sent successfully!")
+    except Exception as e:
+        logger.error(f"Error sending quotation email: {e}")
+        messages.error(request, "Failed to send quotation email.")
+
+    return redirect('show-quotation-info', cus_id=cus_id)
     
 def store(request):
     if not request.user.is_authenticated:

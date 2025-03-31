@@ -2,7 +2,13 @@ import builtins
 from pprint import pprint
 import requests
 from django.conf import settings
+from datetime import datetime
+from django.utils.timezone import now
+from django.db import models, connection
+import pytz
+IST = pytz.timezone("Asia/Kolkata")
 
+ist_now = now().astimezone(IST)
 def dd(*args):
     """Dump and Debug - Prints values but does NOT stop execution."""
     for arg in args:
@@ -11,17 +17,6 @@ def dd(*args):
 
 # Register `dd()` globally
 builtins.dd = dd
-
-
-
-
-# utils.py
-
-
-# utils.py
-import requests
-from django.conf import settings
-
 
 def send_sms_post(number, message):
     """
@@ -47,3 +42,20 @@ def send_sms_post(number, message):
         return response.json()
     except requests.exceptions.JSONDecodeError:
         return {"error": "Invalid response", "response_text": response.text}
+
+class LogType(models.TextChoices):
+    INFO = "INFO", "Info"
+    WARNING = "WARNING", "Warning"
+    ERROR = "ERROR", "Error"
+    DEBUG = "DEBUG", "Debug"
+    AUDIT = "AUDIT", "Audit"
+    SECURITY = "SECURITY", "Security"
+    OTHER = "OTHER", "Other"
+
+def store_log(log_type, log_for, message, user_id=None, ip_address=None):
+    
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            INSERT INTO logs (log_type, log_for, message, user_id, ip_address, created_at, updated_at)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """, (log_type, log_for, message, user_id, ip_address, ist_now, ist_now))

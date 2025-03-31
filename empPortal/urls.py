@@ -15,6 +15,7 @@ motor_patterns = [
     path('quote-management/<str:customer_id>/', quoteManagement.create_or_edit, name='quote-management-edit'),
     path('quote-management/create-quote-vehicle-info/<str:cus_id>/', quoteManagement.createVehicleInfo, name='create-vehicle-info'),
     path('quote-management/show-quotation-info/<str:cus_id>/', quoteManagement.showQuotation, name='show-quotation-info'),
+    path('send-quotation-email/<str:cus_id>/', quoteManagement.sendQuotationPdfEmail, name='send-quotation-email'),
 ]
 
 health_patterns = [

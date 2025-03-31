@@ -69,6 +69,8 @@ class QuotationVehicleDetail(models.Model):
     def __str__(self):
         return f"Vehicle {self.registration_number or 'N/A'}"
 
+from django.db import models
+from django.utils.timezone import now
 
 class VehicleInfo(models.Model):
     customer_id = models.CharField(max_length=20, null=True, blank=True)  # Nullable as per SQL table
@@ -79,7 +81,6 @@ class VehicleInfo(models.Model):
     model = models.CharField(max_length=50, null=True, blank=True)
     variant = models.CharField(max_length=50, null=True, blank=True)
     year_of_manufacture = models.IntegerField(null=True, blank=True)
-    registration_date = models.DateField(null=True, blank=True)
     registration_state = models.CharField(max_length=50, null=True, blank=True)
     registration_city = models.CharField(max_length=50, null=True, blank=True)
     chassis_number = models.CharField(max_length=50, null=True, blank=True)
@@ -92,6 +93,27 @@ class VehicleInfo(models.Model):
     policy_duration = models.CharField(max_length=50, null=True, blank=True)
     policy_companies = models.CharField(max_length=50, null=True, blank=True)
     addons = models.CharField(max_length=50, null=True, blank=True)
+
+    # Additional fields from your request
+    owner_name = models.CharField(max_length=255, null=True, blank=True)
+    father_name = models.CharField(max_length=255, null=True, blank=True)
+    state_code = models.CharField(max_length=20, null=True, blank=True)
+    location = models.CharField(max_length=255, null=True, blank=True)
+    vehicle_category = models.CharField(max_length=100, null=True, blank=True)
+    vehicle_class_description = models.CharField(max_length=100, null=True, blank=True)
+    body_type_description = models.CharField(max_length=100, null=True, blank=True)
+    vehicle_color = models.CharField(max_length=50, null=True, blank=True)
+    vehicle_cubic_capacity = models.CharField(max_length=20, null=True, blank=True)
+    vehicle_gross_weight = models.CharField(max_length=20, null=True, blank=True)
+    vehicle_seating_capacity = models.CharField(max_length=20, null=True, blank=True)
+    vehicle_fuel_description = models.CharField(max_length=50, null=True, blank=True)
+    vehicle_owner_number = models.CharField(max_length=20, null=True, blank=True)
+    rc_expiry_date = models.DateField(null=True, blank=True)
+    rc_pucc_expiry_date = models.DateField(null=True, blank=True)
+    insurance_company = models.CharField(max_length=255, null=True, blank=True)
+    insurance_expiry_date = models.DateField(null=True, blank=True)
+    insurance_policy_number = models.CharField(max_length=255, null=True, blank=True)
+
     active = models.BooleanField(default=True)  # 1 for active, 0 for inactive
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -101,7 +123,6 @@ class VehicleInfo(models.Model):
 
     def __str__(self):
         return f"VehicleInfo {self.registration_number} - {self.customer_id}"
-
 
 
 
