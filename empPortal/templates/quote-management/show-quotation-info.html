@@ -254,18 +254,21 @@
                     </div>
                 </form>
                 
-<script>
-    document.getElementById('shareForm').addEventListener('submit', function(event) {
-        const emailCheckbox = document.getElementById('email');
-        const customerId = "{{ customer.customer_id }}"; // Get customer ID
-    
-        if (emailCheckbox.checked) {
-            event.preventDefault();  // Prevent form submission
-            window.location.href = "{% url 'send-quotation-email' cus_id=customer.customer_id %}";
-        }
-        // Add logic for WhatsApp and SMS if needed.
-    });
-    </script>
+                <script>
+                    document.getElementById('shareForm').addEventListener('submit', function(event) {
+                        const emailCheckbox = document.getElementById('email');
+                        const customerId = "{{ customer.customer_id }}"; // Get customer ID
+                    
+                        // Show the loader
+                        document.getElementById('loader').style.display = 'block';
+                
+                        if (emailCheckbox.checked) {
+                            event.preventDefault();  // Prevent form submission
+                            window.location.href = "{% url 'send-quotation-email' cus_id=customer.customer_id %}";
+                        }
+                    });
+                </script>
+                
                 
                 
               </div>
