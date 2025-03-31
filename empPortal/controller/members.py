@@ -225,7 +225,7 @@ def activationPdf(request,user_id):
 
     context = {
         "user": customer,
-        "support_email": "support@elevate.com",
+        "support_email": "support@elevateinsurance.in",
         "company_website": "https://pos.elevateinsurance.in/",
         "sub_broker_test_url": "https://pos.elevateinsurance.in/",
         "training_material_url": training_pdf_path,
@@ -284,7 +284,7 @@ def activateUser(request, user_id):
             email_body = render_to_string('members/activation-email.html', {
                 'user': user,
                 "logo_url": request.build_absolute_uri(static('dist/img/logo2.png')),
-                "support_email": "support@elevate.com",
+                "support_email": "support@elevateinsurance.in",
                 "company_website": "https://pos.elevateinsurance.in/",
                 "sub_broker_test_url": "https://pos.elevateinsurance.in/",
                 "training_material_url": training_material_url,

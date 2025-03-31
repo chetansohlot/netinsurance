@@ -115,9 +115,7 @@
                                         <img src="{% static 'dist/img/svg/certificate2.svg' %}" alt="">
                                         <span class="list">Download Certificate</span>
                                         <span class="list-output">
-                                            <a href="{% url 'download-certificate' user_details.id %}" class="btn btn-primary btn-xs" download>
-                                                <i class="fa-solid fa-download"></i>
-                                            </a>
+                                            N/A
                                         </span>
                                     </li>
                                     <li>
@@ -139,43 +137,27 @@
                                     <li>
                                         <img src="{% static 'dist/img/svg/exam.svg' %}" alt="">
                                         <span class="list">Exam Score & Status</span>
-                                        <span class="list-output">87 (Qualified)</span>
+                                        <span class="list-output">N/A</span>
                                     </li>
                                     <li>
                                         <img src="{% static 'dist/img/svg/training-status.svg' %}" alt="">
                                         <span class="list">Training Status</span>
                                         <span class="list-output">
-                                            {% if user_details.training_started %}
-                                                Training Started on: Completed
-                                            {% else %}
-                                                Started
-                                            {% endif %}
+                                            N/A
                                         </span>
                                     </li>
                                     <li>
                                         <img src="{% static 'dist/img/svg/training-completed.svg' %}" alt="">
                                         <span class="list">Training Completed</span>
                                         <span class="list-output">
-                                            {% if user_details.training_completed %}
-                                                Yes ({{ user_details.training_completed_date }})
-                                            {% else %}
-                                                Yes
-                                            {% endif %}
+                                            N/A
                                         </span>
                                     </li>
                                     <li>
                                         <img src="{% static 'dist/img/svg/timer.svg' %}" alt="">
                                         <span class="list">Training Time Counter</span>
                                         <span class="list-output">
-                                            {% if user_details.training_started %}
-                                                {% if user_details.training_completed %}
-                                                    Completed in {{ user_details.training_duration }} hours
-                                                {% else %}
-                                                    {{ user_details.training_hours_completed }} / 48 hours
-                                                {% endif %}
-                                            {% else %}
-                                                0 Days Left
-                                            {% endif %}
+                                            N/A
                                         </span>
                                     </li>
                                 </ul>
