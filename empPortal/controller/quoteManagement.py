@@ -17,7 +17,7 @@ from django.forms.models import model_to_dict
 import json
 from datetime import date
 import requests
-from ..utils import store_log
+from ..utils import store_log, create_or_update_lead
 from django.core.mail import EmailMessage
 import logging
 
@@ -523,7 +523,8 @@ def createVehicleInfo(request, cus_id):
                 active=True,
             )
             messages.success(request, "Vehicle information added successfully!")
-        
+
+        create_or_update_lead(request, cus_id)
         return redirect(reverse("show-quotation-info", args=[cus_id]))
 
 

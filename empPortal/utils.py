@@ -8,7 +8,13 @@ from django.db import models, connection
 import pytz
 IST = pytz.timezone("Asia/Kolkata")
 
+from django.shortcuts import render,redirect, get_object_or_404
+from .models import Commission, Users, QuotationCustomer, Leads, VehicleInfo, QuotationVehicleDetail
+from django.contrib import messages
+from django.urls import reverse
+
 ist_now = now().astimezone(IST)
+
 def dd(*args):
     """Dump and Debug - Prints values but does NOT stop execution."""
     for arg in args:
@@ -51,6 +57,56 @@ class LogType(models.TextChoices):
     AUDIT = "AUDIT", "Audit"
     SECURITY = "SECURITY", "Security"
     OTHER = "OTHER", "Other"
+
+
+
+
+def create_or_update_lead(request, cus_id):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    # Fetch existing vehicle info
+    vehicle_info = VehicleInfo.objects.filter(customer_id=cus_id).first()
+    if not vehicle_info:
+        messages.error(request, "Vehicle information not found for this customer.")
+        return redirect(reverse("create-vehicle-info", args=[cus_id]))
+
+    # Fetch customer details
+    customer = get_object_or_404(QuotationCustomer, customer_id=cus_id)
+
+    # Check if a lead already exists with the same mobile number
+    existing_lead = Leads.objects.filter(mobile_number=customer.mobile_number).first()
+
+    # Prepare the data to store
+    lead_data = {
+        'customer_id': customer.customer_id,
+        'mobile_number': customer.mobile_number,
+        'email_address': customer.email_address,
+        'quote_date': customer.quote_date,
+        'name_as_per_pan': customer.name_as_per_pan,
+        'pan_card_number': customer.pan_card_number,
+        'date_of_birth': customer.date_of_birth,
+        'state': customer.state,
+        'city': customer.city,
+        'pincode': customer.pincode,
+        'address': customer.address,
+        'status': 'new',  # New lead status
+        'lead_type': 'MOTOR',  # You can customize based on the vehicle type
+    }
+
+    if existing_lead:
+        # Update the existing lead
+        for field, value in lead_data.items():
+            setattr(existing_lead, field, value)
+        existing_lead.save()
+        messages.success(request, "Lead updated successfully!")
+    else:
+        # Create a new lead
+        Leads.objects.create(**lead_data)
+        messages.success(request, "Lead created successfully!")
+
+    # Redirect to the quotation info page after processing the lead
+    return redirect(reverse("show-quotation-info", args=[cus_id]))
 
 def store_log(log_type, log_for, message, user_id=None, ip_address=None):
     
