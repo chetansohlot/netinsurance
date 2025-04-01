@@ -1056,7 +1056,7 @@
             $(document).ready(function() {
                 $("#uploadDocumentsForm").submit(function(event) {
                     event.preventDefault(); // Prevent default form submission
-            
+                    $("#loader").show();
                     let formData = new FormData(this); // Create FormData object
                     $(".error-message").remove(); // Remove previous error messages
             
@@ -1067,6 +1067,7 @@
                         processData: false,
                         contentType: false,
                         success: function(response) {
+                            $("#loader").hide();
                             if (response.reload) {
                                 // Show SweetAlert success message for 1 second, then reload
                                 Swal.fire({
@@ -1083,6 +1084,7 @@
                             }
                         },
                         error: function(xhr) {
+                            $("#loader").hide();
                             let errors = xhr.responseJSON?.errors || {};
                             $("#uploadStatus").html("<p class='text-danger'>File upload failed.</p>");
             
