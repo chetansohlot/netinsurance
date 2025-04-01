@@ -24,19 +24,42 @@ def dictfetchall(cursor):
     columns = [col[0] for col in cursor.description]
     return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
+
+
 def index(request):
     if not request.user.is_authenticated:
         return redirect('login')
-    
+
+    per_page = request.GET.get('per_page', 10)
+    search_field = request.GET.get('search_field', '')  # Field to search
+    search_query = request.GET.get('search_query', '')  # Search value
+
+    try:
+        per_page = int(per_page)
+    except ValueError:
+        per_page = 10  # Default to 10 if invalid value is given
+
     branches = Branch.objects.all().order_by('-created_at')
+
+    # Apply filtering
+    if search_field and search_query:
+        filter_args = {f"{search_field}__icontains": search_query}
+        branches = branches.filter(**filter_args)
+
     total_count = branches.count()
 
-    # Pagination (10 branches per page)
-    paginator = Paginator(branches, 10)
+    # Pagination
+    paginator = Paginator(branches, per_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    return render(request, 'branches/index.html', {'page_obj': page_obj, 'total_count': total_count})
+    return render(request, 'branches/index.html', {
+        'page_obj': page_obj, 
+        'total_count': total_count,
+        'search_field': search_field,
+        'search_query': search_query,
+        'per_page': per_page,
+    })
 
 
 def create_or_edit(request, branch_id=None):

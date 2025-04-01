@@ -19,26 +19,48 @@ import json
 from django.utils.timezone import now
 from django.core.paginator import Paginator
 import helpers  
+from django.core.paginator import Paginator
 
 def dictfetchall(cursor):
     "Returns all rows from a cursor as a dict"
     columns = [col[0] for col in cursor.description]
     return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
+
+
 def index(request):
     if not request.user.is_authenticated:
         return redirect('login')
-        
+
+    per_page = request.GET.get('per_page', 10)
+    search_field = request.GET.get('search_field', '')  # Field to search
+    search_query = request.GET.get('search_query', '')  # Search value
+
+    try:
+        per_page = int(per_page)
+    except ValueError:
+        per_page = 10  # Default to 10 if invalid value is given
+
     franchises = Franchises.objects.all().order_by('-created_at')
+
+    # Apply filtering
+    if search_field and search_query:
+        filter_args = {f"{search_field}__icontains": search_query}
+        franchises = franchises.filter(**filter_args)
+
     total_count = franchises.count()
-    # Pagination (10 franchises per page)
-    paginator = Paginator(franchises, 10)
+
+    # Pagination
+    paginator = Paginator(franchises, per_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
     return render(request, 'franchises/index.html', {
         'page_obj': page_obj, 
-        'total_count': total_count
+        'total_count': total_count,
+        'search_field': search_field,
+        'search_query': search_query,
+        'per_page': per_page,
     })
 
 

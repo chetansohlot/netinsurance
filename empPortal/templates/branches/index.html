@@ -113,18 +113,22 @@ Branches
                         <div class="row">
                           <div class="col-md-6">
                             <div class="table-search-area">
-                              <form>
-                                <select class="table-select-field">
-                                  <option value="">Branch Name</option>
-                                  <option value="">Mobile Number</option>
-                                  <option value="">Email ID</option>
-                                  <option value="">Contact No</option>
+                              <form method="GET" class="d-flex">
+                                <select class="table-select-field" name="search_field">
+                                    <option value="" disabled selected>Filter By</option>
+                                    <option value="branch_name" {% if search_field == "branch_name" %}selected{% endif %}>Branch Name</option>
+                                    <option value="mobile" {% if search_field == "mobile" %}selected{% endif %}>Mobile Number</option>
+                                    <option value="email" {% if search_field == "email" %}selected{% endif %}>Email ID</option>
+                                    <option value="contact_person" {% if search_field == "contact_person" %}selected{% endif %}>Contact Person</option>
                                 </select>
-                                <input type="text" name="" class="table-search-field" placeholder="Search">
+                            
+                                <input type="text" name="search_query" class="table-search-field" placeholder="Search" value="{{ search_query }}">
+                            
                                 <button type="submit" class="table-search-btn">
-                                  <img src="{% static 'dist/img/svg/search-icon.svg' %}" alt="">
+                                    <img src="{% static 'dist/img/svg/search-icon.svg' %}" alt="Search">
                                 </button>
-                              </form>
+                            </form>
+                            
                             </div>
                           </div>
                           <div class="col-md-6">
