@@ -32,6 +32,7 @@ import os
 import pdfkit
 from django.template.loader import render_to_string
 from pprint import pprint 
+from django.db.models import Q
 
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 
@@ -52,10 +53,25 @@ def members(request):
 
             # Filter and order users by updated_at descending
             users = Users.objects.filter(role_id__in=role_ids).order_by('-updated_at')
+            
+            total_agents = users.count()
+            active_agents = users.filter(activation_status='1').count()
+            deactive_agents = users.filter(
+                Q(activation_status='0') | Q(activation_status__isnull=True) | Q(activation_status='')
+            ).count()
+            pending_agents = 0
+
         else:
             users = Users.objects.none()  # Return an empty queryset for unauthorized users
+            total_agents = active_agents = deactive_agents = pending_agents = 0
         
-        return render(request, 'members/members.html', {'users': users})
+        return render(request, 'members/members.html', {
+            'users': users,
+            'total_agents': total_agents,
+            'active_agents': active_agents,
+            'deactive_agents': deactive_agents,
+            'pending_agents': pending_agents,
+        })
     else:
         return redirect('login')
 
