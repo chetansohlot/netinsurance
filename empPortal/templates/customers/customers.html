@@ -115,19 +115,20 @@ Customers
                         <div class="row">
                           <div class="col-md-6">
                             <div class="table-search-area">
-                              <form>
-                                <select class="table-select-field">
-                                  <option value="">Member Name</option>
-                                  <option value="">Employee ID</option>
-                                  <option value="">Mobile Number</option>
-                                  <option value="">Email ID</option>
-                                  <option value="">Membership ID</option>
+                              <form method="GET" class="d-flex">
+                                <select class="form-select" name="search_field">
+                                    <option value="" disabled selected>Filter By</option>
+                                    <option value="customer_id" {% if search_field == "customer_id" %}selected{% endif %}>Customer ID</option>
+                                    <option value="name" {% if search_field == "name" %}selected{% endif %}>Name</option>
+                                    <option value="email" {% if search_field == "email" %}selected{% endif %}>Email</option>
+                                    <option value="phone" {% if search_field == "phone" %}selected{% endif %}>Phone</option>
                                 </select>
-                                <input type="text" name="" class="table-search-field" placeholder="Search">
-                                <button type="submit" class="table-search-btn">
-                                  <img src="{% static 'dist/img/svg/search-icon.svg' %}" alt="">
-                                </button>
-                              </form>
+                            
+                                <input type="text" name="search_query" class="form-control mx-2" placeholder="Search" value="{{ search_query }}">
+                            
+                                <button type="submit" class="btn btn-primary">Search</button>
+                            </form>
+                            
                             </div>
                           </div>
                           <div class="col-md-6">
@@ -215,33 +216,55 @@ Customers
                         </div>
                       </div>
                     </div>
+                    
+                    
                     <div class="bottom-fix-pagination">
-                      <div class="d-flex">
-                        <ul class="pagination">
-                          <li class="page-item">
-                            <a class="page-link" href="#" aria-label="Previous">
-                              <span aria-hidden="true">&laquo;</span>
-                              <span class="sr-only">Previous</span>
-                            </a>
-                          </li>
-                          <li class="page-item"><a class="page-link" href="#">1</a></li>
-                          <li class="page-item"><a class="page-link" href="#">2</a></li>
-                          <li class="page-item"><a class="page-link" href="#">3</a></li>
-                          <li class="page-item">
-                            <a class="page-link" href="#" aria-label="Next">
-                              <span aria-hidden="true">&raquo;</span>
-                              <span class="sr-only">Next</span>
-                            </a>
-                          </li>
-                        </ul>
-                        <select class="pagination-dropdown">
-                          <option>10 / Page</option>
-                          <option>20 / Page</option>
-                          <option>50 / Page</option>
-                          <option>100 / Page</option>
-                        </select>
-                      </div>  
-                    </div>  
+                      <div class="d-flex justify-content-between align-items-center">
+                          <ul class="pagination">
+                              {% if page_obj.has_previous %}
+                                  <li class="page-item">
+                                      <a class="page-link" href="?page=1&per_page={{ per_page }}" aria-label="First">
+                                          <span aria-hidden="true">&laquo;&laquo;</span>
+                                      </a>
+                                  </li>
+                                  <li class="page-item">
+                                      <a class="page-link" href="?page={{ page_obj.previous_page_number }}&per_page={{ per_page }}" aria-label="Previous">
+                                          <span aria-hidden="true">&laquo;</span>
+                                      </a>
+                                  </li>
+                              {% endif %}
+              
+                              {% for num in page_obj.paginator.page_range %}
+                                  <li class="page-item {% if num == page_obj.number %}active{% endif %}">
+                                      <a class="page-link" href="?page={{ num }}&per_page={{ per_page }}">{{ num }}</a>
+                                  </li>
+                              {% endfor %}
+              
+                              {% if page_obj.has_next %}
+                                  <li class="page-item">
+                                      <a class="page-link" href="?page={{ page_obj.next_page_number }}&per_page={{ per_page }}" aria-label="Next">
+                                          <span aria-hidden="true">&raquo;</span>
+                                      </a>
+                                  </li>
+                                  <li class="page-item">
+                                      <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&per_page={{ per_page }}" aria-label="Last">
+                                          <span aria-hidden="true">&raquo;&raquo;</span>
+                                      </a>
+                                  </li>
+                              {% endif %}
+                          </ul>
+              
+                          <form method="GET" class="d-flex">
+                              <select class="pagination-dropdown form-select" name="per_page" onchange="this.form.submit()">
+                                  <option value="10" {% if per_page == 10 %}selected{% endif %}>10 / Page</option>
+                                  <option value="20" {% if per_page == 20 %}selected{% endif %}>20 / Page</option>
+                                  <option value="50" {% if per_page == 50 %}selected{% endif %}>50 / Page</option>
+                                  <option value="100" {% if per_page == 100 %}selected{% endif %}>100 / Page</option>
+                              </select>
+                              <input type="hidden" name="page" value="1">
+                          </form>
+                      </div>
+                  </div>
                   </div>
                 </div>
               </div>  
