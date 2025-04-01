@@ -44,11 +44,13 @@ def dictfetchall(cursor):
     columns = [col[0] for col in cursor.description]
     return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
-
 def index(request):
     if not request.user.is_authenticated:
         return redirect('login')
+
     per_page = request.GET.get('per_page', 10)
+    search_field = request.GET.get('search_field', '')  # Which field to search
+    search_query = request.GET.get('search_query', '')  # Search value
 
     try:
         per_page = int(per_page)
@@ -56,8 +58,15 @@ def index(request):
         per_page = 10  # Default to 10 if invalid value is given
 
     leads = Leads.objects.all().order_by('-created_at')
+
+    # Apply filtering if search_field and search_query are provided
+    if search_field and search_query:
+        filter_args = {f"{search_field}__icontains": search_query}
+        leads = leads.filter(**filter_args)
+
     total_leads = leads.count()
 
+    # Paginate results
     paginator = Paginator(leads, per_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -66,6 +75,8 @@ def index(request):
         'page_obj': page_obj,
         'total_leads': total_leads,
         'per_page': per_page,
+        'search_field': search_field,
+        'search_query': search_query,
     })
     
 def viewlead(request, lead_id):

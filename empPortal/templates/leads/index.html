@@ -122,19 +122,22 @@
                         <div class="row">
                           <div class="col-md-6">
                             <div class="table-search-area">
-                              <form>
-                                <select class="table-select-field">
-                                  <option value="">Lead ID</option>
-                                  <option value="">Employee ID</option>
-                                  <option value="">Mobile Number</option>
-                                  <option value="">Email ID</option>
-                                  <option value="">Membership ID</option>
+                              <form method="GET" class="d-flex">
+                                <select class="table-select-field form-select" name="search_field">
+                                    <option value="" disabled selected>Filter By</option>
+                                    <option value="lead_id" {% if search_field == "lead_id" %}selected{% endif %}>Lead ID</option>
+                                    <option value="customer_id" {% if search_field == "customer_id" %}selected{% endif %}>Customer ID</option>
+                                    <option value="mobile_number" {% if search_field == "mobile_number" %}selected{% endif %}>Mobile Number</option>
+                                    <option value="email_address" {% if search_field == "email_address" %}selected{% endif %}>Email Address</option>
                                 </select>
-                                <input type="text" name="" class="table-search-field" placeholder="Search">
-                                <button type="submit" class="table-search-btn">
-                                  <img src="{% static 'dist/img/svg/search-icon.svg' %}" alt="">
+                            
+                                <input type="text" name="search_query" class="table-search-field form-control" 
+                                       placeholder="Search" value="{{ search_query }}">
+                            
+                                <button type="submit" class="table-search-btn btn btn-primary">
+                                    <img src="{% static 'dist/img/svg/search-icon.svg' %}" alt="Search">
                                 </button>
-                              </form>
+                            </form>
                             </div>
                           </div>
                           <div class="col-md-6">
