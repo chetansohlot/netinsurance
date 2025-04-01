@@ -41,7 +41,7 @@ Customers
                             <p class="card-text">
                               Total Customer
                             </p>
-                            <h5 class="card-title card-number">14</h5>
+                            <h5 class="card-title card-number">{{ total_count }}</h5>
                           </div>
                           <div class="col-auto">
                             <div class="cardcount-img">
@@ -63,7 +63,7 @@ Customers
                             <p class="card-text">
                               Active Customer
                             </p>
-                            <h5 class="card-title card-number">6</h5>
+                            <h5 class="card-title card-number">{{ total_count }}</h5>
                           </div>
                           <div class="col-auto">
                             <div class="cardcount-img">
@@ -85,7 +85,7 @@ Customers
                             <p class="card-text">
                               Deactive Customer
                             </p>
-                            <h5 class="card-title card-number">3</h5>
+                            <h5 class="card-title card-number">0</h5>
                           </div>
                           <div class="col-auto">
                             <div class="cardcount-img">
@@ -97,28 +97,7 @@ Customers
                     </div>
                   </a>  
                 </div>  
-                <div class="col-xs-6 col-sm-4 col-md-3">
-                  <a href="#">
-                    <div class="card counter-img-card counter-pending-card ">
-                      <div class="card-body">
-                        <div class="row">
-                          <div class="col">
-                            
-                            <p class="card-text">
-                              Pending Customer
-                            </p>
-                            <h5 class="card-title card-number">0</h5>
-                          </div>
-                          <div class="col-auto">
-                            <div class="cardcount-img">
-                              <img src="{% static 'dist/img/svg/pending-members.svg' %}" alt="" >
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </a>  
-                </div>  
+                
               </div>
       
             </div>
@@ -188,51 +167,51 @@ Customers
                                         <input type="checkbox" id="checkall" class="table-chk">
                                         <label for="checkall"></label>
                                     </th>
-                                    <th>Member Name</th>
-                                    <th>Product Name</th>
-                                    <th>TP %</th>
-                                    <th>OD %</th>
-                                    <th>Net %</th>
+                                    <th>Customer ID</th>
+                                    <th>Name</th>
+                                    <th>Mobile Number</th>
+                                    <th>Email Address</th>
+                                    <th>State</th>
+                                    <th>City</th>
+                                    <th>Quote Date</th>
                                     <th width="100">Status</th>
                                     <th>Info</th>
-                                    <th>Action</th>
+                                    {% comment %} <th>Action</th> {% endcomment %}
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for customer in customers %}
+                                {% for customer in users %}
                                 <tr>
                                     <td>
                                         <input type="checkbox" id="check{{ customer.id }}" class="table-chk">
                                         <label for="check{{ customer.id }}"></label>
                                     </td>
+                                    <td>{{ customer.customer_id }}</td>
+                                    <td>{{ customer.name_as_per_pan }}</td>
+                                    <td>{{ customer.mobile_number|default:"N/A" }}</td>
+                                    <td>{{ customer.email_address|default:"N/A" }}</td>
+                                    <td>{{ customer.state|default:"N/A" }}</td>
+                                    <td>{{ customer.city|default:"N/A" }}</td>
+                                    <td>{{ customer.quote_date|default:"N/A" }}</td>
                                     <td>
-                                        <a href="{% url 'member-view' user_id=customer.member_id %}" class="trlink">
-                                            {{ customer.first_name }} {{ customer.last_name }}
-                                            <span class="text-gray d-block small">{{ customer.user_gen_id }}</span>
-                                        </a>
-                                    </td>
-                                    <td>{{ customer.product_name }}</td>
-                                    <td>{{ customer.tp_percentage }}%</td>
-                                    <td>{{ customer.od_percentage }}%</td>
-                                    <td>{{ customer.net_percentage }}%</td>
-                                    <td>
-                                        <span class="badge {% if customer.active == '1' %}bg-success{% else %}bg-danger{% endif %}">
-                                            {% if customer.active == '1' %}Active{% else %}Inactive{% endif %}
+                                        <span class="badge {% if customer.active %}bg-success{% else %}bg-danger{% endif %}">
+                                            {% if customer.active %}Active{% else %}Inactive{% endif %}
                                         </span>
                                     </td>
                                     <td>
                                         <i class="fas fa-clock text-primary"></i> {{ customer.updated_at|date:"d M Y, H:i:s" }} <br>
                                         <i class="fas fa-calendar-alt text-secondary"></i> {{ customer.created_at|date:"d M Y, H:i:s" }}
                                     </td>
-                                    <td>
-                                        <a href="{% url 'member-view' user_id=customer.member_id %}" class="btn btn-xs btn-primary">
+                                    {% comment %} <td>
+                                        <a href="{% url 'member-view' user_id=customer.customer_id %}" class="btn btn-xs btn-primary">
                                             <i class="fas fa-eye"></i> 
                                         </a>
-                                    </td>
+                                    </td> {% endcomment %}
                                 </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
+                        
                         </div>
                       </div>
                     </div>

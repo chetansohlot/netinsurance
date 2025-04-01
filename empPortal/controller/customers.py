@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from ..models import Commission,Users
+from ..models import Commission,Users, QuotationCustomer
 
 from django.contrib.auth import authenticate, login ,logout
 from django.conf import settings
@@ -15,10 +15,11 @@ def dictfetchall(cursor):
 def customers(request):
     if request.user.is_authenticated:
         if request.user.role_id == 1:
-            users = Users.objects.filter(role_id=2)
+            users = QuotationCustomer.objects.all().order_by('-updated_at')
+            total_count = users.count()
         else:
             users = Users.objects.none()
-        return render(request, 'customers/customers.html', {'users': users})
+        return render(request, 'customers/customers.html', {'users': users, 'total_count': total_count})
     else:
         return redirect('login')
     

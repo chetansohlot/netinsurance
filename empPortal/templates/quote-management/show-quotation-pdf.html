@@ -75,6 +75,9 @@
                           {% if customer.pan_card_number %}
                               <strong>PAN:</strong> {{ customer.pan_card_number }} <br>
                           {% endif %}
+                          {% if customer.quote_date %}
+                              <strong>Quote Date:</strong> {{ customer.quote_date }}<br>
+                          {% endif %}
                           {% if customer.date_of_birth %}
                               <strong>DOB:</strong> {{ customer.date_of_birth|date:"d-m-Y" }} <br>
                           {% endif %}
