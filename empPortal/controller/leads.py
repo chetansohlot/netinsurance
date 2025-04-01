@@ -98,8 +98,71 @@ def termlead(request):
     else:
         return redirect('login')
 
-def create(request):
-    if request.user.is_authenticated:
-        return render(request, 'leads/create.html')
-    else:
+
+
+
+def create_or_edit_lead(request, lead_id=None):
+    if not request.user.is_authenticated:
         return redirect('login')
+    
+    lead = None
+    if lead_id:
+        lead = get_object_or_404(Leads, lead_id=lead_id)
+    
+    if request.method == "GET":
+        return render(request, 'leads/create.html', {'lead': lead})
+    
+    elif request.method == "POST":
+        customer_id = request.POST.get("customer_id", "").strip()
+        mobile_number = request.POST.get("mobile_number", "").strip()
+        email_address = request.POST.get("email_address", "").strip()
+        quote_date = request.POST.get("quote_date", None)
+        name_as_per_pan = request.POST.get("name_as_per_pan", "").strip()
+        pan_card_number = request.POST.get("pan_card_number", "").strip() or None
+        date_of_birth = request.POST.get("date_of_birth", None)
+        state = request.POST.get("state", "").strip()
+        city = request.POST.get("city", "").strip()
+        pincode = request.POST.get("pincode", "").strip()
+        address = request.POST.get("address", "").strip()
+        lead_type = request.POST.get("lead_type", "MOTOR").strip()
+        status = request.POST.get("status", "new").strip()
+        
+        if lead:
+            lead.customer_id = customer_id
+            lead.mobile_number = mobile_number
+            lead.email_address = email_address
+            lead.quote_date = quote_date
+            lead.name_as_per_pan = name_as_per_pan
+            lead.pan_card_number = pan_card_number
+            lead.date_of_birth = date_of_birth
+            lead.state = state
+            lead.city = city
+            lead.pincode = pincode
+            lead.address = address
+            lead.lead_type = lead_type
+            lead.status = status
+            lead.updated_at = now()
+            lead.save()
+            messages.success(request, f"Lead updated successfully! Lead ID: {lead.lead_id}")
+        else:
+            new_lead = Leads.objects.create(
+                lead_id=f"LEAD{now().strftime('%Y%m%d%H%M%S')}",
+                customer_id=customer_id,
+                mobile_number=mobile_number,
+                email_address=email_address,
+                quote_date=quote_date,
+                name_as_per_pan=name_as_per_pan,
+                pan_card_number=pan_card_number,
+                date_of_birth=date_of_birth,
+                state=state,
+                city=city,
+                pincode=pincode,
+                address=address,
+                lead_type=lead_type,
+                status=status,
+                created_at=now(),
+                updated_at=now()
+            )
+            messages.success(request, f"Lead created successfully! Lead ID: {new_lead.lead_id}")
+        
+        return redirect("lead-management")

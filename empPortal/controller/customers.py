@@ -7,6 +7,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.paginator import Paginator
 
+from django.shortcuts import get_object_or_404
+from django.utils.timezone import now
+from datetime import datetime
+from django.urls import reverse
+
 
 def dictfetchall(cursor):
     "Returns all rows from a cursor as a dict"
@@ -66,23 +71,104 @@ def customers(request):
         return redirect('login')
     
     
-def create(request):
-    if request.user.is_authenticated:
+from django.core.exceptions import ValidationError
+from django.db import IntegrityError
 
-        products = [
-            {'id': 1, 'name': 'Motor'},
-            {'id': 2, 'name': 'Health'},
-            {'id': 3, 'name': 'Term'},
-        ]
-        
-        if request.user.role_id == 1:
-            members = Users.objects.filter(role_id=2, activation_status='1')
-        else:
-            members = Users.objects.none()
-    
-        return render(request, 'customers/create.html', {'products': products, 'members': members})
-    else:
+def create_or_edit(request, customer_id=None):
+    if not request.user.is_authenticated:
         return redirect('login')
+
+    # Fetch existing customer if editing
+    quotation_customer = None
+    if customer_id:
+        quotation_customer = get_object_or_404(QuotationCustomer, customer_id=customer_id)
+
+    if request.method == "GET":
+        return render(request, 'customers/create.html', {'quotation_customer': quotation_customer})
+
+    elif request.method == "POST":
+        # Extract form data
+        mobile_number = request.POST.get("mobile_number", "").strip()
+        email_address = request.POST.get("email_address", "").strip()
+        quote_date = request.POST.get("quote_date", None)
+        name_as_per_pan = request.POST.get("name_as_per_pan", "").strip()
+        pan_card_number = request.POST.get("pan_card_number", "").strip() or None
+        date_of_birth = request.POST.get("date_of_birth", None)
+        state = request.POST.get("state", "").strip()
+        city = request.POST.get("city", "").strip()
+        pincode = request.POST.get("pincode", "").strip()
+        address = request.POST.get("address", "").strip()
+
+        # Validate and format date fields
+        try:
+            quote_date = datetime.strptime(quote_date, "%Y-%m-%d").date() if quote_date else None
+            date_of_birth = datetime.strptime(date_of_birth, "%Y-%m-%d").date() if date_of_birth else None
+        except ValueError:
+            messages.error(request, "Invalid date format.")
+            return redirect(reverse("quotation-customer-create") if not customer_id else reverse("quotation-customer-edit", args=[customer_id]))
+
+        # Check for uniqueness of mobile number and email address
+        if QuotationCustomer.objects.exclude(customer_id=customer_id).filter(mobile_number=mobile_number).exists():
+            messages.error(request, "Mobile number is already registered.")
+            return redirect(reverse("quotation-customer-create") if not customer_id else reverse("quotation-customer-edit", args=[customer_id]))
+        
+        if QuotationCustomer.objects.exclude(customer_id=customer_id).filter(email_address=email_address).exists():
+            messages.error(request, "Email address is already registered.")
+            return redirect(reverse("quotation-customer-create") if not customer_id else reverse("quotation-customer-edit", args=[customer_id]))
+
+        if quotation_customer:
+            # Update existing record
+            quotation_customer.mobile_number = mobile_number
+            quotation_customer.email_address = email_address
+            quotation_customer.quote_date = quote_date
+            quotation_customer.name_as_per_pan = name_as_per_pan
+            quotation_customer.pan_card_number = pan_card_number
+            quotation_customer.date_of_birth = date_of_birth
+            quotation_customer.state = state
+            quotation_customer.city = city
+            quotation_customer.pincode = pincode
+            quotation_customer.address = address
+            quotation_customer.updated_at = now()
+            quotation_customer.save()
+
+            messages.success(request, f"Quotation Customer updated successfully! Customer ID: {quotation_customer.customer_id}")
+
+            return redirect("customers")  # Redirect to customers list or another page
+
+        else:
+            # Generate new customer_id
+            last_customer = QuotationCustomer.objects.order_by('-id').first()
+            if last_customer and last_customer.customer_id.startswith("CUS"):
+                last_number = int(last_customer.customer_id[3:])
+                new_customer_id = f"CUS{last_number + 1}"
+            else:
+                new_customer_id = "CUS1000001"
+
+            # Create new record
+            new_quotation_customer = QuotationCustomer.objects.create(
+                customer_id=new_customer_id,
+                mobile_number=mobile_number,
+                email_address=email_address,
+                quote_date=quote_date,
+                name_as_per_pan=name_as_per_pan,
+                pan_card_number=pan_card_number,
+                date_of_birth=date_of_birth,
+                state=state,
+                city=city,
+                pincode=pincode,
+                address=address,
+                active=True,
+                created_at=now(),
+                updated_at=now()
+            )
+
+            messages.success(request, f"Quotation Customer created successfully! Customer ID: {new_customer_id}")
+
+            # Redirect to the next page (e.g., vehicle info)
+            return redirect('customers')
+
+
+
     
 def store(request):
     if not request.user.is_authenticated:

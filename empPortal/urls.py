@@ -90,7 +90,8 @@ urlpatterns = [
 
     # LEADS 
     path('lead-mgt/', leads.index, name='leads-mgt'),
-    path('lead-mgt/create', leads.create, name='leads-mgt-create'),
+    path('lead-mgt/create', leads.create_or_edit_lead, name='leads-mgt-create'),
+    path('lead-mgt/<str:lead_id>/', leads.create_or_edit_lead, name='leads-mgt-edit'),
     path('lead-mgt/health-lead', leads.healthLead, name='health-lead'),
     path('lead-mgt/term-lead', leads.termlead, name='term-lead'),
     path('lead-mgt/lead-view/<int:lead_id>/', leads.viewlead, name='lead-view'),
@@ -147,8 +148,10 @@ urlpatterns = [
     # MY-ACCOUNT 
 
     path('customers/', customers.customers, name='customers'),
-    path('add-customer/', customers.create, name='add-customer'),
     path('store-customer/', customers.store, name='store-customer'),
+    path('customers/create', customers.create_or_edit, name='quotation-customer-create'),
+    path('customers/<str:customer_id>/', customers.create_or_edit, name='quotation-customer-edit'),
+
 
     path('motor/', include(motor_patterns)),
     path('health/', include(health_patterns)),

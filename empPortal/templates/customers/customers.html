@@ -26,7 +26,7 @@ Customers
                 </div>
                 <div class="col-sm-6">
                   <div class="d-flex justify-content-end">
-                    <a href="{% url 'add-customer' %}" class="breadcrump-addbtn"><i class="fas fa-plus"></i> Add Customer</a>
+                    <a href="{% url 'quotation-customer-create' %}" class="breadcrump-addbtn"><i class="fas fa-plus"></i> Add Customer</a>
                   </div>
                 </div>
               </div>
@@ -116,7 +116,7 @@ Customers
                           <div class="col-md-6">
                             <div class="table-search-area">
                               <form method="GET" class="d-flex">
-                                <select class="form-select" name="search_field">
+                                <select class="table-select-field" name="search_field">
                                     <option value="" disabled selected>Filter By</option>
                                     <option value="customer_id" {% if search_field == "customer_id" %}selected{% endif %}>Customer ID</option>
                                     <option value="name" {% if search_field == "name" %}selected{% endif %}>Name</option>
@@ -124,11 +124,10 @@ Customers
                                     <option value="phone" {% if search_field == "phone" %}selected{% endif %}>Phone</option>
                                 </select>
                             
-                                <input type="text" name="search_query" class="form-control mx-2" placeholder="Search" value="{{ search_query }}">
+                                <input type="text" name="search_query" class="table-search-field" placeholder="Search" value="{{ search_query }}">
                             
-                                <button type="submit" class="btn btn-primary">Search</button>
+                                <button type="submit" class="table-search-btn">Search</button>
                             </form>
-                            
                             </div>
                           </div>
                           <div class="col-md-6">
@@ -181,7 +180,7 @@ Customers
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for customer in users %}
+                                {% for customer in page_obj %}
                                 <tr>
                                     <td>
                                         <input type="checkbox" id="check{{ customer.id }}" class="table-chk">
