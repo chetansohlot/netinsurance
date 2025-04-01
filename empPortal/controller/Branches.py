@@ -27,15 +27,16 @@ def dictfetchall(cursor):
 def index(request):
     if not request.user.is_authenticated:
         return redirect('login')
-        
+    
     branches = Branch.objects.all().order_by('-created_at')
+    total_count = branches.count()
 
     # Pagination (10 branches per page)
     paginator = Paginator(branches, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    return render(request, 'branches/index.html', {'page_obj': page_obj})
+    return render(request, 'branches/index.html', {'page_obj': page_obj, 'total_count': total_count})
 
 
 def create_or_edit(request, branch_id=None):

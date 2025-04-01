@@ -30,13 +30,16 @@ def index(request):
         return redirect('login')
         
     franchises = Franchises.objects.all().order_by('-created_at')
-
+    total_count = franchises.count()
     # Pagination (10 franchises per page)
     paginator = Paginator(franchises, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    return render(request, 'franchises/index.html', {'page_obj': page_obj})
+    return render(request, 'franchises/index.html', {
+        'page_obj': page_obj, 
+        'total_count': total_count
+    })
 
 
 def create_or_edit(request, franchise_id=None):
