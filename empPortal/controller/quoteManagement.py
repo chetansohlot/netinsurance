@@ -57,41 +57,47 @@ def index(request):
         quotations = quotations.filter(mobile_number__icontains=customer_mobile)
     if policy_type:
         quotations = quotations.filter(vehicleinfo__policy_type__icontains=policy_type)
-    if quote_status:
-        quotations = quotations.filter(status__icontains=quote_status)
-    if vehicle_type:
-        quotations = quotations.filter(vehicleinfo__vehicle_type__icontains=vehicle_type)
-    if ncb:
-        quotations = quotations.filter(vehicleinfo__ncb_percentage=ncb)
-    if insurer_name:
-        quotations = quotations.filter(vehicleinfo__insurer_name__icontains=insurer_name)
-
-    # Handle date range filtering
     if quote_date_range:
         try:
             start_date, end_date = map(str.strip, quote_date_range.split(" - "))
+            start_date = datetime.strptime(start_date, "%Y-%m-%d")
+            end_date = datetime.strptime(end_date, "%Y-%m-%d")
             quotations = quotations.filter(created_at__range=[start_date, end_date])
         except ValueError:
             pass  # Ignore invalid date format
+    if vehicle_type:
+        quotations = quotations.filter(vehicleinfo__vehicle_type__icontains=vehicle_type)
+    if ncb:
+        try:
+            ncb_value = float(ncb)
+            quotations = quotations.filter(vehicleinfo__ncb_percentage=ncb_value)
+        except ValueError:
+            pass  # Ignore invalid ncb format
+    if insurer_name:
+        quotations = quotations.filter(vehicleinfo__insurance_company__icontains=insurer_name)
 
     # Fetch latest vehicle information
     latest_vehicle_info = VehicleInfo.objects.filter(
         customer_id=OuterRef('customer_id')
     ).order_by('-created_at')
 
-    # Annotate vehicle information properly
+    # Annotate vehicle information
     quotations_with_vehicle = quotations.annotate(
         registration_number=Subquery(latest_vehicle_info.values('registration_number')[:1]),
         vehicle_type=Subquery(latest_vehicle_info.values('vehicle_type')[:1]),
-        make=Subquery(latest_vehicle_info.values('make')[:1]),  # ✅ Fixed reference
-        model=Subquery(latest_vehicle_info.values('model')[:1]),  # ✅ Fixed reference
+        make=Subquery(latest_vehicle_info.values('make')[:1]),
+        model=Subquery(latest_vehicle_info.values('model')[:1]),
         year_of_manufacture=Subquery(latest_vehicle_info.values('year_of_manufacture')[:1]),
         policy_type=Subquery(latest_vehicle_info.values('policy_type')[:1]),
         idv_value=Subquery(latest_vehicle_info.values('idv_value')[:1]),
         claim_history=Subquery(latest_vehicle_info.values('claim_history')[:1]),
         ncb_percentage=Subquery(latest_vehicle_info.values('ncb_percentage')[:1]),
         addons=Subquery(latest_vehicle_info.values('addons')[:1]),
+        insurance_company=Subquery(latest_vehicle_info.values('insurance_company')[:1]),
     )
+
+    # Calculate counters
+    total_quotes = quotations_with_vehicle.count()
 
     # Add-ons Mapping
     ADDONS_MAP = {
@@ -115,9 +121,11 @@ def index(request):
             "claim_history": quotation.claim_history,
             "ncb_percentage": quotation.ncb_percentage,
             "addons": quotation.addons,
+            "insurance_company": quotation.insurance_company,
         }
 
         customer_data['vehicle'] = vehicle_data if quotation.registration_number else {}
+        customer_data['vehicle']['premium'] = "N/A"  # Placeholder, update with actual logic if available
 
         if customer_data["vehicle"].get("addons"):
             addons_key = str(customer_data["vehicle"]["addons"])
@@ -126,8 +134,13 @@ def index(request):
             customer_data["vehicle"]["addons_display"] = "N/A"
 
         data.append(customer_data)
-        
-    return render(request, 'quote-management/index.html', {'quotations': data})
+
+    context = {
+        'quotations': data,
+        'total_quotes': total_quotes,
+    }
+
+    return render(request, 'quote-management/index.html', context)
 
 
 def fetch_customer(request):

@@ -31,7 +31,7 @@
                         <p class="card-text">
                         Total Quotes
                         </p>
-                        <h5 class="card-title card-number">11</h5>
+                        <h5 class="card-title card-number">{{ total_quotes }}</h5>
                     </div>
                     </div>
                 </div>
@@ -47,7 +47,7 @@
                         <p class="card-text">
                         Shared Quotes
                         </p>
-                        <h5 class="card-title card-number">6</h5>
+                        <h5 class="card-title card-number">0</h5>
                     </div>
                     </div>
                 </div>
@@ -63,7 +63,7 @@
                         <p class="card-text">
                         Pending Quotes
                         </p>
-                        <h5 class="card-title card-number">2</h5>
+                        <h5 class="card-title card-number">0</h5>
                     </div>
                     </div>
                 </div>
@@ -79,7 +79,7 @@
                         <p class="card-text">
                         Drafted Quotes
                         </p>
-                        <h5 class="card-title card-number">5</h5>
+                        <h5 class="card-title card-number">0</h5>
                     </div>
                     </div>
                 </div>
@@ -95,7 +95,7 @@
                         <p class="card-text">
                         Rejected Quotes
                         </p>
-                        <h5 class="card-title card-number">1</h5>
+                        <h5 class="card-title card-number">0</h5>
                     </div>
                     </div>
                 </div>
@@ -111,7 +111,7 @@
                         <p class="card-text">
                         Approved Quotes
                         </p>
-                        <h5 class="card-title card-number">3</h5>
+                        <h5 class="card-title card-number">0</h5>
                     </div>
                     </div>
                 </div>
@@ -189,7 +189,7 @@
                                 <div class="col-sm-6 col-md-2">
                                     <div class="form-group d-flex">
                                         <button type="submit" class="wrap-btn w-100">Apply</button>
-                                        <a href="/quote-management/" class="wrap-btn w-100 bg-danger ml-2 text-center">Reset</a>
+                                        <a href="{% url 'quote-management' %}" class="wrap-btn w-100 bg-danger ml-2 text-center">Reset</a>
                                     </div>  
                                 </div>
                             </div>
