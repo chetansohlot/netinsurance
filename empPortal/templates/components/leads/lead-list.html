@@ -1,0 +1,69 @@
+{% load static %}
+
+<div class="table-responsive table-ht">
+    <table class="table table-design table-trlink">
+      <thead class="table-thead-bg-light table-header-fix">
+        <tr>
+          <th width="10">
+            <input type="checkbox" id="checkall" class="table-chk">
+            <label for="checkall"></label>
+          </th>
+          <th>Lead ID</th>
+          <th>Customer ID</th>
+          <th>Contact Details</th>
+          <th>Name (as per PAN)</th>
+          <th>PAN Card Number</th>
+          <th>Date of Birth</th>
+          <th>Location</th>
+          <th>Status</th>
+          <th>Lead Type</th>
+          <th width="50"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for lead in leads %}
+          <tr>
+            <td>
+              <input type="checkbox" id="check{{ lead.id }}" class="table-chk">
+              <label for="check{{ lead.id }}"></label>
+            </td>
+            <td>{{ lead.lead_id }}</td>
+            <td>{{ lead.customer_id }}</td>
+            <td>
+              {{ lead.mobile_number }} 
+              <span class="text-gray d-block small">{{ lead.email_address }}</span>
+            </td>
+            <td>{{ lead.name_as_per_pan }}</td>
+            <td>{{ lead.pan_card_number|default:"N/A" }}</td>
+            <td>{{ lead.date_of_birth|date:"d M Y"|default:"N/A" }}</td>
+            <td>
+              {{ lead.city }}, {{ lead.state }}
+              <span class="text-gray d-block small">{{ lead.pincode }}</span>
+            </td>
+            <td>
+              {% if lead.status == 'new' %}
+                <p class="text-primary">New</p>
+              {% elif lead.status == 'active' %}
+                <p class="text-success">Active</p>
+              {% else %}
+                <p class="text-danger">{{ lead.status }}</p>
+              {% endif %}
+            </td>
+            <td>{{ lead.lead_type }}</td>
+            <td>
+              <div class="dropdown">
+                <img src="{% static 'dist/img/svg/menu-dot-vr.svg' %}" alt="" class="table-doticon" data-toggle="dropdown" aria-expanded="false">
+                <ul class="dropdown-menu table-dropdown-menu">
+                  <li><a class="dropdown-item" href="{% url 'lead-view' lead_id=lead.id %}">View Lead</a></li>
+                </ul>
+              </div>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="11" class="text-center">No leads found</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>

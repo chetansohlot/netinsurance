@@ -4,7 +4,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib import messages
 from django.template import loader
-from ..models import Commission,Users, DocumentUpload, Branch
+from ..models import Commission,Users, DocumentUpload, Branch, Leads
 from empPortal.model import BankDetails
 from ..forms import DocumentUploadForm
 from django.core.mail import send_mail
@@ -45,7 +45,28 @@ def dictfetchall(cursor):
 
 def index(request):
     if request.user.is_authenticated:
-        return render(request, 'leads/index.html')
+        leads = Leads.objects.all()
+        total_leads = Leads.objects.count()
+        return render(request, 'leads/index.html', {'leads': leads, 'total_leads': total_leads})  # Pass leads to the template
+    else:
+        return redirect('login')
+    
+def viewlead(request, lead_id):
+    if request.user.is_authenticated:
+        leads = Leads.objects.all()
+        return render(request, 'leads/index.html', {'leads': leads})  # Pass leads to the template
+    else:
+        return redirect('login')
+    
+def healthLead(request):
+    if request.user.is_authenticated:
+        return render(request, 'leads/health-lead.html')
+    else:
+        return redirect('login')
+    
+def termlead(request):
+    if request.user.is_authenticated:
+        return render(request, 'leads/term-lead.html')
     else:
         return redirect('login')
 

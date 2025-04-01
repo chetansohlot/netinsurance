@@ -22,7 +22,16 @@
             </a>
           </li>
           {% if request.user.role_id|stringformat:"s" == "1" %}
-
+          <li class="nav-item">
+            <a href="{% url 'leads-mgt' %}" 
+               class="nav-link {% if request.path|slice:9 == '/lead-mgt' %} active {% endif %}">
+              <svg class="sidbarmenu-svg">
+                <use xlink:href="#members" />
+              </svg>
+              <p>Lead Mgt</p>
+            </a>
+          </li>
+          
             <li class="nav-item">
               <a href="{% url 'policy-data' %}" class="nav-link {% if request.path == '/policy-data/' %} active {% endif %}">
                 <svg class="sidbarmenu-svg">
@@ -148,7 +157,7 @@
               <svg class="sidbarmenu-svg">
                 <use xlink:href="#members" />
               </svg>
-              <p>Leads Mgt</p>
+              <p>Lead Mgt</p>
             </a>
           </li>
             <li class="nav-item {% if '/motor/' in request.path or '/health/' in request.path %} menu-is-opening menu-open {% endif %}">

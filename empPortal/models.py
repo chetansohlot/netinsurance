@@ -57,6 +57,7 @@ class QuotationCustomer(models.Model):
         return f"QuotationCustomer {self.customer_id} - {self.name_as_per_pan}"
     
 class Leads(models.Model):
+    lead_id = models.CharField(max_length=20, unique=True)  # Unique customer identifier (e.g., CUS2343545)
     customer_id = models.CharField(max_length=20, unique=True)  # Unique customer identifier (e.g., CUS2343545)
     mobile_number = models.CharField(max_length=15)  # Customer's mobile number
     email_address = models.CharField(max_length=255)  # Customer's email address

@@ -1,7 +1,7 @@
 {% extends 'master.html' %}
 
 {% block title %}
-    Lead Mgt.
+    Term Lead Mgt.
 {% endblock %}
   
 {% block content %}
@@ -20,10 +20,10 @@
             <div class="container-fluid ">
               <div class="row pt-2 pb-2">
                 <div class="col-sm-6">
-                  <h1 class="admin-title m-0 pt-2">Lead Mgt.</h1>
+                  <h1 class="admin-title m-0 pt-2">Term Lead Mgt.</h1>
                   <ul class="breadcrump">
                     <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
-                    <li>Lead Mgt.</li>
+                    <li>Term Lead Mgt.</li>
                   </ul>
                 </div>
                 <div class="col-sm-6">
@@ -43,7 +43,7 @@
                             <p class="card-text">
                               Total Lead
                             </p>
-                            <h5 class="card-title card-number">{{ total_leads }}</h5>
+                            <h5 class="card-title card-number">0</h5>
                           </div>
                           
                         </div>
@@ -61,7 +61,7 @@
                             <p class="card-text">
                               Active Lead
                             </p>
-                            <h5 class="card-title card-number">{{ total_leads }}</h5>
+                            <h5 class="card-title card-number">0</h5>
                           </div>
                           
                         </div>
@@ -167,7 +167,7 @@
                           </div>
                         </div>
 
-                        {% include "components/leads/lead-list-tab.html" with motor_active="true" %}
+                        {% include "components/leads/lead-list-tab.html" with term_active="true" %}
 
                         {% include "components/leads/lead-list.html" %}
                       </div>

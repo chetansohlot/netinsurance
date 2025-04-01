@@ -89,8 +89,12 @@ urlpatterns = [
     path('update-commission/', commissions.update_commission, name='update-commission'),
 
     # LEADS 
-    path('leads-mgt/', leads.index, name='leads-mgt'),
-    path('leads-mgt/create', leads.create, name='leads-mgt-create'),
+    path('lead-mgt/', leads.index, name='leads-mgt'),
+    path('lead-mgt/create', leads.create, name='leads-mgt-create'),
+    path('lead-mgt/health-lead', leads.healthLead, name='health-lead'),
+    path('lead-mgt/term-lead', leads.termlead, name='term-lead'),
+    path('lead-mgt/lead-view/<int:lead_id>/', leads.viewlead, name='lead-view'),
+
     # LEADS 
 
     # SELL-ONLINE 
