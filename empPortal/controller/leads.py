@@ -32,6 +32,7 @@ import os
 import pdfkit
 from django.template.loader import render_to_string
 from pprint import pprint 
+from django.core.paginator import Paginator
 
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 
@@ -43,13 +44,29 @@ def dictfetchall(cursor):
     columns = [col[0] for col in cursor.description]
     return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
+
 def index(request):
-    if request.user.is_authenticated:
-        leads = Leads.objects.all()
-        total_leads = Leads.objects.count()
-        return render(request, 'leads/index.html', {'leads': leads, 'total_leads': total_leads})  # Pass leads to the template
-    else:
+    if not request.user.is_authenticated:
         return redirect('login')
+    per_page = request.GET.get('per_page', 10)
+
+    try:
+        per_page = int(per_page)
+    except ValueError:
+        per_page = 10  # Default to 10 if invalid value is given
+
+    leads = Leads.objects.all().order_by('-created_at')
+    total_leads = leads.count()
+
+    paginator = Paginator(leads, per_page)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'leads/index.html', {
+        'page_obj': page_obj,
+        'total_leads': total_leads,
+        'per_page': per_page,
+    })
     
 def viewlead(request, lead_id):
     if request.user.is_authenticated:

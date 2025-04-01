@@ -21,7 +21,7 @@
         </tr>
       </thead>
       <tbody>
-        {% for lead in leads %}
+        {% for lead in page_obj %}
           <tr>
             <td>
               <input type="checkbox" id="check{{ lead.id }}" class="table-chk">
