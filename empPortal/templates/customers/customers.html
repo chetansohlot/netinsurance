@@ -176,7 +176,7 @@ Customers
                                     <th>Quote Date</th>
                                     <th width="100">Status</th>
                                     <th>Info</th>
-                                    {% comment %} <th>Action</th> {% endcomment %}
+                                     <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -202,11 +202,12 @@ Customers
                                         <i class="fas fa-clock text-primary"></i> {{ customer.updated_at|date:"d M Y, H:i:s" }} <br>
                                         <i class="fas fa-calendar-alt text-secondary"></i> {{ customer.created_at|date:"d M Y, H:i:s" }}
                                     </td>
-                                    {% comment %} <td>
-                                        <a href="{% url 'member-view' user_id=customer.customer_id %}" class="btn btn-xs btn-primary">
-                                            <i class="fas fa-eye"></i> 
-                                        </a>
-                                    </td> {% endcomment %}
+                                    
+                                     <td>
+                                      <a href="{% url 'quotation-customer-edit' customer_id=customer.id %}" class="btn btn-xs btn-primary">
+                                        <i class="fas fa-pencil-alt"></i> 
+                                    </a>
+                                    </td> 
                                 </tr>
                                 {% endfor %}
                             </tbody>

@@ -79,7 +79,7 @@ def create_or_edit(request, customer_id=None):
     # Fetch existing customer if editing
     quotation_customer = None
     if customer_id:
-        quotation_customer = get_object_or_404(QuotationCustomer, customer_id=customer_id)
+        quotation_customer = get_object_or_404(QuotationCustomer, id=customer_id)
 
     if request.method == "GET":
         return render(request, 'customers/create.html', {'quotation_customer': quotation_customer})
@@ -106,11 +106,11 @@ def create_or_edit(request, customer_id=None):
             return redirect(reverse("quotation-customer-create") if not customer_id else reverse("quotation-customer-edit", args=[customer_id]))
 
         # Check for uniqueness of mobile number and email address
-        if QuotationCustomer.objects.exclude(customer_id=customer_id).filter(mobile_number=mobile_number).exists():
+        if QuotationCustomer.objects.exclude(id=customer_id).filter(mobile_number=mobile_number).exists():
             messages.error(request, "Mobile number is already registered.")
             return redirect(reverse("quotation-customer-create") if not customer_id else reverse("quotation-customer-edit", args=[customer_id]))
         
-        if QuotationCustomer.objects.exclude(customer_id=customer_id).filter(email_address=email_address).exists():
+        if QuotationCustomer.objects.exclude(id=customer_id).filter(email_address=email_address).exists():
             messages.error(request, "Email address is already registered.")
             return redirect(reverse("quotation-customer-create") if not customer_id else reverse("quotation-customer-edit", args=[customer_id]))
 
