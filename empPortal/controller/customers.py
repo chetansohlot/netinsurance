@@ -11,7 +11,8 @@ from django.shortcuts import get_object_or_404
 from django.utils.timezone import now
 from datetime import datetime
 from django.urls import reverse
-
+from django.core.exceptions import ValidationError
+from django.db import IntegrityError
 
 def dictfetchall(cursor):
     "Returns all rows from a cursor as a dict"
@@ -70,9 +71,6 @@ def customers(request):
     else:
         return redirect('login')
     
-    
-from django.core.exceptions import ValidationError
-from django.db import IntegrityError
 
 def create_or_edit(request, customer_id=None):
     if not request.user.is_authenticated:

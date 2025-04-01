@@ -55,6 +55,7 @@
                 <img src="{% static 'dist/img/svg/menu-dot-vr.svg' %}" alt="" class="table-doticon" data-toggle="dropdown" aria-expanded="false">
                 <ul class="dropdown-menu table-dropdown-menu">
                   <li><a class="dropdown-item" href="{% url 'lead-view' lead_id=lead.id %}">View Lead</a></li>
+                  <li><a class="dropdown-item" href="{% url 'leads-mgt-edit' lead_id=lead.id %}">Edit Lead</a></li>
                 </ul>
               </div>
             </td>

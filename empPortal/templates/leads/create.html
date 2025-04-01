@@ -39,16 +39,24 @@
                 <div class="card box-shadow-none p-md-5 p-3">
                   <div class="card-body px-0 pb-0 pt-0">
                     <form autocomplete="off" id="leadForm" name="leadForm"
-      action="{% if lead %}{% url 'leads-mgt-edit' lead.lead_id %}{% else %}{% url 'leads-mgt-create' %}{% endif %}"
+      action="{% if lead %}{% url 'leads-mgt-edit' lead.id %}{% else %}{% url 'leads-mgt-create' %}{% endif %}"
       method="post">
     {% csrf_token %}
 
     <div class="row">
-        <div class="form-group col-md-6">
-            <label for="customer_id">Customer ID</label>
-            <input type="text" class="form-control" name="customer_id" id="customer_id"
-                   placeholder="Enter Customer ID" value="{{ lead.customer_id|default_if_none:'' }}">
-        </div>
+        
+      <div class="form-group col-md-6">
+        <label for="customer_id">Customer ID</label>
+        <select class="form-control" name="customer_id" id="customer_id">
+            <option value="">Select Customer ID</option>
+            {% for customer in customers %}
+                <option value="{{ customer.customer_id }}" 
+                    {% if lead and lead.customer_id == customer.customer_id %}selected{% endif %}>
+                    {{ customer.customer_id }} - {{ customer.name_as_per_pan }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
 
         <div class="form-group col-md-6">
             <label for="mobile_number">Mobile Number</label>

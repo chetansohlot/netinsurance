@@ -4,7 +4,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib import messages
 from django.template import loader
-from ..models import Commission,Users, DocumentUpload, Branch, Leads
+from ..models import Commission,Users, DocumentUpload, Branch, Leads, QuotationCustomer
 from empPortal.model import BankDetails
 from ..forms import DocumentUploadForm
 from django.core.mail import send_mail
@@ -105,12 +105,14 @@ def create_or_edit_lead(request, lead_id=None):
     if not request.user.is_authenticated:
         return redirect('login')
     
+    customers = QuotationCustomer.objects.all()
+    
     lead = None
     if lead_id:
-        lead = get_object_or_404(Leads, lead_id=lead_id)
+        lead = get_object_or_404(Leads, id=lead_id)
     
     if request.method == "GET":
-        return render(request, 'leads/create.html', {'lead': lead})
+        return render(request, 'leads/create.html', {'lead': lead, 'customers': customers})
     
     elif request.method == "POST":
         customer_id = request.POST.get("customer_id", "").strip()
@@ -165,4 +167,4 @@ def create_or_edit_lead(request, lead_id=None):
             )
             messages.success(request, f"Lead created successfully! Lead ID: {new_lead.lead_id}")
         
-        return redirect("lead-management")
+        return redirect("leads-mgt")
