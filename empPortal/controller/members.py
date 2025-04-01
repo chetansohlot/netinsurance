@@ -33,6 +33,7 @@ import pdfkit
 from django.template.loader import render_to_string
 from pprint import pprint 
 from django.db.models import Q
+from django.core.paginator import Paginator
 
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 
@@ -44,37 +45,71 @@ def dictfetchall(cursor):
     columns = [col[0] for col in cursor.description]
     return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
+
 def members(request):
-    if request.user.is_authenticated:
-        if request.user.role_id == 1:
-            # Define the list of role IDs to filter
-            # role_ids = [2, 3, 4]
-            role_ids = [4]
+    if not request.user.is_authenticated:
+        return redirect('login')
 
-            # Filter and order users by updated_at descending
-            users = Users.objects.filter(role_id__in=role_ids).order_by('-updated_at')
-            
-            total_agents = users.count()
-            active_agents = users.filter(activation_status='1').count()
-            deactive_agents = users.filter(
+    if request.user.role_id == 1:
+        role_ids = [4]  # Filter for specific roles
+
+        per_page = request.GET.get('per_page', 10)
+        search_field = request.GET.get('search_field', '')  # Field to search
+        search_query = request.GET.get('search_query', '')  # Search value
+        sorting = request.GET.get('sorting', '')  # Sorting option
+
+        try:
+            per_page = int(per_page)
+        except ValueError:
+            per_page = 10  # Default to 10 if invalid value is given
+
+        # Base QuerySet
+        users = Users.objects.filter(role_id__in=role_ids)
+
+        # Apply filtering
+        if search_field and search_query:
+            filter_args = {f"{search_field}__icontains": search_query}
+            users = users.filter(**filter_args)
+
+        # Apply sorting
+        if sorting == "name_a_z":
+            users = users.order_by("first_name")
+        elif sorting == "name_z_a":
+            users = users.order_by("-first_name")
+        elif sorting == "recently_activated":
+            users = users.filter(activation_status='1').order_by("-updated_at")
+        elif sorting == "recently_deactivated":
+            users = users.filter(
                 Q(activation_status='0') | Q(activation_status__isnull=True) | Q(activation_status='')
-            ).count()
-            pending_agents = 0
-
+            ).order_by("-updated_at")
         else:
-            users = Users.objects.none()  # Return an empty queryset for unauthorized users
-            total_agents = active_agents = deactive_agents = pending_agents = 0
-        
+            users = users.order_by("-updated_at")
+
+        total_agents = users.count()
+        active_agents = users.filter(activation_status='1').count()
+        deactive_agents = users.filter(
+            Q(activation_status='0') | Q(activation_status__isnull=True) | Q(activation_status='')
+        ).count()
+        pending_agents = 0  # Define pending logic if needed
+
+        # Paginate results
+        paginator = Paginator(users, per_page)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+
         return render(request, 'members/members.html', {
-            'users': users,
+            'page_obj': page_obj,
             'total_agents': total_agents,
             'active_agents': active_agents,
             'deactive_agents': deactive_agents,
             'pending_agents': pending_agents,
+            'search_field': search_field,
+            'search_query': search_query,
+            'sorting': sorting,
+            'per_page': per_page,
         })
     else:
         return redirect('login')
-
     
 def members_inprocess(request):
     if request.user.is_authenticated:
