@@ -1,123 +1,391 @@
-{% extends 'master.html' %}
+<!doctype html>
+<html lang="en">
+  <head>
+    {% include 'home/layouts/head.html' %}
+    {% load static %}
 
-{% block title %}
-    Health
-{% endblock %}
-  
-{% block content %}
-{% load static %}
-
-
-<body class="hold-transition sidebar-mini">
-    <div class="wrapper">
-        {% include 'navbar.html' %}
-
-        {% include 'sidebar.html' %}
-    
-        <div class="content-wrapper white-bg">
-          <!-- Content Header (Page header) -->
-          <div class="content-header header-content-bg">
-            <div class="container-fluid ">
-              <div class="row pt-2 pb-2">
-                <div class="col-sm-6">
-                  <h1 class="admin-title m-0 pt-2">Health</h1>
-                  <ul class="breadcrump">
-                    <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
-                    <li> <a href="#">Sell Online</a> <i class="fas fa-chevron-right"></i></li>
-                    <li>Health</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- /.content-header -->
-      
-          <!-- Main content -->
-          <div class="content">
-            <div class="container-fluid">
-              <div class="row">
-                
-                <div class="col-sm-12 col-md-12">  
-                    <div class="card box-shadow-none">
-                      <div class="card-body px-0 pb-0">
-                        <div class="row mt-2 sell-now-main-gen-insu"> 
-                          <div class="col-lg-2 sell-gen-car">
-                             <div class="box-design text-center ">
-                                <svg class="journey-svg">
-                                  <use xlink:href="#health-icon" />
-                                </svg>
-                               <p>Health</p>
-                               <a href="{% url 'sell-health' %}" class="dashboard-btn-outline mt-2 d-inline-block">Start Journey</a>
+    <section class="bg-light py-5">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-md-12 col-lg-12">
+            
+            <div class="row">
+              <div class="col-md-8">
+                <div class="form-box">
+                  <h2 class="wrap-title pb-3">Review the below details. This information will be printed on your policy document.</h2>
+                  <div class="accordion" id="accordionExample">
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingOne">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                          <strong>Proposer</strong>
+                        </button>
+                      </h2>
+                      <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                          <div class="row">
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                <label class="quote-lbl-gray">Name</label>
+                                <p class="quote-lbl">vinod Kumar</p>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                <label class="quote-lbl-gray">Gender</label>
+                                <p class="quote-lbl">Male</p>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                <label class="quote-lbl-gray">Date of Birth</label>
+                                <p class="quote-lbl">15-Dec-1986</p>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                <label class="quote-lbl-gray">Marital Status</label>
+                                <p class="quote-lbl">Married</p>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                <label class="quote-lbl-gray">Occupation</label>
+                                <p class="quote-lbl">Private Service</p>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                <label class="quote-lbl-gray">Email</label>
+                                <p class="quote-lbl">vinod.kumar@netleafinfosoft.com</p>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                <label class="quote-lbl-gray">Phone Number</label>
+                                <p class="quote-lbl">9876543210</p>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                <label class="quote-lbl-gray">Registered Address</label>
+                                <p class="quote-lbl">Jawahar colony,121005-faridabad</p>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                <label class="quote-lbl-gray">Pincode</label>
+                                <p class="quote-lbl">121005</p>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                <label class="quote-lbl-gray">City</label>
+                                <p class="quote-lbl">Faridabad</p>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                <label class="quote-lbl-gray">State</label>
+                                <p class="quote-lbl">Haryana</p>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                <label class="quote-lbl-gray">Relation with Insured</label>
+                                <p class="quote-lbl">SELF</p>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                <label class="quote-lbl-gray">Nominee Name</label>
+                                <p class="quote-lbl">Pooja</p>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                <label class="quote-lbl-gray">Nominee Relation with Proposer</label>
+                                <p class="quote-lbl">Spouse</p>
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingTwo">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                          <strong>Insured</strong>
+                        </button>
+                      </h2>
+                      <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                          <div class="row"> 
+                            <div class="col-sm-12">
+                                <div class="d-flex align-items-center mb-4">
+                                <p class="wrap-title pb-0 mb-0">Vinod Kumar </p>
+                                <p class="quote-lbl-gray ms-2">(Same as proposer details)</p>
+                              </div>
+                            </div>
+                            <hr>
+                            <div class="col-sm-12">
+                                <div class="d-flex align-items-center mb-2">
+                                <p class="wrap-title pb-0 mb-0">Pooja </p>
+                                <p class="quote-lbl-gray ms-2">(Spouse)</p>
+                              </div>
+                            </div>
+                            <div class="col-6">
+                              <div class="form-group">
+                                <p class="quote-lbl-gray">Date of birth</p>
+                                <p class="quote-lbl">15-12-1986 </p>
+                              </div>
+                            </div>
+                            <div class="col-6">
+                              <div class="form-group">
+                                <p class="quote-lbl-gray">Gender</p>
+                                <p class="quote-lbl">Female </p>
+                              </div>
+                            </div>
+                            <div class="col-6">
+                              <div class="form-group">
+                                <p class="quote-lbl-gray">Height</p>
+                                <p class="quote-lbl">5 feet 8 inch </p>
+                              </div>
+                            </div>
+                            <div class="col-6">
+                              <div class="form-group">
+                                <p class="quote-lbl-gray">Weight (kg)</p>
+                                <p class="quote-lbl">72 </p>
+                              </div>
+                            </div>
+                            <hr>
+                            <div class="col-sm-12">
+                              <div class="d-flex align-items-center mb-2">
+                                <p class="wrap-title pb-0 mb-0">Bhavanya </p>
+                                <p class="quote-lbl-gray ms-2">(Daughter)</p>
+                              </div>
+                            </div>
+                            <div class="col-6">
+                              <div class="form-group">
+                                <p class="quote-lbl-gray">Date of birth</p>
+                                <p class="quote-lbl">26-12-2019 </p>
+                              </div>
+                            </div>
+                            <div class="col-6">
+                              <div class="form-group">
+                                <p class="quote-lbl-gray">Gender</p>
+                                <p class="quote-lbl">Female </p>
+                              </div>
+                            </div>
+                            <div class="col-6">
+                              <div class="form-group">
+                                <p class="quote-lbl-gray">Height</p>
+                                <p class="quote-lbl">3 feet 2 inch </p>
+                              </div>
+                            </div>
+                            <div class="col-6">
+                              <div class="form-group">
+                                <p class="quote-lbl-gray">Weight (kg)</p>
+                                <p class="quote-lbl">14 </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingThree">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                          <strong> Medical History</strong>
+                        </button>
+                      </h2>
+                      <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                          <div class="row">
+                            <div class="col-md-6">
+                              <div class="form-group">
+                                <label class="quote-lbl-gray">Hypertension Blood Pressure History</label>
+                                <p class="quote-lbl">
+                                  Vinod Kumar : No <br>
+                                  Pooja : No <br>
+                                  Bhavanya : No
+                                </p>
+                              </div>
+                            </div>
+                            <div class="col-md-6">
+                              <div class="form-group">
+                                <label class="quote-lbl-gray">Diabetes History</label>
+                                <p class="quote-lbl">
+                                  Vinod Kumar : No <br>
+                                  Pooja : No <br>
+                                  Bhavanya : No
+                                </p>
+                              </div>
+                            </div>
+                            <div class="col-md-6">
+                              <div class="form-group">
+                                <label class="quote-lbl-gray">Any Heart related Or Circulatory Conditions Disorders</label>
+                                <p class="quote-lbl">
+                                  Vinod Kumar : No <br>
+                                  Pooja : No <br>
+                                  Bhavanya : No
+                                </p>
+                              </div>
+                            </div>
+                            <div class="col-md-6">
+                              <div class="form-group">
+                                <label class="quote-lbl-gray">Kidney Failure Stone Dialysis Or Any Other Kidney Urinary Tract Or Prostate Disease</label>
+                                <p class="quote-lbl">
+                                  Vinod Kumar : No <br>
+                                  Pooja : No <br>
+                                  Bhavanya : No
+                                </p>
+                              </div>
+                            </div>
+                            <div class="col-md-6">
+                              <div class="form-group">
+                                <label class="quote-lbl-gray">Arthritis Spondylosis Joint Replacement Or Any Other Disorder of Joint ligaments</label>
+                                <p class="quote-lbl">
+                                  Vinod Kumar : No <br>
+                                  Pooja : No <br>
+                                  Bhavanya : No
+                                </p>
+                              </div>
+                            </div>
+                            <div class="col-md-6">
+                              <div class="form-group">
+                                <label class="quote-lbl-gray">Tuberculosis Asthma Bronchitis Or Any Other Lung Respiratory Disease</label>
+                                <p class="quote-lbl">
+                                  Vinod Kumar : No <br>
+                                  Pooja : No <br>
+                                  Bhavanya : No
+                                </p>
+                              </div>
+                            </div>
+                            <div class="col-md-6">
+                              <div class="form-group">
+                                <label class="quote-lbl-gray">Liver Disease Or Any Other Gastro Intestinal Or Gallbladder Disease</label>
+                                <p class="quote-lbl">
+                                  Vinod Kumar : No <br>
+                                  Pooja : No <br>
+                                  Bhavanya : No
+                                </p>
+                              </div>
+                            </div>
+                            <div class="col-md-6">
+                              <div class="form-group">
+                                <label class="quote-lbl-gray">Cancer or Tumor of any kind</label>
+                                <p class="quote-lbl">
+                                  Vinod Kumar : No <br>
+                                  Pooja : No <br>
+                                  Bhavanya : No
+                                </p>
+                              </div>
+                            </div>
+                            <div class="col-md-6">
+                              <div class="form-group">
+                                <label class="quote-lbl-gray">Stroke Epilepsy Paralysis Or Any Other Brain Nervous System Disease</label>
+                                <p class="quote-lbl">
+                                  Vinod Kumar : No <br>
+                                  Pooja : No <br>
+                                  Bhavanya : No
+                                </p>
+                              </div>
+                            </div>
+                            <div class="col-md-6">
+                              <div class="form-group">
+                                <label class="quote-lbl-gray">Any Gynecological Breast Disorder</label>
+                                <p class="quote-lbl">
+                                  Vinod Kumar : No <br>
+                                  Pooja : No <br>
+                                  Bhavanya : No
+                                </p>
+                              </div>
+                            </div>
+                            <div class="col-md-6">
+                              <div class="form-group">
+                                <label class="quote-lbl-gray">Use tobacco products cigarettes or drinks alcohol</label>
+                                <p class="quote-lbl">
+                                  Vinod Kumar : No <br>
+                                  Pooja : No <br>
+                                  Bhavanya : No
+                                </p>
+                              </div>
+                            </div>
+                            <div class="col-md-6">
+                              <div class="form-group">
+                                <label class="quote-lbl-gray">Has the insured sought any medical advice or awaiting any treatment medical or surgical due to any of the diseases or condition listed above or otherwise attend follow up for any diseases or condition or ailment or injury or addiction</label>
+                                <p class="quote-lbl">
+                                  Vinod Kumar : No <br>
+                                  Pooja : No <br>
+                                  Bhavanya : No
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div> 
+                </div>  
+                  
+              </div>
+              <div class="col-md-4">
+                <div class="quote-box mt-4">
+                  <div class="row align-items-center mb-2">
+                    <div class="col-auto">
+                      <div class="quote-img">
+                        <img src="{% static 'home/assets/image/partner-logo/partner-logo-3.png' %}" alt="">
+                      </div>
+                    </div>
+                    <div class="col-md">
+                      <p class="wrap-prgh mb-0"><strong>Health Shield</strong></p>
+                    </div>
+                    <div class="col-md">
+                      <h2 class="wrap-subhding text-end"><i class="fa-solid fa-indian-rupee-sign"></i>19305</h2>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <p class="quote-lbl-gray">Family Composition</p>
+                        <p class="quote-lbl">2 Adult, 1 Child</p>
+                      </div>  
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <p class="quote-lbl-gray">CRN</p>
+                        <p class="quote-lbl">9563409</p>
+                      </div>  
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <p class="quote-lbl-gray">Insurance Cover</p>
+                        <p class="quote-lbl"><i class="fa-solid fa-indian-rupee-sign"></i>5,970</p>
+                      </div>  
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <p class="quote-lbl-gray">Tenure</p>
+                        <p class="quote-lbl">1 year(s)</p>
+                      </div>  
+                    </div>
+                    <div class="col-sm-12">
+                      <a href="#" class="wrap-btn w-100 text-center mb-1">Payment</a>
+                    </div>
                   </div>
                 </div>
-              </div>  
+    
+    
+              </div>
             </div>
             
+    
           </div>
-          
         </div>
-        <!-- /.content-wrapper -->
-    
-        {% include "footer.html" %}
-    </div>
-    <!-- ./wrapper -->
-    
-    
-    <div class="modal fade table-filter-modal" id="modal-filter" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <form class="modal-content">
-          <div class="modal-header">
-            <div class="d-flex align-items-center justify-content-between w-100">
-              <h5 class="modal-title">Filter</h5>
-              <p class="modal-title text-gray mb-0">Clear All</p>
-            </div>  
-            <!-- <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">&times;</button> -->
-          </div>
-          <div class="modal-body">
-            <h4 class="filter-hding">Status</h4>
-            <div class="filter-status">
-              <input type="checkbox" name="" id="status-active">
-              <label for="status-active">Active</label>
-            </div>
-            <div class="filter-status">
-              <input type="checkbox" name="" id="status-deactived">
-              <label for="status-deactived">Deactived</label>
-            </div>
-            <div class="filter-status">
-              <input type="checkbox" name="" id="status-onnotice">
-              <label for="status-onnotice">Active | On Notice</label>
-            </div>
-            <h4 class="filter-hding">Member Name</h4>
-            <input type="search" name="" class="filter-search-field" placeholder="Search Members">
-            <h4 class="filter-hding">Plan</h4>
-            <select class="filter-search-field" id="planselect">
-              <option value="" selected>Select Plan</option>
-              <option value="Team Member">Netyx (Team Member)</option>
-              <option value="Family">Netyx (Team Member, Spouse and Two Children)</option>
-            </select>
-            <h4 class="filter-hding">Activation Date Range</h4>
-            <input type="text" class="daterange filter-search-field" value="01/01/2025 - 01/15/2025" />
-            <h4 class="filter-hding">Deactivation Date Range</h4>
-            <input type="text" class="daterange filter-search-field" value="01/01/2025 - 01/15/2025" />
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="dashboard-btn-outline" data-bs-dismiss="modal">Cancel</button>
-            <button type="button" class="dashboard-addbtn">Apply</button>
-          </div>
-        </form>
-      </div>
-    </div>
-    
-    {% include 'footer-script.html' %}
-    
-    
-    
-    
-    </body>
+      </div>  
+    </section>
 
-{% endblock %}
+{% include 'home/layouts/footer.html' %}
+
+</body>
+</html>

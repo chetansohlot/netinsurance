@@ -58,3 +58,20 @@ $("#health-insurance-child").click(function() {
     $(".increment-decreament").hide();
   }
 });
+
+
+$('input[name="insurer-choose"]').change(function () {
+    // Find the closest <li> and toggle its .increment-decreament div
+$(this).closest('li').find('.increment-decreament').toggle(this.checked);
+});
+
+//Health journey new and renew policy 
+$("#new-policy-btn").click(function(){
+  $("#new-policy").css({"display":"flex"});
+  $("#renew-policy").css({"display":"none"})
+})
+$("#renew-policy-btn").click(function(){
+  $("#renew-policy").css({"display":"flex"})
+  $("#new-policy").css({"display":"none"});
+  
+})

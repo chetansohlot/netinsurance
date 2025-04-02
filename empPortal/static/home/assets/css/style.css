@@ -1176,6 +1176,7 @@ border-radius: 5px;
 .header-login a:hover {background-color: #bb215b; color: #fff !important;}
 .input-left::placeholder {font-size: 13px;}
 .form-field {width:100%; border-radius: 4px; font-size: 13px; padding: 6px 15px 6px; border:1px solid #dee2e6; }
+.form-lbl {font-size: 12px; font-weight: 600;}
 .form-group {margin-bottom: 10px;}
 .form-btn {width: 100%; padding: 6px 15px 6px; text-align: center; background-color: #bb215b; color: #fff; outline: none; border: none; border-radius: 4px;}
 .checkbox-div a {text-decoration: none;}
@@ -1396,6 +1397,9 @@ h1,h2,h3,h4,h5,h6 {text-transform: capitalize;}
 .quote-img {border:1px solid #999; border-radius: 5px; width: 50px; height: 50px; display: flex; align-items: center;}
 .quote-img > img {width: 100%; height: 100%; object-fit: contain;}
 
+.quote-btn-outline {border-radius: 6px; font-size:12px; padding:4px 15px; background: #fff; border:1px solid #bb215b;  color:#bb215b; display: inline-block; text-decoration: none; transition: all 0.3s ease-in-out;}
+.quote-btn-outline:hover {background: #bb215b; color:#fff; transition: all 0.3s ease-in-out; }
+
 .shorting-select > span {font-size:12px; padding: 0 4px 0 0; }
 
 .shorting-dropdown-menu {width: 310px; padding: 12px; border: none; border-radius: 8px; outline: none; box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05); }
@@ -1465,9 +1469,24 @@ footer {background: #f7d134; padding: 45px 0 20px; }
 .footer-disclaimer li {list-style: none; display: flex; gap: 10px; font-size:12px; color:#222; margin-bottom: 10px;}
 .footer-disclaimer li > i { position:relative; top:3px; }
 
+.insurance-plan-img {width:70px; height: 70px; margin-bottom: 15px;}
+.insurance-plan-img > img { width:100%; height:100%; object-fit:contain; }
+
+.policy-coverage-list {margin: 0px; padding: 0px 10px 0 0; max-height: 300px; overflow: auto;}
+.policy-coverage-list li {list-style: none; display:flex; gap:10px; padding:10px 0; border-bottom:1px solid #ddd; }
+.coverage-list-icon {background: #ddddff; padding: 7px 12px; font-size: 13px; display: inline-block; border-radius: 10px;}
+.policy-coverage-list li:last-child {border-bottom: none;} 
+
+.modal-tab li button { font-size:13px; }
+.modal-tab li button.active {background-color: #ffe0ec  !important;}
+.text-gray {color:#999;}
+
+.increment-decreament {display: none;}
+
 @media (max-width:767px) {
   .banner-hding {font-size: 30px;}
   .banner-subhding {font-size:20px;}
   .wrap-hding {font-size:24px;}
   .wrap-subhding {font-size:16px;}
+  .hiw-first-arrow, .hiw-sec-arrow {display: none; }
 }
