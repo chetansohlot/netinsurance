@@ -8,13 +8,22 @@
       </li>
     </ul>
     <div class="header-search-area">
-        <select class="header-search-field">
-          <option>Agents</option>
-          <option>Billing</option>
-        </select>
-        <input type="text" class="header-search-field" value="" placeholder="Enter Min 3 Characters" autocomplete="off">
-        <button class="header-search-btn" type="submit"> <i class="fas fa-search"></i> </button>
-    </div>
+      <form class="" action="{% url 'global_search' %}" method="GET">
+          <select class="header-search-field" name="category">
+              <option value="agents" {% if "lead-mgt" not in request.path %}selected{% endif %}>Agents</option>
+              <option value="lead" {% if "lead-mgt" in request.path %}selected{% endif %}>Lead</option>
+          </select>
+          <input type="text" class="header-search-field" 
+              name="global_search" 
+              placeholder="Search here" 
+              autocomplete="off"
+              value="{{ request.GET.global_search|default:'' }}">
+          <button class="header-search-btn" type="submit"> 
+              <i class="fas fa-search"></i> 
+          </button>
+      </form>
+  </div>
+  
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
       <!-- Navbar Search -->

@@ -2,7 +2,7 @@ from django.urls import path, include
 from . import views,export
 from . import views
 from . import authenticationView
-from .controller import commissions, profile, helpAndSupport, leads, sellMotor, sellHealth, sellTerm, Franchises, Branches, members, customers, quoteManagement, healthQuoteManagement, homeManagement
+from .controller import commissions, profile, globalController, helpAndSupport, leads, sellMotor, sellHealth, sellTerm, Franchises, Branches, members, customers, quoteManagement, healthQuoteManagement, homeManagement
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -30,6 +30,11 @@ health_patterns = [
 ]
 
 urlpatterns = [
+    # GLOBAL - SEARCH 
+    path('global-search/', globalController.global_search, name='global_search'),
+    # GLOBAL - SEARCH 
+
+
     path("login", authenticationView.login_view, name="login"),
     path("login-mobile", authenticationView.login_mobile_view, name="login-mobile"),
     path("check-email/", authenticationView.check_email, name="check-email"),

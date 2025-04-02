@@ -33,6 +33,7 @@ import pdfkit
 from django.template.loader import render_to_string
 from pprint import pprint 
 from django.core.paginator import Paginator
+from django.db.models import Q
 
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 
@@ -51,6 +52,7 @@ def index(request):
     per_page = request.GET.get('per_page', 10)
     search_field = request.GET.get('search_field', '')  # Which field to search
     search_query = request.GET.get('search_query', '')  # Search value
+    global_search = request.GET.get('global_search', '').strip()
 
     try:
         per_page = int(per_page)
@@ -58,6 +60,18 @@ def index(request):
         per_page = 10  # Default to 10 if invalid value is given
 
     leads = Leads.objects.all().order_by('-created_at')
+
+
+    if global_search:
+        leads = leads.filter(
+            Q(name_as_per_pan__icontains=global_search) |  # Search by name
+            Q(email_address__icontains=global_search) |  # Search by email
+            Q(mobile_number__icontains=global_search) |  # Search by mobile number
+            Q(pan_card_number__icontains=global_search) |  # Search by PAN card number
+            Q(state__icontains=global_search) |  # Search by state
+            Q(city__icontains=global_search) |  # Search by city
+            Q(lead_id__icontains=global_search)  # Search by city
+        )
 
     # Apply filtering if search_field and search_query are provided
     if search_field and search_query:

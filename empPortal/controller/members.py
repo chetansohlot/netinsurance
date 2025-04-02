@@ -35,6 +35,9 @@ from pprint import pprint
 from django.db.models import Q
 from django.core.paginator import Paginator
 
+from django.db.models.functions import Concat
+from django.db.models import Q, Value
+
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 
 app = FastAPI()
@@ -57,7 +60,8 @@ def members(request):
         search_field = request.GET.get('search_field', '')  # Field to search
         search_query = request.GET.get('search_query', '')  # Search value
         sorting = request.GET.get('sorting', '')  # Sorting option
-
+        global_search = request.GET.get('global_search', '').strip()
+        
         try:
             per_page = int(per_page)
         except ValueError:
@@ -65,6 +69,18 @@ def members(request):
 
         # Base QuerySet
         users = Users.objects.filter(role_id__in=role_ids)
+
+        
+        if global_search:
+            users = users.annotate(
+                search_full_name=Concat('first_name', Value(' '), 'last_name')
+            ).filter(
+                Q(search_full_name__icontains=global_search) |  
+                Q(first_name__icontains=global_search) |
+                Q(last_name__icontains=global_search) |
+                Q(email__icontains=global_search) |
+                Q(phone__icontains=global_search)  
+            )
 
         # Apply filtering
         if search_field and search_query:
@@ -105,6 +121,7 @@ def members(request):
             'pending_agents': pending_agents,
             'search_field': search_field,
             'search_query': search_query,
+            'global_search': global_search,
             'sorting': sorting,
             'per_page': per_page,
         })
