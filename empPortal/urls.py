@@ -84,8 +84,8 @@ urlpatterns = [
     path('members/activated', members.members_activated, name='members_activated'),
     path('members/rejected', members.members_rejected, name='members_rejected'),
 
-    path('/member/member-view/<str:user_id>',members.memberView, name='member-view'),
-    path('/member/activate-user/<str:user_id>',members.activateUser, name='activate-user'),
+    path('member/member-view/<str:user_id>',members.memberView, name='member-view'),
+    path('member/activate-user/<str:user_id>',members.activateUser, name='activate-user'),
     path('update-commission/', commissions.update_commission, name='update-commission'),
 
     # LEADS 
