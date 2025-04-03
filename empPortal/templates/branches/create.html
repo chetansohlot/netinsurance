@@ -38,82 +38,73 @@
               <div class="col-sm-12">  
                 <div class="card box-shadow-none p-md-5 p-3">
                   <div class="card-body px-0 pb-0 pt-0">
-                    
                     <form autocomplete="off" id="branchForm" name="branchForm"
                     action="{% if branch %}{% url 'branch-management-edit' branch.id %}{% else %}{% url 'branch-management-create' %}{% endif %}"
                     method="post">
-                    {% csrf_token %}
-                
-                    <div class="row">
-                        <!-- Franchise ID -->
-                        <!-- Branch Name -->
-                        <div class="form-group col-md-6">
-                            <label for="branch_name">Branch Name</label>
-                            <input type="text" class="form-control" name="branch_name" id="branch_name" 
-                                placeholder="Enter Branch Name" required maxlength="255"
-                                value="{{ branch.branch_name|default_if_none:'' }}">
-                        </div>
-                
-                        <!-- Contact Person -->
-                        <div class="form-group col-md-6">
-                            <label for="contact_person">Contact Person</label>
-                            <input type="text" class="form-control" name="contact_person" id="contact_person" 
-                                placeholder="Enter Contact Person" required maxlength="255"
-                                value="{{ branch.contact_person|default_if_none:'' }}">
-                        </div>
-                
-                        <!-- Mobile Number -->
-                        <div class="form-group col-md-6">
-                            <label for="mobile">Mobile</label>
-                            <input type="tel" class="form-control" name="mobile" id="mobile" 
-                                placeholder="Enter Mobile Number" required pattern="[0-9]{10}"
-                                value="{{ branch.mobile|default_if_none:'' }}">
-                        </div>
-                
-                        <!-- Email -->
-                        <div class="form-group col-md-6">
-                            <label for="email">Email</label>
-                            <input type="email" class="form-control" name="email" id="email" 
-                                placeholder="Enter Email" required maxlength="255"
-                                value="{{ branch.email|default_if_none:'' }}">
-                        </div>
-                
-                        <!-- Address -->
-                        <div class="form-group col-md-12">
-                            <label for="address">Address</label>
-                            <textarea class="form-control" name="address" id="address" 
+                  {% csrf_token %}
+                  
+                  <input type="hidden" name="branch_id" id="branch_id" value="{{ branch.id|default_if_none:'' }}">
+              
+                  <div class="row">
+                      <div class="form-group col-md-6">
+                          <label for="branch_name">Branch Name</label>
+                          <input type="text" class="form-control" name="branch_name" id="branch_name" 
+                                 placeholder="Enter Branch Name" required maxlength="255"
+                                 value="{{ branch.branch_name|default_if_none:'' }}">
+                      </div>
+              
+                      <div class="form-group col-md-6">
+                          <label for="contact_person">Contact Person</label>
+                          <input type="text" class="form-control" name="contact_person" id="contact_person" 
+                                 placeholder="Enter Contact Person" required maxlength="255"
+                                 value="{{ branch.contact_person|default_if_none:'' }}">
+                      </div>
+              
+                      <div class="form-group col-md-6">
+                          <label for="mobile">Mobile</label>
+                          <input type="tel" class="form-control" name="mobile" id="mobile" 
+                                 placeholder="Enter Mobile Number" required pattern="[0-9]{10}"
+                                 value="{{ branch.mobile|default_if_none:'' }}">
+                      </div>
+              
+                      <div class="form-group col-md-6">
+                          <label for="email">Email</label>
+                          <input type="email" class="form-control" name="email" id="email" 
+                                 placeholder="Enter Email" required maxlength="255"
+                                 value="{{ branch.email|default_if_none:'' }}">
+                      </div>
+              
+                      <div class="form-group col-md-12">
+                          <label for="address">Address</label>
+                          <textarea class="form-control" name="address" id="address" 
                                     placeholder="Enter Full Address" rows="2">{{ branch.address|default_if_none:'' }}</textarea>
-                        </div>
-                
-                        <!-- City -->
-                        <div class="form-group col-md-4">
-                            <label for="city">City</label>
-                            <input type="text" class="form-control" name="city" id="city" placeholder="Enter City"
-                                value="{{ branch.city|default_if_none:'' }}">
-                        </div>
-                
-                        <!-- State -->
-                        <div class="form-group col-md-4">
-                            <label for="state">State</label>
-                            <input type="text" class="form-control" name="state" id="state" placeholder="Enter State"
-                                value="{{ branch.state|default_if_none:'' }}">
-                        </div>
-                
-                        <!-- Pincode -->
-                        <div class="form-group col-md-4">
-                            <label for="pincode">Pincode</label>
-                            <input type="text" class="form-control" name="pincode" id="pincode" 
-                                placeholder="Enter Pincode" pattern="[0-9]{6}"
-                                value="{{ branch.pincode|default_if_none:'' }}">
-                        </div>
-                
-                    </div>
-                
-                    <!-- Submit Button -->
-                    <button type="submit" class="btn btn-primary mt-3">
-                        {% if branch %}Update Branch{% else %}Add Branch{% endif %}
-                    </button>
-                </form>
+                      </div>
+              
+                      <div class="form-group col-md-4">
+                          <label for="city">City</label>
+                          <input type="text" class="form-control" name="city" id="city" placeholder="Enter City"
+                                 value="{{ branch.city|default_if_none:'' }}">
+                      </div>
+              
+                      <div class="form-group col-md-4">
+                          <label for="state">State</label>
+                          <input type="text" class="form-control" name="state" id="state" placeholder="Enter State"
+                                 value="{{ branch.state|default_if_none:'' }}">
+                      </div>
+              
+                      <div class="form-group col-md-4">
+                          <label for="pincode">Pincode</label>
+                          <input type="text" class="form-control" name="pincode" id="pincode" 
+                                 placeholder="Enter Pincode" pattern="[0-9]{6}"
+                                 value="{{ branch.pincode|default_if_none:'' }}">
+                      </div>
+                  </div>
+              
+                  <button type="submit" class="btn btn-primary mt-3">
+                      {% if branch %}Update Branch{% else %}Add Branch{% endif %}
+                  </button>
+              </form>
+              
                 
 
                     

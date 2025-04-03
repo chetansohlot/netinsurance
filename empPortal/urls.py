@@ -61,6 +61,7 @@ urlpatterns = [
     path('franchise-management/<str:franchise_id>/', Franchises.create_or_edit, name='franchise-management-edit'),
 
     path('branch-management/', Branches.index, name='branch-management'),
+    path("check-branch-email/", Branches.check_branch_email, name="check-branch-email"),
     path('branch-management/create-branch', Branches.create_or_edit, name='branch-management-create'),
     path('branch-management/<str:branch_id>/', Branches.create_or_edit, name='branch-management-edit'),
 
