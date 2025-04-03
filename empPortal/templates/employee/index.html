@@ -200,13 +200,16 @@ Employee Management
                                         <td>{{ employee.email|default:"-" }}</td>
                                         <td>
                                             {% with all_users|get_item:employee.senior_id as supervisor %}
-                                                {% if supervisor %}
+                                                {% if supervisor and employee.role_id != 2 %}
                                                     {{ supervisor.first_name }} {{ supervisor.last_name }}
+                                                {% elif employee.role_id == 2 %}
+                                                    Admin
                                                 {% else %}
                                                     -
                                                 {% endif %}
                                             {% endwith %}
                                         </td>
+                                        
                                         <td>{{ branches|get_item:employee.branch_id|default:"-" }}</td>
                                         <td>
                                             <a href="{% url 'employee-management-edit' employee_id=employee.id %}" class="btn btn-xs btn-warning">
