@@ -11,7 +11,7 @@ entries = [
     {"first_name":"chetan7","last_name":"Kumar7"}
 ]
 
-with open('ne2w.csv',mode="w") as csvfile:
+with open('ne2w.csv',mode="r") as csvfile:
     fieldNames = entries[0].keys()
     writer = csv.DictWriter(csvfile,fieldNames)
     writer.writeheader()
