@@ -62,6 +62,27 @@ def index(request):
     })
 
 
+def check_branch_email(request):
+    if request.method == "POST":
+        email = request.POST.get("email", "").strip()
+        branch_id = request.POST.get("branch_id", "").strip()
+        
+        print(f"Checking email: {email}, Branch ID: {branch_id}")  # Debugging
+
+        # If editing, allow current branch email
+        if branch_id:
+            branch = Branch.objects.filter(id=branch_id).first()
+            if branch and branch.email == email:
+                return JsonResponse({"exists": False})  # Allow the current email
+
+        # Check if email exists in any other branch
+        exists = Branch.objects.filter(email=email).exists()
+        print(f"Exists in DB: {exists}")  # Debugging
+
+        return JsonResponse({"exists": exists})
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
 def create_or_edit(request, branch_id=None):
     if not request.user.is_authenticated:
         return redirect('login')

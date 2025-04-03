@@ -171,129 +171,83 @@
 
   </script>
 
-  <script>
-    $(document).ready(function () {
-        $("#leadForm").validate({
-            rules: {
-                customer_id: {
-                    required: true
+  
+  
+    <script>
+        $(document).ready(function () {
+            $("#departmentForm").validate({
+                rules: {
+                    name: {
+                        required: true,
+                        minlength: 3
+                    },
+                    contact_person: {
+                        required: true,
+                        minlength: 3
+                    },
+                    mobile: {
+                        required: true,
+                        digits: true,
+                        minlength: 10,
+                        maxlength: 10
+                    },
+                    email: {
+                        required: true,
+                        email: true
+                    },
+                    department_code: {
+                        required: true,
+                        minlength: 3,
+                        maxlength: 20
+                    },
+                    head_of_department: {
+                        required: true,
+                        minlength: 3
+                    }
                 },
-                mobile_number: {
-                    required: true,
-                    digits: true,
-                    minlength: 10,
-                    maxlength: 10
+                messages: {
+                    name: {
+                        required: "Please enter Department Name",
+                        minlength: "Department Name must be at least 3 characters long"
+                    },
+                    contact_person: {
+                        required: "Please enter Contact Person",
+                        minlength: "Contact Person must be at least 3 characters long"
+                    },
+                    mobile: {
+                        required: "Please enter Mobile Number",
+                        digits: "Only numbers allowed",
+                        minlength: "Mobile number must be 10 digits",
+                        maxlength: "Mobile number must be 10 digits"
+                    },
+                    email: {
+                        required: "Please enter an Email Address",
+                        email: "Enter a valid email address"
+                    },
+                  
+                    department_code: {
+                        required: "Please enter Department Code",
+                        minlength: "Department Code must be at least 3 characters",
+                        maxlength: "Department Code must not exceed 20 characters"
+                    },
+                    head_of_department: {
+                        required: "Please enter Head of Department",
+                        minlength: "Head of Department must be at least 3 characters long"
+                    }
                 },
-                email_address: {
-                    required: true,
-                    email: true
+                errorElement: "div",
+                errorPlacement: function (error, element) {
+                    error.addClass("text-danger");
+                    error.insertAfter(element);
                 },
-                quote_date: {
-                    required: true,
-                    date: true
-                },
-                name_as_per_pan: {
-                    required: true,
-                    minlength: 3
-                },
-                pan_card_number: {
-                    required: true,
-                    minlength: 10,
-                    maxlength: 10,
-                    pattern: /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/
-                },
-                date_of_birth: {
-                    required: true,
-                    date: true
-                },
-                state: {
-                    required: true
-                },
-                city: {
-                    required: true
-                },
-                pincode: {
-                    required: true,
-                    digits: true,
-                    minlength: 6,
-                    maxlength: 6
-                },
-                address: {
-                    required: true,
-                    minlength: 10
-                },
-                lead_type: {
-                    required: true
-                },
-                status: {
-                    required: true
+                submitHandler: function (form) {
+                    form.submit();
                 }
-            },
-            messages: {
-                customer_id: {
-                    required: "Please select a Customer ID"
-                },
-                mobile_number: {
-                    required: "Please enter a mobile number",
-                    digits: "Only numbers allowed",
-                    minlength: "Mobile number must be 10 digits",
-                    maxlength: "Mobile number must be 10 digits"
-                },
-                email_address: {
-                    required: "Please enter an email address",
-                    email: "Enter a valid email address"
-                },
-                quote_date: {
-                    required: "Please select a quote date"
-                },
-                name_as_per_pan: {
-                    required: "Please enter your name as per PAN",
-                    minlength: "Name must be at least 3 characters long"
-                },
-                pan_card_number: {
-                    required: "Please enter PAN number",
-                    minlength: "PAN must be 10 characters long",
-                    maxlength: "PAN must be 10 characters long",
-                    pattern: "Enter a valid PAN (e.g., ABCDE1234F)"
-                },
-                date_of_birth: {
-                    required: "Please enter Date of Birth"
-                },
-                state: {
-                    required: "Please enter State"
-                },
-                city: {
-                    required: "Please enter City"
-                },
-                pincode: {
-                    required: "Please enter Pincode",
-                    digits: "Only numbers allowed",
-                    minlength: "Pincode must be 6 digits",
-                    maxlength: "Pincode must be 6 digits"
-                },
-                address: {
-                    required: "Please enter Address",
-                    minlength: "Address must be at least 10 characters long"
-                },
-                lead_type: {
-                    required: "Please select Lead Type"
-                },
-                status: {
-                    required: "Please select Status"
-                }
-            },
-            errorElement: "div",
-            errorPlacement: function (error, element) {
-                error.addClass("text-danger");
-                error.insertAfter(element);
-            },
-            submitHandler: function (form) {
-                form.submit();
-            }
+            });
         });
-    });
+        
     </script>
-    
+        
 
   
                             <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
@@ -782,11 +736,12 @@
     });
 });
 </script>
+
 <script>
     $(document).ready(function () {
         console.log("jQuery Loaded:", !!window.jQuery);
         console.log("jQuery Validate Loaded:", typeof $.fn.validate !== "undefined");
-
+    
         $("#branchForm").validate({
             rules: {
                 branch_name: {
@@ -808,7 +763,24 @@
                 email: {
                     required: true,
                     email: true,
-                    maxlength: 255
+                    maxlength: 255,
+                    remote: {
+                        url: "/check-branch-email/",  // Django view to check branch email
+                        type: "POST",
+                        data: {
+                            email: function () {
+                                return $("#email").val();
+                            },
+                            branch_id: function () {
+                                return $("#branch_id").val();  // Pass branch ID to allow current email in edit mode
+                            },
+                            csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val()
+                        },
+                        dataFilter: function (response) {
+                            var data = JSON.parse(response);
+                            return data.exists ? "false" : "true"; // 'false' means email is taken
+                        }
+                    }
                 },
                 address: {
                     required: true,
@@ -845,7 +817,8 @@
                 email: {
                     required: "Please enter an email",
                     email: "Enter a valid email",
-                    maxlength: "Email must be under 255 characters"
+                    maxlength: "Email must be under 255 characters",
+                    remote: "This email is already registered."
                 },
                 address: {
                     required: "Please enter the full address",
@@ -874,6 +847,7 @@
             }
         });
     });
+    
 </script>
 
 </html>

@@ -2,7 +2,7 @@ from django.urls import path, include
 from . import views,export
 from . import views
 from . import authenticationView
-from .controller import commissions, profile, globalController, helpAndSupport, leads, sellMotor, sellHealth, sellTerm, Franchises, Branches, members, customers, quoteManagement, healthQuoteManagement, homeManagement
+from .controller import commissions, profile, globalController, helpAndSupport, leads, sellMotor, sellHealth, sellTerm, Franchises, Department, Branches, members, customers, quoteManagement, healthQuoteManagement, homeManagement
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -61,8 +61,16 @@ urlpatterns = [
     path('franchise-management/<str:franchise_id>/', Franchises.create_or_edit, name='franchise-management-edit'),
 
     path('branch-management/', Branches.index, name='branch-management'),
+    path("check-branch-email/", Branches.check_branch_email, name="check-branch-email"),
     path('branch-management/create-branch', Branches.create_or_edit, name='branch-management-create'),
     path('branch-management/<str:branch_id>/', Branches.create_or_edit, name='branch-management-edit'),
+
+
+    path('department-management/', Department.index, name='department-management'),
+    path('department-management/create-department', Department.create_or_edit, name='department-management-create'),
+    path('department-management/<str:department_id>/', Department.create_or_edit, name='department-management-edit'),
+
+
 
     path('my-account/', profile.myAccount, name='my-account'),
     path('download-certificate-pdf/<str:cus_id>/', profile.downloadCertificatePdf, name='download-certificate'),
