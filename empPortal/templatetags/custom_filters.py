@@ -4,6 +4,13 @@ import re
 
 register = template.Library()
 
+
+
+@register.filter
+def get_item(dictionary, key):
+    """Returns the value from a dictionary given a key."""
+    return dictionary.get(key, "-")
+
 @register.filter
 def format_date(value, output_format="%Y-%m-%d"):
     """Convert '03-Mar-2025' to '2025-03-03' (YYYY-MM-DD)."""

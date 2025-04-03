@@ -1,0 +1,163 @@
+{% extends 'master.html' %}
+
+{% load static %}
+
+{% block title %}
+Add Allocation
+{% endblock %}
+
+{% block content %}
+
+<body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+    
+        {% include "navbar.html" %}
+        {% include "sidebar.html" %}
+    
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <div class="content-header breadcrump-bg">
+          <div class="container-fluid">
+            <div class="row py-2">
+              <div class="col-sm-6">
+                <div class="d-flex align-items-center">
+                  <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Add Allocation</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /.content-header -->
+    
+        <!-- Main content -->
+        <div class="content">
+          <div class="container-fluid">
+            <div class="row">
+              
+              <div class="col-sm-12">  
+                
+                <ul class="stepflow-text">
+                    <li class="active"><a href="#link1"><span>Create User</span></a></li>
+                    <li><a href="#link2"><span>Allocation Details</span></a></li>
+                </ul>
+                <ul class="new-stepflow">
+                    <li class="active"><a href="#link1"></a></li>
+                    <li><a href="#link2"></a></li>
+                </ul>
+                <div class="card box-shadow-none p-md-5 p-3">
+                  <div class="card-body px-0 pb-0 pt-0">
+                    <form autocomplete="off" id="employeeForm" name="employeeForm"
+                            action="{% url 'employee-allocation-update' employee.id %}" method="post">
+                            {% csrf_token %}
+                            <div class="row">
+                                
+                                <div class="form-group col-sm-6">
+                                    <label for="department">Department</label>
+                                    <select class="form-control" name="department" id="department">
+                                        <option value="">Select Department</option>
+                                        {% for department in departments %}
+                                            <option value="{{ department.id }}" {% if department.id|stringformat:"s" == employee.department_id|stringformat:"s" %}selected{% endif %}>
+                                            {{ department.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group col-sm-6">
+                                    <label for="branch">Branch</label>
+                                    <select class="form-control" name="branch" id="branch">
+                                        <option value="">Select Branch</option>
+                                        {% for branch in branches %}
+                                            <option value="{{ branch.id }}" {% if branch.id|stringformat:"s" == employee.branch_id|stringformat:"s" %}selected{% endif %}>
+                                            {{ branch.branch_name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group col-sm-6">
+                                    <label for="role">Role</label>
+                                    <select class="form-control" name="role" id="role">
+                                        <option value="">Select Role</option>
+                                        {% for role in roles %}
+                                            <option value="{{ role.id }}" {% if role.id|stringformat:"s" == employee.role_id|stringformat:"s" %}selected{% endif %}>
+                                            {{ role.roleName }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                        
+                                <div class="form-group col-sm-6">
+                                    <label for="senior">Select Senior</label>
+                                    <select class="form-control" name="senior" id="senior">
+                                        <option value="">Select Senior</option>
+                                        {% for senior in senior_users %}
+                                            <option value="{{ senior.id }}" {% if senior.id|stringformat:"s" == employee.senior_id|stringformat:"s" %}selected{% endif %}>
+                                            {{ senior.first_name }} {{ senior.last_name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                {% if employee %}Update Employee{% else %}Save Employee{% endif %}
+                            </button>
+                        </form>
+                
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>  
+        </div>
+      </div>
+        
+    </div>
+    
+    {% include "footer.html" %}
+    {% include "footer-script.html" %}
+    <script>
+      document.getElementById("myForm").addEventListener("submit", function() {
+          document.getElementById("loader").style.display = "flex";
+      });
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('#role').change(function() {
+                var roleId = $(this).val();
+                var userSelect = $('#senior');
+
+                if (roleId) {
+                    $.ajax({
+                        url: "{% url 'get_users_by_role' %}",
+                        type: 'GET',
+                        data: { 'role_id': roleId },
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                        success: function(response) {
+                            userSelect.empty();
+                            userSelect.append('<option value="">Select User</option>');
+                            if (response.users && response.users.length > 0) {
+                                $.each(response.users, function(index, user) {
+                                    userSelect.append(
+                                        `<option value="${user.id}">${user.full_name}</option>`
+                                    );
+                                });
+                            } else {
+                                userSelect.append('<option value="">No users available</option>');
+                            }
+                        },
+                        error: function() {
+                            alert('Error fetching users');
+                        }
+                    });
+                } else {
+                    userSelect.empty().append('<option value="">Select User</option>');
+                }
+            });
+        });
+</script>
+</body>
+{% endblock %}

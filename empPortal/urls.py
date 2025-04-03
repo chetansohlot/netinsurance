@@ -2,7 +2,7 @@ from django.urls import path, include
 from . import views,export
 from . import views
 from . import authenticationView
-from .controller import commissions, profile, globalController, helpAndSupport, leads, sellMotor, sellHealth, sellTerm, Franchises, Department, Branches, members, customers, quoteManagement, healthQuoteManagement, homeManagement
+from .controller import commissions, profile, globalController, helpAndSupport, Employee, leads, sellMotor, sellHealth, sellTerm, Franchises, Department, Branches, members, customers, quoteManagement, healthQuoteManagement, homeManagement
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -71,6 +71,10 @@ urlpatterns = [
     path('department-management/<str:department_id>/', Department.create_or_edit, name='department-management-edit'),
 
 
+    path('employee-management/', Employee.index, name='employee-management'),
+    path('employee-management/create-employee', Employee.create_or_edit, name='employee-management-create'),
+    path('employee-management/<str:employee_id>/', Employee.create_or_edit, name='employee-management-edit'),
+    path('employee-management/employee-allocation-employee/<str:employee_id>', Employee.create_or_edit_allocation, name='employee-allocation-update'),
 
     path('my-account/', profile.myAccount, name='my-account'),
     path('download-certificate-pdf/<str:cus_id>/', profile.downloadCertificatePdf, name='download-certificate'),

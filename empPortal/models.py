@@ -288,6 +288,7 @@ class Users(AbstractBaseUser):
     phone_otp = models.CharField(max_length=10, null=True, blank=True)
     phone_verified = models.BooleanField(default=False)
     gender = models.PositiveSmallIntegerField(null=True, blank=True) 
+    pan_no = models.CharField(max_length=20, null=True, blank=True)
     
     dob = models.CharField(max_length=255)
     state = models.CharField(max_length=255)
