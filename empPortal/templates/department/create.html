@@ -54,13 +54,6 @@
                                         value="{{ department.name|default_if_none:'' }}">
                                 </div>
 
-                                <!-- Contact Person -->
-                                <div class="form-group col-md-6">
-                                    <label for="contact_person">Contact Person</label>
-                                    <input type="text" class="form-control" name="contact_person" id="contact_person" 
-                                        placeholder="Enter Contact Person" maxlength="255"
-                                        value="{{ department.contact_person|default_if_none:'' }}">
-                                </div>
 
                                 <!-- Mobile Number -->
                                 <div class="form-group col-md-6">
@@ -86,13 +79,6 @@
                                         value="{{ department.department_code|default_if_none:'' }}">
                                 </div>
 
-                                <!-- Head of Department -->
-                                <div class="form-group col-md-6">
-                                    <label for="head_of_department">Head of Department</label>
-                                    <input type="text" class="form-control" name="head_of_department" id="head_of_department" 
-                                        placeholder="Enter Head of Department" maxlength="255"
-                                        value="{{ department.head_of_department|default_if_none:'' }}">
-                                </div>
                             </div>
 
                             <!-- Submit Button -->

@@ -82,20 +82,16 @@ def create_or_edit(request, department_id=None):
     elif request.method == "POST":
         # Extract form data
         name = request.POST.get("name", "").strip()
-        contact_person = request.POST.get("contact_person", "").strip()
         mobile = request.POST.get("mobile", "").strip()
         email = request.POST.get("email", "").strip()
         department_code = request.POST.get("department_code", "").strip()  # New Field
-        head_of_department = request.POST.get("head_of_department", "").strip()  # New Field
 
         if department:
             # Update existing department
             department.name = name
-            department.contact_person = contact_person
             department.contact_number = mobile
             department.email = email
             department.department_code = department_code
-            department.head_of_department = head_of_department
             department.updated_at = now()
             department.save()
 
@@ -106,11 +102,9 @@ def create_or_edit(request, department_id=None):
             # Create new department
             new_department = Department.objects.create(
                 name=name,
-                contact_person=contact_person,
                 contact_number=mobile,
                 email=email,
                 department_code=department_code,  # New Field
-                head_of_department=head_of_department,  # New Field
                 created_at=now(),
                 updated_at=now(),
             )
