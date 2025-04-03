@@ -33,21 +33,24 @@ def index(request):
         return redirect('login')
 
     per_page = request.GET.get('per_page', 10)
-    search_field = request.GET.get('search_field', '')  # Field to search
-    search_query = request.GET.get('search_query', '')  # Search value
+    search_field = request.GET.get('search_field', '')
+    search_query = request.GET.get('search_query', '')
 
     try:
         per_page = int(per_page)
     except ValueError:
-        per_page = 10  # Default to 10 if invalid value is given
+        per_page = 10  
 
-    # Filter employees (Active & Role not in [1, 4]) and join with Roles & Branch
+    # Fetch all employees (Active & Role not in [1, 4])
     employees = Users.objects.filter(status=1).exclude(role_id__in=[1, 4]) \
         .select_related('role') \
         .order_by('-created_at')
 
-    # Fetch branch names separately since branch_id is a CharField
+    # Fetch branch names separately
     branches = {str(branch.id): branch.branch_name for branch in Branch.objects.all()}
+
+    # Fetch all users in a dictionary for supervisor lookup
+    all_users = {str(user.id): user for user in Users.objects.all()}
 
     # Apply filtering
     if search_field and search_query:
@@ -67,8 +70,10 @@ def index(request):
         'search_field': search_field,
         'search_query': search_query,
         'per_page': per_page,
-        'branches': branches
+        'branches': branches,
+        'all_users': all_users  # Pass all users for supervisor lookup
     })
+
 
 
 
