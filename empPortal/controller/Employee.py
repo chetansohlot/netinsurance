@@ -203,17 +203,17 @@ def create_or_edit(request, employee_id=None):
             return redirect('employee-allocation-update', employee_id=new_user.id)
 
 
-
 def create_or_edit_allocation(request, employee_id=None):
     if not request.user.is_authenticated:
         return redirect('login')
-    
+
     if request.method == "POST":
         department_id = request.POST.get('department', '').strip()
         branch_id = request.POST.get('branch', '').strip()
         role_id = request.POST.get('role', '').strip()
         senior_id = request.POST.get('senior', '').strip()
-        
+        team_leader = request.POST.get('team_leader', '').strip()
+
         # Validate required fields
         if not department_id:
             messages.error(request, 'Department is required.')
@@ -221,17 +221,25 @@ def create_or_edit_allocation(request, employee_id=None):
             messages.error(request, 'Branch is required.')
         if not role_id:
             messages.error(request, 'Role is required.')
-        
-        # Ensure role_id is valid
-        if role_id == '1':  # Assuming 1 is the Admin role
+
+        # Prevent assigning the Admin role
+        if role_id == '1':  
             messages.error(request, "You cannot assign the Admin role.")
-        
+
+        # If role is 5 (Regional Manager), assign senior_id to team_leader
+        if role_id == '5':
+            if not team_leader:
+                messages.error(request, "Team Leader selection is required for Role 5.")
+            else:
+                senior_id = team_leader  # Assign the Team Leader as senior
+
+        # Check if there are any error messages
         if messages.get_messages(request):
             return redirect(request.META.get('HTTP_REFERER', '/'))
-        
+
         # Fetch user data if employee_id is provided (for editing allocation)
         user_data = Users.objects.filter(id=employee_id).first() if employee_id else None
-        
+
         if user_data:
             # Update allocation details
             user_data.department_id = department_id
@@ -242,19 +250,50 @@ def create_or_edit_allocation(request, employee_id=None):
             messages.success(request, "User allocation updated successfully.")
         else:
             messages.error(request, "User not found.")
-        
+
         return redirect('employee-management')
-    
-    # If GET request, render form with existing data (if editing)
+
+    # Fetch necessary data for the form
     departments = Department.objects.all().order_by('name')
     branches = Branch.objects.all().order_by('branch_name')
     roles = Roles.objects.exclude(id__in=[1, 4])
-    senior_users = Users.objects.filter(role_id=2).values('id', 'first_name', 'last_name')
-    
+    senior_users = Users.objects.filter(role_id=2).values('id', 'first_name', 'last_name', 'senior_id')  # Managers
+
+    senior_details = None
+    tl_details = None
+    tl_list = None
+    employee = None  # Ensure it's defined before usage
+
+    if employee_id:
+        employee = Users.objects.filter(id=employee_id).first()
+        if employee and employee.role_id == 5 and employee.senior_id:
+            tl_details = Users.objects.filter(id=employee.senior_id).values(
+                'id', 'first_name', 'last_name', 'senior_id'
+            ).first()
+
+            if tl_details and tl_details['senior_id']:
+                senior_id = tl_details['senior_id']
+
+                # Get the senior details
+                senior_details = Users.objects.filter(id=senior_id).values(
+                    'id', 'first_name', 'last_name'
+                ).first()
+
+                # Get all users who report to this senior
+                tl_list = list(Users.objects.filter(senior_id=senior_id).values(
+                    'id', 'first_name', 'last_name', 'role_id'
+                ))
+        elif employee and employee.senior_id:
+            senior_details = Users.objects.filter(id=employee.senior_id).values(
+                'id', 'first_name', 'last_name', 'senior_id'
+            ).first()
+
     return render(request, 'employee/allocation-update.html', {
-        'employee': Users.objects.filter(id=employee_id).first() if employee_id else None,
+        'employee': employee,
         'departments': departments,
         'branches': branches,
         'roles': roles,
         'senior_users': senior_users,
+        'tl_list': tl_list,
+        'senior_details': senior_details,
     })
