@@ -1,4 +1,12 @@
 {% load static %}
+{% url 'commission-report' as commission_url %}
+{% url 'sales-manager-business-report' as sm_business_url %}
+{% url 'agent-business-report' as agent_business_url %}
+{% url 'franchisees-business-report' as franchise_business_url %}
+{% url 'insurer-business-report' as insurer_business_url %}
+
+
+
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
    
@@ -102,7 +110,7 @@
                   </svg>
                   <p>Master <i class="fas fa-angle-right right"></i></p>
               </a>
-              <ul class="nav nav-treeview" {% if '/franchise-management/' in request.path or '/branch-management/' in request.path or '/department-management/' in request.path or '/user-and-roles/' in request.path or '/create-user/' in request.path or '/users/' in request.path %} style="display: block;" {% else %} style="display: none;" {% endif %}>
+              <ul class="nav nav-treeview" {% if '/franchise-management/' in request.path or '/branch-management/' in request.path or '/user-and-roles/' in request.path or '/create-user/' in request.path or '/users/' in request.path %} style="display: block;" {% else %} style="display: none;" {% endif %}>
                   <li class="nav-item">
                       <a href="{% url 'franchise-management' %}" class="nav-link {% if '/franchise-management/' in request.path %} active {% endif %}">
                           <i class="nav-icon fa-solid fa-building"></i>
@@ -113,12 +121,6 @@
                       <a href="{% url 'branch-management' %}" class="nav-link {% if '/branch-management/' in request.path %} active {% endif %}">
                           <i class="nav-icon fa-solid fa-code-branch"></i>
                           <p>Branch</p>
-                      </a>
-                  </li>
-                  <li class="nav-item">
-                      <a href="{% url 'department-management' %}" class="nav-link {% if '/department-management/' in request.path %} active {% endif %}">
-                          <i class="nav-icon fa-solid fa-building"></i>
-                          <p>Department</p>
                       </a>
                   </li>
                   <li class="nav-item">
@@ -133,56 +135,52 @@
           </li>
           
           
-            <li class="nav-item">
-              <a href="#" class="nav-link {% if '/report/' in request.path %} active {% endif %}">
-
+            <li class="nav-item {% if '/report/' in request.path %} menu-is-opening menu-open {% endif %}">
+              <a href="#" class="nav-link {% if '/report/' in request.path %} active {% endif %}" {% if "/report/" in request.path %} style="display:block" {% endif %}>
                 <svg class="sidbarmenu-svg">
                   <use xlink:href="#billing-icon" />
                 </svg>
                 <p>Reports  <i class="fas fa-angle-right right"></i></p>
               </a>
               <ul class="nav nav-treeview">
-                 <li class="nav-item {% if request.path == 'report/commission-report/' %} active {% endif %}">
-                  <a href="{% url 'commission-report' %}" class="nav-link ">
+                <li class="nav-item">
+                  <a href="{{ commission_url }}" class="nav-link {% if request.path == commission_url %} active {% endif %}">
                     <i class="nav-icon far fa-user"></i>
                     <p> Commission Report </p>
                   </a>
-                  </li>
-              </ul>
-              {% if request.user.role_id|stringformat:"s" == "1" %}
-                <ul class="nav nav-treeview">
-                  <li class="nav-item {% if request.path == 'report/sm-business-report/' %} active {% endif %}">
-                    <a href="{% url 'sales-manager-business-report' %}" class="nav-link ">
+                </li>
+                {% if request.user.role_id|stringformat:"s" == "1" %}
+                <li class="nav-item">
+                  <a href="{{ sm_business_url }}" class="nav-link {% if request.path == sm_business_url %} active {% endif %}">
                       <i class="nav-icon far fa-user"></i>
                       <p> Sales Manager Business </p>
-                    </a>
-                    </li>
-                </ul>
-                <ul class="nav nav-treeview">
-                  <li class="nav-item {% if request.path == '/report/a-business-report/' %} active {% endif %}">
-                    <a href="{% url 'agent-business-report' %}" class="nav-link ">
+                  </a>
+              </li>
+              
+              <li class="nav-item">
+                  <a href="{{ agent_business_url }}" class="nav-link {% if request.path == agent_business_url %} active {% endif %}">
                       <i class="nav-icon far fa-user"></i>
                       <p> Agent Business </p>
-                    </a>
-                    </li>
-                </ul>
-                <ul class="nav nav-treeview">
-                  <li class="nav-item {% if request.path == '/report/f-business-report/' %} active {% endif %}">
-                    <a href="{% url 'franchisees-business-report' %}" class="nav-link ">
+                  </a>
+              </li>
+              
+              <li class="nav-item">
+                  <a href="{{ franchise_business_url }}" class="nav-link {% if request.path == franchise_business_url %} active {% endif %}">
                       <i class="nav-icon far fa-user"></i>
                       <p> Franchisees Business </p>
-                    </a>
-                    </li>
-                </ul>
-                <ul class="nav nav-treeview">
-                  <li class="nav-item {% if request.path == '/report/i-business-report/' %} active {% endif %}">
-                    <a href="{% url 'insurer-business-report' %}" class="nav-link ">
+                  </a>
+              </li>
+              
+              <li class="nav-item">
+                  <a href="{{ insurer_business_url }}" class="nav-link {% if request.path == insurer_business_url %} active {% endif %}">
                       <i class="nav-icon far fa-user"></i>
                       <p> Insurer Business </p>
-                    </a>
-                    </li>
-                </ul>
+                  </a>
+              </li>
+              
               {% endif %}
+              </ul>
+              
             </li>
             <li class="nav-item">
               <a href="#" class="nav-link">
