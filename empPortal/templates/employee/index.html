@@ -192,7 +192,7 @@ Employee Management
                                         <td>
                                             <a href="{% url 'employee-management-edit' employee_id=employee.id %}" class="trlink">
                                                 {{ employee.full_name|default:"N/A" }}
-                                                <span class="text-gray d-block small">#{{ employee.pan_no }}</span>
+                                                <span class="text-gray d-block small">PAN#{{ employee.pan_no }}</span>
                                             </a>
                                         </td>
                                         <td>{{ employee.role.roleName|default:"-" }}</td>
