@@ -145,6 +145,12 @@ urlpatterns = [
     # SELL-ONLINE 
 
     # REPORTS 
+    path('report/commission-report/', export.commission_report, name='commission-report'),
+    path('report/sm-business-report/', export.sales_manager_business_report, name='sales-manager-business-report'),
+    path('report/a-business-report/', export.agent_business_report, name='agent-business-report'),
+    path('report/f-business-report/', export.franchisees_business_report, name='franchisees-business-report'),
+    path('report/i-business-report/', export.insurer_business_report, name='insurer-business-report'),
+    
     # REPORTS 
 
 
@@ -207,7 +213,6 @@ urlpatterns = [
     #  path('export-policy/', views.exportPolicies, name='update-policy'),
     path('export-policy/', export.exportPolicies, name='export-policy'),   
     path('save-policy-data/', export.download_policy_data, name='save-policy-data'),
-    path('commission-report/', export.commission_report, name='commission-report'),
 
 
 ] 
