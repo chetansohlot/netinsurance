@@ -112,19 +112,24 @@
                                   </div>
                               </div>
                               <div class="col-sm-6 col-md-3">
-                                  <div class="form-group">
-                                      <label class="form-lbl">Variant</label>
-                                      <select class="form-field" name="variant">
-                                          {% with selected_variant=vehicle_json.result.vehicle_fuel_description|default:vehicle_info.variant|default_if_none:''|title_case %}
-                                          <option value="Petrol" {% if selected_variant == "Petrol" %}selected{% endif %}>Petrol</option>
-                                          <option value="Diesel" {% if selected_variant == "Diesel" %}selected{% endif %}>Diesel</option>
-                                          <option value="Electric" {% if selected_variant == "Electric" %}selected{% endif %}>Electric</option>
-                                          <option value="CNG" {% if selected_variant == "CNG" %}selected{% endif %}>CNG</option>
-                                          <option value="LPG" {% if selected_variant == "LPG" %}selected{% endif %}>LPG</option>
-                                          {% endwith %}
-                                      </select>
-                                  </div>
-                              </div>
+                                <div class="form-group">
+                                    <label class="form-lbl">Variant</label>
+                                    <select class="form-field" name="variant">
+                                        {% with selected_variant=vehicle_json.result.vehicle_fuel_description|default:'' %}
+                                            {% if not selected_variant and vehicle_info %}
+                                                {% with selected_variant=vehicle_info.variant|default:'' %}
+                                                {% endwith %}
+                                            {% endif %}
+                                            <option value="Petrol" {% if selected_variant == "PETROL" %}selected{% endif %}>Petrol</option>
+                                            <option value="Diesel" {% if selected_variant == "DIESEL" %}selected{% endif %}>Diesel</option>
+                                            <option value="Electric" {% if selected_variant == "ELECTRIC" %}selected{% endif %}>Electric</option>
+                                            <option value="CNG" {% if selected_variant == "CNG" %}selected{% endif %}>CNG</option>
+                                            <option value="LPG" {% if selected_variant == "LPG" %}selected{% endif %}>LPG</option>
+                                        {% endwith %}
+                                    </select>
+                                </div>
+                            </div>
+                            
                               <div class="col-sm-6 col-md-3">
                                   <div class="form-group">
                                       <label class="form-lbl">Year of Manufacture</label>

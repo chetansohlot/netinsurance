@@ -66,6 +66,11 @@ def login_view(request):
         # Authenticate user
         user = authenticate(request, username=email, password=password)
         if user:
+            if user.user_active == 0 :  
+                messages.error(request, 'Your Account is deactivated. Please Contact Elevate Insurance Support !')
+                logout(request)
+                return redirect(request.META.get('HTTP_REFERER', '/'))
+        
             login(request, user)
             return redirect('dashboard')
         else:
