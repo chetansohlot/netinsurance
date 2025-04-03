@@ -395,6 +395,116 @@ def activateUser(request, user_id):
     return redirect('member-view', user_id=user_id)
 
 
+def deactivateUser(request, user_id):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    try:
+        # Update user activation status in the database
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "UPDATE users SET user_active = %s WHERE id = %s",
+                ['0', user_id]
+            )
+
+        user = get_object_or_404(Users, id=user_id)
+        user_email = user.email
+        
+        training_material_url = request.build_absolute_uri(settings.MEDIA_URL + 'training/Training_Material_Elevate_Insurance_V1.0.pdf')
+
+        # Render email HTML template
+        email_body = render_to_string('members/activation-email.html', {
+            'user': user,
+            "logo_url": request.build_absolute_uri(static('dist/img/logo2.png')),
+            "support_email": "support@elevateinsurance.in",
+            "company_website": "https://pos.elevateinsurance.in/",
+            "sub_broker_test_url": "https://pos.elevateinsurance.in/",
+            "training_material_url": training_material_url,
+            "support_number": +918887779999,
+        })
+
+        # Prepare and send activation confirmation email
+        subject = 'Account Activated Successfully'
+        from_email = settings.DEFAULT_FROM_EMAIL
+        recipient_list = [user_email]
+
+        email = EmailMessage(subject, email_body, from_email, recipient_list)
+        email.content_subtype = "html"  # Set content type to HTML
+
+            
+        # Generate and attach PDF
+        # pdf_path = activationPdf(request, user_id)
+        # if pdf_path and os.path.exists(pdf_path):
+        #     email.attach_file(pdf_path)
+        # else:
+        #     logger.error("PDF generation failed or file not found. Skipping attachment.")
+
+        # email.send()
+        messages.success(request, "User account has been deactivated successfully!")
+
+    except Exception as e:
+        logger.error(f"Error activating user: {e}")
+        messages.error(request, "An error occurred during deactivation.")
+
+    # Redirect to the member view page
+    return redirect('member-view', user_id=user_id)
+
+
+def loginActivateUser(request, user_id):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    try:
+        # Update user activation status in the database
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "UPDATE users SET user_active = %s WHERE id = %s",
+                ['1', user_id]
+            )
+
+        user = get_object_or_404(Users, id=user_id)
+        user_email = user.email
+        
+        training_material_url = request.build_absolute_uri(settings.MEDIA_URL + 'training/Training_Material_Elevate_Insurance_V1.0.pdf')
+
+        # Render email HTML template
+        email_body = render_to_string('members/activation-email.html', {
+            'user': user,
+            "logo_url": request.build_absolute_uri(static('dist/img/logo2.png')),
+            "support_email": "support@elevateinsurance.in",
+            "company_website": "https://pos.elevateinsurance.in/",
+            "sub_broker_test_url": "https://pos.elevateinsurance.in/",
+            "training_material_url": training_material_url,
+            "support_number": +918887779999,
+        })
+
+        # Prepare and send activation confirmation email
+        subject = 'Account Activated Successfully'
+        from_email = settings.DEFAULT_FROM_EMAIL
+        recipient_list = [user_email]
+
+        email = EmailMessage(subject, email_body, from_email, recipient_list)
+        email.content_subtype = "html"  # Set content type to HTML
+
+            
+        # Generate and attach PDF
+        # pdf_path = activationPdf(request, user_id)
+        # if pdf_path and os.path.exists(pdf_path):
+        #     email.attach_file(pdf_path)
+        # else:
+        #     logger.error("PDF generation failed or file not found. Skipping attachment.")
+
+        # email.send()
+        messages.success(request, "User account has been activated successfully!")
+
+    except Exception as e:
+        logger.error(f"Error activating user: {e}")
+        messages.error(request, "An error occurred during activation.")
+
+    # Redirect to the member view page
+    return redirect('member-view', user_id=user_id)
+
+
 
 # LATEST CODE
 
