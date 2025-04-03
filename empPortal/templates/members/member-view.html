@@ -26,11 +26,38 @@
                   <form id="activate-form" name="activate-form" method="post" action="{% url 'activate-user' user_id=user_details.id %}" style="display: none;">
                     {% csrf_token %}
                   </form>
+
+                  
+                  <form id="deactivate-form" name="deactivate-form" method="post" action="{% url 'deactivate-user' user_id=user_details.id %}" style="display: none;">
+                    {% csrf_token %}
+                  </form>
+                  
+                  <form id="login-activate-form" name="login-activate-form" method="post" action="{% url 'login-activate-user' user_id=user_details.id %}" style="display: none;">
+                    {% csrf_token %}
+                  </form>
                   
                   {% if user_details.activation_status != '1' %}
                     <div class="col">
                       <div class="d-flex justify-content-end mt-2">
                         <button class="dashboard-btn-outline mb-0 bg-success border-success" type="button" id="activate-btn" data-user-id="{{ user_details.id }}">Activate Account</button>
+                      </div>  
+                    </div>
+                  {% endif %}
+
+                  
+                  {% if user_details.activation_status == '1' and user_details.user_active == 1 %}
+                    <div class="col">
+                      <div class="d-flex justify-content-end mt-2">
+                        <button class="dashboard-btn-outline mb-0 bg-danger border-danger" type="button" id="deactivate-btn" data-user-id="{{ user_details.id }}">Deactivate Account</button>
+                      </div>  
+                    </div>
+                  {% endif %}
+
+                  
+                  {% if user_details.activation_status == '1' and user_details.user_active == 0 %}
+                    <div class="col">
+                      <div class="d-flex justify-content-end mt-2">
+                        <button class="dashboard-btn-outline mb-0 bg-info border-info" type="button" id="login-activate-btn" data-user-id="{{ user_details.id }}">Activate Account</button>
                       </div>  
                     </div>
                   {% endif %}
@@ -972,6 +999,52 @@
                 if (result.isConfirmed) {
                   // Submit the hidden form
                   document.getElementById('activate-form').submit();
+                }
+              });
+            });
+          </script>
+
+          
+        <script>
+            // Add event listener to the button
+            document.getElementById('deactivate-btn').addEventListener('click', function() {
+              var userId = this.getAttribute('data-user-id');
+              
+              // Show SweetAlert confirmation
+              Swal.fire({
+                title: 'Are you sure?',
+                text: "You are about to deactivate this account.",
+                icon: 'danger',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, deactivate it!',
+                cancelButtonText: 'Cancel',
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  // Submit the hidden form
+                  document.getElementById('deactivate-form').submit();
+                }
+              });
+            });
+          </script>
+
+          
+        <script>
+            // Add event listener to the button
+            document.getElementById('login-activate-btn').addEventListener('click', function() {
+              var userId = this.getAttribute('data-user-id');
+              
+              // Show SweetAlert confirmation
+              Swal.fire({
+                title: 'Are you sure?',
+                text: "You are about to activate this account.",
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, activate it!',
+                cancelButtonText: 'Cancel',
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  // Submit the hidden form
+                  document.getElementById('login-activate-form').submit();
                 }
               });
             });
