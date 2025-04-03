@@ -174,8 +174,6 @@ Department
                                         <th>Contact Person</th>
                                         <th>Mobile</th>
                                         <th>Email</th>
-                                        <th>City</th>
-                                        <th>State</th>
                                         <th>Status</th>
                                         <th>Info</th>
                                         <th>Action</th>
@@ -197,8 +195,6 @@ Department
                                         <td>{{ department.contact_person }}</td>
                                         <td>{{ department.contact_number }}</td>
                                         <td>{{ department.email }}</td>
-                                        <td>{{ department.city }}</td>
-                                        <td>{{ department.state }}</td>
                                         <td>
                                             <span class="badge {% if department.status == 'Active' %}bg-success{% else %}bg-danger{% endif %}">
                                                 {{ department.status }}

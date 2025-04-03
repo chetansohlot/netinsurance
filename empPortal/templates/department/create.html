@@ -78,35 +78,6 @@
                                         value="{{ department.email|default_if_none:'' }}">
                                 </div>
 
-                                <!-- Address -->
-                                <div class="form-group col-md-12">
-                                    <label for="address">Address</label>
-                                    <textarea class="form-control" name="address" id="address" 
-                                            placeholder="Enter Full Address" rows="2">{{ department.address|default_if_none:'' }}</textarea>
-                                </div>
-
-                                <!-- City -->
-                                <div class="form-group col-md-4">
-                                    <label for="city">City</label>
-                                    <input type="text" class="form-control" name="city" id="city" placeholder="Enter City"
-                                        value="{{ department.city|default_if_none:'' }}">
-                                </div>
-
-                                <!-- State -->
-                                <div class="form-group col-md-4">
-                                    <label for="state">State</label>
-                                    <input type="text" class="form-control" name="state" id="state" placeholder="Enter State"
-                                        value="{{ department.state|default_if_none:'' }}">
-                                </div>
-
-                                <!-- Pincode -->
-                                <div class="form-group col-md-4">
-                                    <label for="pincode">Pincode</label>
-                                    <input type="text" class="form-control" name="pincode" id="pincode" 
-                                        placeholder="Enter Pincode" pattern="[0-9]{6}"
-                                        value="{{ department.pincode|default_if_none:'' }}">
-                                </div>
-
                                 <!-- Department Code -->
                                 <div class="form-group col-md-6">
                                     <label for="department_code">Department Code</label>
