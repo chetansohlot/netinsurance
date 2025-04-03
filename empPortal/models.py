@@ -298,6 +298,7 @@ class Users(AbstractBaseUser):
     role = models.ForeignKey(Roles, on_delete=models.CASCADE, null=True)
     role_name = models.CharField(max_length=255)
     branch_id = models.CharField(max_length=20, null=True, blank=True)
+    department_id = models.CharField(max_length=20, null=True, blank=True)
     senior_id = models.CharField(max_length=20, null=True, blank=True)
     status = models.IntegerField(default=1)
     created_at = models.DateTimeField(default=timezone.now)
@@ -359,6 +360,42 @@ class Franchises(models.Model):
         db_table = 'franchises'
         verbose_name = "Franchise"
         verbose_name_plural = "Franchises"
+
+    def __str__(self):
+        return self.name
+
+    def status_type(self):
+        return "Active" if self.status == "Active" else "Inactive"
+
+from django.db import models
+from django.utils import timezone
+
+class Department(models.Model):
+    name = models.CharField(max_length=255, verbose_name="Department Name")
+    department_code = models.CharField(max_length=20, unique=True, verbose_name="Department Code")  # New Field
+    head = models.CharField(max_length=255, verbose_name="Head of Department")
+    head_of_department = models.CharField(max_length=255, verbose_name="Head of Department Name")  # New Field
+    contact_person = models.CharField(max_length=255, verbose_name="Contact Person")  # New Field
+    contact_number = models.CharField(max_length=15, verbose_name="Contact Number")
+    email = models.EmailField(max_length=255, unique=True, verbose_name="Email")
+    address = models.TextField(null=True, blank=True, verbose_name="Address")
+    city = models.CharField(max_length=100, null=True, blank=True, verbose_name="City")
+    state = models.CharField(max_length=100, null=True, blank=True, verbose_name="State")
+    pincode = models.CharField(max_length=10, null=True, blank=True, verbose_name="Pincode")
+    
+    STATUS_CHOICES = [
+        ('Active', 'Active'),
+        ('Inactive', 'Inactive'),
+    ]
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Active', verbose_name="Status")
+
+    created_at = models.DateTimeField(default=timezone.now, verbose_name="Created At")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Updated At")
+
+    class Meta:
+        db_table = 'departments'
+        verbose_name = "Department"
+        verbose_name_plural = "Departments"
 
     def __str__(self):
         return self.name

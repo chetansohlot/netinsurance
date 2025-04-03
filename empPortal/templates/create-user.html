@@ -73,6 +73,17 @@ Add Members
                                 <span class="error phone_err"></span>
                             </div>
                             <div class="form-group col-sm-6">
+                                <label for="department">Department</label>
+                                <select class="form-control" name="department" id="department">
+                                    <option value="">Select Department</option>
+                                    {% if departments %}
+                                        {% for department in departments %}
+                                            <option value={{ department.id }}>{{ department.name }}</option>
+                                        {% endfor %}
+                                    {% endif %}
+                                </select>
+                            </div>
+                            <div class="form-group col-sm-6">
                                 <label for="branch">Branch</label>
                                 <select class="form-control" name="branch" id="branch">
                                     <option value="">Select Branch</option>

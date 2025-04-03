@@ -4,7 +4,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.template import loader
-from .models import Roles,Users,PolicyDocument,BulkPolicyLog, Branch, UserFiles,UnprocessedPolicyFiles, Commission, Branch
+from .models import Roles,Users, Department,PolicyDocument,BulkPolicyLog, Branch, UserFiles,UnprocessedPolicyFiles, Commission, Branch
 from django.contrib.auth import authenticate, login ,logout
 from django.core.files.storage import FileSystemStorage
 import re
@@ -149,7 +149,8 @@ def createUser(request):
     if request.user.is_authenticated:
         roles = Roles.objects.all()
         branches = Branch.objects.all().order_by('-created_at')
-        return render(request,'create-user.html',{'role_data':roles, 'branches':branches})
+        departments = Department.objects.all().order_by('-created_at')
+        return render(request,'create-user.html',{'role_data':roles, 'branches':branches, 'departments':departments})
     else:
         return redirect('login')
 
@@ -184,6 +185,7 @@ def insertUser(request):
             user_phone = request.POST.get('phone', 0).strip()
             role = request.POST.get('role', '').strip()
             branch = request.POST.get('branch', '').strip()
+            department = request.POST.get('department', '').strip()
             senior = request.POST.get('senior', '').strip()  # New senior field
             password = request.POST.get('password', '').strip()
 
@@ -261,6 +263,7 @@ def insertUser(request):
             user_phone = user_phone
             user_password = user_password
             branch_id = branch
+            department_id = department
             senior_id = senior
             user_status = 1
 
@@ -274,6 +277,7 @@ def insertUser(request):
                 email=user_email, 
                 phone=user_phone, 
                 branch_id=branch_id, 
+                department_id=department_id, 
                 senior_id=senior_id, 
                 status=user_status, 
                 password=user_password
@@ -299,6 +303,7 @@ def editUser(request, id):
     if request.user.is_authenticated:
         role_data = Roles.objects.all()
         branches = Branch.objects.all().order_by('branch_name')
+        departments = Department.objects.all().order_by('name')
         user_data = Users.objects.filter(user_gen_id=id).first()
 
         senior_users = []  # Default empty list
@@ -309,6 +314,7 @@ def editUser(request, id):
             'user_data': user_data,
             'role_data': role_data,
             'branches': branches,
+            'departments': departments,
             'senior_users': senior_users
         })
     else:
@@ -375,6 +381,7 @@ def updateUser(request):
             last_name = request.POST.get('last_name', '').strip()
             role_id = request.POST.get('role', '').strip()
             branch_id = request.POST.get('branch', '').strip()
+            department_id = request.POST.get('department', '').strip()
             senior_id = request.POST.get('senior', '').strip()
 
             if role_id == '1':
@@ -409,6 +416,7 @@ def updateUser(request):
                 user_data.first_name = first_name
                 user_data.last_name = last_name
                 user_data.branch_id = branch_id
+                user_data.department_id = department_id
                 user_data.senior_id = senior_id  # Update senior_id
                 user_data.save()
 
