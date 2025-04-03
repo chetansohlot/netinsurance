@@ -59,6 +59,9 @@ npm-debug.log
 *.zip
 *.tar.gz
 *.bak
+*.csv
 
 # Ignore Docker and deployment files (if applicable)
 docker-compose.override.yml
+
+
