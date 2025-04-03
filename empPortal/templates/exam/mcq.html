@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training Material & Question Paper - Elevate Insurance</title>
+    <link rel="stylesheet" href="https://pos.elevateinsurance.in/assets/css/style.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .question {
+            font-weight: bold;
+            margin-top: 15px;
+        }
+        .options label {
+            display: block;
+            margin-bottom: 5px;
+            cursor: pointer;
+        }
+        .header, .footer {
+            background: #003366;
+            color: white;
+            text-align: center;
+            padding: 15px 0;
+        }
+        .header h1, .footer p {
+            margin: 0;
+        }
+        .thank-you {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #dff0d8;
+            color: #3c763d;
+            border: 1px solid #3c763d;
+            text-align: center;
+        }
+        .nav-buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+        button {
+            padding: 10px 15px;
+            border: none;
+            background: #003366;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>Elevate Insurance Training & Examination</h1>
+        <p>Empowering Agents with Knowledge</p>
+    </header>
+    
+    <div class="container">
+        <section class="section" id="exam-section">
+            <h2>Examination - Question Paper</h2>
+            <form id="examForm">
+                <div id="question-container"></div>
+                <div class="nav-buttons">
+                    <button type="button" id="prevButton" onclick="prevQuestion()" disabled>Previous</button>
+                    <button type="button" id="nextButton" onclick="nextQuestion()">Next</button>
+                    <button type="button" id="submitButton" onclick="submitExam()" style="display: none;">Submit</button>
+                </div>
+            </form>
+        </section>
+        <div id="thank-you" class="thank-you">Thank you for completing the exam!</div>
+    </div>
+    
+    <footer class="footer">
+        <p>&copy; 2025 Elevate Insurance. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        const questions = [
+            { question: "What is the primary purpose of Health Insurance?", options: ["To save tax", "To provide financial coverage for medical expenses", "To invest money", "To increase savings"], correct: "b" },
+            { question: "What is a Pre-existing Disease in Health Insurance?", options: ["A disease diagnosed after buying the policy", "A disease present before purchasing the policy", "A disease that is covered from day one", "A temporary illness"], correct: "b" },
+            { question: "What is a Cashless Claim in Health Insurance?", options: ["Paying the hospital and later claiming reimbursement", "Getting treatment without paying upfront at network hospitals", "Claiming cash after hospital discharge", "A claim that takes more than 30 days"], correct: "b" },
+            { question: "What is a Deductible in Health Insurance?", options: ["The portion of the claim the insurer pays", "The amount paid by the policyholder before coverage starts", "The amount reimbursed after the claim", "The sum insured"], correct: "b" },
+            { question: "What does No Claim Bonus (NCB) mean in Motor Insurance?", options: ["A reward for accident-free driving", "A penalty for making claims", "A discount given by the government", "A compulsory charge"], correct: "a" },
+            { question: "What are the types of Motor Insurance policies?", options: ["Third-Party and Comprehensive", "Individual and Family Floater", "Term and Whole Life", "Standard and Premium"], correct: "a" },
+            { question: "What is Insured Declared Value (IDV) in Motor Insurance?", options: ["The market value of the car", "The maximum amount the insurer will pay in case of total loss or theft", "The policyholder's declared income", "The tax amount on the vehicle"], correct: "b" },
+            { question: "Which of the following is NOT covered under a Third-Party Insurance policy?", options: ["Damage to the insured car", "Injury to third parties", "Damage to third-party property", "Legal liability"], correct: "a" },
+            { question: "Which regulatory body governs insurance in India?", options: ["RBI", "SEBI", "IRDAI", "TRAI"], correct: "c" }
+        ];
+
+        let currentQuestionIndex = 0;
+
+        function loadQuestion() {
+            const questionContainer = document.getElementById("question-container");
+            questionContainer.innerHTML = `
+                <div class="question">${currentQuestionIndex + 1}. ${questions[currentQuestionIndex].question}</div>
+                <div class="options">
+                    ${questions[currentQuestionIndex].options.map((opt, index) => `
+                        <label>
+                            <input type="radio" name="q${currentQuestionIndex}" value="${String.fromCharCode(97 + index)}"> ${opt}
+                        </label>
+                    `).join('')}
+                </div>
+            `;
+            document.getElementById("prevButton").disabled = currentQuestionIndex === 0;
+            document.getElementById("nextButton").style.display = currentQuestionIndex === questions.length - 1 ? "none" : "inline-block";
+            document.getElementById("submitButton").style.display = currentQuestionIndex === questions.length - 1 ? "inline-block" : "none";
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion();
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", loadQuestion);
+    </script>
+</body>
+</html>

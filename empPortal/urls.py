@@ -86,6 +86,9 @@ urlpatterns = [
     path('members/in-process', members.members_inprocess, name='members_inprocess'),
     path('members/in-training', members.members_intraining, name='members_intraining'),
     path('members/in-exam', members.members_inexam, name='members_inexam'),
+    path('exam', members.members_exam, name='members_exam'),
+    path('exam/MCQs', members.members_exam_mcq, name='members_exam_mcq'),
+    
     path('members/activated', members.members_activated, name='members_activated'),
     path('members/rejected', members.members_rejected, name='members_rejected'),
 
@@ -205,6 +208,7 @@ urlpatterns = [
     path('export-policy/', export.exportPolicies, name='export-policy'),   
     path('save-policy-data/', export.download_policy_data, name='save-policy-data'),
     path('commission-report/', export.commission_report, name='commission-report'),
+
 
 ] 
 
