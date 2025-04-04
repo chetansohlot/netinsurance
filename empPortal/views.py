@@ -482,10 +482,14 @@ def browsePolicy(request):
     if request.method == "POST" and request.FILES.get("image"):
         image = request.FILES["image"]
          # Validate ZIP file format
-        if not image.name.endswith(".pdf"):
+        if not image.name.lower().endswith(".pdf"):
             messages.error(request, "Invalid file format. Only pdf files are allowed.")
             return redirect("policy-mgt")
         
+        if image.size > 2 * 1024 * 1024:  # 2MB = 1024*1024*2 bytes
+            messages.error(request, "File too large. Maximum allowed size is 2 MB.")
+            return redirect("policy-mgt")
+
         fs = FileSystemStorage()
         filename = fs.save(image.name, image)
         filepath = fs.path(filename)
@@ -813,10 +817,14 @@ def bulkBrowsePolicy(request):
         rm_id = request.POST.get("rm_id")
         
         # Validate ZIP file format
-        if not zip_file.name.endswith(".zip"):
+        if not zip_file or not zip_file.name.lower().endswith(".zip"):
             messages.error(request, "Invalid file format. Only ZIP files are allowed.")
             return redirect("bulk-policy-mgt")
-
+         
+        if not camp_name:
+            messages.error(request, "Campaign Name is mandatory.")
+            return redirect("bulk-policy-mgt")
+        
         if rm_id:
             rm_name = getUserNameByUserId(rm_id)
         else:

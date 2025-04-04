@@ -24,7 +24,7 @@ Policy Data
           <div class="col-sm-12">
             <div class="d-flex align-items-center justify-content-between">
               <div>
-                <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Policy Data </a>
+                <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Policy Management </a>
                 <ul class="breadcrump">
                   <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
                   <li>Post Policies Mgt</li>
@@ -80,38 +80,42 @@ Policy Data
                           </tr>
                         </thead>
                         <tbody>
-                          {% for data in policy_data %}
-                            <tr>
-                              <td>{{ data.insurance_provider }}</td>
-                              <td>{{ data.vehicle_number }}</td>
-                              <td>{{ data.holder_name }}</td>
-                              <td>{{ data.policy_number|default:"-" }} </td>
-                              <td>{{ data.policy_type|default:"-" }}</td>
-                              <td>{{ data.issue_date|default:"-" }}</td>
-                              <td>{{ data.start_date|default:"-" }}</td>
-                              <td>{{ data.expiry_date|default:"-" }}</td>
-                              <td>{{ data.policy_premium }}</td>
-                              <td>{{ data.policy_total_premium }}</td>
-                              <td>{{ data.od_premium }}</td>
-                              <td>{{ data.tp_premium }}</td>
-                              <td>{{ data.gst }}</td>
-                              <td>{{ data.rm_name }}</td>
-                              <td>{{ data.payment_status|default:"Not Paid" }}</td>
-                              <td>{{ data.vehicle_type|default:"-" }}</td>
-                              <td>{{ data.vehicle_make|default:"-" }} / {{ data.vehicle_model|default:"-" }} </td>
-                              <td>{{ data.vehicle_gross_weight|default:"-" }}</td>
-                              <td> {{ data.sum_insured|default:"-" }}</td>
-                              <td>{{ data.vehicle_manuf_date|default:"-" }}</td>
-                              <td>
-                                <div class="d-flex">
-                                  <a href="{{ data.filepath }}" class="tooltip-sec mx-2" data-title="Download {{ data.filename }}" target="_blank" download><i class="fas fa-download"></i></a>
-                                  <a href="{% url 'edit-policy' id=data.id %}" class="tooltip-sec" data-title="Edit Policy">
-                                    <i class="fa-solid fa-edit"></i>
-                                  </a>
-                                </div>
-                              </td>
-                            </tr>
-                          {% endfor %}
+                          {% if policy_data  %}
+                            {% for data in policy_data %}
+                              <tr>
+                                <td>{{ data.insurance_provider }}</td>
+                                <td>{{ data.vehicle_number }}</td>
+                                <td>{{ data.holder_name }}</td>
+                                <td>{{ data.policy_number|default:"-" }} </td>
+                                <td>{{ data.policy_type|default:"-" }}</td>
+                                <td>{{ data.issue_date|default:"-" }}</td>
+                                <td>{{ data.start_date|default:"-" }}</td>
+                                <td>{{ data.expiry_date|default:"-" }}</td>
+                                <td>{{ data.policy_premium }}</td>
+                                <td>{{ data.policy_total_premium }}</td>
+                                <td>{{ data.od_premium }}</td>
+                                <td>{{ data.tp_premium }}</td>
+                                <td>{{ data.gst }}</td>
+                                <td>{{ data.rm_name }}</td>
+                                <td>{{ data.payment_status|default:"Not Paid" }}</td>
+                                <td>{{ data.vehicle_type|default:"-" }}</td>
+                                <td>{{ data.vehicle_make|default:"-" }} / {{ data.vehicle_model|default:"-" }} </td>
+                                <td>{{ data.vehicle_gross_weight|default:"-" }}</td>
+                                <td> {{ data.sum_insured|default:"-" }}</td>
+                                <td>{{ data.vehicle_manuf_date|default:"-" }}</td>
+                                <td>
+                                  <div class="d-flex">
+                                    <a href="{{ data.filepath }}" class="tooltip-sec mx-2" data-title="Download {{ data.filename }}" target="_blank" download><i class="fas fa-download"></i></a>
+                                    <a href="{% url 'edit-policy' id=data.id %}" class="tooltip-sec" data-title="Edit Policy">
+                                      <i class="fa-solid fa-edit"></i>
+                                    </a>
+                                  </div>
+                                </td>
+                              </tr>
+                            {% endfor %}
+                          {% else %}
+                            <tr><td colspan="8" class="text-center">No data found</td><td colspan="8" class="text-center">No data found</td><td colspan="8" class="text-center">No data found</td></tr>
+                          {% endif %}
                         </tbody>
                       </table>
                     </div>
