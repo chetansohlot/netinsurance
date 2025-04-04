@@ -21,9 +21,16 @@ Policy Data
     <div class="content-header breadcrump-bg">
       <div class="container-fluid ">
         <div class="row py-2">
-          <div class="col-sm-12">
-            <div class="d-flex align-items-center justify-content-between">
-              <div><a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Policy Logs </a></div>
+          <div class="col-sm-12 col-md-6">
+            <h2 class="admin-title m-0 pt-2 text-dark">Policy Logs </h2>
+            <ul class="breadcrump">
+              <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
+              <li> <a href="#">Post Policies Mgt</a> <i class="fas fa-chevron-right"></i></li>
+              <li>Policy Log</li>
+            </ul>
+          </div>
+          <div class="col-md-6">  
+            <div class="d-flex align-items-center justify-content-end">
               <div>
                 <a href="{% url 'policy-mgt' %}" class="breadcrump-addbtn mx-1">Add Policy</a>
                 <a href="{% url 'bulk-policy-mgt' %}" class="breadcrump-addbtn mx-1">Add Bulk Policy</a>
@@ -69,7 +76,7 @@ Policy Data
                             <td>{{ log.camp_name }}</td>
                             <td>{{ log.file_name }}</td>
                             <td>
-                              <a href="{{ log.file_url }}" target="_blank" class="btn btn-primary btn-sm">Download</a>
+                              <a href="{{ log.file_url }}" target="_blank" class="btn btn-primary btn-xs"><i class="fa-solid fa-download"></i> Download</a>
                             </td>
                             <td>{{ log.count_total_files }}</td>
                             <td>{{ log.count_pdf_files }}</td>
