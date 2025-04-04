@@ -154,20 +154,35 @@ def createUser(request):
     else:
         return redirect('login')
 
+
 def get_users_by_role(request):
     if request.method == "GET" and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         role_id = request.GET.get('role_id', '')
+        manager_id = request.GET.get('manager_id', '')
+
         if role_id and role_id.isdigit():
-            if role_id == '3':  # Check if role_id is 3
-                users = Users.objects.filter(role_id=2).values('id', 'first_name', 'last_name')  # Fetch users with role_id = 2
-                users_list = [
-                    {'id': user['id'], 'full_name': f"{user['first_name']} {user['last_name']} (Branch Manager)".strip()}
-                    for user in users
-                ]
-                return JsonResponse({'users': users_list}, status=200)
+            role_id = int(role_id)
+
+            if role_id == 3:  # Fetch Branch Managers
+                users = Users.objects.filter(role_id=2).values('id', 'first_name', 'last_name')
+                role_name = "Manager"
+            elif role_id == 5 and manager_id == '':  # Fetch Regional Managers
+                users = Users.objects.filter(role_id=2).values('id', 'first_name', 'last_name')
+                role_name = "Manager"
+            elif role_id == 5 and manager_id != '' and manager_id.isdigit():  # Fetch Team Leaders under selected Manager
+                users = Users.objects.filter(senior_id=manager_id).values('id', 'first_name', 'last_name')
+                role_name = "Team Leader"
             else:
-                return JsonResponse({'users': []}, status=200)  # Empty list if role_id != 3
-        return JsonResponse({'users': []}, status=200)  # Empty list if no role_id or invalid
+                return JsonResponse({'users': []}, status=200)
+
+            users_list = [
+                {'id': user['id'], 'full_name': f"{user['first_name']} {user['last_name']} ({role_name})".strip()}
+                for user in users
+            ]
+            return JsonResponse({'users': users_list}, status=200)
+
+        return JsonResponse({'users': []}, status=200)
+
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
 def insertUser(request):

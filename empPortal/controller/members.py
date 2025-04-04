@@ -240,29 +240,57 @@ def memberView(request, user_id):
 
         branches = Branch.objects.all().order_by('-created_at')
 
-        
+        manager_list = []
         branch = None
         if user_details.branch_id:
             branch = Branch.objects.filter(id=user_details.branch_id).first()
+            managers = Users.objects.filter(branch_id=user_details.branch_id, role_id=2)
+            manager_list = [{'id': m.id, 'full_name': f'{m.first_name} {m.last_name}'} for m in managers]
                 
-        senior = None
+        rm = None
         if user_details.senior_id:
-            senior = Users.objects.filter(id=user_details.senior_id).first()
+            rm = Users.objects.filter(id=user_details.senior_id).first()
+
+        rm_list = []
+        tl = None
+        if rm and rm.senior_id:
+            rms = Users.objects.filter(senior_id=rm.senior_id, role_id=5)
+            rm_list = [{'id': r.id, 'full_name': f'{r.first_name} {r.last_name}'} for r in rms]
+            tl = Users.objects.filter(id=rm.senior_id).first()
 
         manager = None
-        if senior and senior.senior_id:  # Ensure senior is not None before accessing senior_id
-            manager = Users.objects.filter(id=senior.senior_id).first()
+        tl_list = []
+
+        if tl and tl.senior_id: 
+            tls = Users.objects.filter(senior_id=tl.senior_id, role_id=3)
+            tl_list = [{'id': t.id, 'full_name': f'{t.first_name} {t.last_name}'} for t in tls]
+            manager = Users.objects.filter(id=tl.senior_id).first()
+
+        
+        selected_branch_id = branch.id if branch else None
+        selected_manager_id = manager.id if manager else None
+        selected_tl_id = tl.id if tl else None
+        selected_rm_id = rm.id if rm else None
+
 
         return render(request, 'members/member-view.html', {
             'user_details': user_details,
             'bank_details': bank_details,
             'docs': docs,
+            'manager_list': manager_list,
+            'rm_list': rm_list,
+            'tl_list': tl_list,
             'branches': branches,
-            'sales_manager': senior,
+            'rm_details': rm,
+            'tl_details': tl,
             'branch': branch,
-            'branch_manager': manager,
-            'commissions': commissions_list,  # Fixed variable name
-            'products': products  # Fixed variable name
+            'manager_details': manager,
+            'commissions': commissions_list, 
+            'products': products,  
+            'selected_branch_id': selected_branch_id,
+            'selected_manager_id': selected_manager_id,
+            'selected_tl_id': selected_tl_id,
+            'selected_rm_id': selected_rm_id,
         })
     else:
         return redirect('login')
@@ -279,6 +307,13 @@ def get_sales_managers(request):
     sales_managers = Users.objects.filter(senior_id=branch_manager_id, role_id=3).values('id', 'first_name', 'last_name')
     sales_list = [{'id': manager['id'], 'full_name': f"{manager['first_name']} {manager['last_name']}"} for manager in sales_managers]
     return JsonResponse({'sales_managers': sales_list})
+
+
+def get_rm_list(request):
+    tlId = request.GET.get('tlId')
+    sales_managers = Users.objects.filter(senior_id=tlId, role_id=5).values('id', 'first_name', 'last_name')
+    rm_list = [{'id': manager['id'], 'full_name': f"{manager['first_name']} {manager['last_name']}"} for manager in sales_managers]
+    return JsonResponse({'rm_list': rm_list})
 
 # LATEST CODE  
 from django.templatetags.static import static  # ✅ Import static

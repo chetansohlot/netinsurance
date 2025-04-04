@@ -23,12 +23,15 @@ Users and Roles
         <div class="row py-2">
           <div class="col-sm-6">
             <div class="d-flex align-items-center">
-              <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Users and Roles </a>
+              <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Roles </a>
             </div>
+            <ul class="breadcrump">
+              <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
+              <li>Roles</li>
+            </ul>
           </div>
           <div class="col-sm-6">
             <div class="d-flex justify-content-end">
-              <a href="/create-user" class="breadcrump-addbtn mr-2"><i class="fas fa-plus"></i> Add User</a>
               <a href="/new-role" class="dashboard-btn-outline"><i class="fas fa-plus"></i> New Role</a>
             </div>
           </div>
@@ -45,55 +48,10 @@ Users and Roles
             <div class="card box-shadow-none">
               <div class="card-body px-0 pb-0 pt-0">
                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                  <a class="nav-item nav-link active" id="tab1-tab" data-toggle="tab" href="#tab1" role="tab"
-                    aria-controls="tab1" aria-selected="true">All Users</a>
-                  <a class="nav-item nav-link" id="tab2-tab" data-toggle="tab" href="#tab2" role="tab"
+                  <a class="nav-item nav-link active" id="tab2-tab" data-toggle="tab" href="#tab2" role="tab"
                     aria-controls="tab2" aria-selected="false">Roles</a>
                 </div>
-                <div class="tab-content" id="nav-tabContent">
-                  <div class="tab-pane fade show active" id="tab1" role="tabpanel" aria-labelledby="tab1-tab">
-                    <div class="table-responsive table-ht">
-                      <table class="table table-design">
-                        <thead class="table-thead-bg-light table-header-fix">
-                          <tr>
-                            <th>User Details</th>
-                            <th>Phone</th>
-                            <th>Role Name</th>
-                            <th>Senior</th>
-                            <th>User Status</th>
-                            <th>Action</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {% for user in user_data %}
-                            <tr>
-                              <td>{{ user.full_name }}<span class="text-gray d-block small">{{ user.email }}</span></td>
-                              <td>{{ user.phone }}</td>
-                              <td>{{ user.role_name }}</td>
-                              <td>{{ user.senior_name }}</td>
-                              <td>
-                                <span class="{% if user.status == 1 %}text-success{% elif user.status == 2 %}text-danger{% else %}text-info{% endif %} tooltip-sec" data-title="Click To Change Status">
-                                  <form action="{% url 'edit-user-status' %}" method="POST">
-                                      {% csrf_token %}
-                                      <input type="hidden" name="user_id" value="{{ user.id }}">
-                                      <button type="submit" class="btn btn-link p-0 border-0">
-                                          {{ user.status_type }}
-                                      </button>
-                                  </form>
-                                </span>
-                              </td>
-                              <td>
-                                <a href="{% url 'edit-user' id=user.user_gen_id %}" class="circle-arrow-link tooltip-sec" data-title="Edit User" ><i class="fa-solid fa-chevron-right"></i></a>
-                              </td>
-                            </tr>
-                          {% endfor %}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                  <div class="tab-pane fade" id="tab2" role="tabpanel" aria-labelledby="tab2-tab">
-                    <div class="table-responsive table-ht">
-                      
+                
                       <table class="table table-design">
                         <thead class="table-thead-bg-light table-header-fix">
                           <tr>
@@ -116,9 +74,6 @@ Users and Roles
                           {% endfor %}
                         </tbody>
                       </table>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>

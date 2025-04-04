@@ -1,12 +1,12 @@
 {% extends 'master.html' %}
 
 {% block title %}
-Customers
+Employee Management
 {% endblock %}
   
 {% block content %}
 {% load static %}
-
+{% load custom_filters %}
 
 <body class="hold-transition sidebar-mini">
     <div class="wrapper">
@@ -21,16 +21,16 @@ Customers
               <div class="row pt-2 pb-5">
                 <div class="col-sm-6">
                   <div class="d-flex align-items-center">
-                  <h1 class="admin-title m-0 pt-2">Customers</h1>
+                  <h1 class="admin-title m-0 pt-2">Employee Management</h1>
                   </div>
                   <ul class="breadcrump">
                     <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
-                    <li>Customers</li>
+                    <li>Employee management</li>
                   </ul>
                 </div>
                 <div class="col-sm-6">
                   <div class="d-flex justify-content-end">
-                    <a href="{% url 'quotation-customer-create' %}" class="breadcrump-addbtn"><i class="fas fa-plus"></i> Add Customer</a>
+                    <a href="{% url 'employee-management-create' %}" class="breadcrump-addbtn"><i class="fas fa-plus"></i> Add Employee</a>
                   </div>
                 </div>
               </div>
@@ -43,7 +43,7 @@ Customers
                           <div class="col">
                             
                             <p class="card-text">
-                              Total Customer
+                              Total Employee
                             </p>
                             <h5 class="card-title card-number">{{ total_count }}</h5>
                           </div>
@@ -63,9 +63,8 @@ Customers
                       <div class="card-body">
                         <div class="row">
                           <div class="col">
-                            
                             <p class="card-text">
-                              Active Customer
+                              Active Employee
                             </p>
                             <h5 class="card-title card-number">{{ total_count }}</h5>
                           </div>
@@ -87,7 +86,7 @@ Customers
                           <div class="col">
                             
                             <p class="card-text">
-                              Inactive Customer
+                              Inactive Employee
                             </p>
                             <h5 class="card-title card-number">0</h5>
                           </div>
@@ -101,13 +100,13 @@ Customers
                     </div>
                   </a>  
                 </div>  
-                
               </div>
-      
             </div>
           </div>
           <!-- /.content-header -->
       
+                      <!-- Display error messages -->
+                   
           <!-- Main content -->
           <div class="content">
             <div class="container-fluid">
@@ -122,16 +121,18 @@ Customers
                               <form method="GET" class="d-flex">
                                 <select class="table-select-field" name="search_field">
                                     <option value="" disabled selected>Filter By</option>
-                                    <option value="customer_id" {% if search_field == "customer_id" %}selected{% endif %}>Customer ID</option>
-                                    <option value="name" {% if search_field == "name" %}selected{% endif %}>Name</option>
-                                    <option value="email" {% if search_field == "email" %}selected{% endif %}>Email</option>
-                                    <option value="phone" {% if search_field == "phone" %}selected{% endif %}>Phone</option>
+                                    <option value="first_name" {% if search_field == "first_name" %}selected{% endif %}>Name</option>
+                                    <option value="phone" {% if search_field == "phone" %}selected{% endif %}>Mobile Number</option>
+                                    <option value="email" {% if search_field == "email" %}selected{% endif %}>Email ID</option>
                                 </select>
                             
                                 <input type="text" name="search_query" class="table-search-field" placeholder="Search" value="{{ search_query }}">
                             
-                                <button type="submit" class="table-search-btn">Search</button>
+                                <button type="submit" class="table-search-btn">
+                                    <img src="{% static 'dist/img/svg/search-icon.svg' %}" alt="Search">
+                                </button>
                             </form>
+                            
                             </div>
                           </div>
                           <div class="col-md-6">
@@ -164,111 +165,120 @@ Customers
                           </div>
                         </div>
                         <div class="table-responsive table-ht">
-                          <table class="table table-design table-trlink">
-                            <thead class="table-thead-bg-light table-header-fix">
-                                <tr>
-                                    <th width="10">
-                                        <input type="checkbox" id="checkall" class="table-chk">
-                                        <label for="checkall"></label>
-                                    </th>
-                                    <th>Customer ID</th>
-                                    <th>Name</th>
-                                    <th>Mobile Number</th>
-                                    <th>Email Address</th>
-                                    <th>State</th>
-                                    <th>City</th>
-                                    <th>Quote Date</th>
-                                    <th width="100">Status</th>
-                                    <th>Info</th>
-                                     <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for customer in page_obj %}
-                                <tr>
-                                    <td>
-                                        <input type="checkbox" id="check{{ customer.id }}" class="table-chk">
-                                        <label for="check{{ customer.id }}"></label>
-                                    </td>
-                                    <td>{{ customer.customer_id }}</td>
-                                    <td>{{ customer.name_as_per_pan }}</td>
-                                    <td>{{ customer.mobile_number|default:"N/A" }}</td>
-                                    <td>{{ customer.email_address|default:"N/A" }}</td>
-                                    <td>{{ customer.state|default:"N/A" }}</td>
-                                    <td>{{ customer.city|default:"N/A" }}</td>
-                                    <td>{{ customer.quote_date|default:"N/A" }}</td>
-                                    <td>
-                                        <span class="badge {% if customer.active %}bg-success{% else %}bg-danger{% endif %}">
-                                            {% if customer.active %}Active{% else %}Inactive{% endif %}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <i class="fas fa-clock text-primary"></i> {{ customer.updated_at|date:"d M Y, H:i:s" }} <br>
-                                        <i class="fas fa-calendar-alt text-secondary"></i> {{ customer.created_at|date:"d M Y, H:i:s" }}
-                                    </td>
-                                    
-                                     <td>
-                                      <a href="{% url 'quotation-customer-edit' customer_id=customer.id %}" class="btn btn-xs btn-primary">
-                                        <i class="fas fa-pencil-alt"></i> 
-                                    </a>
-                                    </td> 
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                        
+                            
+                            <table class="table table-design table-trlink">
+                                <thead class="table-thead-bg-light table-header-fix">
+                                    <tr>
+                                        <th width="10">
+                                            <input type="checkbox" id="checkall" class="table-chk">
+                                            <label for="checkall"></label>
+                                        </th>
+                                        <th>Employee Name</th>
+                                        <th>Role</th>
+                                        <th>Mobile</th>
+                                        <th>Email</th>
+                                        <th>Supervisor</th>
+                                        <th>Branch</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for employee in page_obj %}
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" id="check{{ employee.id }}" class="table-chk">
+                                            <label for="check{{ employee.id }}"></label>
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'employee-management-edit' employee_id=employee.id %}" class="trlink">
+                                                {{ employee.full_name|default:"N/A" }}
+                                                <span class="text-gray d-block small">PAN#{{ employee.pan_no }}</span>
+                                            </a>
+                                        </td>
+                                        <td>{{ employee.role.roleName|default:"-" }}</td>
+                                        <td>{{ employee.phone|default:"-" }}</td>
+                                        <td>{{ employee.email|default:"-" }}</td>
+                                        <td>
+                                            {% with all_users|get_item:employee.senior_id as supervisor %}
+                                                {% if supervisor and employee.role_id != 2 %}
+                                                    {{ supervisor.first_name }} {{ supervisor.last_name }}
+                                                {% elif employee.role_id == 2 %}
+                                                    Subhash Bishnoi
+                                                {% else %}
+                                                    -
+                                                {% endif %}
+                                            {% endwith %}
+                                        </td>
+                                        
+                                        <td>{{ branches|get_item:employee.branch_id|default:"-" }}</td>
+                                        <td>
+                                            <a href="{% url 'employee-management-edit' employee_id=employee.id %}" class="btn btn-xs btn-warning">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            
+                            
+                            
                         </div>
                       </div>
                     </div>
                     
-                    
                     <div class="bottom-fix-pagination">
-                      <div class="d-flex justify-content-between align-items-center">
-                          <ul class="pagination">
-                              {% if page_obj.has_previous %}
-                                  <li class="page-item">
-                                      <a class="page-link" href="?page=1&per_page={{ per_page }}" aria-label="First">
-                                          <span aria-hidden="true">&laquo;&laquo;</span>
-                                      </a>
-                                  </li>
-                                  <li class="page-item">
-                                      <a class="page-link" href="?page={{ page_obj.previous_page_number }}&per_page={{ per_page }}" aria-label="Previous">
-                                          <span aria-hidden="true">&laquo;</span>
-                                      </a>
-                                  </li>
-                              {% endif %}
-              
-                              {% for num in page_obj.paginator.page_range %}
-                                  <li class="page-item {% if num == page_obj.number %}active{% endif %}">
-                                      <a class="page-link" href="?page={{ num }}&per_page={{ per_page }}">{{ num }}</a>
-                                  </li>
-                              {% endfor %}
-              
-                              {% if page_obj.has_next %}
-                                  <li class="page-item">
-                                      <a class="page-link" href="?page={{ page_obj.next_page_number }}&per_page={{ per_page }}" aria-label="Next">
-                                          <span aria-hidden="true">&raquo;</span>
-                                      </a>
-                                  </li>
-                                  <li class="page-item">
-                                      <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&per_page={{ per_page }}" aria-label="Last">
-                                          <span aria-hidden="true">&raquo;&raquo;</span>
-                                      </a>
-                                  </li>
-                              {% endif %}
-                          </ul>
-              
-                          <form method="GET" class="d-flex">
-                              <select class="pagination-dropdown form-select" name="per_page" onchange="this.form.submit()">
-                                  <option value="10" {% if per_page == 10 %}selected{% endif %}>10 / Page</option>
-                                  <option value="20" {% if per_page == 20 %}selected{% endif %}>20 / Page</option>
-                                  <option value="50" {% if per_page == 50 %}selected{% endif %}>50 / Page</option>
-                                  <option value="100" {% if per_page == 100 %}selected{% endif %}>100 / Page</option>
-                              </select>
-                              <input type="hidden" name="page" value="1">
-                          </form>
-                      </div>
-                  </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <ul class="pagination">
+                                {% if page_obj.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=1&per_page={{ per_page }}" aria-label="First">
+                                            <span aria-hidden="true">&laquo;&laquo;</span>
+                                            <span class="sr-only">First</span>
+                                        </a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}&per_page={{ per_page }}" aria-label="Previous">
+                                            <span aria-hidden="true">&laquo;</span>
+                                            <span class="sr-only">Previous</span>
+                                        </a>
+                                    </li>
+                                {% endif %}
+                    
+                                {% for num in page_obj.paginator.page_range %}
+                                    <li class="page-item {% if num == page_obj.number %}active{% endif %}">
+                                        <a class="page-link" href="?page={{ num }}&per_page={{ per_page }}">{{ num }}</a>
+                                    </li>
+                                {% endfor %}
+                    
+                                {% if page_obj.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}&per_page={{ per_page }}" aria-label="Next">
+                                            <span aria-hidden="true">&raquo;</span>
+                                            <span class="sr-only">Next</span>
+                                        </a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&per_page={{ per_page }}" aria-label="Last">
+                                            <span aria-hidden="true">&raquo;&raquo;</span>
+                                            <span class="sr-only">Last</span>
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                    
+                            <form method="GET" class="d-flex">
+                                <select class="pagination-dropdown form-select" name="per_page" onchange="this.form.submit()">
+                                    <option value="10" {% if per_page == '10' %}selected{% endif %}>10 / Page</option>
+                                    <option value="20" {% if per_page == '20' %}selected{% endif %}>20 / Page</option>
+                                    <option value="50" {% if per_page == '50' %}selected{% endif %}>50 / Page</option>
+                                    <option value="100" {% if per_page == '100' %}selected{% endif %}>100 / Page</option>
+                                </select>
+                                <input type="hidden" name="page" value="1">
+                            </form>
+                        </div>
+                    </div>
+                     
                   </div>
                 </div>
               </div>  

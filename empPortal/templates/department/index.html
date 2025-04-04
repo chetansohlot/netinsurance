@@ -22,6 +22,10 @@ Department
                   <div class="d-flex align-items-center">
                   <h1 class="admin-title m-0 pt-2">Department</h1>
                   </div>
+                  <ul class="breadcrump">
+                    <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
+                    <li>Department</li>
+                  </ul>
                 </div>
                 <div class="col-sm-6">
                   <div class="d-flex justify-content-end">
@@ -171,7 +175,6 @@ Department
                                             <label for="checkall"></label>
                                         </th>
                                         <th>Department Name</th>
-                                        <th>Contact Person</th>
                                         <th>Mobile</th>
                                         <th>Email</th>
                                         <th>Status</th>
@@ -192,7 +195,6 @@ Department
                                                 <span class="text-gray d-block small">#{{ department.id }}</span>
                                             </a>
                                         </td>
-                                        <td>{{ department.contact_person }}</td>
                                         <td>{{ department.contact_number }}</td>
                                         <td>{{ department.email }}</td>
                                         <td>
