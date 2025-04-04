@@ -135,41 +135,51 @@
                                             {% endif %}
                                         </span>
                                     </li>
-                                    
-                                    <li>
-                                        <img src="{% static 'dist/img/svg/exam.svg' %}" alt="">
-                                        <span class="list">Start Exam</span>
-                                        <span class="list-output">
-                                            <span class="badge badge-info"><a class="text-white" href="{% url 'members_exam'%}">Start Exam</a></span>
-                                        </span>
-                                    </li>
-                                    <li>
-                                        <img src="{% static 'dist/img/svg/exam.svg' %}" alt="">
-                                        <span class="list">Exam Score & Status</span>
-                                        <span class="list-output">N/A</span>
-                                    </li>
-                                    <li>
-                                        <img src="{% static 'dist/img/svg/training-status.svg' %}" alt="">
-                                        <span class="list">Training Status</span>
-                                        <span class="list-output">
-                                            N/A
-                                        </span>
-                                    </li>
-                                    <li>
-                                        <img src="{% static 'dist/img/svg/training-completed.svg' %}" alt="">
-                                        <span class="list">Training Completed</span>
-                                        <span class="list-output">
-                                            N/A
-                                        </span>
-                                    </li>
-                                    <li>
-                                        <img src="{% static 'dist/img/svg/timer.svg' %}" alt="">
-                                        <span class="list">Training Time Counter</span>
-                                        <span class="list-output">
-                                            N/A
-                                        </span>
-                                    </li>
-                                   
+                                    {% if user.role_id == 4 %}
+                                        {% if user.activation_status == "1" %}
+                                            {% if user.exam_eligibility == 1 %}
+                                                {% if user.exam_attempt < 3 %}
+                                                    {% if user.exam_pass == 0 %}
+                                                        <li>
+                                                            <img src="{% static 'dist/img/svg/exam.svg' %}" alt="">
+                                                            <span class="list">Start Exam</span>
+                                                            <span class="list-output">
+                                                                <span class="badge badge-info">
+                                                                    <a class="text-white" href="{% url 'members_exam' %}">Start Exam</a>
+                                                                </span>
+                                                            </span>
+                                                        </li>
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endif %}
+                                            <li>
+                                                <img src="{% static 'dist/img/svg/exam.svg' %}" alt="">
+                                                <span class="list">Exam Score & Status</span>
+                                                <span class="list-output">N/A</span>
+                                            </li>
+                                            <li>
+                                                <img src="{% static 'dist/img/svg/training-status.svg' %}" alt="">
+                                                <span class="list">Training Status</span>
+                                                <span class="list-output">
+                                                    N/A
+                                                </span>
+                                            </li>
+                                            <li>
+                                                <img src="{% static 'dist/img/svg/training-completed.svg' %}" alt="">
+                                                <span class="list">Training Completed</span>
+                                                <span class="list-output">
+                                                    N/A
+                                                </span>
+                                            </li>
+                                            <li>
+                                                <img src="{% static 'dist/img/svg/timer.svg' %}" alt="">
+                                                <span class="list">Training Time Counter</span>
+                                                <span class="list-output">
+                                                    N/A
+                                                </span>
+                                            </li>
+                                        {% endif %}
+                                    {% endif %}
                                 </ul>
                             </div>
                         </div>

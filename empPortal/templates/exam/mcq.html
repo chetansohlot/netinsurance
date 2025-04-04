@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Training Material & Question Paper - Elevate Insurance</title>
-    <link rel="stylesheet" href="https://pos.elevateinsurance.in/assets/css/style.css">
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -74,7 +75,6 @@
         <h1>Elevate Insurance Training & Examination</h1>
         <p>Empowering Agents with Knowledge</p>
     </header>
-    
     <div class="container">
         <section class="section" id="exam-section">
             <h2>Examination - Question Paper</h2>
@@ -87,61 +87,68 @@
                 </div>
             </form>
         </section>
-        <div id="thank-you" class="thank-you">Thank you for completing the exam!</div>
+        <div id="thank-you" class="thank-you">
+            Thank you for completing the exam!
+            Score : <span id="exam_score"></span>
+            Result : <span id="result"></span>
+            Attempt Questions : <span id="attempted_questions"></span>
+            <span id="greeting" class="text-red"></span>
+        </div>
     </div>
     
     <footer class="footer">
         <p>&copy; 2025 Elevate Insurance. All Rights Reserved.</p>
     </footer>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script>
         const questions = [
-        { question: "What is the primary purpose of Health Insurance?", options: ["To save tax", "To provide financial coverage for medical expenses", "To invest money", "To increase savings"], correct: "b" },
-        { question: "What is a Pre-existing Disease in Health Insurance?", options: ["A disease diagnosed after buying the policy", "A disease present before purchasing the policy", "A disease that is covered from day one", "A temporary illness"], correct: "b" },
-        { question: "What is a Cashless Claim in Health Insurance?", options: ["Paying the hospital and later claiming reimbursement", "Getting treatment without paying upfront at network hospitals", "Claiming cash after hospital discharge", "A claim that takes more than 30 days"], correct: "b" },
-        { question: "What is a Deductible in Health Insurance?", options: ["The portion of the claim the insurer pays", "The amount paid by the policyholder before coverage starts", "The amount reimbursed after the claim", "The sum insured"], correct: "b" },
-        { question: "What does No Claim Bonus (NCB) mean in Motor Insurance?", options: ["A reward for accident-free driving", "A penalty for making claims", "A discount given by the government", "A compulsory charge"], correct: "a" },
-        { question: "What are the types of Motor Insurance policies?", options: ["Third-Party and Comprehensive", "Individual and Family Floater", "Term and Whole Life", "Standard and Premium"], correct: "a" },
-        { question: "What is Insured Declared Value (IDV) in Motor Insurance?", options: ["The market value of the car", "The maximum amount the insurer will pay in case of total loss or theft", "The policyholder's declared income", "The tax amount on the vehicle"], correct: "b" },
-        { question: "Which of the following is NOT covered under a Third-Party Insurance policy?", options: ["Damage to the insured car", "Injury to third parties", "Damage to third-party property", "Legal liability"], correct: "a" },
-        { question: "What is the meaning of Co-Payment in Health Insurance?", options: ["The insurance company pays the full claim amount", "The insured shares a part of the claim cost", "The claim is paid in instalments", "The policy is jointly held by two people"], correct: "b" },
-        { question: "Which regulatory body governs insurance in India?", options: ["RBI", "SEBI", "IRDAI", "TRAI"], correct: "c" },
-        { question: "What is a Waiting Period in Health Insurance?", options: ["The time before a policy is issued", "The period before certain benefits becomes active", "The time taken for claim settlement", "The tenure of the policy"], correct: "b" },
-        { question: "What is the penalty for driving a vehicle without insurance in India?", options: ["500", "1,000", "2,000", "5,000"], correct: "c" },
-        { question: "What is a Personal Accident Cover in Motor Insurance?", options: ["A cover for third-party injuries", "A cover for damage to the vehicle", "A cover for injuries or death of the insured driver", "A discount on premium"], correct: "c" },
-        { question: "Which factor does NOT affect Motor Insurance premium?", options: ["Age of the vehicle", "Driving history", "Fuel price", "Type of policy"], correct: "c" },
-        { question: "What is a Critical Illness Plan?", options: ["A plan that covers common cold and fever", "A plan that provides a lump sum on diagnosis of severe diseases", "A regular Mediclaim policy", "A life insurance policy"], correct: "b" },
-        { question: "What is the standard duration of a Health Insurance policy?", options: ["1 year", "3 years", "5 years", "Lifetime"], correct: "a" },
-        { question: "What is Roadside Assistance in Motor Insurance?", options: ["Insurance for highway accidents", "An add-on that provides breakdown assistance", "A claim settlement process", "Insurance for public transport"], correct: "b" },
-        { question: "What is an Add-on in Motor Insurance?", options: ["A free benefit included in all policies", "An optional cover enhancing the base policy", "A policy for commercial vehicles", "A type of tax deduction"], correct: "b" },
-        { question: "What is the major benefit of a Family Floater Health Insurance plan?", options: ["Covers all family members under a single sum insured", "Provides higher tax benefits", "Has a lower waiting period", "Covers only senior citizens"], correct: "a" },
-        { question: "How does a Zero Depreciation Cover benefit a car owner?", options: ["Reduces the premium", "Covers the full cost of car parts without depreciation", "Increases the resale value", "Provides free maintenance"], correct: "b" },
-        { question: "What is an Incurred Claim Ratio (ICR)?", options: ["The ratio of premium collected to claims paid", "The percentage of rejected claims", "The policyholders claim history", "The ratio of claims pending to total policies"], correct: "a" },
-        { question: "What is an Endorsement in Insurance?", options: ["A legal document modifying an insurance policy", "A promotional advertisement", "A claim settlement report", "A premium refund"], correct: "a" },
-        { question: "What is the main purpose of Third-Party Motor Insurance?", options: ["To cover damages to the insured vehicle", "To cover damages to third-party property or injury", "To cover regular servicing costs", "To provide discounts on fuel"], correct: "b" },
-        { question: "What is a Network Hospital in Health Insurance?", options: ["Any hospital that accepts cash payments", "A hospital linked with an insurance provider for cashless treatment", "A government hospitals", "A hospital without an ICU"], correct: "b" }
-    ];
+            {% for question in questions %}
+                {
+                    question: "{{ question.question_text|escapejs }}",
+                    question_id: "{{ question.id|escapejs }}",
+                    options: [
+                    {% for option in question.options.all %}
+                        { text: "{{ option.option_text|escapejs }}",id:"{{option.id|escapejs}}"}
+                        {% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                    ]
+                }
+                {% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ];
 
         let currentQuestionIndex = 0;
 
+      
+
         function loadQuestion() {
+            const question = questions[currentQuestionIndex];
             const questionContainer = document.getElementById("question-container");
+        
             questionContainer.innerHTML = `
-                <div class="question">${currentQuestionIndex + 1}. ${questions[currentQuestionIndex].question}</div>
+                <div class="question">${currentQuestionIndex + 1}. ${question.question}</div>
                 <div class="options">
-                    ${questions[currentQuestionIndex].options.map((opt, index) => `
+                    ${question.options.map((opt, index) => `
                         <label>
-                            <input type="radio" name="q${currentQuestionIndex}" value="${String.fromCharCode(97 + index)}"> ${opt}
+                            <input type="radio" name="q${question.question_id}" value="${opt.id}"
+                            ${selectedAnswers[question.question_id] == index+1 ? "checked" : ""}>
+                            ${opt.text}
                         </label>
                     `).join('')}
                 </div>
             `;
+        
             document.getElementById("prevButton").disabled = currentQuestionIndex === 0;
             document.getElementById("nextButton").style.display = currentQuestionIndex === questions.length - 1 ? "none" : "inline-block";
             document.getElementById("submitButton").style.display = currentQuestionIndex === questions.length - 1 ? "inline-block" : "none";
         }
 
+        let selectedAnswers = {}; 
+
         function nextQuestion() {
+            saveSelectedAnswer();
             if (currentQuestionIndex < questions.length - 1) {
                 currentQuestionIndex++;
                 loadQuestion();
@@ -149,6 +156,7 @@
         }
 
         function prevQuestion() {
+            saveSelectedAnswer();
             if (currentQuestionIndex > 0) {
                 currentQuestionIndex--;
                 loadQuestion();
@@ -156,6 +164,52 @@
         }
 
         document.addEventListener("DOMContentLoaded", loadQuestion);
+
+        function saveSelectedAnswer() {
+            let selectedOption = document.querySelector(`input[name="q${questions[currentQuestionIndex].question_id}"]:checked`);
+            if (selectedOption) {
+                selectedAnswers[questions[currentQuestionIndex].question_id] = selectedOption.value;
+            }
+        }
+        
+        function submitExam() {
+            let answers = [];
+            Object.entries(selectedAnswers).forEach(([question_id, selected_option]) => {
+                answers.push({
+                    question_id: question_id,
+                    selected_option: selected_option
+                });
+            });
+            $.ajax({
+                url: "{% url 'submit-exam' %}",
+                type: "POST",
+                contentType: "application/json",
+                headers: { "X-CSRFToken": getCSRFToken() }, // Ensure CSRF protection
+                data: JSON.stringify({ answers: answers }),
+                success: function(response) {
+                    $("#exam-section").hide();
+                    $("#thank-you").show();
+                    $('#exam_score').text(response.percentage)
+                    $('#result').text(response.result)
+                    $('#attempted_questions').text(response.attempted_questions)
+                  
+                    if (response.result === 'failed') {
+                        $('#greeting').text('Better luck next time!');
+                    } else {
+                        $('#greeting').text(response.greeting || 'Congratulations!');
+                    }
+                    
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error:", error);
+                }
+            });
+        }
+
+        function getCSRFToken() {
+            return document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1];
+        }
+
     </script>
 </body>
 </html>

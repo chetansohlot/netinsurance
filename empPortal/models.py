@@ -12,7 +12,6 @@ class Roles(models.Model):
     class Meta:
         db_table = 'roles'
         
-
 class Commission(models.Model):
     rm_name  =models.CharField(max_length=255, unique=True)
     member_id = models.CharField(max_length=20, null=True, blank=True)
@@ -288,7 +287,10 @@ class Users(AbstractBaseUser):
     phone_otp = models.CharField(max_length=10, null=True, blank=True)
     phone_verified = models.BooleanField(default=False)
     gender = models.PositiveSmallIntegerField(null=True, blank=True) 
-    
+    exam_eligibility = models.PositiveSmallIntegerField(null=True, blank=True, default=0) 
+    exam_attempt = models.PositiveSmallIntegerField(null=True, blank=True, default=0) 
+    exam_pass = models.PositiveSmallIntegerField(null=True, blank=True, default=0) 
+    exam_last_attempted_on = models.DateTimeField(null=True)
     dob = models.CharField(max_length=255)
     state = models.CharField(max_length=255)
     city = models.CharField(max_length=255)
@@ -301,6 +303,8 @@ class Users(AbstractBaseUser):
     department_id = models.CharField(max_length=20, null=True, blank=True)
     senior_id = models.CharField(max_length=20, null=True, blank=True)
     status = models.IntegerField(default=1)
+    activation_status_updated_at = models.DateTimeField(default=False)
+    user_active_updated_date = models.DateTimeField(default=False)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
     password = models.CharField(max_length=255, null=True)
@@ -311,6 +315,7 @@ class Users(AbstractBaseUser):
     is_login_available = models.BooleanField(default=False)
     is_reset_pass_available = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
+    
     
     objects = UsersManager()
     USERNAME_FIELD  = 'email'
@@ -523,9 +528,6 @@ class DocumentUpload(models.Model):
     class Meta:
         db_table = 'documents_upload'
 
-
-
-
 class UnprocessedPolicyFiles(models.Model):
     policy_document = models.CharField(max_length=255)
     bulk_log_id = models.IntegerField()
@@ -540,3 +542,88 @@ class UnprocessedPolicyFiles(models.Model):
 
     class Meta:
         db_table = 'unprocessed_policy_files'
+
+
+class Exam(models.Model):
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    duration = models.IntegerField(help_text="Duration in minutes")
+    exam_eligibility = models.FloatField(null=True, blank=True, help_text="Eligibility score for the exam")
+    exam_question_count = models.IntegerField(null=True, blank=True, help_text="Total number of questions in the exam")
+    duration = models.IntegerField(help_text="Duration in minutes")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+    
+    class Meta:
+        db_table = 'exam'
+        verbose_name = "Exam"
+        verbose_name_plural = "Exams"
+        
+
+class Question(models.Model):
+    exam = models.ForeignKey(Exam, on_delete=models.CASCADE, related_name='questions')
+    question_text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.question_text
+    
+    class Meta:
+        db_table = 'question'
+        verbose_name = "Question"
+        verbose_name_plural = "Questions"
+
+class Option(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='options')
+    option_text = models.TextField()
+    is_correct = models.BooleanField(default=False)  # True for the correct option
+
+    def __str__(self):
+        return self.option_text
+    
+    class Meta:
+        db_table = 'option'
+        verbose_name = "Option"
+        verbose_name_plural = "Options"
+
+
+class UserAnswer(models.Model):
+    user = models.ForeignKey(Users, on_delete=models.CASCADE)
+    exam = models.ForeignKey(Exam, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    selected_option = models.ForeignKey(Option, on_delete=models.SET_NULL, null=True, blank=True)
+    submitted_at = models.DateTimeField(auto_now_add=True)
+
+    def is_correct(self):
+        return self.selected_option.is_correct if self.selected_option else False
+
+    def __str__(self):
+        return f"{self.user.username} - {self.question.question_text}"
+    
+    class Meta:
+        db_table = 'user_answer'
+        verbose_name = "user_answers"
+        verbose_name_plural = "User_answers"
+        
+
+# Exam Results Model (Stores Scores)
+class ExamResult(models.Model):
+    user = models.ForeignKey(Users, on_delete=models.CASCADE)
+    exam = models.ForeignKey(Exam, on_delete=models.CASCADE)
+    total_questions = models.IntegerField(default=0)
+    total_attempted_questions = models.IntegerField(default=0)
+    correct_answers = models.IntegerField(default=0)
+    percentage = models.DecimalField(max_digits=5, decimal_places=2)
+    status = models.CharField(max_length=10, choices=[('passed', 'Passed'), ('failed', 'Failed')], default='failed')
+    created_at = models.DateTimeField(auto_now_add=True)
+    exam_submitted = models.IntegerField(default=1, help_text="1->start, 2->submitted")
+
+    def __str__(self):
+        return f"{self.user.username} - {self.exam.title} - {self.status}"
+
+    class Meta:
+        db_table = 'exam_result'
+        verbose_name = "Exam_result"
+        verbose_name_plural = "Exam_results"

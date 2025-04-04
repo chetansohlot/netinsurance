@@ -90,7 +90,11 @@
             </ul>
         </section>
         
-        <a href="{% url 'members_exam_mcq' %}" class="btn btn-success">Start Exam</a>
+        <form action="{% url 'start_exam' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success">Start Exam</button>
+        </form>
+        <!-- <a href="" class="btn btn-success">Start Exam</a> -->
         <!-- <button type="button" class="btn btn-success">Start Exam</button> -->
 
         <!-- <section class="section">

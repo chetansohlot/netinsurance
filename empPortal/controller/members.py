@@ -528,29 +528,6 @@ def myAccount(request):
     else:
         return redirect('login')
 
-def members_exam(request):
-    if request.user.is_authenticated:
-        # Fetch user and bank details for the logged-in user
-        user_details = Users.objects.get(id=request.user.id)  # Fetching the user's details
-
-        return render(request, 'exam/index.html', {
-            'user_details': user_details
-        })
-    else:
-        return redirect('login')
-    
-def members_exam_mcq(request):
-    if request.user.is_authenticated:
-        # Fetch user and bank details for the logged-in user
-        user_details = Users.objects.get(id=request.user.id)  # Fetching the user's details
-
-        return render(request, 'exam/mcq.html', {
-            'user_details': user_details
-        })
-    else:
-        return redirect('login')
-
-
 def update_user_details(request):
     if request.method == 'POST':
         user_details = Users.objects.get(id=request.user.id)
