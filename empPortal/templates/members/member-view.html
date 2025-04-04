@@ -448,16 +448,22 @@
                                                 <td>{{ branch.mobile|default:"N/A" }}</td>
                                             </tr>
                                             <tr>
-                                                <td>Branch Manager</td>
-                                                <td>{{ branch_manager.full_name|default:"N/A" }}</td>
-                                                <td>{{ branch_manager.email|default:"N/A" }}</td>
-                                                <td>{{ branch_manager.phone|default:"N/A" }}</td>
+                                                <td>Manager</td>
+                                                <td>{{ manager_details.full_name|default:"N/A" }}</td>
+                                                <td>{{ manager_details.email|default:"N/A" }}</td>
+                                                <td>{{ manager_details.phone|default:"N/A" }}</td>
                                             </tr>
                                             <tr>
-                                                <td>Sales Manager</td>
-                                                <td>{{ sales_manager.full_name|default:"N/A" }}</td>
-                                                <td>{{ sales_manager.email|default:"N/A" }}</td>
-                                                <td>{{ sales_manager.phone|default:"N/A" }}</td>
+                                                <td>Team leader</td>
+                                                <td>{{ tl_details.full_name|default:"N/A" }}</td>
+                                                <td>{{ tl_details.email|default:"N/A" }}</td>
+                                                <td>{{ tl_details.phone|default:"N/A" }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Relationship Member</td>
+                                                <td>{{ rm_details.full_name|default:"N/A" }}</td>
+                                                <td>{{ rm_details.email|default:"N/A" }}</td>
+                                                <td>{{ rm_details.phone|default:"N/A" }}</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -479,22 +485,45 @@
                                                     <select id="branch" name="branch" class="form-control">
                                                         <option value="">Select Branch</option>
                                                         {% for branch in branches %}
-                                                            <option value="{{ branch.id }}">{{ branch.branch_name }}</option>
+                                                        <option value="{{ branch.id }}" {% if branch.id == selected_branch_id %}selected{% endif %}>
+                                                            {{ branch.branch_name }}
+                                                        </option>
                                                         {% endfor %}
                                                     </select>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label for="branch_manager">Branch Manager</label>
+                                                    <label for="branch_manager">Manager</label>
                                                     <select id="branch_manager" name="branch_manager" class="form-control">
-                                                        <option value="">Select Branch Manager</option>
-                                                        <!-- Options will be populated via AJAX -->
+                                                        <option value="">Select Manager</option>
+                                                        {% for manager_s in manager_list %}
+                                                        <option value="{{ manager_s.id }}" {% if manager_s.id == selected_manager_id %}selected{% endif %}>
+                                                            {{ manager_s.full_name }}
+                                                        </option>
+                                                        
+                                                        {% endfor %}
                                                     </select>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label for="sales_manager">Sales Manager</label>
+                                                    <label for="sales_manager">Team Leader</label>
                                                     <select id="sales_manager" name="sales_manager" class="form-control">
-                                                        <option value="">Select Sales Manager</option>
-                                                        <!-- Options will be populated via AJAX -->
+                                                        <option value="">Select Team Leader</option>
+                                                        {% for tl_s in tl_list %}
+                                                        <option value="{{ tl_s.id }}" {% if tl_s.id == selected_tl_id %}selected{% endif %}>
+                                                            {{ tl_s.full_name }}
+                                                        </option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="role_rm">Relationship Member</label>
+                                                    <select id="role_rm" name="role_rm" class="form-control">
+                                                        <option value="">Select Relationship Member</option>
+                                                        {% for rm_s in rm_list %}
+                                                        <option value="{{ rm_s.id }}" {% if rm_s.id == selected_rm_id %}selected{% endif %}>
+                                                            {{ rm_s.full_name }}
+                                                        </option>
+                                                        {% endfor %}
                                                     </select>
                                                 </div>
 
@@ -1208,10 +1237,12 @@
             var branchId = this.value;
             var branchManagerSelect = document.getElementById('branch_manager');
             var salesManagerSelect = document.getElementById('sales_manager');
+            var roleRmSelect = document.getElementById('role_rm');
 
             // Reset Branch Manager and Sales Manager dropdowns
-            branchManagerSelect.innerHTML = '<option value="">Select Branch Manager</option>';
-            salesManagerSelect.innerHTML = '<option value="">Select Sales Manager</option>';
+            branchManagerSelect.innerHTML = '<option value="">Select Manager</option>';
+            salesManagerSelect.innerHTML = '<option value="">Select Team Leader</option>';
+            roleRmSelect.innerHTML = '<option value="">Select RM</option>';
 
             if (branchId) {
                 fetch(`/get-branch-managers/?branch_id=${branchId}`)
@@ -1222,16 +1253,18 @@
                             branchManagerSelect.add(option);
                         });
                     })
-                    .catch(error => console.error('Error fetching branch managers:', error));
+                    .catch(error => console.error('Error fetching managers:', error));
             }
         });
 
         document.getElementById('branch_manager').addEventListener('change', function() {
             var branchManagerId = this.value;
             var salesManagerSelect = document.getElementById('sales_manager');
+            var roleRmSelect = document.getElementById('role_rm');
 
             // Reset Sales Manager dropdown
-            salesManagerSelect.innerHTML = '<option value="">Select Sales Manager</option>';
+            salesManagerSelect.innerHTML = '<option value="">Select Team Leader</option>';
+            roleRmSelect.innerHTML = '<option value="">Select RM</option>';
 
             if (branchManagerId) {
                 fetch(`/get-sales-managers/?branch_manager_id=${branchManagerId}`)
@@ -1242,9 +1275,31 @@
                             salesManagerSelect.add(option);
                         });
                     })
-                    .catch(error => console.error('Error fetching sales managers:', error));
+                    .catch(error => console.error('Error fetching Team Leaders:', error));
             }
         });
+
+        
+        document.getElementById('sales_manager').addEventListener('change', function() {
+            var tlId = this.value;
+            var roleRmSelect = document.getElementById('role_rm');
+
+            roleRmSelect.innerHTML = '<option value="">Select RM</option>';
+
+            if (tlId) {
+                fetch(`/get-rm-list/?tlId=${tlId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.rm_list.forEach(function(rm) {
+                            var option = new Option(rm.full_name, rm.id);
+                            roleRmSelect.add(option);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching RM:', error));
+            }
+        });
+
+        
 
     </script>
     

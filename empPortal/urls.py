@@ -87,6 +87,7 @@ urlpatterns = [
     
     path('get-branch-managers/', members.get_branch_managers, name='get_branch_managers'),
     path('get-sales-managers/', members.get_sales_managers, name='get_sales_managers'),
+    path('get-rm-list/', members.get_rm_list, name='get_rm_list'),
 
     path("check-account-number/", profile.check_account_number, name="check-account-number"),
 
