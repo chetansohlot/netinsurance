@@ -1833,7 +1833,7 @@ a:hover .dr-pdficon {
         bottom: 0;
         background: #fff;
         z-index: 1;
-        padding: 20px 32px 20px 280px;
+        padding: 20px 32px 20px 240px;
         box-shadow: 10px -2px 12px #00000012;
     }
 
@@ -2300,7 +2300,7 @@ a:hover .dr-pdficon {
     width:2800px;
 }
 .policy-data-table-width {
-    width:2800px;
+    width:2200px;
 }
 .commission-report-table-width {
     width:3800px;
@@ -2667,6 +2667,9 @@ a:hover .dr-pdficon {
 .quantity_input:focus {border:none; outline: none;}
 .quantity_minus:disabled, .quantity_plus:disabled {opacity: 0.5; }
 
+.form-box-shadow {box-shadow: 0px 0px 12px rgb(204 204 204 / 50%); border-radius: 10px; margin-bottom: 15px;}
+.form-bg-title {background: #feddd5; padding:10px 20px; margin-bottom: 15px; font-size:16px; font-weight: 600; width: 100%; border-radius: 10px 10px 0 0;}
+.form-padding {padding:0 20px;}
 
 @media (max-width:767px) {
     .banner-hding {font-size: 30px;}

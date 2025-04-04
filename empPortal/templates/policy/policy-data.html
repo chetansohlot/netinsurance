@@ -18,26 +18,97 @@ Policy Data
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper white-bg">
     <!-- Content Header (Page header) -->
-    <div class="content-header breadcrump-bg">
+    <div class="content-header header-content-bg">
       <div class="container-fluid ">
         <div class="row py-2">
-          <div class="col-sm-12">
-            <div class="d-flex align-items-center justify-content-between">
-              <div>
-                <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Policy Data </a>
-                <ul class="breadcrump">
-                  <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
-                  <li>Post Policies Mgt</li>
-              </ul>
-              </div>
-              <div>
+          <div class="col-sm-6">
+            <h1 class="admin-title m-0 pt-2">Policy Mgt.</h1>
+            <ul class="breadcrump">
+              <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
+              <li>Post Policies Mgt</li>
+            </ul>
+          </div>
+          <div class="col-sm-6">
+            <div class="d-flex justify-content-end">
                 <a href="{% url 'bulk-upload-logs' %}" class="breadcrump-addbtn mx-1">View Bulk Logs</a>
                 <a href="{% url 'bulk-policy-mgt' %}" class="breadcrump-addbtn mx-1">Add Bulk Policy</a>
                 <a href="{% url 'policy-mgt' %}" class="breadcrump-addbtn mx-1">Add Policy</a>
-                <!-- <a href="{% url 'export-policy' %}" class="breadcrump-addbtn mx-1">Export</a> -->
-              </div>
             </div>
           </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-6 col-sm-4 col-md-3">
+            <a href="#">
+              <div class="card counter-img-card active">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col">
+                      
+                      <p class="card-text">
+                        Total Lead
+                      </p>
+                      <h5 class="card-title card-number">0</h5>
+                    </div>
+                    
+                  </div>
+                </div>
+              </div>
+            </a>   
+          </div>  
+          <div class="col-xs-6 col-sm-4 col-md-3">
+            <a href="#">
+              <div class="card counter-img-card counter-active-card ">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col">
+                      
+                      <p class="card-text">
+                        Active Lead
+                      </p>
+                      <h5 class="card-title card-number">0</h5>
+                    </div>
+                    
+                  </div>
+                </div>
+              </div>
+            </a>  
+          </div>  
+          <div class="col-xs-6 col-sm-4 col-md-3">
+            <a href="#">
+              <div class="card counter-img-card counter-deactive-card ">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col">
+                      
+                      <p class="card-text">
+                        Inactive Lead
+                      </p>
+                      <h5 class="card-title card-number">0</h5>
+                    </div>
+                    
+                  </div>
+                </div>
+              </div>
+            </a>  
+          </div>  
+          <div class="col-xs-6 col-sm-4 col-md-3">
+            <a href="#">
+              <div class="card counter-img-card counter-pending-card ">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col">
+                      
+                      <p class="card-text">
+                        Pending Lead
+                      </p>
+                      <h5 class="card-title card-number">0</h5>
+                    </div>
+                    
+                  </div>
+                </div>
+              </div>
+            </a>  
+          </div>  
         </div>
       </div>
     </div>
@@ -50,6 +121,67 @@ Policy Data
           <div class="col-sm-12 col-md-12">
             <div class="card box-shadow-none">
               <div class="card-body px-0 pb-0 pt-0">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="table-search-area">
+                      <form method="GET" class="d-flex">
+                        <select class="table-select-field form-select" name="search_field">
+                            <option value="" disabled selected>Filter By</option>
+                            <option value="lead_id" {% if search_field == "lead_id" %}selected{% endif %}>Lead ID</option>
+                            <option value="customer_id" {% if search_field == "customer_id" %}selected{% endif %}>Customer ID</option>
+                            <option value="mobile_number" {% if search_field == "mobile_number" %}selected{% endif %}>Mobile Number</option>
+                            <option value="email_address" {% if search_field == "email_address" %}selected{% endif %}>Email Address</option>
+                        </select>
+                    
+                        <input type="text" name="search_query" class="table-search-field form-control" 
+                               placeholder="Search" value="{{ search_query }}">
+                    
+                        <button type="submit" class="table-search-btn btn btn-primary">
+                            <img src="{% static 'dist/img/svg/search-icon.svg' %}" alt="Search">
+                        </button>
+                    </form>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class=" d-flex justify-content-end">
+                      <div class="dropdown">
+                        <div class="shorting-select"  data-toggle="dropdown" aria-expanded="false">
+                          <img src="{% static 'dist/img/svg/shorting-icon.svg' %}" alt="">
+                          <span>Short</span>
+                          <img src="{% static 'dist/img/svg/down-arrow-icon.svg' %}" alt="" class="change-arrow">
+                        </div>
+                        <form action="">
+                          <ul class="dropdown-menu shorting-dropdown-menu">
+                            <p class="border-bottom pb-1 title2">Short</p>
+                            <li><input type="radio" name="shorting" id="name-a_z"> <label for="name-a_z">Name A &gt; Z</label></li>
+                            <li><input type="radio" name="shorting" id="name-z_a"> <label for="name-z_a">Name Z &lt; A</label></li>
+                            <li><input type="radio" name="shorting" id="recently_activated"> <label for="recently_activated">Recently Activated</label></li>
+                            <li><input type="radio" name="shorting" id="recently_deactivated"> <label for="recently_deactivated">Recently Deactivated</label></li>
+                            <div class="d-flex justify-content-center border-top pt-3 mt-2 pb-2">
+                              <button type="submit" class="dashboard-addbtn w-100">Apply</button>
+                            </div>   
+                          </ul>
+                        </form>
+                      </div>  
+                      <div class="shorting-select" data-toggle="modal" data-target="#modal-filter">
+                        <img src="{% static 'dist/img/svg/filter-icon.svg' %}" alt="">
+                        <span>Filter</span>
+                        <img src="{% static 'dist/img/svg/down-arrow-icon.svg' %}" alt="" class="change-arrow">
+                      </div>
+                    </div>  
+                  </div>
+                </div>  
+                <ul class="nav nav-pills profile-tab">
+                  <li class="nav-item text-bold">
+                      <a class="nav-link active" href="#">MOTOR</a>
+                  </li>
+                  <li class="nav-item text-bold">
+                      <a class="nav-link " href="#">HEALTH</a>
+                  </li>
+                  <li class="nav-item text-bold">
+                      <a class="nav-link " href="#">TERM</a>
+                  </li>
+                </ul>
                 <div class="tab-content" id="nav-tabContent">
                     <div class="table-responsive table-ht">
                      
@@ -57,17 +189,17 @@ Policy Data
                         <thead class="table-thead-bg-light table-header-fix">
                           <tr>
                             <th class="nowrap">Insurance Co.</th>
-                            <th class="nowrap">Reg. No.</th>
+                            <!-- <th class="nowrap">Reg. No.</th> -->
                             <th class="nowrap">Holder</th>
-                            <th class="nowrap">Policy No.</th>
+                            <!-- <th class="nowrap">Policy No.</th> -->
                             <th class="nowrap">Policy Type</th>
-                            <th class="nowrap">Issue Date</th>
-                            <th class="nowrap">Start Date</th>
-                            <th class="nowrap">Expiry Date</th>
-                            <th class="nowrap">Net Premium</th>
-                            <th class="nowrap">Gross Premium</th>
+                            <th class="nowrap">Date</th>
+                            <!-- <th class="nowrap">Start Date</th>
+                            <th class="nowrap">Expiry Date</th> -->
+                            <th class="nowrap">Premium</th>
+                            <!-- <th class="nowrap">Gross Premium</th>
                             <th class="nowrap">OD Premium</th>
-                            <th class="nowrap">TP Premium</th>
+                            <th class="nowrap">TP Premium</th> -->
                             <th class="nowrap">GST</th>
                             <th class="nowrap">RM Name</th>
                             <th class="nowrap">Payment</th>
@@ -82,18 +214,33 @@ Policy Data
                         <tbody>
                           {% for data in policy_data %}
                             <tr>
-                              <td>{{ data.insurance_provider }}</td>
-                              <td>{{ data.vehicle_number }}</td>
+                              <td>
+                                <span class="d-block">{{ data.insurance_provider }}</span>
+                                <span class="text-info d-inline-block"><strong>Policy No.:</strong> {{ data.policy_number|default:"-" }}</span>
+                                <span class="d-block "><strong>Reg. No.</strong> {{ data.vehicle_number }}</span>
+                              </td>
+                              <!-- <td>{{ data.vehicle_number }}</td> -->
                               <td>{{ data.holder_name }}</td>
-                              <td>{{ data.policy_number|default:"-" }} </td>
+                              <!-- <td>{{ data.policy_number|default:"-" }} </td> -->
                               <td>{{ data.policy_type|default:"-" }}</td>
-                              <td>{{ data.issue_date|default:"-" }}</td>
-                              <td>{{ data.start_date|default:"-" }}</td>
-                              <td>{{ data.expiry_date|default:"-" }}</td>
-                              <td>{{ data.policy_premium }}</td>
-                              <td>{{ data.policy_total_premium }}</td>
+                              <td>
+                                <span class="circle-icon"><i class="far fa-circle"></i></span><strong>Issue:</strong> {{ data.issue_date|default:"-" }} <br>
+                                <span class="circle-icon"><i class="far fa-circle"></i></span><strong>Start:</strong> {{ data.start_date|default:"-" }}<br>
+                                <span class="circle-icon"><i class="far fa-circle"></i></span><strong>Expiry:</strong> {{ data.expiry_date|default:"-" }}
+                                
+
+                              </td>
+                              <!-- <td>{{ data.start_date|default:"-" }}</td>
+                              <td>{{ data.expiry_date|default:"-" }}</td> -->
+                              <td>
+                                <span class="circle-icon"><i class="far fa-circle"></i></span> <strong>Net:</strong> <i class="fa-solid fa-indian-rupee-sign"></i> {{ data.policy_premium }} <br>
+                                <span class="circle-icon"><i class="far fa-circle"></i></span> <strong>Gross:</strong> <i class="fa-solid fa-indian-rupee-sign"></i> {{ data.policy_total_premium }} <br>
+                                <span class="circle-icon"><i class="far fa-circle"></i></span> <strong>OD:</strong> <i class="fa-solid fa-indian-rupee-sign"></i> {{ data.od_premium }} <br>
+                                <span class="circle-icon"><i class="far fa-circle"></i></span> <strong>TP:</strong> <i class="fa-solid fa-indian-rupee-sign"></i> {{ data.tp_premium }}
+                              </td>
+                              <!-- <td>{{ data.policy_total_premium }}</td>
                               <td>{{ data.od_premium }}</td>
-                              <td>{{ data.tp_premium }}</td>
+                              <td>{{ data.tp_premium }}</td> -->
                               <td>{{ data.gst }}</td>
                               <td>{{ data.rm_name }}</td>
                               <td>{{ data.payment_status|default:"Not Paid" }}</td>
@@ -104,7 +251,7 @@ Policy Data
                               <td>{{ data.vehicle_manuf_date|default:"-" }}</td>
                               <td>
                                 <div class="d-flex">
-                                  <a href="{{ data.filepath }}" class="tooltip-sec mx-2" data-title="Download {{ data.filename }}" target="_blank" download><i class="fas fa-download"></i></a>
+                                  <a href="{{ data.filepath }}" class="tooltip-sec mx-2 text-success" data-title="Download {{ data.filename }}" target="_blank" download><i class="fas fa-download"></i></a>
                                   <a href="{% url 'edit-policy' id=data.id %}" class="tooltip-sec" data-title="Edit Policy">
                                     <i class="fa-solid fa-edit"></i>
                                   </a>
@@ -116,6 +263,52 @@ Policy Data
                       </table>
                     </div>
                 </div>
+              </div>
+            </div>
+            <div class="bottom-fix-pagination">
+              <div class="d-flex justify-content-between align-items-center">
+                  <ul class="pagination">
+                      
+                          <li class="page-item">
+                              <a class="page-link" href="#" aria-label="First">
+                                  <span aria-hidden="true">&laquo;&laquo;</span>
+                              </a>
+                          </li>
+                          <li class="page-item">
+                              <a class="page-link" href="#" aria-label="Previous">
+                                  <span aria-hidden="true">&laquo;</span>
+                              </a>
+                          </li>
+                          <li class="page-item">
+                              <a class="page-link" href="#">1</a>
+                          </li>
+                          <li class="page-item">
+                            <a class="page-link" href="#">2</a>
+                          </li>
+                          <li class="page-item">
+                              <a class="page-link" href="#">3</a>
+                          </li>
+                          <li class="page-item">
+                              <a class="page-link" href="#" aria-label="Next">
+                                  <span aria-hidden="true">&raquo;</span>
+                              </a>
+                          </li>
+                          <li class="page-item">
+                              <a class="page-link" href="#" aria-label="Last">
+                                  <span aria-hidden="true">&raquo;&raquo;</span>
+                              </a>
+                          </li>
+                  </ul>
+      
+                  <form method="GET" class="d-flex">
+                      <select class="pagination-dropdown form-select" name="per_page" onchange="this.form.submit()">
+                          <option value="10" {% if per_page == 10 %}selected{% endif %}>10 / Page</option>
+                          <option value="20" {% if per_page == 20 %}selected{% endif %}>20 / Page</option>
+                          <option value="50" {% if per_page == 50 %}selected{% endif %}>50 / Page</option>
+                          <option value="100" {% if per_page == 100 %}selected{% endif %}>100 / Page</option>
+                      </select>
+                      <input type="hidden" name="page" value="1">
+                  </form>
               </div>
             </div>
           </div>
