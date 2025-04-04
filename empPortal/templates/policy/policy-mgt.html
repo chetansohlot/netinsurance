@@ -20,9 +20,15 @@ Policy Management
         <div class="content-header breadcrump-bg">
           <div class="container-fluid">
             <div class="row py-2">
-              <div class="col-sm-12">
-                <div class="d-flex align-items-center justify-content-between">
-                  <div><a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Add New Policy </a></div>
+              <div class="col-sm-12 col-md-6">
+                <h2 class="admin-title m-0 pt-2 text-dark">Browse Policy </h2>
+                <ul class="breadcrump">
+                  <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
+                  <li>Post Policies Mgt</li>
+                </ul>
+              </div>
+              <div class="col-sm-12 col-md-6">
+                <div class="d-flex align-items-center justify-content-end">
                   <div>
                     <a href="{% url 'bulk-upload-logs' %}" class="breadcrump-addbtn mx-1">View Bulk Logs</a>
                     <a href="{% url 'bulk-policy-mgt' %}" class="breadcrump-addbtn mx-1">Add Bulk Policy</a>
@@ -47,18 +53,21 @@ Policy Management
                     <form autocomplete="off" name="browsePolicy" id="myForm" action="{% url 'browser-policy' %}" method="post" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="row">
-                            <div class="form-group col-sm-6">
-                                <label for="image">Upload Image</label>
-                                <input type="file" class="form-control" name="image" id="image" accept="application/pdf">
-
+                          <div class="col-sm-6">
+                            <div class="form-group ">
+                                <label class="form-lbl" for="image">Upload Policy</label>
+                                <input type="file" class="form-field" name="image" id="image" accept="application/pdf">
                                 <span class="error image_err"></span>
                                 {% if form.image.errors %}
                                     <span class="text-danger">{{ form.image.errors.0 }}</span>
                                 {% endif %}
+                                <p class="text-gray small pt-2">Only PDF allowed and max size 2 mb allowed</p>
                             </div>
+                            <div class="d-flex justify-content-end">
+                              <button type="submit" class="form-submit-btn" id="submitButton">Upload Policy</button>
+                            </div>  
+                          </div>  
                         </div>
-                        
-                        <button type="submit" class="btn btn-primary" id="submitButton">Upload Image</button>
                     </form>
                   </div>
                   <div id="loader" class="form-loader" style="display: none;">

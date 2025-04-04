@@ -19,6 +19,7 @@ import os
 import zipfile
 from django.conf import settings
 from datetime import datetime
+from io import BytesIO
 
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 
@@ -821,8 +822,21 @@ def bulkBrowsePolicy(request):
             messages.error(request, "Invalid file format. Only ZIP files are allowed.")
             return redirect("bulk-policy-mgt")
          
+        if zip_file.size > 50 * 1024 * 1024:
+            messages.error(request, "File too large. Maximum allowed size is 50 MB.")
+            return redirect("bulk-policy-mgt")  
+         
         if not camp_name:
             messages.error(request, "Campaign Name is mandatory.")
+            return redirect("bulk-policy-mgt")
+        
+        try:
+            with zipfile.ZipFile(BytesIO(zip_file.read())) as zf:
+                if len(zf.infolist()) > 50:
+                    messages.error(request, "ZIP contains more than 50 files.")
+                    return redirect("bulk-policy-mgt")
+        except zipfile.BadZipFile:
+            messages.error(request, "The uploaded ZIP file is corrupted or invalid.")
             return redirect("bulk-policy-mgt")
         
         if rm_id:
