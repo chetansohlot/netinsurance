@@ -155,7 +155,19 @@
                                             <li>
                                                 <img src="{% static 'dist/img/svg/exam.svg' %}" alt="">
                                                 <span class="list">Exam Score & Status</span>
-                                                <span class="list-output">N/A</span>
+                                                <span class="list-output">
+                                                    {% if exam_details %}
+                                                        {% if exam_details.exam_submitted == 2 %}
+                                                            {{ exam_details.percentage }}% - {{ exam_details.status|upper }}
+                                                        {% elif exam_details.exam_submitted == 1 %}
+                                                            {{ "In Exam"|upper }}
+                                                        {% else %}
+                                                            {{ "N/A"|upper }}
+                                                        {% endif %}
+                                                    {% else %}
+                                                        {{ "N/A"|upper }}
+                                                    {% endif %}
+                                                </span>
                                             </li>
                                             <li>
                                                 <img src="{% static 'dist/img/svg/training-status.svg' %}" alt="">

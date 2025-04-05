@@ -4,7 +4,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib import messages
 from django.template import loader
-from ..models import Commission,Users,Branch, DocumentUpload
+from ..models import Commission,Users,Branch, DocumentUpload, ExamResult
 from empPortal.model import BankDetails
 from ..forms import DocumentUploadForm
 from django.contrib.auth import authenticate, login ,logout
@@ -114,7 +114,13 @@ def myAccount(request):
         if senior and senior.senior_id:  # Ensure senior is not None before accessing senior_id
             manager = Users.objects.filter(id=senior.senior_id).first()
 
-
+        exam_details = None
+        if request.user.exam_attempt > 0:
+            try:
+                exam_details = ExamResult.objects.filter(user_id=request.user.id).latest('created_at')
+            except ExamResult.DoesNotExist:
+                exam_details = None
+                
         return render(request, 'profile/my-account.html', {
             'user_details': user_details,
             'bank_details': bank_details,
@@ -124,7 +130,8 @@ def myAccount(request):
             'branch_manager': manager,
             'commissions': commissions_list , 
             'document_fields': document_fields , 
-            'docs': docs  
+            'docs': docs ,
+            'exam_details':exam_details
         })
     else:
         return redirect('login')
