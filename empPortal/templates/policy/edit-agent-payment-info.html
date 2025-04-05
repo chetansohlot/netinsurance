@@ -1,0 +1,248 @@
+{% extends 'master.html' %}
+
+{% load static %}
+
+{% block title %}
+    Edit Agent Payment Info
+{% endblock %}
+
+{% block content %}
+
+<body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+    
+        {% include "navbar.html" %}
+        {% include "sidebar.html" %}
+    
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <div class="content-header breadcrump-bg">
+          <div class="container-fluid">
+            <div class="row py-2">
+              <div class="col-sm-6">
+                <div class="d-flex align-items-center">
+                  <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Edit Agent Payment Info</a>
+                </div>
+                <ul class="breadcrump">
+                  <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
+                  <li> <a href="#">Policy Mgt</a> <i class="fas fa-chevron-right"></i></li>
+                  <li>Edit Policy</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /.content-header -->
+    
+        <!-- Main content -->
+        <div class="content">
+          <div class="container-fluid">
+            <div class="row">
+              
+              <div class="col-sm-12">  
+                <div class="card box-shadow-none p-3">
+                  <div class="card-body px-0 pb-0 pt-0">
+
+                    <form autocomplete="off" id="myForm" name="updatePolicy" action="{% url 'edit-agent-payment-info' policy_data.policy_number %}" method="post">
+                        {% csrf_token %}
+                      
+                        <input type="hidden" class="form-field" name="policy_id" id="policy_id" value="{{ policy_data.id }}">
+                        
+                        <div class="form-box-shadow">
+                          <h2 class="form-bg-title">Basic Policy</h2>
+                          <div class="form-padding">
+                            <div class="row">
+                              <div class="col-sm-6 col-md-4 col-lg-3">
+                                <div class="form-group">
+                                  <label class="form-lbl" for="policy_number">Policy Number</label>
+                                  <input type="text" class="form-field" name="policy_number" id="policy_number" placeholder="Policy Number" value="{{ policy_data.policy_number }}">
+                                </div>
+                              </div>
+                        
+                              <div class="col-sm-6 col-md-4 col-lg-3">
+                                <div class="form-group">
+                                  <label class="form-lbl" for="policy_issue_date">Policy Issue Date</label>
+                                  <input type="text" class="form-field" name="policy_issue_date" id="policy_issue_date" placeholder="Policy Issue Date" value="{{ policy_data.policy_issue_date }}">
+                                </div>
+                              </div>
+                        
+                              <div class="col-sm-6 col-md-4 col-lg-3">
+                                <div class="form-group">
+                                  <label class="form-lbl" for="policy_start_date">Policy Start Date</label>
+                                  <input type="text" class="form-field" name="policy_start_date" id="policy_start_date" placeholder="Policy Start Date" value="{{ policy_data.policy_start_date }}">
+                                </div>
+                              </div>
+                        
+                              <div class="col-sm-6 col-md-4 col-lg-3">
+                                <div class="form-group">
+                                  <label class="form-lbl" for="policy_expiry_date">Policy Expiry Date</label>
+                                  <input type="text" class="form-field" name="policy_expiry_date" id="policy_expiry_date" placeholder="Policy Expiry Date" value="{{ policy_data.policy_expiry_date }}">
+                                </div>
+                              </div>
+                        
+                              <div class="col-sm-6 col-md-4 col-lg-3">
+                                <!-- Reserved for future -->
+                              </div>
+                        
+                              <div class="col-sm-6 col-md-4 col-lg-3">
+                                <!-- Reserved for future -->
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div class="row">
+                          <div class="col-md-4">
+                            <div class="form-box-shadow">
+                              <iframe src="https://www.slideshare.net/slideshow/embed_code/key/78NW2yxg5UZMM3" frameborder="0" width="100%" height="400px"></iframe>
+                            </div>
+                          </div>
+                          <div class="col-md-8">
+                            <ul class="new-stepflow">
+                              <li class="active"><a href="javascript:void(0)"></a></li>
+                              <li class="active"><a href="javascript:void(0)"></a></li>
+                              <li class="active"><a href="javascript:void(0)"></a></li>
+                              <li class="active"><a href="javascript:void(0)"></a></li>
+                              <li><a href="javascript:void(0)"></a></li>
+                              <li><a href="javascript:void(0)"></a></li>
+                             </ul>
+                            
+                             
+                            <div class="form-box-shadow">
+                                <h2 class="form-bg-title">Agent Payment Details</h2>
+                                <div class="form-padding">
+                                  <div class="row">
+                                    <div class="col-sm-6 col-md-4 col-lg-3">
+                                      <div class="form-group">
+                                        <label class="form-lbl">Agent Name</label>
+                                        <input type="text" class="form-field" placeholder="Agent Name" >
+                                      </div>
+                                    </div>
+                                    <div class="col-sm-6 col-md-4 col-lg-3">
+                                      <div class="form-group">
+                                        <label class="form-lbl">Agent Payment Mod</label>
+                                        <select class="form-field">
+                                          <option>Online</option>
+                                        </select>
+                                      </div>
+                                    </div>
+                                    <div class="col-sm-6 col-md-4 col-lg-3">
+                                      <div class="form-group">
+                                        <label class="form-lbl">Agent Payment Date</label>
+                                        <input type="text" class="form-field" placeholder="Agent Payment Date">
+                                      </div>
+                                    </div>
+                                    <div class="col-sm-6 col-md-4 col-lg-3">
+                                      <div class="form-group">
+                                        <label class="form-lbl">Agent Amount</label>
+                                        <input type="text" class="form-field" placeholder="Agent Amount">
+                                      </div>
+                                    </div>
+                                    <div class="col-sm-6 col-md-4 col-lg-3">
+                                      <div class="form-group">
+                                        <label class="form-lbl">Agent Remarks</label>
+                                        <input type="text" class="form-field" placeholder="Agent Remarks">
+                                      </div>
+                                    </div>
+                                    <div class="col-sm-6 col-md-4 col-lg-3">
+                                      <div class="form-group">
+                                        <label class="form-lbl">Agent OD Comm</label>
+                                        <input type="text" class="form-field" placeholder="Agent OD Comm">
+                                      </div>
+                                    </div>
+                                    <div class="col-sm-6 col-md-4 col-lg-3">
+                                      <div class="form-group">
+                                        <label class="form-lbl">Agent Net Comm</label>
+                                        <input type="text" class="form-field" placeholder="Agent Net Comm">
+                                      </div>
+                                    </div>
+                                    <div class="col-sm-6 col-md-4 col-lg-3">
+                                      <div class="form-group">
+                                        <label class="form-lbl">Agent Incentive Amount</label>
+                                        <input type="text" class="form-field" placeholder="Agent Incentive Amount">
+                                      </div>
+                                    </div>
+                                    <div class="col-sm-6 col-md-4 col-lg-3">
+                                      <div class="form-group">
+                                        <label class="form-lbl">Agent TDS</label>
+                                        <input type="text" class="form-field" placeholder="Agent TDS">
+                                      </div>
+                                    </div>
+                                    <div class="col-sm-6 col-md-4 col-lg-3">
+                                      <div class="form-group">
+                                        <label class="form-lbl">Agent OD Amount</label>
+                                        <input type="text" class="form-field" placeholder="Agent OD Amount">
+                                      </div>
+                                    </div>
+                                    <div class="col-sm-6 col-md-4 col-lg-3">
+                                      <div class="form-group">
+                                        <label class="form-lbl">Agent Net Amount</label>
+                                        <input type="text" class="form-field" placeholder="Agent Net Amount">
+                                      </div>
+                                    </div>
+                                    <div class="col-sm-6 col-md-4 col-lg-3">
+                                      <div class="form-group">
+                                        <label class="form-lbl">Agent TP Amount</label>
+                                        <input type="text" class="form-field" placeholder="Agent TP Amount">
+                                      </div>
+                                    </div>
+                                    <div class="col-sm-6 col-md-4 col-lg-3">
+                                      <div class="form-group">
+                                        <label class="form-lbl">Agent Total Comm Amount</label>
+                                        <input type="text" class="form-field" placeholder="Agent Total Comm Amount">
+                                      </div>
+                                    </div>
+                                    <div class="col-sm-6 col-md-4 col-lg-3">
+                                      <div class="form-group">
+                                        <label class="form-lbl">Agent Net Payable Amount</label>
+                                        <input type="text" class="form-field" placeholder="Agent Net Payable Amount">
+                                      </div>
+                                    </div>
+                                    <div class="col-sm-6 col-md-4 col-lg-3">
+                                      <div class="form-group">
+                                        <label class="form-lbl">Agent TDS Amount</label>
+                                        <input type="text" class="form-field" placeholder="Agent OD Amount">
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>  
+                              </div>
+  
+
+                            
+
+                            <div class="d-flex justify-content-end mt-4">
+                              <button type="submit" class="dashboard-addbtn">Save and Continue</button>
+                            </div>  
+                          </div>
+                        </div>
+                        
+                        
+                        
+                    </form>
+                    <div id="loader" class="form-loader" style="display: none;">
+                      <div>
+                        <div class="spinner-border text-primary mx-auto d-block" role="status"></div>
+                        <span class="visually-hidden d-block pt-2">Loading...</span>
+                      </div>  
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>  
+        </div>
+      </div>
+        
+    </div>
+    
+    {% include "footer.html" %}
+    {% include "footer-script.html" %}
+    <script>
+      document.getElementById("myForm").addEventListener("submit", function() {
+          document.getElementById("loader").style.display = "flex";
+      });
+    </script>
+</body>
+{% endblock %}

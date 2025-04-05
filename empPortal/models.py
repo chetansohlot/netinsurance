@@ -213,6 +213,89 @@ class PolicyDocument(models.Model):
     class Meta:
         db_table = 'policydocument'
 
+
+from django.db import models
+
+class PolicyInfo(models.Model):
+    policy_id = models.CharField(max_length=20, null=True, blank=True)
+
+    # Basic Policy
+    policy_number = models.CharField(max_length=100, null=True, blank=True)
+    policy_issue_date = models.CharField(max_length=25, null=True, blank=True)
+    policy_start_date = models.CharField(max_length=25, null=True, blank=True)
+    policy_expiry_date = models.CharField(max_length=25, null=True, blank=True)
+
+    # Insured Details
+    insurer_name = models.CharField(max_length=255, null=True, blank=True)
+    insured_mobile = models.CharField(max_length=15, null=True, blank=True)
+    insured_email = models.CharField(max_length=255, null=True, blank=True)
+    insured_address = models.TextField(null=True, blank=True)
+    insured_pan = models.CharField(max_length=20, null=True, blank=True)
+    insured_aadhaar = models.CharField(max_length=20, null=True, blank=True)
+
+    # Policy Details
+    insurance_company = models.CharField(max_length=255, null=True, blank=True)
+    service_provider = models.CharField(max_length=255, null=True, blank=True)
+    insurer_contact_name = models.CharField(max_length=255, null=True, blank=True)
+    bqp = models.CharField(max_length=255, null=True, blank=True)
+    pos_name = models.CharField(max_length=255, null=True, blank=True)
+    branch_name = models.CharField(max_length=255, null=True, blank=True)
+    supervisor_name = models.CharField(max_length=255, null=True, blank=True)
+    policy_type = models.CharField(max_length=255, null=True, blank=True)
+    policy_plan = models.CharField(max_length=255, null=True, blank=True)
+
+    sum_insured = models.CharField(max_length=20, null=True, blank=True)
+    od_premium = models.CharField(max_length=20, null=True, blank=True)
+    tp_premium = models.CharField(max_length=20, null=True, blank=True)
+    pa_count = models.CharField(max_length=20, default='0', null=True, blank=True)
+    pa_amount = models.CharField(max_length=20, default='0.00', null=True, blank=True)
+    driver_count = models.CharField(max_length=20, default='0', null=True, blank=True)
+    driver_amount = models.CharField(max_length=20, default='0.00', null=True, blank=True)
+
+    active = models.CharField(max_length=1, choices=[('0', 'Inactive'), ('1', 'Active')], default='1')
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "policy_info"
+
+    def __str__(self):
+        return f"Policy {self.policy_number} - {self.policy_id}"
+
+from django.db import models
+
+class PolicyVehicleInfo(models.Model):
+    policy_number = models.CharField(max_length=100)
+
+    vehicle_type = models.CharField(max_length=100, null=True, blank=True)
+    vehicle_make = models.CharField(max_length=100, null=True, blank=True)
+    vehicle_model = models.CharField(max_length=100, null=True, blank=True)
+    vehicle_variant = models.CharField(max_length=100, null=True, blank=True)
+    fuel_type = models.CharField(max_length=30, null=True, blank=True)  # Originally ENUM('Petrol', 'Diesel')
+
+    gvw = models.CharField(max_length=50, null=True, blank=True)
+    cubic_capacity = models.CharField(max_length=50, null=True, blank=True)
+    seating_capacity = models.CharField(max_length=10, null=True, blank=True)
+
+    registration_number = models.CharField(max_length=100, null=True, blank=True)
+    engine_number = models.CharField(max_length=100, null=True, blank=True)
+    chassis_number = models.CharField(max_length=100, null=True, blank=True)
+    manufacture_year = models.CharField(max_length=4, null=True, blank=True)
+
+    active = models.CharField(max_length=1, choices=[('0', 'Inactive'), ('1', 'Active')], default='1')
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "policy_vehicle_info"
+
+    def __str__(self):
+        return f"Vehicle Info - {self.policy_number}"
+
+
+
 class CommissionHistory(models.Model):
     id = models.BigAutoField(primary_key=True)
     member_id = models.CharField(max_length=20, null=True, blank=True)

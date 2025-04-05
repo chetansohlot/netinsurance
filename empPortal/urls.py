@@ -2,9 +2,10 @@ from django.urls import path, include
 from . import views,export
 from . import views
 from . import authenticationView
-from .controller import commissions, profile, globalController, helpAndSupport, Employee, leads, sellMotor, sellHealth, sellTerm, Franchises, Department, Branches, members, customers, quoteManagement, healthQuoteManagement, homeManagement, exams
+from .controller import commissions, profile,policy, globalController, helpAndSupport, Employee, leads, sellMotor, sellHealth, sellTerm, Franchises, Department, Branches, members, customers, quoteManagement, healthQuoteManagement, homeManagement, exams
 from django.conf import settings
 from django.conf.urls.static import static
+from django.urls import re_path
 
 motor_patterns = [
     path('quote-management/', quoteManagement.index, name='quote-management'),
@@ -213,6 +214,13 @@ urlpatterns = [
     path('bulk-browser-policy/', views.bulkBrowsePolicy, name='bulk-browser-policy'),
     path('policy-data/', views.policyData, name='policy-data'),
     path('edit-policy-data/<str:id>', views.editPolicy, name='edit-policy'),
+    path('edit-policy/<str:policy_id>/', policy.edit_policy, name='edit-policy-data'),
+    re_path(r'^edit-policy-vehicle-details/(?P<policy_no>.+)/$', policy.edit_vehicle_details, name='edit-policy-vehicle-details'),
+    re_path(r'^edit-policy-docs/(?P<policy_no>.+)/$', policy.edit_policy_docs, name='edit-policy-docs'),
+    re_path(r'^edit-agent-payment-info/(?P<policy_no>.+)/$', policy.edit_agent_payment_info, name='edit-agent-payment-info'),
+    re_path(r'^edit-insurer-payment-info/(?P<policy_no>.+)/$', policy.edit_insurer_payment_info, name='edit-insurer-payment-info'),
+    re_path(r'^edit-franchise-payment-info/(?P<policy_no>.+)/$', policy.edit_franchise_payment_info, name='edit-franchise-payment-info'),
+
     path('update-policy/', views.updatePolicy, name='update-policy'),
     path('reprocess-bulk-policies',views.reprocessBulkPolicies,name="reprocess-bulk-policies"),
     path('bulk-upload-logs/',views.bulkUploadLogs,name='bulk-upload-logs'),

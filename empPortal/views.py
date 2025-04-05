@@ -19,6 +19,7 @@ import os
 import zipfile
 from django.conf import settings
 from datetime import datetime
+from django.db.models import Q
 
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 
@@ -700,26 +701,50 @@ def process_text_with_chatgpt(text):
     
     except requests.exceptions.RequestException as e:
         return json.dumps({"error": "Request failed", "details": str(e)}, indent=4)
-    
-def policyData(request):
-    
-    # policy_data = PolicyDocument.objects.filter(status=1).order_by('-id')
-    id  = request.user.id
-    # Fetch policies
-    role_id = Users.objects.filter(id=id).values_list('role_id', flat=True).first()
-    if role_id == 2:
-        policy_data = PolicyDocument.objects.filter(status=1,rm_id=id).all().order_by('-id')
-    else:
-        policy_data = PolicyDocument.objects.filter(status=1).all().order_by('-id')
 
-    
-    for data in policy_data:
+
+
+def policyData(request):
+    user_id = request.user.id
+    role_id = Users.objects.filter(id=user_id).values_list('role_id', flat=True).first()
+
+    # Base queryset
+    if role_id == 2:
+        queryset = PolicyDocument.objects.filter(status=1, rm_id=user_id)
+    else:
+        queryset = PolicyDocument.objects.filter(status=1)
+
+    # Handle search filters
+    search_field = request.GET.get('search_field')
+    search_query = request.GET.get('search_query')
+
+    if search_field and search_query:
+        if search_field == 'policy_number':
+            queryset = queryset.filter(policy_number__icontains=search_query)
+        elif search_field == 'vehicle_number':
+            queryset = queryset.filter(vehicle_number__icontains=search_query)
+        elif search_field == 'holder_name':
+            queryset = queryset.filter(holder_name__icontains=search_query)
+        elif search_field == 'insurance_provider':
+            queryset = queryset.filter(insurance_provider__icontains=search_query)
+
+    # Convert extracted_text JSON string to dict
+    for data in queryset:
         if isinstance(data.extracted_text, str):
             try:
-                data.extracted_text = json.loads(data.extracted_text)  # Convert JSON string to dictionary
+                data.extracted_text = json.loads(data.extracted_text)
             except json.JSONDecodeError:
-                data.extracted_text = {}  # Handle invalid JSON case
-    return render(request,'policy/policy-data.html',{"policy_data":policy_data})
+                data.extracted_text = {}
+
+    policy_count = queryset.count()
+
+    return render(request, 'policy/policy-data.html', {
+        "policy_data": queryset,
+        "policy_count": policy_count,
+        "search_field": search_field,
+        "search_query": search_query,
+    })
+
 
 def editPolicy(request,id):
     if request.user.is_authenticated:

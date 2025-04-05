@@ -45,9 +45,9 @@ Policy Data
                     <div class="col">
                       
                       <p class="card-text">
-                        Total Lead
+                        Total Policy
                       </p>
-                      <h5 class="card-title card-number">0</h5>
+                      <h5 class="card-title card-number">{{ policy_count }}</h5>
                     </div>
                     
                   </div>
@@ -63,9 +63,9 @@ Policy Data
                     <div class="col">
                       
                       <p class="card-text">
-                        Active Lead
+                        Motor Policy
                       </p>
-                      <h5 class="card-title card-number">0</h5>
+                      <h5 class="card-title card-number">{{ policy_count }}</h5>
                     </div>
                     
                   </div>
@@ -81,7 +81,7 @@ Policy Data
                     <div class="col">
                       
                       <p class="card-text">
-                        Inactive Lead
+                        Health Policy
                       </p>
                       <h5 class="card-title card-number">0</h5>
                     </div>
@@ -99,7 +99,7 @@ Policy Data
                     <div class="col">
                       
                       <p class="card-text">
-                        Pending Lead
+                        Term Policy
                       </p>
                       <h5 class="card-title card-number">0</h5>
                     </div>
@@ -124,22 +124,23 @@ Policy Data
                 <div class="row">
                   <div class="col-md-6">
                     <div class="table-search-area">
-                      <form method="GET" class="d-flex">
-                        <select class="table-select-field form-select" name="search_field">
-                            <option value="" disabled selected>Filter By</option>
-                            <option value="lead_id" {% if search_field == "lead_id" %}selected{% endif %}>Lead ID</option>
-                            <option value="customer_id" {% if search_field == "customer_id" %}selected{% endif %}>Customer ID</option>
-                            <option value="mobile_number" {% if search_field == "mobile_number" %}selected{% endif %}>Mobile Number</option>
-                            <option value="email_address" {% if search_field == "email_address" %}selected{% endif %}>Email Address</option>
+                      <form method="GET" class="d-flex gap-2 align-items-center mb-3">
+                        <select class="table-select-field form-select" name="search_field" required>
+                            <option value="" disabled {% if not search_field %}selected{% endif %}>Filter By</option>
+                            <option value="policy_number" {% if search_field == "policy_number" %}selected{% endif %}>Policy Number</option>
+                            <option value="vehicle_number" {% if search_field == "vehicle_number" %}selected{% endif %}>Vehicle Number</option>
+                            <option value="holder_name" {% if search_field == "holder_name" %}selected{% endif %}>Holder Name</option>
+                            <option value="insurance_provider" {% if search_field == "insurance_provider" %}selected{% endif %}>Insurance Provider</option>
                         </select>
                     
-                        <input type="text" name="search_query" class="table-search-field form-control" 
-                               placeholder="Search" value="{{ search_query }}">
+                        <input type="text" name="search_query" class="table-search-field form-control"
+                               placeholder="Search" value="{{ search_query|default_if_none:'' }}" required>
                     
                         <button type="submit" class="table-search-btn btn btn-primary">
                             <img src="{% static 'dist/img/svg/search-icon.svg' %}" alt="Search">
                         </button>
                     </form>
+                    
                     </div>
                   </div>
                   <div class="col-md-6">
@@ -219,7 +220,6 @@ Policy Data
                                   <div>
                                     <span class="d-block">{{ data.insurance_provider }}</span>
                                     <span class="text-info d-inline-block"><strong>Policy No.:</strong> {{ data.policy_number|default:"-" }}</span>
-                                    <span class="d-block "><strong>Reg. No.</strong> {{ data.vehicle_number }}</span>
                                   </div>  
                                   <a href="{% url 'edit-policy' id=data.id %}" class="tooltip-sec ml-2 text-danger" data-title="Edit Policy">
                                     <i class="fa-solid fa-edit"></i>
@@ -227,8 +227,13 @@ Policy Data
                                 </div>  
                               </td>
                               <!-- <td>{{ data.vehicle_number }}</td> -->
-                              <td>{{ data.holder_name }}</td>
-                              <!-- <td>{{ data.policy_number|default:"-" }} </td> -->
+                              <td>
+                                <div class="d-flex align-items-start">
+                                  <div>
+                                    <span class="d-block">{{ data.holder_name }}</span>
+                                    <span class="d-block "><strong>Reg. No.</strong> {{ data.vehicle_number }}</span>
+                                  </div>  
+                                </div>  
                               <td>{{ data.policy_type|default:"-" }}</td>
                               <td>
                                 <span class="circle-icon"><i class="far fa-circle"></i></span><strong>Issue:</strong> {{ data.issue_date|default:"-" }} <br>
