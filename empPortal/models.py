@@ -221,9 +221,9 @@ class PolicyInfo(models.Model):
 
     # Basic Policy
     policy_number = models.CharField(max_length=100, null=True, blank=True)
-    policy_issue_date = models.CharField(max_length=25, null=True, blank=True)
-    policy_start_date = models.CharField(max_length=25, null=True, blank=True)
-    policy_expiry_date = models.CharField(max_length=25, null=True, blank=True)
+    policy_issue_date = models.CharField(max_length=35, null=True, blank=True)
+    policy_start_date = models.CharField(max_length=35, null=True, blank=True)
+    policy_expiry_date = models.CharField(max_length=35, null=True, blank=True)
 
     # Insured Details
     insurer_name = models.CharField(max_length=255, null=True, blank=True)
