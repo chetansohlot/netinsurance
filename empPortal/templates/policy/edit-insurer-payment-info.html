@@ -109,108 +109,140 @@
                              </ul>
                             
                              
-                            <div class="form-box-shadow">
+                                                        
+                              <div class="form-box-shadow">
                                 <h2 class="form-bg-title">Insurer Payment Details</h2>
                                 <div class="form-padding">
                                   <div class="row">
+                                    <!-- Payment Mode -->
                                     <div class="col-sm-6 col-md-4 col-lg-3">
                                       <div class="form-group">
-                                        <label class="form-lbl" for="insurer_name">Insurer Payment Mod</label>
-                                        <select class="form-field">
-                                          <option>Online</option>
-                                        </select>
+                                        <label class="form-lbl">Insurer Payment Mode</label>
+                                        <input type="text" class="form-field" name="insurer_payment_mode" placeholder="Payment Mode"
+                                              value="{{ insurer_payment.insurer_payment_mode }}">
                                       </div>
                                     </div>
+
+                                    <!-- Payment Date -->
                                     <div class="col-sm-6 col-md-4 col-lg-3">
                                       <div class="form-group">
                                         <label class="form-lbl">Insurer Payment Date</label>
-                                        <input type="text" class="form-field" placeholder="Insurer Payment Date">
+                                        <input type="date" class="form-field" name="insurer_payment_date" placeholder="DD-MM-YYYY"
+                                              value="{{ insurer_payment.insurer_payment_date }}">
                                       </div>
                                     </div>
+
+                                    <!-- Amount -->
                                     <div class="col-sm-6 col-md-4 col-lg-3">
                                       <div class="form-group">
                                         <label class="form-lbl">Insurer Amount</label>
-                                        <input type="text" class="form-field" placeholder="Insurer Amount">
+                                        <input type="text" class="form-field" name="insurer_amount" placeholder="Amount"
+                                              value="{{ insurer_payment.insurer_amount }}">
                                       </div>
                                     </div>
+
+                                    <!-- Remarks -->
                                     <div class="col-sm-6 col-md-4 col-lg-3">
                                       <div class="form-group">
-                                        <label class="form-lbl">Insurer Remakrs</label>
-                                        <input type="text" class="form-field" placeholder="Insurer Remakrs">
+                                        <label class="form-lbl">Insurer Remarks</label>
+                                        <input type="text" class="form-field" name="insurer_remarks" placeholder="Remarks"
+                                              value="{{ insurer_payment.insurer_remarks }}">
                                       </div>
                                     </div>
+
+                                    <!-- Commissions -->
                                     <div class="col-sm-6 col-md-4 col-lg-3">
                                       <div class="form-group">
-                                        <label class="form-lbl">Insured OD Comm</label>
-                                        <input type="text" class="form-field" placeholder="Insured OD Comm" value="45.00">
+                                        <label class="form-lbl">Insurer OD Comm</label>
+                                        <input type="text" class="form-field" name="insurer_od_comm" placeholder="OD Commission (%)"
+                                              value="{{ insurer_payment.insurer_od_comm }}">
                                       </div>
                                     </div>
+
                                     <div class="col-sm-6 col-md-4 col-lg-3">
                                       <div class="form-group">
-                                        <label class="form-lbl">Insured Net Comm</label>
-                                        <input type="text" class="form-field" placeholder="Insured Net Comm" value="5.00">
+                                        <label class="form-lbl">Insurer Net Comm</label>
+                                        <input type="text" class="form-field" name="insurer_net_comm" placeholder="Net Commission (%)"
+                                              value="{{ insurer_payment.insurer_net_comm }}">
                                       </div>
                                     </div>
+
                                     <div class="col-sm-6 col-md-4 col-lg-3">
                                       <div class="form-group">
-                                        <label class="form-lbl">Insured TP Comm</label>
-                                        <input type="text" class="form-field" placeholder="Insured TP Comm" value="43.00">
+                                        <label class="form-lbl">Insurer TP Comm</label>
+                                        <input type="text" class="form-field" name="insurer_tp_comm" placeholder="TP Commission (%)"
+                                              value="{{ insurer_payment.insurer_tp_comm }}">
                                       </div>
                                     </div>
+
+                                    <!-- Incentives and TDS -->
                                     <div class="col-sm-6 col-md-4 col-lg-3">
                                       <div class="form-group">
-                                        <label class="form-lbl">Insured Incentive Amount</label>
-                                        <input type="text" class="form-field" placeholder="Insured Incentive Amount" value="-50.00">
+                                        <label class="form-lbl">Insurer Incentive Amount</label>
+                                        <input type="text" class="form-field" name="insurer_incentive_amount" placeholder="Incentive Amount"
+                                              value="{{ insurer_payment.insurer_incentive_amount }}">
                                       </div>
                                     </div>
+
                                     <div class="col-sm-6 col-md-4 col-lg-3">
                                       <div class="form-group">
-                                        <label class="form-lbl">Insured TDS</label>
-                                        <input type="text" class="form-field" placeholder="Insured TDS">
+                                        <label class="form-lbl">Insurer TDS</label>
+                                        <input type="text" class="form-field" name="insurer_tds" placeholder="TDS (%)"
+                                              value="{{ insurer_payment.insurer_tds }}">
                                       </div>
                                     </div>
+
+                                    <!-- Amounts -->
                                     <div class="col-sm-6 col-md-4 col-lg-3">
                                       <div class="form-group">
-                                        <label class="form-lbl">Insured OD Amount</label>
-                                        <input type="text" class="form-field" placeholder="Insured OD Amount" value="-578.00">
+                                        <label class="form-lbl">Insurer OD Amount</label>
+                                        <input type="text" class="form-field" name="insurer_od_amount" placeholder="OD Amount"
+                                              value="{{ insurer_payment.insurer_od_amount }}">
                                       </div>
                                     </div>
+
                                     <div class="col-sm-6 col-md-4 col-lg-3">
                                       <div class="form-group">
-                                        <label class="form-lbl">Insured Net Amount</label>
-                                        <input type="text" class="form-field" placeholder="Insured Net Amount" value="-885.00">
+                                        <label class="form-lbl">Insurer Net Amount</label>
+                                        <input type="text" class="form-field" name="insurer_net_amount" placeholder="Net Amount"
+                                              value="{{ insurer_payment.insurer_net_amount }}">
                                       </div>
                                     </div>
+
                                     <div class="col-sm-6 col-md-4 col-lg-3">
                                       <div class="form-group">
-                                        <label class="form-lbl">Insured TP Amount</label>
-                                        <input type="text" class="form-field" placeholder="Insured TP Amount" value="-7550.00">
+                                        <label class="form-lbl">Insurer TP Amount</label>
+                                        <input type="text" class="form-field" name="insurer_tp_amount" placeholder="TP Amount"
+                                              value="{{ insurer_payment.insurer_tp_amount }}">
                                       </div>
                                     </div>
+
                                     <div class="col-sm-6 col-md-4 col-lg-3">
                                       <div class="form-group">
-                                        <label class="form-lbl">Total Comm Amount</label>
-                                        <input type="text" class="form-field" placeholder="Total Comm Amount" value="-8905.00">
+                                        <label class="form-lbl">Total Commission Amount</label>
+                                        <input type="text" class="form-field" name="insurer_total_comm_amount" placeholder="Total Commission"
+                                              value="{{ insurer_payment.insurer_total_comm_amount }}">
                                       </div>
                                     </div>
+
                                     <div class="col-sm-6 col-md-4 col-lg-3">
                                       <div class="form-group">
                                         <label class="form-lbl">Net Payable Amount</label>
-                                        <input type="text" class="form-field" placeholder="Net Payable Amount" value="8905.00">
+                                        <input type="text" class="form-field" name="insurer_net_payable_amount" placeholder="Net Payable"
+                                              value="{{ insurer_payment.insurer_net_payable_amount }}">
                                       </div>
                                     </div>
+
                                     <div class="col-sm-6 col-md-4 col-lg-3">
                                       <div class="form-group">
                                         <label class="form-lbl">TDS Amount</label>
-                                        <input type="text" class="form-field" placeholder="TDS Amount" value="0.00">
+                                        <input type="text" class="form-field" name="insurer_tds_amount" placeholder="TDS Amount"
+                                              value="{{ insurer_payment.insurer_tds_amount }}">
                                       </div>
                                     </div>
                                   </div>
-                                </div>  
+                                </div>
                               </div>
-
-                            
-
                             <div class="d-flex justify-content-end mt-4">
                               <button type="submit" class="dashboard-addbtn">Save and Continue</button>
                             </div>  

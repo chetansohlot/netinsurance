@@ -4,7 +4,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib import messages
 from django.template import loader
-from ..models import Commission,Users,Branch,PolicyInfo,PolicyDocument, DocumentUpload, PolicyVehicleInfo
+from ..models import Commission,Users,Branch,PolicyInfo,PolicyDocument, DocumentUpload, FranchisePayment, InsurerPaymentDetails, PolicyVehicleInfo, AgentPaymentDetails
 from empPortal.model import BankDetails
 from ..forms import DocumentUploadForm
 from django.contrib.auth import authenticate, login ,logout
@@ -179,20 +179,36 @@ def edit_agent_payment_info(request, policy_no):
     policy_data = PolicyDocument.objects.filter(policy_number=policy_no).first()
 
     try:
-        vehicle = PolicyVehicleInfo.objects.get(policy_number=policy.policy_number)
-    except PolicyVehicleInfo.DoesNotExist:
-        vehicle = None
+        agent_payment = AgentPaymentDetails.objects.get(policy_number=policy.policy_number)
+    except AgentPaymentDetails.DoesNotExist:
+        agent_payment = AgentPaymentDetails(policy_number=policy.policy_number)
 
     if request.method == 'POST':
+        agent_payment.agent_name = request.POST.get('agent_name')
+        agent_payment.agent_payment_mod = request.POST.get('agent_payment_mod')
+        agent_payment.agent_payment_date = request.POST.get('agent_payment_date')
+        agent_payment.agent_amount = request.POST.get('agent_amount')
+        agent_payment.agent_remarks = request.POST.get('agent_remarks')
+        agent_payment.agent_od_comm = request.POST.get('agent_od_comm')
+        agent_payment.agent_net_comm = request.POST.get('agent_net_comm')
+        agent_payment.agent_incentive_amount = request.POST.get('agent_incentive_amount')
+        agent_payment.agent_tds = request.POST.get('agent_tds')
+        agent_payment.agent_od_amount = request.POST.get('agent_od_amount')
+        agent_payment.agent_net_amount = request.POST.get('agent_net_amount')
+        agent_payment.agent_tp_amount = request.POST.get('agent_tp_amount')
+        agent_payment.agent_total_comm_amount = request.POST.get('agent_total_comm_amount')
+        agent_payment.agent_net_payable_amount = request.POST.get('agent_net_payable_amount')
+        agent_payment.agent_tds_amount = request.POST.get('agent_tds_amount')
+
+        agent_payment.save()
         messages.success(request, "Policy Agent Payment Updated successfully!")
 
         return redirect('edit-insurer-payment-info', policy_no=quote(policy.policy_number))
 
-
     return render(request, 'policy/edit-agent-payment-info.html', {
         'policy': policy,
         'policy_data': policy_data,
-        'vehicle': vehicle
+        'agent_payment': agent_payment
     })
 
 
@@ -206,17 +222,44 @@ def edit_insurer_payment_info(request, policy_no):
     except PolicyVehicleInfo.DoesNotExist:
         vehicle = None
 
+    try:
+        insurer_payment = InsurerPaymentDetails.objects.get(policy_number=policy.policy_number)
+    except InsurerPaymentDetails.DoesNotExist:
+        insurer_payment = InsurerPaymentDetails(policy_number=policy.policy_number)
+
     if request.method == 'POST':
+        insurer_payment.insurer_payment_mode = request.POST.get('insurer_payment_mode')
+        insurer_payment.insurer_payment_date = request.POST.get('insurer_payment_date')
+        insurer_payment.insurer_amount = request.POST.get('insurer_amount')
+        insurer_payment.insurer_remarks = request.POST.get('insurer_remarks')
 
-        messages.success(request, "Policy Agent Insurer Updated successfully!")
+        insurer_payment.insurer_od_comm = request.POST.get('insurer_od_comm')
+        insurer_payment.insurer_net_comm = request.POST.get('insurer_net_comm')
+        insurer_payment.insurer_tp_comm = request.POST.get('insurer_tp_comm')
+        insurer_payment.insurer_incentive_amount = request.POST.get('insurer_incentive_amount')
+        insurer_payment.insurer_tds = request.POST.get('insurer_tds')
 
+        insurer_payment.insurer_od_amount = request.POST.get('insurer_od_amount')
+        insurer_payment.insurer_net_amount = request.POST.get('insurer_net_amount')
+        insurer_payment.insurer_tp_amount = request.POST.get('insurer_tp_amount')
+        insurer_payment.insurer_total_comm_amount = request.POST.get('insurer_total_comm_amount')
+        insurer_payment.insurer_net_payable_amount = request.POST.get('insurer_net_payable_amount')
+        insurer_payment.insurer_tds_amount = request.POST.get('insurer_tds_amount')
+
+        insurer_payment.active = '1'
+        insurer_payment.save()
+
+        messages.success(request, "Insurer Payment details updated successfully!")
         return redirect('edit-franchise-payment-info', policy_no=quote(policy.policy_number))
 
     return render(request, 'policy/edit-insurer-payment-info.html', {
         'policy': policy,
         'policy_data': policy_data,
-        'vehicle': vehicle
+        'vehicle': vehicle,
+        'insurer_payment': insurer_payment
     })
+
+
 
 
 def edit_franchise_payment_info(request, policy_no):
@@ -228,14 +271,34 @@ def edit_franchise_payment_info(request, policy_no):
     except PolicyVehicleInfo.DoesNotExist:
         vehicle = None
 
-    if request.method == 'POST':
-        
-        messages.success(request, "Policy Agent Franchise Updated successfully!")
+    try:
+        franchise_payment = FranchisePayment.objects.get(policy_number=policy.policy_number)
+    except FranchisePayment.DoesNotExist:
+        franchise_payment = FranchisePayment(policy_number=policy.policy_number)
 
+    if request.method == 'POST':
+        franchise_payment.franchise_od_comm = request.POST.get('franchise_od_comm')
+        franchise_payment.franchise_net_comm = request.POST.get('franchise_net_comm')
+        franchise_payment.franchise_tp_comm = request.POST.get('franchise_tp_comm')
+        franchise_payment.franchise_incentive_amount = request.POST.get('franchise_incentive_amount')
+        franchise_payment.franchise_tds = request.POST.get('franchise_tds')
+
+        franchise_payment.franchise_od_amount = request.POST.get('franchise_od_amount')
+        franchise_payment.franchise_net_amount = request.POST.get('franchise_net_amount')
+        franchise_payment.franchise_tp_amount = request.POST.get('franchise_tp_amount')
+        franchise_payment.franchise_total_comm_amount = request.POST.get('franchise_total_comm_amount')
+        franchise_payment.franchise_net_payable_amount = request.POST.get('franchise_net_payable_amount')
+        franchise_payment.franchise_tds_amount = request.POST.get('franchise_tds_amount')
+
+        franchise_payment.active = True
+        franchise_payment.save()
+
+        messages.success(request, "Franchise Payment details updated successfully!")
         return redirect('policy-data')
 
     return render(request, 'policy/edit-franchise-payment-info.html', {
         'policy': policy,
         'policy_data': policy_data,
-        'vehicle': vehicle
+        'vehicle': vehicle,
+        'franchise_payment': franchise_payment
     })

@@ -263,8 +263,90 @@ class PolicyInfo(models.Model):
     def __str__(self):
         return f"Policy {self.policy_number} - {self.policy_id}"
 
-from django.db import models
+class AgentPaymentDetails(models.Model):
+    policy_number = models.CharField(max_length=255)
+    agent_name = models.CharField(max_length=255)
+    agent_payment_mod = models.CharField(max_length=255)
+    agent_payment_date = models.CharField(max_length=255)
+    agent_amount = models.CharField(max_length=255)
+    agent_remarks = models.CharField(max_length=255)
+    agent_od_comm = models.CharField(max_length=255)
+    agent_net_comm = models.CharField(max_length=255)
+    agent_incentive_amount = models.CharField(max_length=255)
+    agent_tds = models.CharField(max_length=255)
+    agent_od_amount = models.CharField(max_length=255)
+    agent_net_amount = models.CharField(max_length=255)
+    agent_tp_amount = models.CharField(max_length=255)
+    agent_total_comm_amount = models.CharField(max_length=255)
+    agent_net_payable_amount = models.CharField(max_length=255)
+    agent_tds_amount = models.CharField(max_length=255)
+    active = models.CharField(max_length=1, choices=[('0', 'Inactive'), ('1', 'Active')], default='1')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        db_table = 'agent_payment_details'
+
+    def __str__(self):
+        return f"{self.agent_name} - {self.policy_number}"
+
+class FranchisePayment(models.Model):
+    policy_number = models.CharField(max_length=50, unique=True)
+    franchise_od_comm = models.CharField(max_length=50, blank=True, null=True)
+    franchise_net_comm = models.CharField(max_length=50, blank=True, null=True)
+    franchise_tp_comm = models.CharField(max_length=50, blank=True, null=True)
+    franchise_incentive_amount = models.CharField(max_length=50, blank=True, null=True)
+    franchise_tds = models.CharField(max_length=50, blank=True, null=True)
+    franchise_od_amount = models.CharField(max_length=50, blank=True, null=True)
+    franchise_net_amount = models.CharField(max_length=50, blank=True, null=True)
+    franchise_tp_amount = models.CharField(max_length=50, blank=True, null=True)
+    franchise_total_comm_amount = models.CharField(max_length=50, blank=True, null=True)
+    franchise_net_payable_amount = models.CharField(max_length=50, blank=True, null=True)
+    franchise_tds_amount = models.CharField(max_length=50, blank=True, null=True)
+    active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'franchise_payments'
+        verbose_name = 'Franchise Payment'
+        verbose_name_plural = 'Franchise Payments'
+
+    def __str__(self):
+        return f"Franchise Payment #{self.id}"
+
+
+class InsurerPaymentDetails(models.Model):
+    policy_number = models.CharField(max_length=100, unique=True)
+
+    insurer_payment_mode = models.CharField(max_length=100, blank=True, null=True)
+    insurer_payment_date = models.CharField(max_length=100, blank=True, null=True)
+    insurer_amount = models.CharField(max_length=50, blank=True, null=True)
+    insurer_remarks = models.TextField(blank=True, null=True)
+
+    insurer_od_comm = models.CharField(max_length=50, blank=True, null=True)
+    insurer_net_comm = models.CharField(max_length=50, blank=True, null=True)
+    insurer_tp_comm = models.CharField(max_length=50, blank=True, null=True)
+    insurer_incentive_amount = models.CharField(max_length=50, blank=True, null=True)
+    insurer_tds = models.CharField(max_length=50, blank=True, null=True)
+
+    insurer_od_amount = models.CharField(max_length=50, blank=True, null=True)
+    insurer_net_amount = models.CharField(max_length=50, blank=True, null=True)
+    insurer_tp_amount = models.CharField(max_length=50, blank=True, null=True)
+    insurer_total_comm_amount = models.CharField(max_length=50, blank=True, null=True)
+    insurer_net_payable_amount = models.CharField(max_length=50, blank=True, null=True)
+    insurer_tds_amount = models.CharField(max_length=50, blank=True, null=True)
+
+    active = models.CharField(max_length=1, choices=[('0', 'Inactive'), ('1', 'Active')], default='1')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'insurer_payment_details'
+
+    def __str__(self):
+        return f"Insurer Payment for {self.policy_number}"
+    
 class PolicyVehicleInfo(models.Model):
     policy_number = models.CharField(max_length=100)
 
