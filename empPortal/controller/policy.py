@@ -106,6 +106,8 @@ def edit_policy(request, policy_id):
         policy.driver_amount = request.POST.get('driver_amount', '0.00')
 
         policy.save()
+        messages.success(request, "Policy Updated successfully!")
+
         return redirect('edit-policy-vehicle-details', policy_no=quote(policy.policy_number))
 
 
@@ -137,6 +139,8 @@ def edit_vehicle_details(request, policy_no):
         vehicle.manufacture_year = request.POST.get('mgf_year')
 
         vehicle.save()
+        messages.success(request, "Policy Vehicle details Updated successfully!")
+
         return redirect('edit-policy-docs', policy_no=quote(policy.policy_number))
 
     return render(request, 'policy/edit-policy-vehicle.html', {
@@ -156,6 +160,8 @@ def edit_policy_docs(request, policy_no):
         vehicle = None
 
     if request.method == 'POST':
+
+        messages.success(request, "Policy Docs Updated successfully!")
         
         return redirect('edit-agent-payment-info', policy_no=quote(policy.policy_number))
     
@@ -178,6 +184,8 @@ def edit_agent_payment_info(request, policy_no):
         vehicle = None
 
     if request.method == 'POST':
+        messages.success(request, "Policy Agent Payment Updated successfully!")
+
         return redirect('edit-insurer-payment-info', policy_no=quote(policy.policy_number))
 
 
@@ -199,6 +207,9 @@ def edit_insurer_payment_info(request, policy_no):
         vehicle = None
 
     if request.method == 'POST':
+
+        messages.success(request, "Policy Agent Insurer Updated successfully!")
+
         return redirect('edit-franchise-payment-info', policy_no=quote(policy.policy_number))
 
     return render(request, 'policy/edit-insurer-payment-info.html', {
@@ -218,6 +229,9 @@ def edit_franchise_payment_info(request, policy_no):
         vehicle = None
 
     if request.method == 'POST':
+        
+        messages.success(request, "Policy Agent Franchise Updated successfully!")
+
         return redirect('policy-data')
 
     return render(request, 'policy/edit-franchise-payment-info.html', {
