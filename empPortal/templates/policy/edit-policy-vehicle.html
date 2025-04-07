@@ -108,115 +108,115 @@
                               <li><a href="javascript:void(0)"></a></li>
                              </ul>
                             
-                             
                              <div class="form-box-shadow">
-                                <h2 class="form-bg-title">Vehicle Details</h2>
-                                <div class="form-padding">
-                                  <div class="row">
+                              <h2 class="form-bg-title">Vehicle Details</h2>
+                              <div class="form-padding">
+                                <div class="row">
                             
-                                    <!-- Vehicle Type -->
-                                    <div class="col-sm-6 col-md-4 col-lg-3">
-                                      <div class="form-group">
-                                        <label class="form-lbl" for="vehicle_type">Vehicle Type</label>
-                                        <input type="text" class="form-field" name="vehicle_type" id="vehicle_type" placeholder="Vehicle Type" value="{{ vehicle.vehicle_type|default:policy_data.vehicle_type }}">
-                                      </div>
+                                  <!-- Vehicle Type -->
+                                  <div class="col-sm-6 col-md-4 col-lg-3">
+                                    <div class="form-group">
+                                      <label class="form-lbl" for="vehicle_type">Vehicle Type</label>
+                                      <input type="text" class="form-field" name="vehicle_type" id="vehicle_type" placeholder="Vehicle Type" value="{{ vehicle.vehicle_type|default:policy_data.vehicle_type }}">
                                     </div>
-                            
-                                    <!-- Make -->
-                                    <div class="col-sm-6 col-md-4 col-lg-3">
-                                      <div class="form-group">
-                                        <label class="form-lbl" for="vehicle_make">Make</label>
-                                        <input type="text" class="form-field" name="vehicle_make" id="vehicle_make" placeholder="Vehicle Make" value="{{ vehicle.vehicle_make|default:policy_data.vehicle_make }}">
-                                      </div>
-                                    </div>
-                            
-                                    <!-- Model -->
-                                    <div class="col-sm-6 col-md-4 col-lg-3">
-                                      <div class="form-group">
-                                        <label class="form-lbl" for="vehicle_model">Model</label>
-                                        <input type="text" class="form-field" name="vehicle_model" id="vehicle_model" placeholder="Vehicle Model" value="{{ vehicle.vehicle_model|default:policy_data.vehicle_model }}">
-                                      </div>
-                                    </div>
-                            
-                                    <!-- Variant -->
-                                    <div class="col-sm-6 col-md-4 col-lg-3">
-                                      <div class="form-group">
-                                        <label class="form-lbl" for="vehicle_variant">Variant</label>
-                                        <input type="text" class="form-field" name="vehicle_variant" id="vehicle_variant" placeholder="Vehicle Variant" value="{{ vehicle.vehicle_variant }}">
-                                      </div>
-                                    </div>
-                            
-                                    <!-- Fuel Type -->
-                                    <div class="col-sm-6 col-md-4 col-lg-3">
-                                      <div class="form-group">
-                                        <label class="form-lbl" for="fuel_type">Fuel Type</label>
-                                        <select class="form-field" name="fuel_type" id="fuel_type">
-                                          <option value="">Select</option>
-                                          <option value="Petrol" {% if vehicle.fuel_type == 'Petrol' %}selected{% endif %}>Petrol</option>
-                                          <option value="Diesel" {% if vehicle.fuel_type == 'Diesel' %}selected{% endif %}>Diesel</option>
-                                        </select>
-                                      </div>
-                                    </div>
-                            
-                                    <!-- GVW -->
-                                    <div class="col-sm-6 col-md-4 col-lg-3">
-                                      <div class="form-group">
-                                        <label class="form-lbl" for="gvw">GVW</label>
-                                        <input type="text" class="form-field" name="gvw" id="gvw" placeholder="GVW" value="{{ vehicle.gvw }}">
-                                      </div>
-                                    </div>
-                            
-                                    <!-- Cubic Capacity -->
-                                    <div class="col-sm-6 col-md-4 col-lg-3">
-                                      <div class="form-group">
-                                        <label class="form-lbl" for="cubic_capacity">Cubic Capacity</label>
-                                        <input type="text" class="form-field" name="cubic_capacity" id="cubic_capacity" placeholder="Cubic Capacity" value="{{ vehicle.cubic_capacity }}">
-                                      </div>
-                                    </div>
-                            
-                                    <!-- Seating Capacity -->
-                                    <div class="col-sm-6 col-md-4 col-lg-3">
-                                      <div class="form-group">
-                                        <label class="form-lbl" for="seating_capacity">Seating Capacity</label>
-                                        <input type="text" class="form-field" name="seating_capacity" id="seating_capacity" placeholder="Seating Capacity" value="{{ vehicle.seating_capacity }}">
-                                      </div>
-                                    </div>
-                            
-                                    <!-- Registration Number -->
-                                    <div class="col-sm-6 col-md-4 col-lg-3">
-                                      <div class="form-group">
-                                        <label class="form-lbl" for="vehicle_reg_no">Reg Number</label>
-                                        <input type="text" class="form-field" name="vehicle_reg_no" id="vehicle_reg_no" placeholder="Vehicle Reg Number" value="{{ vehicle.registration_number|default:policy_data.vehicle_number }}">
-                                      </div>
-                                    </div>
-                            
-                                    <!-- Engine Number -->
-                                    <div class="col-sm-6 col-md-4 col-lg-3">
-                                      <div class="form-group">
-                                        <label class="form-lbl" for="engine_number">Engine Number</label>
-                                        <input type="text" class="form-field" name="engine_number" id="engine_number" placeholder="Engine Number" value="{{ vehicle.engine_number }}">
-                                      </div>
-                                    </div>
-                            
-                                    <!-- Chassis Number -->
-                                    <div class="col-sm-6 col-md-4 col-lg-3">
-                                      <div class="form-group">
-                                        <label class="form-lbl" for="chassis_number">Chassis Number</label>
-                                        <input type="text" class="form-field" name="chassis_number" id="chassis_number" placeholder="Chassis Number" value="{{ vehicle.chassis_number }}">
-                                      </div>
-                                    </div>
-                            
-                                    <!-- Manufacture Year -->
-                                    <div class="col-sm-6 col-md-4 col-lg-3">
-                                      <div class="form-group">
-                                        <label class="form-lbl" for="mgf_year">Manufacture Date</label>
-                                        <input type="text" class="form-field" name="mgf_year" id="mgf_year" placeholder="MGF Year" value="{{ vehicle.manufacture_year|default:policy_data.vehicle_manuf_date }}">
-                                      </div>
-                                    </div>
-                            
                                   </div>
+                            
+                                  <!-- Make -->
+                                  <div class="col-sm-6 col-md-4 col-lg-3">
+                                    <div class="form-group">
+                                      <label class="form-lbl" for="vehicle_make">Make</label>
+                                      <input type="text" class="form-field" name="vehicle_make" id="vehicle_make" placeholder="Vehicle Make" value="{{ vehicle.vehicle_make|default:policy_data.vehicle_make }}">
+                                    </div>
+                                  </div>
+                            
+                                  <!-- Model -->
+                                  <div class="col-sm-6 col-md-4 col-lg-3">
+                                    <div class="form-group">
+                                      <label class="form-lbl" for="vehicle_model">Model</label>
+                                      <input type="text" class="form-field" name="vehicle_model" id="vehicle_model" placeholder="Vehicle Model" value="{{ vehicle.vehicle_model|default:policy_data.vehicle_model }}">
+                                    </div>
+                                  </div>
+                            
+                                  <!-- Variant -->
+                                  <div class="col-sm-6 col-md-4 col-lg-3">
+                                    <div class="form-group">
+                                      <label class="form-lbl" for="vehicle_variant">Variant</label>
+                                      <input type="text" class="form-field" name="vehicle_variant" id="vehicle_variant" placeholder="Vehicle Variant" value="{{ vehicle.vehicle_variant|default:'' }}">
+                                    </div>
+                                  </div>
+                            
+                                  <!-- Fuel Type -->
+                                  <div class="col-sm-6 col-md-4 col-lg-3">
+                                    <div class="form-group">
+                                      <label class="form-lbl" for="fuel_type">Fuel Type</label>
+                                      <select class="form-field" name="fuel_type" id="fuel_type">
+                                        <option value="">Select</option>
+                                        <option value="Petrol" {% if vehicle.fuel_type|default:policy_data.fuel_type == 'Petrol' %}selected{% endif %}>Petrol</option>
+                                        <option value="Diesel" {% if vehicle.fuel_type|default:policy_data.fuel_type == 'Diesel' %}selected{% endif %}>Diesel</option>
+                                      </select>
+                                    </div>
+                                  </div>
+                            
+                                  <!-- GVW -->
+                                  <div class="col-sm-6 col-md-4 col-lg-3">
+                                    <div class="form-group">
+                                      <label class="form-lbl" for="gvw">GVW</label>
+                                      <input type="text" class="form-field" name="gvw" id="gvw" placeholder="GVW" value="{{ vehicle.gvw|default:'' }}">
+                                    </div>
+                                  </div>
+                            
+                                  <!-- Cubic Capacity -->
+                                  <div class="col-sm-6 col-md-4 col-lg-3">
+                                    <div class="form-group">
+                                      <label class="form-lbl" for="cubic_capacity">Cubic Capacity</label>
+                                      <input type="text" class="form-field" name="cubic_capacity" id="cubic_capacity" placeholder="Cubic Capacity" value="{{ vehicle.cubic_capacity|default:'' }}">
+                                    </div>
+                                  </div>
+                            
+                                  <!-- Seating Capacity -->
+                                  <div class="col-sm-6 col-md-4 col-lg-3">
+                                    <div class="form-group">
+                                      <label class="form-lbl" for="seating_capacity">Seating Capacity</label>
+                                      <input type="text" class="form-field" name="seating_capacity" id="seating_capacity" placeholder="Seating Capacity" value="{{ vehicle.seating_capacity|default:'' }}">
+                                    </div>
+                                  </div>
+                            
+                                  <!-- Registration Number -->
+                                  <div class="col-sm-6 col-md-4 col-lg-3">
+                                    <div class="form-group">
+                                      <label class="form-lbl" for="vehicle_reg_no">Reg Number</label>
+                                      <input type="text" class="form-field" name="vehicle_reg_no" id="vehicle_reg_no" placeholder="Vehicle Reg Number" value="{{ vehicle.registration_number|default:policy_data.vehicle_number }}">
+                                    </div>
+                                  </div>
+                            
+                                  <!-- Engine Number -->
+                                  <div class="col-sm-6 col-md-4 col-lg-3">
+                                    <div class="form-group">
+                                      <label class="form-lbl" for="engine_number">Engine Number</label>
+                                      <input type="text" class="form-field" name="engine_number" id="engine_number" placeholder="Engine Number" value="{{ vehicle.engine_number|default:'' }}">
+                                    </div>
+                                  </div>
+                            
+                                  <!-- Chassis Number -->
+                                  <div class="col-sm-6 col-md-4 col-lg-3">
+                                    <div class="form-group">
+                                      <label class="form-lbl" for="chassis_number">Chassis Number</label>
+                                      <input type="text" class="form-field" name="chassis_number" id="chassis_number" placeholder="Chassis Number" value="{{ vehicle.chassis_number|default:'' }}">
+                                    </div>
+                                  </div>
+                            
+                                  <!-- Manufacture Year -->
+                                  <div class="col-sm-6 col-md-4 col-lg-3">
+                                    <div class="form-group">
+                                      <label class="form-lbl" for="mgf_year">Manufacture Date</label>
+                                      <input type="text" class="form-field" name="mgf_year" id="mgf_year" placeholder="MGF Year" value="{{ vehicle.manufacture_year|default:policy_data.vehicle_manuf_date }}">
+                                    </div>
+                                  </div>
+                            
                                 </div>
                               </div>
+                            </div>
+                            
                             
 
                             
