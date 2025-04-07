@@ -36,6 +36,9 @@ DEBUG = True if APPLY_STATIC == 'TRUE' else False
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 
+# Allow iframes from same origin
+X_FRAME_OPTIONS = 'ALLOWALL'
+
 
 # Application definition
 
@@ -56,7 +59,6 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
 ROOT_URLCONF = 'elevatInsurance.urls'

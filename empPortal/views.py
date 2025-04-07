@@ -4,7 +4,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.template import loader
-from .models import Roles,Users, Department,PolicyDocument,BulkPolicyLog, Branch, UserFiles,UnprocessedPolicyFiles, Commission, Branch
+from .models import Roles,Users, Department,PolicyDocument,BulkPolicyLog, PolicyInfo, Branch, UserFiles,UnprocessedPolicyFiles, Commission, Branch
 from django.contrib.auth import authenticate, login ,logout
 from django.core.files.storage import FileSystemStorage
 import re
@@ -521,7 +521,7 @@ def browsePolicy(request):
                 filename=image.name,
                 extracted_text=processed_text,
                 filepath=fileurl,
-                rm_name=request.user.full_name,
+                rm_name=request.user.first_name,
                 rm_id=request.user.id,
                 od_percent=od_percentage,
                 tp_percent=tp_percentage,
@@ -708,6 +708,7 @@ def process_text_with_chatgpt(text):
         return json.dumps({"error": "Request failed", "details": str(e)}, indent=4)
 
 
+from django.core.paginator import Paginator
 
 def policyData(request):
     user_id = request.user.id
@@ -743,26 +744,75 @@ def policyData(request):
 
     policy_count = queryset.count()
 
+    # Pagination
+    per_page = request.GET.get('per_page', 10)
+    try:
+        per_page = int(per_page)
+    except ValueError:
+        per_page = 10
+
+    paginator = Paginator(queryset, per_page)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     return render(request, 'policy/policy-data.html', {
-        "policy_data": queryset,
+        "page_obj": page_obj,
         "policy_count": policy_count,
         "search_field": search_field,
         "search_query": search_query,
+        "per_page": per_page,
     })
 
 
-def editPolicy(request,id):
+import os
+from django.conf import settings
+from urllib.parse import urljoin
+
+
+
+def editPolicy(request, id):
     if request.user.is_authenticated:
         policy_data = PolicyDocument.objects.filter(id=id).first()
-        base_url = request.build_absolute_uri('/')[:-1]
-        pdf_path = base_url + policy_data.filepath
-        
-        return render(request,'policy/edit-policy.html',{
-            'policy_data':policy_data,
-            'pdf_path':pdf_path,
-            })
+        policy_number = policy_data.policy_number
+        policy = PolicyInfo.objects.filter(policy_number=policy_number).first()
+        pdf_path = get_pdf_path(request, policy_data.filepath)
+
+        return render(request, 'policy/edit-policy.html', {
+            'policy_data': policy_data,
+            'policy': policy,
+            'pdf_path': pdf_path,
+        })
     else:
         return redirect('login')
+    
+    
+def get_pdf_path(request, filepath):
+    """
+    Returns the absolute URI to the PDF file if it exists, otherwise an empty string.
+    """
+    if not filepath:
+        return ""
+
+    filepath_str = str(filepath).replace('\\', '/')
+    rel_path = ""
+    
+    if 'media/' in filepath_str:
+        rel_path = filepath_str.split('media/')[-1]
+        absolute_file_path = os.path.join(settings.MEDIA_ROOT, rel_path)
+
+        if not os.path.exists(absolute_file_path):
+            # Try fallback inside empPortal/media
+            fallback_path = os.path.join(settings.BASE_DIR, 'empPortal', 'media', rel_path)
+            if os.path.exists(fallback_path):
+                absolute_file_path = fallback_path
+            else:
+                rel_path = ""  # File not found in either location
+
+        if rel_path:
+            media_url_path = urljoin(settings.MEDIA_URL, rel_path.replace('\\', '/'))
+            return request.build_absolute_uri(media_url_path)
+
+    return ""
 
 def parse_date(date_str):
     """Convert DD-MM-YYYY to YYYY-MM-DD format."""

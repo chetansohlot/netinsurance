@@ -213,7 +213,7 @@ Policy Data
                           </tr>
                         </thead>
                         <tbody>
-                          {% for data in policy_data %}
+                          {% for data in page_obj %}
                             <tr>
                               <td>
                                 <div class="d-flex align-items-start">
@@ -277,39 +277,44 @@ Policy Data
                 </div>
               </div>
             </div>
+            
+            
+
+            
             <div class="bottom-fix-pagination">
               <div class="d-flex justify-content-between align-items-center">
                   <ul class="pagination">
-                      
+                      {% if page_obj.has_previous %}
                           <li class="page-item">
-                              <a class="page-link" href="#" aria-label="First">
+                              <a class="page-link" href="?page=1&per_page={{ per_page }}" aria-label="First">
                                   <span aria-hidden="true">&laquo;&laquo;</span>
                               </a>
                           </li>
                           <li class="page-item">
-                              <a class="page-link" href="#" aria-label="Previous">
+                              <a class="page-link" href="?page={{ page_obj.previous_page_number }}&per_page={{ per_page }}" aria-label="Previous">
                                   <span aria-hidden="true">&laquo;</span>
                               </a>
                           </li>
-                          <li class="page-item">
-                              <a class="page-link" href="#">1</a>
+                      {% endif %}
+      
+                      {% for num in page_obj.paginator.page_range %}
+                          <li class="page-item {% if num == page_obj.number %}active{% endif %}">
+                              <a class="page-link" href="?page={{ num }}&per_page={{ per_page }}">{{ num }}</a>
                           </li>
+                      {% endfor %}
+      
+                      {% if page_obj.has_next %}
                           <li class="page-item">
-                            <a class="page-link" href="#">2</a>
-                          </li>
-                          <li class="page-item">
-                              <a class="page-link" href="#">3</a>
-                          </li>
-                          <li class="page-item">
-                              <a class="page-link" href="#" aria-label="Next">
+                              <a class="page-link" href="?page={{ page_obj.next_page_number }}&per_page={{ per_page }}" aria-label="Next">
                                   <span aria-hidden="true">&raquo;</span>
                               </a>
                           </li>
                           <li class="page-item">
-                              <a class="page-link" href="#" aria-label="Last">
+                              <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&per_page={{ per_page }}" aria-label="Last">
                                   <span aria-hidden="true">&raquo;&raquo;</span>
                               </a>
                           </li>
+                      {% endif %}
                   </ul>
       
                   <form method="GET" class="d-flex">
@@ -322,7 +327,7 @@ Policy Data
                       <input type="hidden" name="page" value="1">
                   </form>
               </div>
-            </div>
+          </div>
           </div>
         </div>
       </div>

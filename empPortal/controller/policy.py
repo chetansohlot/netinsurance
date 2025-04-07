@@ -25,7 +25,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.db import connection
 from urllib.parse import quote
-
+from urllib.parse import urljoin
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 
@@ -142,14 +142,48 @@ def edit_vehicle_details(request, policy_no):
         messages.success(request, "Policy Vehicle details Updated successfully!")
 
         return redirect('edit-policy-docs', policy_no=quote(policy.policy_number))
+    pdf_path = get_pdf_path(request, policy_data.filepath)
 
     return render(request, 'policy/edit-policy-vehicle.html', {
         'policy': policy,
         'policy_data': policy_data,
+        'pdf_path': pdf_path,
         'vehicle': vehicle
     })
 
 
+
+def get_pdf_path(request, filepath):
+    """
+    Returns the absolute URI to the PDF file if it exists, otherwise an empty string.
+    """
+    if not filepath:
+        return ""
+
+    filepath_str = str(filepath).replace('\\', '/')
+    rel_path = ""
+    
+    if 'media/' in filepath_str:
+        rel_path = filepath_str.split('media/')[-1]
+        absolute_file_path = os.path.join(settings.MEDIA_ROOT, rel_path)
+
+        if not os.path.exists(absolute_file_path):
+            # Try fallback inside empPortal/media
+            fallback_path = os.path.join(settings.BASE_DIR, 'empPortal', 'media', rel_path)
+            if os.path.exists(fallback_path):
+                absolute_file_path = fallback_path
+            else:
+                rel_path = ""  # File not found in either location
+
+        if rel_path:
+            media_url_path = urljoin(settings.MEDIA_URL, rel_path.replace('\\', '/'))
+            return request.build_absolute_uri(media_url_path)
+
+    return ""
+
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 def edit_policy_docs(request, policy_no):
     policy = get_object_or_404(PolicyInfo, policy_number=policy_no)
@@ -165,29 +199,34 @@ def edit_policy_docs(request, policy_no):
     except PolicyUploadDoc.DoesNotExist:
         doc_data = PolicyUploadDoc(policy_number=policy_no)
 
-    if request.method == 'POST':
-        if request.FILES.get('re_other_endorsement'):
-            doc_data.re_other_endorsement = request.FILES['re_other_endorsement']
-        if request.FILES.get('previous_policy'):
-            doc_data.previous_policy = request.FILES['previous_policy']
-        if request.FILES.get('kyc_document'):
-            doc_data.kyc_document = request.FILES['kyc_document']
-        if request.FILES.get('proposal_document'):
-            doc_data.proposal_document = request.FILES['proposal_document']
+    # AJAX file upload
+    if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        field_name = request.POST.get('field_name')
 
-        doc_data.active = True
-        doc_data.save()
+        if field_name and field_name in request.FILES:
+            try:
+                setattr(doc_data, field_name, request.FILES[field_name])
+                doc_data.active = True
+                doc_data.save()
 
-        messages.success(request, "Policy Docs updated successfully!")
-        return redirect('edit-agent-payment-info', policy_no=quote(policy.policy_number))
+                messages.success(request, "Doc Uploaded successfully!")
+
+                return JsonResponse({'success': True})
+            except Exception as e:
+                return JsonResponse({'success': False, 'error': str(e)})
+
+        return JsonResponse({'success': False, 'error': 'Invalid file field'})
+
+    # Standard GET
+    pdf_path = get_pdf_path(request, policy_data.filepath if policy_data else None)
 
     return render(request, 'policy/edit-policy-docs.html', {
         'policy': policy,
         'policy_data': policy_data,
+        'pdf_path': pdf_path,
         'vehicle': vehicle,
         'doc_data': doc_data
     })
-
 
 
 def edit_agent_payment_info(request, policy_no):
@@ -221,8 +260,11 @@ def edit_agent_payment_info(request, policy_no):
 
         return redirect('edit-insurer-payment-info', policy_no=quote(policy.policy_number))
 
+    pdf_path = get_pdf_path(request, policy_data.filepath)
+
     return render(request, 'policy/edit-agent-payment-info.html', {
         'policy': policy,
+        'pdf_path': pdf_path,
         'policy_data': policy_data,
         'agent_payment': agent_payment
     })
@@ -268,9 +310,12 @@ def edit_insurer_payment_info(request, policy_no):
         messages.success(request, "Insurer Payment details updated successfully!")
         return redirect('edit-franchise-payment-info', policy_no=quote(policy.policy_number))
 
+    pdf_path = get_pdf_path(request, policy_data.filepath)
+
     return render(request, 'policy/edit-insurer-payment-info.html', {
         'policy': policy,
         'policy_data': policy_data,
+        'pdf_path': pdf_path,
         'vehicle': vehicle,
         'insurer_payment': insurer_payment
     })
@@ -312,9 +357,12 @@ def edit_franchise_payment_info(request, policy_no):
         messages.success(request, "Franchise Payment details updated successfully!")
         return redirect('policy-data')
 
+    pdf_path = get_pdf_path(request, policy_data.filepath)
+
     return render(request, 'policy/edit-franchise-payment-info.html', {
         'policy': policy,
         'policy_data': policy_data,
+        'pdf_path': pdf_path,
         'vehicle': vehicle,
         'franchise_payment': franchise_payment
     })

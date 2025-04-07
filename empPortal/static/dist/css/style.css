@@ -986,7 +986,7 @@ select.form-field {
     padding: 7px 10px;
 }
 
-input[type="file"] {padding:4px 10px !important;}
+input[type="file"] {padding:0px !important; height: 31.6px;}
 .form-submit-btn {
     padding: 6px 15px;
     margin-top: 0px;
@@ -2670,6 +2670,15 @@ a:hover .dr-pdficon {
 .form-box-shadow {box-shadow: 0px 0px 12px rgb(204 204 204 / 50%); border-radius: 10px; margin-bottom: 15px;}
 .form-bg-title {background: #feddd5; padding:10px 20px; margin-bottom: 15px; font-size:16px; font-weight: 600; width: 100%; border-radius: 10px 10px 0 0;}
 .form-padding {padding:0 20px;}
+
+.doc-btn-pos {position: absolute; right:0; top:0; bottom:0; width: auto; display: flex; align-items:start; gap:2px;}
+.form-field[type="file"]::file-selector-button{
+    border: none; border-radius: 4px 0 0 4px; height: 31.6px; padding: 2px 10px; background-color: #04015e; transition: all 0.6s; color: #fff; font-size: 11px; vertical-align: middle; cursor: pointer; margin-right: 10px; 
+}
+.form-field[type="file"]::file-selector-button:hover{
+    background-color: #04015e; color: #fff; transition: all .25s ease-in; 
+
+}
 
 @media (max-width:767px) {
     .banner-hding {font-size: 30px;}

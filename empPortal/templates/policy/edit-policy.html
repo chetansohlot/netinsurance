@@ -1,6 +1,7 @@
 {% extends 'master.html' %}
 
 {% load static %}
+{% load custom_filters %}
 
 {% block title %}
     Edit Policy
@@ -91,9 +92,6 @@
                             </div>
                           </div>
                         </div>
-                        <pre> 
-                          {{ pdf_path }}
-                        </pre>
                         <div class="row">
                           <div class="col-md-4">
                             <div class="form-box-shadow">
@@ -110,159 +108,186 @@
                               <li><a href="javascript:void(0)"></a></li>
                              </ul>
                             
-                             <div class="form-box-shadow">
+                            <div class="form-box-shadow">
                               <h2 class="form-bg-title">Insured Details</h2>
                               <div class="form-padding">
                                 <div class="row">
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl" for="holder_name">Insured Name</label>
-                                      <input type="text" class="form-field" name="holder_name" id="holder_name" placeholder="Insured Name" value="{{ policy_data.holder_name }}">
+                                      <input type="text" class="form-field" name="holder_name" id="holder_name" placeholder="Insured Name" value="{{ policy.holder_name|default:policy_data.holder_name }}">
                                     </div>
                                   </div>
                             
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl" for="insured_mobile">Insured Mobile</label>
-                                      <input type="text" class="form-field" name="insured_mobile" id="insured_mobile" placeholder="Insured Mobile" value="{{ policy_data.insured_mobile }}">
+                                      <input type="text" class="form-field" name="insured_mobile" id="insured_mobile"
+                                        placeholder="Insured Mobile"
+                                        value="{{ policy.insured_mobile|default:'' }}">
                                     </div>
                                   </div>
                             
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl" for="insured_email">Insured Email</label>
-                                      <input type="text" class="form-field" name="insured_email" id="insured_email" placeholder="Insured Email" value="{{ policy_data.insured_email }}">
+                                      <input type="text" class="form-field" name="insured_email" id="insured_email"
+                                          placeholder="Insured Email"
+                                          value="{{ policy.insured_email|default:'' }}">
                                     </div>
                                   </div>
                             
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl" for="insured_address">Insured Address</label>
-                                      <input type="text" class="form-field" name="insured_address" id="insured_address" placeholder="Insured Address" value="{{ policy_data.insured_address }}">
+                                      <input type="text" class="form-field" name="insured_address" id="insured_address"
+                                          placeholder="Insured Address"
+                                          value="{{ policy.insured_address|default:'' }}">
                                     </div>
                                   </div>
                             
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl" for="insured_pan">Insured PAN</label>
-                                      <input type="text" class="form-field" name="insured_pan" id="insured_pan" placeholder="Insured PAN" value="{{ policy_data.insured_pan }}">
+                                      <input type="text" class="form-field" name="insured_pan" id="insured_pan"
+                                          placeholder="Insured PAN"
+                                          value="{{ policy.insured_pan|default:'' }}">
                                     </div>
                                   </div>
                             
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl" for="insured_aadhaar">Insured Aadhaar</label>
-                                      <input type="text" class="form-field" name="insured_aadhaar" id="insured_aadhaar" placeholder="Insured Aadhaar" value="{{ policy_data.insured_aadhaar }}">
+                                      <input type="text" class="form-field" name="insured_aadhaar" id="insured_aadhaar"
+                                          placeholder="Insured Aadhaar"
+                                          value="{{ policy.insured_aadhaar|default:'' }}">
                                     </div>
                                   </div>
                                 </div>
                               </div>
                             </div>
                             
-
                             <div class="form-box-shadow">
                               <h2 class="form-bg-title">Policy Details</h2>
                               <div class="form-padding">
                                 <div class="row">
+                                  {% comment %} Repeat the same pattern for all fields: prefer policy, fallback to policy_data {% endcomment %}
+                            
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl">Insurance Company</label>
-                                      <input type="text" class="form-field" name="insurance_company" placeholder="Insurance Company" value="{% if policy_data.insurance_company %}{{ policy_data.insurance_company }}{% endif %}">
+                                      <input type="text" class="form-field" name="insurance_company" placeholder="Insurance Company" value="{{ policy.insurance_company|default:'' }}">
                                     </div>
                                   </div>
+                            
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl">Service Provider</label>
-                                      <input type="text" class="form-field" name="location" placeholder="Service Provider" value="{% if policy_data.location %}{{ policy_data.location }}{% endif %}">
+                                      <input type="text" class="form-field" name="location" placeholder="Service Provider" value="{{ policy.service_provider|default:'' }}">
                                     </div>
                                   </div>
+                            
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl">Insurer Name</label>
-                                      <input type="text" class="form-field" name="owner_name" placeholder="Insurer Name" value="{% if policy_data.owner_name %}{{ policy_data.owner_name }}{% endif %}">
+                                      <input type="text" class="form-field" name="owner_name" placeholder="Insurer Name" value="{{ policy.insurer_name|default:'' }}">
                                     </div>
                                   </div>
+                            
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl">Bqp</label>
-                                      <input type="text" class="form-field" name="father_name" placeholder="Bqp" value="{% if policy_data.father_name %}{{ policy_data.father_name }}{% endif %}">
+                                      <input type="text" class="form-field" name="father_name" placeholder="Bqp" value="{{ policy.bqp|default:'' }}">
                                     </div>
                                   </div>
+                            
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl">Pos Name</label>
-                                      <input type="text" class="form-field" name="vehicle_owner_number" placeholder="Pos Name" value="{% if policy_data.vehicle_owner_number %}{{ policy_data.vehicle_owner_number }}{% endif %}">
+                                      <input type="text" class="form-field" name="vehicle_owner_number" placeholder="Pos Name" value="{{ policy.pos_name|default:'' }}">
                                     </div>
                                   </div>
+                            
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl">Branch Name</label>
-                                      <input type="text" class="form-field" name="registration_city" placeholder="Branch Name" value="{% if policy_data.registration_city %}{{ policy_data.registration_city }}{% endif %}">
+                                      <input type="text" class="form-field" name="registration_city" placeholder="Branch Name" value="{{ policy.branch_name|default:'' }}">
                                     </div>
                                   </div>
+                            
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl">Supervisor Name</label>
-                                      <input type="text" class="form-field" name="vehicle_type" placeholder="Supervisor Name" value="{% if policy_data.vehicle_type %}{{ policy_data.vehicle_type }}{% endif %}">
+                                      <input type="text" class="form-field" name="vehicle_type" placeholder="Supervisor Name" value="{{ policy.supervisor_name|default:'' }}">
                                     </div>
                                   </div>
+                            
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl">Policy Type</label>
-                                      <input type="text" class="form-field" name="policy_type" placeholder="Policy Type" value="{% if policy_data.policy_type %}{{ policy_data.policy_type }}{% endif %}">
+                                      <input type="text" class="form-field" name="policy_type" placeholder="Policy Type" value="{{ policy.policy_type|default:'' }}">
                                     </div>
                                   </div>
+                            
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl">Policy Plan</label>
-                                      <input type="text" class="form-field" name="policy_duration" placeholder="Policy Plan" value="{% if policy_data.policy_duration %}{{ policy_data.policy_duration }}{% endif %}">
+                                      <input type="text" class="form-field" name="policy_duration" placeholder="Policy Plan" value="{{ policy.policy_plan|default:'' }}">
                                     </div>
                                   </div>
+                            
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl">Sum Insured</label>
-                                      <input type="text" class="form-field" name="idv_value" placeholder="Sum Insured" value="{% if policy_data.idv_value %}{{ policy_data.idv_value }}{% endif %}">
+                                      <input type="text" class="form-field" name="idv_value" placeholder="Sum Insured" value="{{ policy.sum_insured|default:'' }}">
                                     </div>
                                   </div>
+                            
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl">OD Premium</label>
-                                      <input type="text" class="form-field" name="od_premium" placeholder="OD Premium" value="{% if policy_data.od_premium %}{{ policy_data.od_premium }}{% endif %}">
+                                      <input type="text" class="form-field" name="od_premium" placeholder="OD Premium" value="{{ policy.od_premium|default:policy_data.od_premium }}">
                                     </div>
                                   </div>
+                            
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl">TP Premium</label>
-                                      <input type="text" class="form-field" name="tp_premium" placeholder="TP Premium" value="{% if policy_data.tp_premium %}{{ policy_data.tp_premium }}{% endif %}">
+                                      <input type="text" class="form-field" name="tp_premium" placeholder="TP Premium" value="{{ policy.tp_premium|default:policy_data.tp_premium }}">
                                     </div>
                                   </div>
+                            
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl">PA Count</label>
-                                      <input type="text" class="form-field" name="pa_count" placeholder="PA Count" value="{% if policy_data.pa_count %}{{ policy_data.pa_count }}{% else %}0{% endif %}">
+                                      <input type="text" class="form-field" name="pa_count" placeholder="PA Count" value="{{ policy.pa_count|default:''|default:'0' }}">
                                     </div>
                                   </div>
+                            
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl">PA Amount</label>
-                                      <input type="text" class="form-field" name="pa_amount" placeholder="PA Amount" value="{% if policy_data.pa_amount %}{{ policy_data.pa_amount }}{% else %}0.00{% endif %}">
+                                      <input type="text" class="form-field" name="pa_amount" placeholder="PA Amount" value="{{ policy.pa_amount|default:''|default:'0.00' }}">
                                     </div>
                                   </div>
+                            
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl">Driver Count</label>
-                                      <input type="text" class="form-field" name="driver_count" placeholder="Driver Count" value="{% if policy_data.driver_count %}{{ policy_data.driver_count }}{% else %}0{% endif %}">
+                                      <input type="text" class="form-field" name="driver_count" placeholder="Driver Count" value="{{ policy.driver_count|default:''|default:'0' }}">
                                     </div>
                                   </div>
+                            
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl">Driver Amount</label>
-                                      <input type="text" class="form-field" name="driver_amount" placeholder="Driver Amount" value="{% if policy_data.driver_amount %}{{ policy_data.driver_amount }}{% else %}0.00{% endif %}">
+                                      <input type="text" class="form-field" name="driver_amount" placeholder="Driver Amount" value="{{ policy.driver_amount|default:''|default:'0.00' }}">
                                     </div>
                                   </div>
                                 </div>
                               </div>
                             </div>
+                            
                             
 
                             <div class="d-flex justify-content-end mt-4">
