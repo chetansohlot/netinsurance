@@ -758,7 +758,7 @@ def editPolicy(request, id):
         pdf_path = ""
         if policy_data and policy_data.filepath:
             base_url = request.build_absolute_uri('/')[:-1]
-            pdf_path = f"{base_url}/media/{policy_data.filepath}"  # Manually build full URL
+            pdf_path = f"{base_url}{policy_data.filepath}"  # Manually build full URL
 
         return render(request, 'policy/edit-policy.html', {
             'policy_data': policy_data,
