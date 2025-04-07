@@ -316,6 +316,25 @@ class FranchisePayment(models.Model):
         return f"Franchise Payment #{self.id}"
 
 
+
+class PolicyUploadDoc(models.Model):
+    policy_number = models.CharField(max_length=100)
+    re_other_endorsement = models.FileField(upload_to='policy_doc/', null=True, blank=True)
+    previous_policy = models.FileField(upload_to='policy_doc/', null=True, blank=True)
+    kyc_document = models.FileField(upload_to='policy_doc/', null=True, blank=True)
+    proposal_document = models.FileField(upload_to='policy_doc/', null=True, blank=True)
+    active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'policy_upload_docs'  # 👈 This sets the exact table name
+
+    def __str__(self):
+        return f"Documents for Policy: {self.policy_number}"
+
+
+
 class InsurerPaymentDetails(models.Model):
     policy_number = models.CharField(max_length=100, unique=True)
 

@@ -4,7 +4,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib import messages
 from django.template import loader
-from ..models import Commission,Users,Branch,PolicyInfo,PolicyDocument, DocumentUpload, FranchisePayment, InsurerPaymentDetails, PolicyVehicleInfo, AgentPaymentDetails
+from ..models import Commission,Users, PolicyUploadDoc,Branch,PolicyInfo,PolicyDocument, DocumentUpload, FranchisePayment, InsurerPaymentDetails, PolicyVehicleInfo, AgentPaymentDetails
 from empPortal.model import BankDetails
 from ..forms import DocumentUploadForm
 from django.contrib.auth import authenticate, login ,logout
@@ -150,6 +150,7 @@ def edit_vehicle_details(request, policy_no):
     })
 
 
+
 def edit_policy_docs(request, policy_no):
     policy = get_object_or_404(PolicyInfo, policy_number=policy_no)
     policy_data = PolicyDocument.objects.filter(policy_number=policy_no).first()
@@ -159,17 +160,32 @@ def edit_policy_docs(request, policy_no):
     except PolicyVehicleInfo.DoesNotExist:
         vehicle = None
 
-    if request.method == 'POST':
+    try:
+        doc_data = PolicyUploadDoc.objects.get(policy_number=policy_no)
+    except PolicyUploadDoc.DoesNotExist:
+        doc_data = PolicyUploadDoc(policy_number=policy_no)
 
-        messages.success(request, "Policy Docs Updated successfully!")
-        
+    if request.method == 'POST':
+        if request.FILES.get('re_other_endorsement'):
+            doc_data.re_other_endorsement = request.FILES['re_other_endorsement']
+        if request.FILES.get('previous_policy'):
+            doc_data.previous_policy = request.FILES['previous_policy']
+        if request.FILES.get('kyc_document'):
+            doc_data.kyc_document = request.FILES['kyc_document']
+        if request.FILES.get('proposal_document'):
+            doc_data.proposal_document = request.FILES['proposal_document']
+
+        doc_data.active = True
+        doc_data.save()
+
+        messages.success(request, "Policy Docs updated successfully!")
         return redirect('edit-agent-payment-info', policy_no=quote(policy.policy_number))
-    
 
     return render(request, 'policy/edit-policy-docs.html', {
         'policy': policy,
         'policy_data': policy_data,
-        'vehicle': vehicle
+        'vehicle': vehicle,
+        'doc_data': doc_data
     })
 
 

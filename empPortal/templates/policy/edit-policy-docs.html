@@ -43,9 +43,10 @@
               <div class="col-sm-12">  
                 <div class="card box-shadow-none p-3">
                   <div class="card-body px-0 pb-0 pt-0">
-
-                    <form autocomplete="off" id="myForm" name="updatePolicy" action="{% url 'edit-policy-docs' policy_data.policy_number %}" method="post">
-                        {% csrf_token %}
+                    <form autocomplete="off" id="myForm" name="updatePolicy"
+                    action="{% url 'edit-policy-docs' policy_data.policy_number %}" 
+                    method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
                       
                         <input type="hidden" class="form-field" name="policy_id" id="policy_id" value="{{ policy_data.id }}">
                         
@@ -109,43 +110,66 @@
                              </ul>
                             
                              
-                             
-                            <div class="form-box-shadow">
-                                <h2 class="form-bg-title">Document Details</h2>
-                                <div class="form-padding">
-                                  <div class="row">
-                                    {% comment %} <div class="col-sm-12">
-                                      <p class="wrap-prgh mb-0 pb-0">Current Insurance Policy</p>
-                                      <p class="wrap-prgh small text-gray">insurance_policies/sdf5445455646.pdf</p>
-                                    </div> {% endcomment %}
-                                    <div class="col-sm-6 col-md-6 col-lg-6">
-                                      <div class="form-group">
-                                        <label class="form-lbl">Re Other Endorsement</label>
-                                        <input type="file" class="form-field">
-                                      </div>
-                                    </div>
-                                    <div class="col-sm-6 col-md-6 col-lg-6">
-                                      <div class="form-group">
-                                        <label class="form-lbl">Previous Policy</label>
-                                        <input type="file" class="form-field">
-                                      </div>
-                                    </div>
-                                    <div class="col-sm-6 col-md-6 col-lg-6">
-                                      <div class="form-group">
-                                        <label class="form-lbl">Kyc Document</label>
-                                        <input type="file" class="form-field">
-                                      </div>
-                                    </div>
-                                    <div class="col-sm-6 col-md-6 col-lg-6">
-                                      <div class="form-group">
-                                        <label class="form-lbl">Proposal Document</label>
-                                        <input type="file" class="form-field">
-                                      </div>
+                             <div class="form-box-shadow">
+                              <h2 class="form-bg-title">Document Details</h2>
+                              <div class="form-padding">
+                                <div class="row">
+                            
+                                  <!-- Re Other Endorsement -->
+                                  <div class="col-sm-6 col-md-6 col-lg-6">
+                                    <div class="form-group">
+                                      <label class="form-lbl">Re Other Endorsement</label>
+                                      <input type="file" name="re_other_endorsement" class="form-field">
+                                      {% if doc_data.re_other_endorsement %}
+                                        <a href="{{ doc_data.re_other_endorsement.url }}" target="_blank" class="btn btn-link mt-1">
+                                          Download Existing
+                                        </a>
+                                      {% endif %}
                                     </div>
                                   </div>
-                                </div>  
-                              </div>
-  
+                            
+                                  <!-- Previous Policy -->
+                                  <div class="col-sm-6 col-md-6 col-lg-6">
+                                    <div class="form-group">
+                                      <label class="form-lbl">Previous Policy</label>
+                                      <input type="file" name="previous_policy" class="form-field">
+                                      {% if doc_data.previous_policy %}
+                                        <a href="{{ doc_data.previous_policy.url }}" target="_blank" class="btn btn-link mt-1">
+                                          Download Existing
+                                        </a>
+                                      {% endif %}
+                                    </div>
+                                  </div>
+                            
+                                  <!-- KYC Document -->
+                                  <div class="col-sm-6 col-md-6 col-lg-6">
+                                    <div class="form-group">
+                                      <label class="form-lbl">KYC Document</label>
+                                      <input type="file" name="kyc_document" class="form-field">
+                                      {% if doc_data.kyc_document %}
+                                        <a href="{{ doc_data.kyc_document.url }}" target="_blank" class="btn btn-link mt-1">
+                                          Download Existing
+                                        </a>
+                                      {% endif %}
+                                    </div>
+                                  </div>
+                            
+                                  <!-- Proposal Document -->
+                                  <div class="col-sm-6 col-md-6 col-lg-6">
+                                    <div class="form-group">
+                                      <label class="form-lbl">Proposal Document</label>
+                                      <input type="file" name="proposal_document" class="form-field">
+                                      {% if doc_data.proposal_document %}
+                                        <a href="{{ doc_data.proposal_document.url }}" target="_blank" class="btn btn-link mt-1">
+                                          Download Existing
+                                        </a>
+                                      {% endif %}
+                                    </div>
+                                  </div>
+                            
+                                </div>
+                              </div>  
+                            </div>
                             
 
                             
