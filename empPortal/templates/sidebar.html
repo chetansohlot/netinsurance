@@ -40,14 +40,14 @@
             </a>
           </li>
           
-            <li class="nav-item">
-              <a href="{% url 'policy-data' %}" class="nav-link {% if request.path == '/policy-data/' %} active {% endif %}">
-                <svg class="sidbarmenu-svg">
-                  <use xlink:href="#view-policy" />
-                </svg>
-                <p>Policy Mgt</p>
-              </a>
-            </li>
+          <li class="nav-item">
+            <a href="{% url 'policy-data' %}" class="nav-link {% if '/policy-data/' in request.path or '/edit-policy-data/' in request.path or '/edit-policy-vehicle-details/' in request.path or '/edit-policy-docs/' in request.path or '/edit-agent-payment-info/' in request.path or '/edit-insurer-payment-info/' in request.path or '/edit-franchise-payment-info/' in request.path %} active {% endif %}">
+              <svg class="sidbarmenu-svg">
+                <use xlink:href="#view-policy" />
+              </svg>
+              <p>Policy Mgt</p>
+            </a>
+          </li>
             <li class="nav-item">
                 <a href="{% url 'members' %}" class="nav-link {% if '/members/' in request.path or '/member/member-view/' in request.path %} active {% endif %}">
                     <svg class="sidbarmenu-svg">
