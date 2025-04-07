@@ -754,7 +754,13 @@ def policyData(request):
 def editPolicy(request,id):
     if request.user.is_authenticated:
         policy_data = PolicyDocument.objects.filter(id=id).first()
-        return render(request,'policy/edit-policy.html',{'policy_data':policy_data})
+        base_url = request.build_absolute_uri('/')[:-1]
+        pdf_path = base_url + policy_data.filepath
+        
+        return render(request,'policy/edit-policy.html',{
+            'policy_data':policy_data,
+            'pdf_path':pdf_path,
+            })
     else:
         return redirect('login')
 
