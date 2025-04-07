@@ -182,6 +182,9 @@ def get_pdf_path(request, filepath):
     return ""
 
 
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
 def edit_policy_docs(request, policy_no):
     policy = get_object_or_404(PolicyInfo, policy_number=policy_no)
     policy_data = PolicyDocument.objects.filter(policy_number=policy_no).first()
@@ -196,23 +199,26 @@ def edit_policy_docs(request, policy_no):
     except PolicyUploadDoc.DoesNotExist:
         doc_data = PolicyUploadDoc(policy_number=policy_no)
 
-    if request.method == 'POST':
-        if request.FILES.get('re_other_endorsement'):
-            doc_data.re_other_endorsement = request.FILES['re_other_endorsement']
-        if request.FILES.get('previous_policy'):
-            doc_data.previous_policy = request.FILES['previous_policy']
-        if request.FILES.get('kyc_document'):
-            doc_data.kyc_document = request.FILES['kyc_document']
-        if request.FILES.get('proposal_document'):
-            doc_data.proposal_document = request.FILES['proposal_document']
+    # AJAX file upload
+    if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        field_name = request.POST.get('field_name')
 
-        doc_data.active = True
-        doc_data.save()
+        if field_name and field_name in request.FILES:
+            try:
+                setattr(doc_data, field_name, request.FILES[field_name])
+                doc_data.active = True
+                doc_data.save()
 
-        messages.success(request, "Policy Docs updated successfully!")
-        return redirect('edit-agent-payment-info', policy_no=quote(policy.policy_number))
+                messages.success(request, "Doc Uploaded successfully!")
 
-    pdf_path = get_pdf_path(request, policy_data.filepath)
+                return JsonResponse({'success': True})
+            except Exception as e:
+                return JsonResponse({'success': False, 'error': str(e)})
+
+        return JsonResponse({'success': False, 'error': 'Invalid file field'})
+
+    # Standard GET
+    pdf_path = get_pdf_path(request, policy_data.filepath if policy_data else None)
 
     return render(request, 'policy/edit-policy-docs.html', {
         'policy': policy,
@@ -221,7 +227,6 @@ def edit_policy_docs(request, policy_no):
         'vehicle': vehicle,
         'doc_data': doc_data
     })
-
 
 
 def edit_agent_payment_info(request, policy_no):

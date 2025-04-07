@@ -10,7 +10,7 @@
     <div class="header-search-area">
       <form class="" action="{% url 'global_search' %}" method="GET">
           <select class="header-search-field" name="category">
-              <option value="agents" {% if "lead-mgt" not in request.path %}selected{% endif %}>Agents</option>
+              <option value="agents" {% if "lead-mgt" not in request.path %}selected{% endif %}>Partners</option>
               <option value="lead" {% if "lead-mgt" in request.path %}selected{% endif %}>Lead</option>
           </select>
           <input type="text" class="header-search-field" 
