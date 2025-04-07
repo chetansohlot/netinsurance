@@ -986,7 +986,7 @@ select.form-field {
     padding: 7px 10px;
 }
 
-input[type="file"] {padding:0px !important;}
+input[type="file"] {padding:0px !important; height: 31.6px;}
 .form-submit-btn {
     padding: 6px 15px;
     margin-top: 0px;
