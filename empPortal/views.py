@@ -521,7 +521,7 @@ def browsePolicy(request):
                 filename=image.name,
                 extracted_text=processed_text,
                 filepath=fileurl,
-                rm_name=request.user.full_name,
+                rm_name=request.user.first_name,
                 rm_id=request.user.id,
                 od_percent=od_percentage,
                 tp_percent=tp_percentage,
