@@ -751,13 +751,38 @@ def policyData(request):
     })
 
 
+import os
+from django.conf import settings
+from urllib.parse import urljoin
+
+
+
 def editPolicy(request, id):
     if request.user.is_authenticated:
         policy_data = PolicyDocument.objects.filter(id=id).first()
-        
         pdf_path = ""
+
         if policy_data and policy_data.filepath:
-            pdf_path = f'https://151.106.112.100{policy_data.filepath}'
+            # Convert to string and normalize path
+            filepath_str = str(policy_data.filepath).replace('\\', '/')
+
+            # First try: strip up to 'media/' and check if file exists
+            if 'media/' in filepath_str:
+                rel_path = filepath_str.split('media/')[-1]
+                absolute_file_path = os.path.join(settings.MEDIA_ROOT, rel_path)
+
+                if not os.path.exists(absolute_file_path):
+                    # If file doesn't exist, assume it's inside empPortal/media
+                    rel_path = f"empPortal/media/{rel_path}"
+                    absolute_file_path = os.path.join(settings.BASE_DIR, rel_path)
+
+                    # Check again if fallback path exists
+                    if not os.path.exists(absolute_file_path):
+                        rel_path = ""  # File not found in either location
+
+                if rel_path:
+                    media_url_path = urljoin(settings.MEDIA_URL, rel_path.replace('\\', '/'))
+                    pdf_path = request.build_absolute_uri(media_url_path)
 
         return render(request, 'policy/edit-policy.html', {
             'policy_data': policy_data,
@@ -765,8 +790,6 @@ def editPolicy(request, id):
         })
     else:
         return redirect('login')
-
-
 
 def parse_date(date_str):
     """Convert DD-MM-YYYY to YYYY-MM-DD format."""
