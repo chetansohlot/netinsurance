@@ -4,7 +4,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.template import loader
-from .models import Roles,Users, Department,PolicyDocument,BulkPolicyLog, Branch, UserFiles,UnprocessedPolicyFiles, Commission, Branch
+from .models import Roles,Users, Department,PolicyDocument,BulkPolicyLog, PolicyInfo, Branch, UserFiles,UnprocessedPolicyFiles, Commission, Branch
 from django.contrib.auth import authenticate, login ,logout
 from django.core.files.storage import FileSystemStorage
 import re
@@ -760,7 +760,11 @@ from urllib.parse import urljoin
 def editPolicy(request, id):
     if request.user.is_authenticated:
         policy_data = PolicyDocument.objects.filter(id=id).first()
+        policy_number = policy_data.policy_number
         pdf_path = ""
+        policy = PolicyInfo.objects.filter(
+            policy_number=policy_number
+        ).first()
 
         if policy_data and policy_data.filepath:
             # Convert to string and normalize path
@@ -786,6 +790,7 @@ def editPolicy(request, id):
 
         return render(request, 'policy/edit-policy.html', {
             'policy_data': policy_data,
+            'policy': policy,
             'pdf_path': pdf_path,
         })
     else:

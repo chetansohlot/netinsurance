@@ -4,7 +4,9 @@ import re
 
 register = template.Library()
 
-
+@register.filter
+def fallback(primary, secondary):
+    return primary or secondary
 
 @register.filter
 def get_item(dictionary, key):
