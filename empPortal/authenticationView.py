@@ -17,12 +17,13 @@ import json
 from django.http import JsonResponse
 import os
 import zipfile
+from django.urls import  reverse
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.core.mail import send_mail
 import random
-
+from .utils import encrypt_text,decrypt_text,check_agent_linked_info
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 
 app = FastAPI()
@@ -545,20 +546,57 @@ def register_verify_otp_view(request):
         # OTP Validation: Correct OTP or Bypass with "1987"
         if otp == "1987" or (stored_otp and otp == stored_otp):
             # Activate user and allow login
-            request.user.is_login_available = 1
-            request.user.is_active = 1
+     
             request.user.email_verified = True
             request.user.save()
 
             login(request, request.user)
-            messages.success(request, 'OTP verified successfully. Welcome!')
+            messages.success(request, 'OTP verified successfully. Please wait we are verifing your existance')
+            # encrypted_user_id = encrypt_text(request.user.id)
+            return redirect('check-agent-existance',uid=request.user.id)
             return redirect('my-account')
         else:
             messages.error(request, 'Invalid OTP. Please try again.')
 
     return render(request, 'authentication/register-verify-otp.html')
 
+def check_agent_existance(request,uid):
+    
+    return render(request, 'authentication/checking-agent-existance.html',{
+        'uid': uid
+    })
 
+
+def verify_agent_existance(request):
+    if request.method == 'POST':
+        user_id = int(request.POST.get('uid', '').strip())
+        # user_id = decrypt_text(uid)
+        
+        user_data = Users.objects.filter(id=user_id).first()
+        user_data.pan_no = "GZPPS8050E"  # Hardcoded for now
+
+        request_data = [{
+            'user_id': user_data.id,
+            'pan_no': user_data.pan_no,
+        }]
+        check_agent_linked = check_agent_linked_info(request_data)
+        result = check_agent_linked[0] if check_agent_linked else {}
+        if result.get('agency_linked'):
+            messages.error(request, f"Sorry. {result.get('message', 'Agency already linked. NOC required.')}")
+            return JsonResponse({
+                'status': 'error',
+                'redirect': reverse('login')
+            })
+        
+        user_data.is_login_available = 1
+        user_data.is_active = 1
+        user_data.save()
+        messages.success(request, f"Successfully registered. Welcome {request.user.full_name}")
+            
+        return JsonResponse({
+            'status': 'success',
+            'redirect': reverse('dashboard')
+        })
 
 def registerReSendOtp_View(request):
     email = request.user.email  # Retrieve email from session

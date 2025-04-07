@@ -1,19 +1,37 @@
 import builtins
 from pprint import pprint
 import requests
+import json
 from django.conf import settings
 from datetime import datetime
 from django.utils.timezone import now
 from django.db import models, connection
 import pytz
+from django.http import HttpResponse,JsonResponse
+
 IST = pytz.timezone("Asia/Kolkata")
 
 from django.shortcuts import render,redirect, get_object_or_404
 from .models import Commission, Users, QuotationCustomer, Leads, VehicleInfo, QuotationVehicleDetail
 from django.contrib import messages
 from django.urls import reverse
-
+import base64
 ist_now = now().astimezone(IST)
+SECRET_KEY = getattr(settings, 'SECRET_KEY', 'django-insecure-#^%otoo7@)j9a8_6m)n8om&2_x6@d2i(*mw^97pme+b-dy0#ze')
+
+def encrypt_text(text):
+    raw = f"{text}-{SECRET_KEY}"
+    encoded_bytes = base64.urlsafe_b64encode(raw.encode('utf-8')) 
+    return encoded_bytes.decode('utf-8')
+
+def decrypt_text(encrypted_text):
+    # try:
+        decoded_bytes = base64.urlsafe_b64decode(encrypted_text.encode('utf-8'))
+        decoded_str = decoded_bytes.decode('utf-8')
+        decoded_text, _ = decoded_str.split('-', 1)
+        return decoded_text
+    # except Exception:
+    #     return None
 
 def dd(*args):
     """Dump and Debug - Prints values but does NOT stop execution."""
@@ -23,6 +41,67 @@ def dd(*args):
 
 # Register `dd()` globally
 builtins.dd = dd
+
+def check_agent_linked_info(data_list):
+    """
+    Check whether users with given PAN numbers are already linked with any agency.
+
+    Args:
+        data_list (list): A list of dicts containing 'user_id' and 'pan_no'.
+
+    Returns:
+        list: A list of dicts with user_id, pan_no, and agency_linked status.
+    """
+    url = getattr(settings, 'IRDAI_AGENT_CHECK_URL', 'https://sandbox.surepass.io/api/v1/irdai/verify')
+    token = getattr(settings, 'IRDAI_API_TOKEN', 'your-fallback-token')
+
+    results = []
+
+    for data in data_list:
+        user_id = data['user_id']
+        pan_no = data['pan_no']
+
+        payload = json.dumps({
+            "id_number": pan_no
+        })
+
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {token}'
+        }
+
+        try:
+            response = requests.post(url, headers=headers, data=payload)
+            status_code = response.status_code
+            res_data = response.json()
+
+            agency_linked = False
+            message = ""
+
+            if status_code == 200 and res_data.get('success', False):
+                results_data = res_data.get('data', {}).get('results', [])
+                if results_data:
+                    agency_linked = True
+                    agency_name = results_data[0].get('insurer_type', 'the existing agency')
+                    message = f"Please get a NOC from {agency_name}"
+
+            results.append({
+                'user_id': user_id,
+                'pan_no': pan_no,
+                'agency_linked': agency_linked,
+                'message': message
+            })
+
+        except Exception as e:
+            results.append({
+                'user_id': user_id,
+                'pan_no': pan_no,
+                'agency_linked': False,
+                'error': str(e)
+            })
+
+    return results
+
 
 def send_sms_post(number, message):
     """
