@@ -708,6 +708,7 @@ def process_text_with_chatgpt(text):
         return json.dumps({"error": "Request failed", "details": str(e)}, indent=4)
 
 
+from django.core.paginator import Paginator
 
 def policyData(request):
     user_id = request.user.id
@@ -743,11 +744,23 @@ def policyData(request):
 
     policy_count = queryset.count()
 
+    # Pagination
+    per_page = request.GET.get('per_page', 10)
+    try:
+        per_page = int(per_page)
+    except ValueError:
+        per_page = 10
+
+    paginator = Paginator(queryset, per_page)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     return render(request, 'policy/policy-data.html', {
-        "policy_data": queryset,
+        "page_obj": page_obj,
         "policy_count": policy_count,
         "search_field": search_field,
         "search_query": search_query,
+        "per_page": per_page,
     })
 
 
