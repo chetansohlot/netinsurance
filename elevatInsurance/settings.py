@@ -34,6 +34,9 @@ DEBUG = True if APPLY_STATIC == 'TRUE' else False
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 
+# Allow iframes from same origin
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+
 
 # Application definition
 

@@ -751,18 +751,22 @@ def policyData(request):
     })
 
 
-def editPolicy(request,id):
+def editPolicy(request, id):
     if request.user.is_authenticated:
         policy_data = PolicyDocument.objects.filter(id=id).first()
-        base_url = request.build_absolute_uri('/')[:-1]
-        pdf_path = base_url + policy_data.filepath
         
-        return render(request,'policy/edit-policy.html',{
-            'policy_data':policy_data,
-            'pdf_path':pdf_path,
-            })
+        pdf_path = ""
+        if policy_data and policy_data.filepath:
+            base_url = request.build_absolute_uri('/')[:-1]
+            pdf_path = f"{base_url}/media/{policy_data.filepath}"  # Manually build full URL
+
+        return render(request, 'policy/edit-policy.html', {
+            'policy_data': policy_data,
+            'pdf_path': pdf_path,
+        })
     else:
         return redirect('login')
+
 
 def parse_date(date_str):
     """Convert DD-MM-YYYY to YYYY-MM-DD format."""
