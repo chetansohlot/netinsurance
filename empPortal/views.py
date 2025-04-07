@@ -757,7 +757,7 @@ def editPolicy(request, id):
         
         pdf_path = ""
         if policy_data and policy_data.filepath:
-            pdf_path = f'http://151.106.112.100/{policy_data.filepath}'
+            pdf_path = f'http://151.106.112.100{policy_data.filepath}'
 
         return render(request, 'policy/edit-policy.html', {
             'policy_data': policy_data,
