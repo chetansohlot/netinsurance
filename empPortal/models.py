@@ -812,3 +812,19 @@ class ExamResult(models.Model):
         db_table = 'exam_result'
         verbose_name = "Exam_result"
         verbose_name_plural = "Exam_results"
+        
+
+class IrdaiAgentApiLogs(models.Model):
+    url = models.URLField(null=True, blank=True)
+    user_id = models.IntegerField(null=True, blank=True)
+    request_payload = models.TextField(null=True, blank=True)
+    request_headers = models.TextField(null=True, blank=True)
+    response_status = models.IntegerField(null=True, blank=True)
+    response_body = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Log {self.id} - {self.url} ({self.response_status})"
+    
+    class Meta:
+        db_table = 'irdai_agent_api_logs'

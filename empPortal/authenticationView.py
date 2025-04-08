@@ -34,13 +34,13 @@ def login_view(request):
     # Initialize variable
     mobile_no_user = ""
 
-    if request.user.is_authenticated:
+    if request.user.is_authenticated and request.user.is_active == 1:
         mobile_no_user = request.user.phone  # Store user phone for OTP login
         if not from_otp_verification:
             return redirect('dashboard')  # Redirect if user is already logged in and not coming from OTP
-
+        
     # Logout user if they navigated back from OTP page
-    if from_otp_verification and request.user.is_authenticated:
+    if from_otp_verification and request.user.is_authenticated and request.user.is_active == 1:
         logout(request)
     # Check if login is coming from OTP verification
     if request.method == 'POST' and not from_otp_verification:
@@ -98,6 +98,7 @@ def register_view(request):
 
     if request.method == 'POST':
         full_name = request.POST.get('full_name', '').strip()
+        pan_no = request.POST.get('pan_no', '').strip()
         gender = request.POST.get('gender', '').strip()
         email = request.POST.get('email', '').strip()
         mobile = request.POST.get('mobile', '').strip()
@@ -141,6 +142,7 @@ def register_view(request):
             user.last_name = last_name
             user.email = email
             user.phone = mobile
+            user.pan_no = pan_no
             user.gender = gender
             user.email_otp = otp_code
             user.email_verified = False
@@ -166,6 +168,7 @@ def register_view(request):
                 last_name=last_name,
                 email=email,
                 phone=mobile,
+                pan_no=pan_no,
                 gender=gender,
                 password=make_password(password),
                 email_otp=otp_code,
@@ -570,33 +573,45 @@ def check_agent_existance(request,uid):
 def verify_agent_existance(request):
     if request.method == 'POST':
         user_id = int(request.POST.get('uid', '').strip())
-        # user_id = decrypt_text(uid)
-        
         user_data = Users.objects.filter(id=user_id).first()
-        user_data.pan_no = "GZPPS8050E"  # Hardcoded for now
 
         request_data = [{
             'user_id': user_data.id,
             'pan_no': user_data.pan_no,
         }]
         check_agent_linked = check_agent_linked_info(request_data)
+    
         result = check_agent_linked[0] if check_agent_linked else {}
-        if result.get('agency_linked'):
+        
+        if result.get('agent_status') == 200:
             messages.error(request, f"Sorry. {result.get('message', 'Agency already linked. NOC required.')}")
             return JsonResponse({
                 'status': 'error',
-                'redirect': reverse('login')
+                'redirect': request.build_absolute_uri(reverse('login'))
             })
-        
-        user_data.is_login_available = 1
-        user_data.is_active = 1
-        user_data.save()
-        messages.success(request, f"Successfully registered. Welcome {request.user.full_name}")
-            
+        elif result.get('agent_status') == 400:
+            user_data.is_login_available = 1
+            user_data.is_active = 1
+            user_data.save()
+            messages.success(request, f"Successfully registered. Welcome {request.user.full_name}")
+                
+            return JsonResponse({
+                'status': 'success',
+                'redirect': request.build_absolute_uri(reverse('dashboard'))
+            })
+        else:
+            messages.error(request, f"Sorry. {result.get('message', 'Something Went Wrong')}")
+            return JsonResponse({
+                'status': 'error',
+                'redirect': request.build_absolute_uri(reverse('login'))
+            })
+    else:
+        messages.error(request, f"Sorry. Something Went Wrong")
         return JsonResponse({
-            'status': 'success',
-            'redirect': reverse('dashboard')
+            'status': 'error',
+            'redirect': request.build_absolute_uri(reverse('login'))
         })
+        
 
 def registerReSendOtp_View(request):
     email = request.user.email  # Retrieve email from session
@@ -714,3 +729,4 @@ def mobile_verify_otp_view(request):
         # return redirect('dashboard')
 
     return render(request, 'authentication/mobile-verify-otp.html')
+
