@@ -205,7 +205,27 @@ Add Allocation
             });
         });
     </script>
-    
+    <script>
+        $(document).ready(function () {
+          function toggleManagerField() {
+            const selectedRole = $('#role').val();
+            if (selectedRole === '2') {
+              $('#senior').closest('.form-group').hide();  // Hide Manager field
+            } else {
+              $('#senior').closest('.form-group').show();  // Show Manager field
+            }
+          }
+      
+          // On page load
+          toggleManagerField();
+      
+          // On role change
+          $('#role').on('change', function () {
+            toggleManagerField();
+          });
+        });
+      </script>
+      
     
 </body>
 {% endblock %}
