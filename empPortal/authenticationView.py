@@ -129,6 +129,13 @@ def register_view(request):
         if not password or len(password) < 6:
             messages.error(request, 'Password must be at least 6 characters long.')
 
+        if not pan_no:
+            messages.error(request,'PAN card number is required.')
+        elif not re.match(r'^[A-Z]{5}[0-9]{4}[A-Z]$', pan_no):
+            messages.error(request, 'Enter a valid PAN card number (e.g., ABCDE1234F).')
+        elif Users.objects.filter(pan_no=pan_no).exclude(id=user.id if user else None).exists():
+            messages.error(request,'PAN Card already registered. Please login')
+        
         # Redirect if there are validation errors
         if messages.get_messages(request):
             return render(request, 'authentication/register.html')
