@@ -246,7 +246,177 @@
         });
         
     </script>
+    
+    <script>
+        $(document).ready(function () {
+            // Custom regex validator for PAN
+            jQuery.validator.addMethod("regex", function (value, element, regexp) {
+                let re = new RegExp(regexp);
+                return this.optional(element) || re.test(value);
+            }, "Invalid format.");
         
+            // Apply validation rules to the form
+            $("#myPolicyForm").validate({
+                rules: {
+                    // Insured Details
+                    holder_name: {
+                        required: true,
+                        minlength: 3
+                    },
+                    insured_mobile: {
+                        required: true,
+                        digits: true,
+                        minlength: 10,
+                        maxlength: 10
+                    },
+                    insured_email: {
+                        required: true,
+                        email: true
+                    },
+                    insured_address: {
+                        required: true,
+                        minlength: 5
+                    },
+                    insured_pan: {
+                        required: true,
+                        regex: "^[A-Z]{5}[0-9]{4}[A-Z]{1}$"
+                    },
+                    insured_aadhaar: {
+                        required: true,
+                        digits: true,
+                        minlength: 12,
+                        maxlength: 12
+                    },
+        
+                    // Policy Details
+                    insurance_company: { required: true },
+                    location: { required: true },
+                    owner_name: { required: true },
+                    father_name: { required: true },
+                    vehicle_owner_number: { required: true },
+                    registration_city: { required: true },
+                    supervisor_name: { required: true },
+                    policy_type: { required: true },
+                    policy_duration: { required: true },
+                    idv_value: {
+                        required: true,
+                        number: true
+                    },
+                    od_premium: {
+                        required: true,
+                        number: true
+                    },
+                    tp_premium: {
+                        required: true,
+                        number: true
+                    },
+                    pa_count: {
+                        required: true,
+                        digits: true
+                    },
+                    pa_amount: {
+                        required: true,
+                        number: true
+                    },
+                    driver_count: {
+                        required: true,
+                        digits: true
+                    },
+                    driver_amount: {
+                        required: true,
+                        number: true
+                    }
+                },
+                messages: {
+                    holder_name: {
+                        required: "Please enter insured name",
+                        minlength: "Name must be at least 3 characters"
+                    },
+                    insured_mobile: {
+                        required: "Please enter insured mobile number",
+                        digits: "Only digits allowed",
+                        minlength: "Must be 10 digits",
+                        maxlength: "Must be 10 digits"
+                    },
+                    insured_email: {
+                        required: "Please enter insured email",
+                        email: "Enter a valid email"
+                    },
+                    insured_address: {
+                        required: "Please enter address",
+                        minlength: "Address must be at least 5 characters"
+                    },
+                    insured_pan: {
+                        required: "Please enter PAN",
+                        regex: "Enter valid PAN (e.g., ABCDE1234F)"
+                    },
+                    insured_aadhaar: {
+                        required: "Please enter Aadhaar",
+                        digits: "Only digits allowed",
+                        minlength: "Must be 12 digits",
+                        maxlength: "Must be 12 digits"
+                    },
+        
+                    // Policy Details messages
+                    insurance_company: { required: "Enter Insurance Company" },
+                    location: { required: "Enter Service Provider" },
+                    owner_name: { required: "Enter Insurer Name" },
+                    father_name: { required: "Enter Bqp" },
+                    vehicle_owner_number: { required: "Enter Pos Name" },
+                    registration_city: { required: "Enter Branch Name" },
+                    supervisor_name: { required: "Enter Supervisor Name" },
+                    policy_type: { required: "Enter Policy Type" },
+                    policy_duration: { required: "Enter Policy Plan" },
+                    idv_value: {
+                        required: "Enter Sum Insured",
+                        number: "Must be a number"
+                    },
+                    od_premium: {
+                        required: "Enter OD Premium",
+                        number: "Must be a number"
+                    },
+                    tp_premium: {
+                        required: "Enter TP Premium",
+                        number: "Must be a number"
+                    },
+                    pa_count: {
+                        required: "Enter PA Count",
+                        digits: "Must be an integer"
+                    },
+                    pa_amount: {
+                        required: "Enter PA Amount",
+                        number: "Must be a number"
+                    },
+                    driver_count: {
+                        required: "Enter Driver Count",
+                        digits: "Must be an integer"
+                    },
+                    driver_amount: {
+                        required: "Enter Driver Amount",
+                        number: "Must be a number"
+                    }
+                },
+                errorElement: "div",
+                errorPlacement: function (error, element) {
+                    error.addClass("text-danger");
+                    error.insertAfter(element);
+                }
+            });
+        
+            // Save button click handler
+            $("#save-policy-from").on("click", function () {
+                if ($("#myPolicyForm").valid()) {
+                    $("#myPolicyForm").submit();
+                } else {
+                    console.log("Form has validation errors.");
+                }
+            });
+        });
+        </script>
+        
+        
+    
+    
 
   
                             <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>

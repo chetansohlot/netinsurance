@@ -94,7 +94,7 @@ def edit_policy(request, policy_id):
         policy.bqp = request.POST.get('father_name')
         policy.pos_name = request.POST.get('vehicle_owner_number')
         policy.branch_name = request.POST.get('registration_city')
-        policy.supervisor_name = request.POST.get('vehicle_type')
+        policy.supervisor_name = request.POST.get('supervisor_name')
         policy.policy_type = request.POST.get('policy_type')
         policy.policy_plan = request.POST.get('policy_duration')
         policy.sum_insured = request.POST.get('idv_value')
