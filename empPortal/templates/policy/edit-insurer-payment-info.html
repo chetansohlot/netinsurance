@@ -44,7 +44,7 @@
                 <div class="card box-shadow-none p-3">
                   <div class="card-body px-0 pb-0 pt-0">
 
-                    <form autocomplete="off" id="myForm" name="updatePolicy" action="{% url 'edit-insurer-payment-info' policy_data.policy_number %}" method="post">
+                    <form autocomplete="off" id="myInsurerPaymentForm" name="updatePolicy" action="{% url 'edit-insurer-payment-info' policy_data.policy_number %}" method="post">
                         {% csrf_token %}
                       
                         <input type="hidden" class="form-field" name="policy_id" id="policy_id" value="{{ policy_data.id }}">
@@ -244,7 +244,7 @@
                                 </div>
                               </div>
                             <div class="d-flex justify-content-end mt-4">
-                              <button type="submit" class="dashboard-addbtn">Save and Continue</button>
+                              <button type="button" id="save-insurer-payment-form" class="dashboard-addbtn">Save and Continue</button>
                             </div>  
                           </div>
                         </div>
@@ -271,7 +271,7 @@
     {% include "footer.html" %}
     {% include "footer-script.html" %}
     <script>
-      document.getElementById("myForm").addEventListener("submit", function() {
+      document.getElementById("myInsurerPaymentForm").addEventListener("submit", function() {
           document.getElementById("loader").style.display = "flex";
       });
     </script>

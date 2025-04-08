@@ -44,7 +44,7 @@
                 <div class="card box-shadow-none p-3">
                   <div class="card-body px-0 pb-0 pt-0">
 
-                    <form autocomplete="off" id="myForm" name="updatePolicy" action="{% url 'edit-agent-payment-info' policy_data.policy_number %}" method="post">
+                    <form autocomplete="off" id="myAgentPaymentForm" name="updatePolicy" action="{% url 'edit-agent-payment-info' policy_data.policy_number %}" method="post">
                         {% csrf_token %}
                       
                         <input type="hidden" class="form-field" name="policy_id" id="policy_id" value="{{ policy_data.id }}">
@@ -135,7 +135,7 @@
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl">Agent Payment Date</label>
-                                      <input type="text" class="form-field" name="agent_payment_date" placeholder="Agent Payment Date" value="{{ agent_payment.agent_payment_date }}">
+                                      <input type="date" class="form-field" name="agent_payment_date" value="{{ agent_payment.agent_payment_date }}">
                                     </div>
                                   </div>
                             
@@ -232,7 +232,7 @@
                             
 
                             <div class="d-flex justify-content-end mt-4">
-                              <button type="submit" class="dashboard-addbtn">Save and Continue</button>
+                              <button type="button" id="save-agent-payment-form" class="dashboard-addbtn">Save and Continue</button>
                             </div>  
                           </div>
                         </div>
@@ -259,7 +259,7 @@
     {% include "footer.html" %}
     {% include "footer-script.html" %}
     <script>
-      document.getElementById("myForm").addEventListener("submit", function() {
+      document.getElementById("myAgentPaymentForm").addEventListener("submit", function() {
           document.getElementById("loader").style.display = "flex";
       });
     </script>

@@ -44,7 +44,7 @@
                 <div class="card box-shadow-none p-3">
                   <div class="card-body px-0 pb-0 pt-0">
 
-                    <form autocomplete="off" id="myForm" name="updatePolicy" action="{% url 'edit-policy-vehicle-details' policy_data.policy_number %}" method="post">
+                    <form autocomplete="off" id="myVehiclePolicyForm" name="updatePolicy" action="{% url 'edit-policy-vehicle-details' policy_data.policy_number %}" method="post">
                         {% csrf_token %}
                       
                         <input type="hidden" class="form-field" name="policy_id" id="policy_id" value="{{ policy_data.id }}">
@@ -149,11 +149,14 @@
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl" for="fuel_type">Fuel Type</label>
+                                      {% with vehicle.fuel_type|default:'' as selected_fuel %}
                                       <select class="form-field" name="fuel_type" id="fuel_type">
-                                        <option value="">Select</option>
-                                        <option value="Petrol" {% if vehicle.fuel_type|default:policy_data.fuel_type == 'Petrol' %}selected{% endif %}>Petrol</option>
-                                        <option value="Diesel" {% if vehicle.fuel_type|default:policy_data.fuel_type == 'Diesel' %}selected{% endif %}>Diesel</option>
+                                          <option value="">Select</option>
+                                          <option value="Petrol" {% if selected_fuel == 'Petrol' %}selected{% endif %}>Petrol</option>
+                                          <option value="Diesel" {% if selected_fuel == 'Diesel' %}selected{% endif %}>Diesel</option>
                                       </select>
+                                      {% endwith %}
+
                                     </div>
                                   </div>
                             
@@ -222,7 +225,7 @@
                             
 
                             <div class="d-flex justify-content-end mt-4">
-                              <button type="submit" class="dashboard-addbtn">Save and Continue</button>
+                              <button type="button" id="save-vehicle-policy-form" class="dashboard-addbtn">Save and Continue</button>
                             </div>  
                           </div>
                         </div>
@@ -249,7 +252,7 @@
     {% include "footer.html" %}
     {% include "footer-script.html" %}
     <script>
-      document.getElementById("myForm").addEventListener("submit", function() {
+      document.getElementById("myVehiclepolicyForm").addEventListener("submit", function() {
           document.getElementById("loader").style.display = "flex";
       });
     </script>
