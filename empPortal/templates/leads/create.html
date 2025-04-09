@@ -49,20 +49,6 @@
     {% csrf_token %}
 
     <div class="row">
-        
-      <div class="form-group col-md-6">
-        <label for="customer_id">Customer ID</label>
-        <select class="form-control" name="customer_id" id="customer_id">
-            <option value="">Select Customer ID</option>
-            {% for customer in customers %}
-                <option value="{{ customer.customer_id }}" 
-                    {% if lead and lead.customer_id == customer.customer_id %}selected{% endif %}>
-                    {{ customer.customer_id }} - {{ customer.name_as_per_pan }}
-                </option>
-            {% endfor %}
-        </select>
-    </div>
-
         <div class="form-group col-md-6">
             <label for="mobile_number">Mobile Number</label>
             <input type="tel" class="form-control" name="mobile_number" id="mobile_number" pattern="[0-9]{10}"
@@ -118,10 +104,18 @@
         </div>
 
         <div class="form-group col-md-12">
-            <label for="address">Address</label>
-            <textarea class="form-control" name="address" id="address"
-                      placeholder="Enter Address">{{ lead.address|default_if_none:'' }}</textarea>
-        </div>
+          <label for="address">Address</label>
+          <textarea class="form-control" name="address" id="address"
+                    placeholder="Enter Address">{{ lead.address|default_if_none:'' }}</textarea>
+      </div>
+      <div class="form-group col-md-12">
+          <label for="lead_description">Lead Description</label>
+          <textarea class="form-control" name="lead_description" id="lead_description"
+          rows="4" maxlength="1000"
+          placeholder="Enter Lead Description">{{ lead.lead_description|default_if_none:'' }}</textarea>
+<small class="form-text text-muted">Max 1000 characters.</small>
+
+      </div>
 
         <div class="form-group col-md-6">
             <label for="lead_type">Lead Type</label>
