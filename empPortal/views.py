@@ -28,7 +28,7 @@ app = FastAPI()
 
 def dashboard(request):
     # return HttpResponse()
-    if request.user.is_authenticated and request.user.is_active == 1:
+    if request.user.is_authenticated:
         user = request.user
         return render(request,'dashboard.html',{'user':user})
     else:
