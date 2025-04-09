@@ -550,18 +550,7 @@
                                             </p>
                                         </div>
                                     </div>
-                                    <div class="col-6 col-sm-6 col-md-4 col-lg-4">
-                                        <div class="userdetail-group">
-                                            <p class="userdetail-lbl">Re Enter Account Number</p>
-                                            <p class="userdetail-highligt" id="reEnterAccountNumber">
-                                                {% if bank_details %}
-                                                    {{ bank_details.re_enter_account_number }}
-                                                {% else %}
-                                                    -
-                                                {% endif %}
-                                            </p>
-                                        </div>
-                                    </div>
+                                    
                                     <div class="col-6 col-sm-6 col-md-4 col-lg-4">
                                         <div class="userdetail-group">
                                             <p class="userdetail-lbl">Account Number</p>
@@ -657,7 +646,7 @@
                                                 <div class="col-sm-12">
                                                     <hr>
                                                     <div class="ml-3 pl-1">
-                                                        <p class="wrap-prgh font-weight-bold mb-0 pb-0">Cheque Number</p>
+                                                        <p class="wrap-prgh font-weight-bold mb-0 pb-0">Account Number</p>
                                                         <p class="wrap-small text-uppercase">{{ docs.cheque_number|default:"-" }}</p>
                                                     </div>  
                                                 </div>

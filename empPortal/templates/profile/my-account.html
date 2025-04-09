@@ -484,18 +484,6 @@
                                     </div>
                                     <div class="col-6 col-sm-6 col-md-4 col-lg-4">
                                         <div class="userdetail-group">
-                                            <p class="userdetail-lbl">Re Enter Account Number</p>
-                                            <p class="userdetail-highligt" id="reEnterAccountNumber">
-                                                {% if bank_details %}
-                                                    {{ bank_details.re_enter_account_number }}
-                                                {% else %}
-                                                    -
-                                                {% endif %}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div class="col-6 col-sm-6 col-md-4 col-lg-4">
-                                        <div class="userdetail-group">
                                             <p class="userdetail-lbl">Account Number</p>
                                             <p class="userdetail-highligt" id="accountNumber">
                                                 {% if bank_details %}
@@ -1032,8 +1020,8 @@
                                                 <div class="row">
                                                     <div class="col-md-4">
                                                         <div class="mb-3">
-                                                            <label class="form-lbl">Cheque Number</label>
-                                                            <input type="text" class="form-field" name="cheque_number" placeholder="Cheque Number">
+                                                            <label class="form-lbl">Account Number</label>
+                                                            <input type="text" class="form-field" name="cheque_number" placeholder="Account Number">
                                                         </div>
                                                     </div>
                                                     <div class="col-md">
