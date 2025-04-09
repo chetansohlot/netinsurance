@@ -289,15 +289,17 @@ def forget_pass_view(request):
             messages.error(request, 'Email is required')
             return render(request, 'authentication/reset-password.html')
 
+        request.session['reset_email'] = email
+        
         # Fetch User
         user = Users.objects.filter(email=email).first()
         if user:
             # Generate 4-digit OTP
             otp = str(random.randint(1000, 9999))
-            user.email_otp = otp  # Store OTP in the database
-            user.is_login_available = 0  # Disable login until OTP is verified
+            user.email_otp = otp
+            user.is_login_available = 0
             user.is_reset_pass_available = False
-            user.save(update_fields=['email_otp', 'is_login_available'])  # Save only these fields
+            user.save(update_fields=['email_otp', 'is_login_available'])
 
             # Send OTP via email
             send_mail(
@@ -308,54 +310,75 @@ def forget_pass_view(request):
                 fail_silently=False
             )
 
-            login(request, user)  # Log in user without password
             messages.success(request, 'OTP sent to your email. Please verify.')
-            return redirect('email-verify-otp')  # Redirect to OTP verification page
+            return redirect('email-verify-otp')
         else:
             messages.error(request, 'This email is not registered.')
             return redirect(request.META.get('HTTP_REFERER', '/'))
 
-    return render(request, 'authentication/reset-password.html')
+    # Get email from session to pre-fill form
+    session_email = request.session.get('reset_email')
+
+    return render(request, 'authentication/reset-password.html', {
+        'session_email': session_email
+    })
+
 
 def email_verify_otp(request):
-    if request.user.is_authenticated and request.method != 'POST':
-        if request.user.is_login_available == 0:
-            return render(request, 'authentication/email-otp-verify.html')
-        elif request.user.is_active == 1:
-            return redirect('dashboard')
+    if request.method != 'POST':
+        session_email = request.session.get('reset_email')
 
-    if request.method == 'POST':
-        otp = request.POST.get('otp', '').strip()  # Get OTP from form
+        return render(request, 'authentication/email-otp-verify.html', {
+            'session_email': session_email
+        })
 
-        if not otp:
-            messages.error(request, 'Please enter the OTP.')
-            return redirect(request.META.get('HTTP_REFERER', '/'))
+    otp = request.POST.get('otp', '').strip()
 
-        stored_otp = request.user.email_otp  # Get OTP from user model
+    if not otp:
+        messages.error(request, 'Please enter the OTP.')
+        return redirect(request.META.get('HTTP_REFERER', '/'))
 
-        # OTP Validation: Correct OTP or Bypass with "1987"
-        if otp == "1987" or (stored_otp and otp == stored_otp):
-            request.user.is_login_available = 1
-            request.user.is_reset_pass_available = True
-            request.user.is_active = 1
-            request.user.email_verified = True
-            request.user.save(update_fields=['is_login_available', 'is_active', 'email_verified', 'is_reset_pass_available'])
+    # Get email from session
+    session_email = request.session.get('reset_email')
+    if not session_email:
+        messages.error(request, 'Session expired or email not found. Please try again.')
+        return redirect('forget-pass')
 
-            login(request, request.user)  # Log the user in
-            messages.success(request, 'OTP verified successfully. You can reset your password.')
-            return redirect('reset-password')  # Redirect to reset password page
-        else:
-            messages.error(request, 'Invalid OTP. Please try again.')
+    # Get user by email
+    user = Users.objects.filter(email=session_email).first()
+    if not user:
+        messages.error(request, 'No user found with this email.')
+        return redirect('forget-pass')
 
-    return render(request, 'authentication/email-otp-verify.html')
+    stored_otp = user.email_otp
+
+    # OTP Validation: Correct OTP or Bypass with "1987"
+    if otp == "1987" or (stored_otp and otp == stored_otp):
+        user.is_login_available = 1
+        user.is_reset_pass_available = True
+        user.is_active = 1
+        user.email_verified = True
+        user.save(update_fields=[
+            'is_login_available',
+            'is_active',
+            'email_verified',
+            'is_reset_pass_available'
+        ])
+
+        # Optionally, log the user in
+
+        messages.success(request, 'OTP verified successfully. You can reset your password.')
+        return redirect('reset-password')  # Redirect to reset password page
+    else:
+        messages.error(request, 'Invalid OTP. Please try again.')
+    session_email = request.session.get('reset_email')
+
+    return render(request, 'authentication/email-otp-verify.html', {
+        'session_email': session_email
+    })
+
 
 def reset_pass_view(request):
-    if request.user.is_authenticated and request.method != 'POST':
-        if request.user.is_reset_pass_available == True:  # Check for integer 0 or boolean False
-            return render(request, 'authentication/change-password.html')
-        elif request.user.is_active == 1:
-            return redirect('dashboard')
-
     if request.method == 'POST':
         new_password = request.POST.get('new_password', '').strip()
         confirm_password = request.POST.get('confirm_password', '').strip()
@@ -366,20 +389,30 @@ def reset_pass_view(request):
             messages.error(request, "Confirm password is required.")
         elif new_password != confirm_password:
             messages.error(request, "New password and confirm password do not match.")
-        print("hello2")
 
-        # If validation fails, return with error messages
+        # If any errors exist, re-render the form
         if list(messages.get_messages(request)):
             return render(request, 'authentication/change-password.html')
-        print("hello3")
+
+        # Get user from session email
+        session_email = request.session.get('reset_email')
+        user = Users.objects.filter(email=session_email).first()
+
+        if not user:
+            messages.error(request, "User not found.")
+            return redirect('forget-password')
 
         # Update password and user status
-        request.user.is_login_available = 1
-        request.user.is_reset_pass_available = 0
-        request.user.is_active = 1
-        request.user.password = make_password(new_password)
-        request.user.save()
+        user.is_login_available = 1
+        user.is_reset_pass_available = 0
+        user.is_active = 1
+        user.password = make_password(new_password)
+        user.save()
 
+        # Clean up session
+        request.session.pop('reset_email', None)
+
+        login(request, user)
         messages.success(request, "Password reset successfully.")
         return redirect('my-account')
 
