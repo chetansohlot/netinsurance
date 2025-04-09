@@ -829,3 +829,5 @@ class IrdaiAgentApiLogs(models.Model):
     
     class Meta:
         db_table = 'irdai_agent_api_logs'
+
+     
