@@ -14,8 +14,12 @@
             <li>Seamless Integration</li>
           </ul>
           <div class="d-flex mt-4">
-            <a href="{% url 'register' %}" class="banner-btn me-2">Become a POSP</a>
-            <a href="{% url 'login' %}" class="banner-btn-outline">Login</a>
+            {% if not request.user.is_authenticated %}
+              <a href="{% url 'register' %}" class="banner-btn me-2">Become a POSP</a>
+              <a href="{% url 'login' %}" class="banner-btn-outline">Login</a>
+            {% else %}
+              <a href="{% url 'dashboard' %}" class="banner-btn me-2">Go to Dashboard</a>
+            {% endif %}
           </div>
         </div>
         <div class="col-lg-5 order-first order-lg-last">

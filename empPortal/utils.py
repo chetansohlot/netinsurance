@@ -179,7 +179,6 @@ def create_or_update_lead(request, cus_id):
 
     # Prepare the data to store
     lead_data = {
-        'customer_id': customer.customer_id,
         'mobile_number': customer.mobile_number,
         'email_address': customer.email_address,
         'quote_date': customer.quote_date,

@@ -20,6 +20,8 @@ from django.utils.timezone import now
 from django.core.paginator import Paginator
 import helpers  
 from django.core.paginator import Paginator
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 def dictfetchall(cursor):
     "Returns all rows from a cursor as a dict"
@@ -125,3 +127,26 @@ def create_or_edit(request, department_id=None):
 
             messages.success(request, f"Department created successfully! Department ID: {new_department.id}")
             return redirect(reverse("department-management"))  
+
+
+def toggle_department_status(request, department_id):
+    """Toggle department status based on user action (Activate/Deactivate)"""
+    if request.method == "POST":
+        department = get_object_or_404(Department, id=department_id)
+        
+        # Toggle status
+        if department.status == "Active":
+            department.status = "Inactive"
+        else:
+            department.status = "Active"
+
+        department.save()
+
+        return JsonResponse({
+            "success": True,
+            "message": f"Department status updated to {department.status}",
+            "status": department.status,
+            "department_id": department.id
+        })
+
+    return JsonResponse({"success": False, "message": "Invalid request method!"}, status=400)

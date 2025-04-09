@@ -59,7 +59,10 @@ def index(request):
     except ValueError:
         per_page = 10  # Default to 10 if invalid value is given
 
-    leads = Leads.objects.all().order_by('-created_at')
+    if request.user.role_id != 1:
+        leads = Leads.objects.filter(created_by=request.user.id).order_by('-created_at')
+    else:
+        leads = Leads.objects.all().order_by('-created_at')
 
 
     if global_search:
@@ -129,7 +132,6 @@ def create_or_edit_lead(request, lead_id=None):
         return render(request, 'leads/create.html', {'lead': lead, 'customers': customers})
     
     elif request.method == "POST":
-        customer_id = request.POST.get("customer_id", "").strip()
         mobile_number = request.POST.get("mobile_number", "").strip()
         email_address = request.POST.get("email_address", "").strip()
         quote_date = request.POST.get("quote_date", None)
@@ -140,11 +142,11 @@ def create_or_edit_lead(request, lead_id=None):
         city = request.POST.get("city", "").strip()
         pincode = request.POST.get("pincode", "").strip()
         address = request.POST.get("address", "").strip()
+        lead_description = request.POST.get("lead_description", "").strip()
         lead_type = request.POST.get("lead_type", "MOTOR").strip()
         status = request.POST.get("status", "new").strip()
         
         if lead:
-            lead.customer_id = customer_id
             lead.mobile_number = mobile_number
             lead.email_address = email_address
             lead.quote_date = quote_date
@@ -155,6 +157,7 @@ def create_or_edit_lead(request, lead_id=None):
             lead.city = city
             lead.pincode = pincode
             lead.address = address
+            lead.lead_description = lead_description
             lead.lead_type = lead_type
             lead.status = status
             lead.updated_at = now()
@@ -162,8 +165,6 @@ def create_or_edit_lead(request, lead_id=None):
             messages.success(request, f"Lead updated successfully! Lead ID: {lead.lead_id}")
         else:
             new_lead = Leads.objects.create(
-                lead_id=f"LEAD{now().strftime('%Y%m%d%H%M%S')}",
-                customer_id=customer_id,
                 mobile_number=mobile_number,
                 email_address=email_address,
                 quote_date=quote_date,
@@ -174,8 +175,10 @@ def create_or_edit_lead(request, lead_id=None):
                 city=city,
                 pincode=pincode,
                 address=address,
+                lead_description=lead_description,
                 lead_type=lead_type,
                 status=status,
+                created_by=request.user.id,
                 created_at=now(),
                 updated_at=now()
             )

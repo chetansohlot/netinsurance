@@ -1,5 +1,8 @@
 from django.shortcuts import render,redirect, get_object_or_404
 from ..models import Commission, Users, QuotationCustomer, VehicleInfo, QuotationVehicleDetail
+
+from empPortal.model import Quotation
+
 from django.db.models import OuterRef, Subquery
 from django.contrib import messages
 from datetime import datetime
@@ -45,8 +48,18 @@ def index(request):
     ncb = request.GET.get('ncb', '').strip()
     insurer_name = request.GET.get('insurer_name', '').strip()
 
-    # Base QuerySet
-    quotations = QuotationCustomer.objects.all()
+    # Get customer_ids from Quotation based on user role
+    if request.user.role_id == 1:
+        # Admin or superuser: show all quotations
+        customer_ids = Quotation.objects.values_list('customer_id', flat=True)
+    else:
+        # Only show quotations created by the logged-in user
+        customer_ids = Quotation.objects.filter(
+            created_by=str(request.user.id)
+        ).values_list('customer_id', flat=True)
+
+    # Base QuerySet, filtered by role
+    quotations = QuotationCustomer.objects.filter(customer_id__in=customer_ids)
 
     # Apply filters dynamically
     if customer_id:
@@ -141,6 +154,7 @@ def index(request):
     }
 
     return render(request, 'quote-management/index.html', context)
+
 
 
 def fetch_customer(request):
@@ -244,7 +258,7 @@ def create_or_edit(request, customer_id=None):
             quotation.save()
 
             messages.success(request, f"Quotation updated successfully! Customer ID: {quotation.customer_id}")
-
+            create_quotation(request, quotation.customer_id)
             # Redirect to vehicle info page
             return redirect(reverse("create-vehicle-info", args=[quotation.customer_id]))
         
@@ -272,12 +286,28 @@ def create_or_edit(request, customer_id=None):
                 address=address,
                 active=True,
             )
+            create_quotation(request, new_customer_id)
 
             messages.success(request, f"Quotation created successfully! Customer ID: {new_customer_id}")
 
             # Redirect to create-vehicle-info page
             return redirect(reverse("create-vehicle-info", args=[new_customer_id]))
 
+from django.utils import timezone
+
+def create_quotation(request, customer_id):
+    quotation, created = Quotation.objects.get_or_create(
+        customer_id=customer_id,
+        defaults={
+            'created_by': str(request.user.id),
+            'active': True
+        }
+    )
+
+    if not created:
+        # If it already exists, update something if needed
+        quotation.updated_at = timezone.now()
+        quotation.save()
 
 
 def fetch_vehicle_details_from_api(registration_number):
@@ -537,7 +567,7 @@ def createVehicleInfo(request, cus_id):
             )
             messages.success(request, "Vehicle information added successfully!")
 
-        create_or_update_lead(request, cus_id)
+        # create_or_update_lead(request, cus_id)
         return redirect(reverse("show-quotation-info", args=[cus_id]))
 
 
