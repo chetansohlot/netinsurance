@@ -742,7 +742,11 @@ def policyData(request):
             except json.JSONDecodeError:
                 data.extracted_text = {}
 
-    policy_count = queryset.count()
+    # Base queryset
+    if role_id != 1:
+        policy_count = PolicyDocument.objects.filter(status=1, rm_id=user_id).count()
+    else:
+        policy_count = PolicyDocument.objects.filter(status=1).count()
 
     # Pagination
     per_page = request.GET.get('per_page', 10)

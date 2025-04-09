@@ -81,8 +81,10 @@ def index(request):
         filter_args = {f"{search_field}__icontains": search_query}
         leads = leads.filter(**filter_args)
 
-    total_leads = leads.count()
-
+    if request.user.role_id != 1:
+        total_leads = Leads.objects.filter(created_by=request.user.id).order_by('-created_at').count()
+    else:
+        total_leads = Leads.objects.all().order_by('-created_at').count()
     # Paginate results
     paginator = Paginator(leads, per_page)
     page_number = request.GET.get('page')
