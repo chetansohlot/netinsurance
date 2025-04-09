@@ -59,7 +59,10 @@ def index(request):
     except ValueError:
         per_page = 10  # Default to 10 if invalid value is given
 
-    leads = Leads.objects.all().order_by('-created_at')
+    if request.user.role_id != 1:
+        leads = Leads.objects.filter(created_by=request.user.id).order_by('-created_at')
+    else:
+        leads = Leads.objects.all().order_by('-created_at')
 
 
     if global_search:
@@ -175,6 +178,7 @@ def create_or_edit_lead(request, lead_id=None):
                 lead_description=lead_description,
                 lead_type=lead_type,
                 status=status,
+                created_by=request.user.id,
                 created_at=now(),
                 updated_at=now()
             )
