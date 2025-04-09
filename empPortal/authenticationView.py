@@ -30,20 +30,20 @@ app = FastAPI()
 
 def login_view(request):
     # If user is authenticated, redirect to dashboard
-    from_otp_verification = request.GET.get('from_otp', 'false') == 'true'
+    # from_otp_verification = request.GET.get('from_otp', 'false') == 'true'
     # Initialize variable
     mobile_no_user = ""
 
     if request.user.is_authenticated and request.user.is_active == 1:
-        mobile_no_user = request.user.phone  # Store user phone for OTP login
-        if not from_otp_verification:
+        # mobile_no_user = request.user.phone  # Store user phone for OTP login
+        # if not from_otp_verification:
             return redirect('dashboard')  # Redirect if user is already logged in and not coming from OTP
         
     # Logout user if they navigated back from OTP page
-    if from_otp_verification and request.user.is_authenticated and request.user.is_active == 1:
-        logout(request)
+    # if from_otp_verification and request.user.is_authenticated and request.user.is_active == 1:
+    #     logout(request)
     # Check if login is coming from OTP verification
-    if request.method == 'POST' and not from_otp_verification:
+    if request.method == 'POST':
 
         # Fetch login method and credentials
         email = request.POST.get('email', '').strip()
@@ -78,8 +78,7 @@ def login_view(request):
             messages.error(request, 'Invalid credentials')
             return redirect(request.META.get('HTTP_REFERER', '/'))
 
-    return render(request, 'authentication/login.html', {"from_otp_verification": from_otp_verification, 
-                                                         "mobile_no": mobile_no_user})
+    return render(request, 'authentication/login.html', {"mobile_no": mobile_no_user})
 
 def generate_otp():
     """Generate a 6-digit OTP."""
