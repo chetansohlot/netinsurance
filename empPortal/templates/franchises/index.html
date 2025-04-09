@@ -188,19 +188,40 @@ Franchise
                                         <td>{{ franchise.city }}</td>
                                         <td>{{ franchise.state }}</td>
                                         <td>
-                                            <span class="badge {% if franchise.status == 'Active' %}bg-success{% else %}bg-danger{% endif %}">
-                                                {{ franchise.status }}
-                                            </span>
+                                          <span id="status-badge-{{ franchise.id }}" class="badge {% if franchise.status == 'Active' %}badge-success{% else %}badge-danger{% endif %}">
+                                            {{ franchise.status }}
+                                        </span>
                                         </td>
                                         <td>
                                             <i class="fas fa-clock text-primary"></i> {{ franchise.updated_at|date:"d M Y, H:i:s" }} <br>
                                             <i class="fas fa-calendar-alt text-secondary"></i> {{ franchise.created_at|date:"d M Y, H:i:s" }}
                                         </td>
                                         <td>
-                                            <a href="{% url 'franchise-management-edit' franchise_id=franchise.id %}" class="btn btn-xs btn-warning">
+                                          <div style="display: flex; gap: 5px; justify-content: center; align-items: center;">
+                                            <a href="{% url 'franchise-management-edit' franchise_id=franchise.id %}" class="btn btn-xs btn-warning ">
                                                 <i class="fas fa-edit"></i> 
                                             </a>
-                                        </td>
+                                           
+                                            <a href="#" class="btn btn-xs btn-info toggle-status"
+                                            data-url="{% url 'franchise-toggle-status' franchise.id %}"
+                                            data-action="activate"
+                                            {% if franchise.status == "Active" %}style="display: none;"{% endif %}
+                                            id="activate-btn-{{ franchise.id }}">
+                                             <i class="fas fa-check-circle"></i>
+                                         </a>
+                                 
+                                         <!-- Deactivate Button (Trash) -->
+                                         <a href="#" class="btn btn-xs btn-danger toggle-status"
+                                            data-url="{% url 'franchise-toggle-status' franchise.id %}"
+                                            data-action="deactivate"
+                                            {% if franchise.status == "Inactive" %}style="display: none;"{% endif %}
+                                            id="deactivate-btn-{{ franchise.id }}">
+                                             <i class="fas fa-trash"></i>
+                                         </a>
+                                            </div>
+                                          </td>
+                                          
+                                         
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -327,5 +348,70 @@ Franchise
     
     
     </body>
+    <script>
+      $(document).ready(function () {
+        $(".toggle-status").click(function (e) {
+            e.preventDefault();
+    
+            var button = $(this);
+            var franchiseId = button.data("url").split("/").slice(-2, -1)[0]; // Extract franchise ID
+            var url = button.data("url");
+    
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You want to change the status!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, change it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: url,
+                        type: "POST",
+                        dataType: "json",
+                        headers: { "X-CSRFToken": getCSRFToken() },  // Include CSRF token
+                        success: function (response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    title: "Updated!",
+                                    text: response.message,
+                                    icon: "success",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
+    
+                                // Update status badge dynamically
+                                var statusBadge = $("#status-badge-" + franchiseId);
+                                if (response.status === "Active") {
+                                    statusBadge.text("Active").removeClass("badge-danger").addClass("badge-success");
+                                    $("#activate-btn-" + franchiseId).hide();
+                                    $("#deactivate-btn-" + franchiseId).show();
+                                } else {
+                                    statusBadge.text("Inactive").removeClass("badge-success").addClass("badge-danger");
+                                    $("#activate-btn-" + franchiseId).show();
+                                    $("#deactivate-btn-" + franchiseId).hide();
+                                }
+                            } else {
+                                Swal.fire("Error!", response.message, "error");
+                            }
+                        },
+                        error: function (xhr) {
+                            console.log("AJAX Error:", xhr.responseText);
+                            Swal.fire("Error!", "Something went wrong!", "error");
+                        }
+                    });
+                }
+            });
+        });
+    
+        function getCSRFToken() {
+            return document.querySelector("[name=csrfmiddlewaretoken]").value;
+        }
+    });
+    
+  </script>
+  
 
 {% endblock %}

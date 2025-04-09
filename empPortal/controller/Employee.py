@@ -20,6 +20,8 @@ from django.utils.timezone import now
 from django.core.paginator import Paginator
 from django.contrib.auth.hashers import make_password
 import re
+from django.http import JsonResponse
+
 
 def dictfetchall(cursor):
     "Returns all rows from a cursor as a dict"
@@ -302,3 +304,5 @@ def create_or_edit_allocation(request, employee_id=None):
         'tl_list': tl_list,
         'senior_details': senior_details,
     })
+
+

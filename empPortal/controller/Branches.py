@@ -18,6 +18,7 @@ from django.forms.models import model_to_dict
 import json
 from django.utils.timezone import now
 from django.core.paginator import Paginator
+from django.http import JsonResponse
 
 def dictfetchall(cursor):
     "Returns all rows from a cursor as a dict"
@@ -141,3 +142,28 @@ def create_or_edit(request, branch_id=None):
 
             messages.success(request, f"Branch created successfully! Branch ID: {new_branch.id}")
             return redirect(reverse("branch-management"))  # Redirect to branch listing
+
+def toggle_branch_status(request, branch_id):
+    """Toggle branch status based on user action (Activate/Deactivate)"""
+    if request.method == "POST":  # Accept only POST requests
+        branch = get_object_or_404(Branch, id=branch_id)
+        action = request.POST.get("action")  # Get action from AJAX request
+
+        # Debugging Log
+        print(f"Branch: {branch.branch_name}, Current Status: {branch.status}, Action: {action}")
+
+        # Update status
+        if action == "activate":
+            branch.status = "Active"
+        elif action == "deactivate":
+            branch.status = "Inactive"
+        else:
+            return JsonResponse({'success': False, 'message': 'Invalid action!'}, status=400)
+
+        branch.save()
+
+        print(f"Updated Status in Database: {branch.status}")  # Debugging log
+
+        return JsonResponse({'success': True, 'message': f"Branch status updated to {branch.status}", 'status': branch.status})
+
+    return JsonResponse({'success': False, 'message': 'Invalid request method!'}, status=405)
