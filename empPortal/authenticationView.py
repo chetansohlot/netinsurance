@@ -32,9 +32,9 @@ def login_view(request):
     # If user is authenticated, redirect to dashboard
     # from_otp_verification = request.GET.get('from_otp', 'false') == 'true'
     # Initialize variable
-    mobile_no_user = ""
+    # mobile_no_user = ""
 
-    if request.user.is_authenticated and request.user.is_active == 1:
+    if request.user.is_authenticated:
         # mobile_no_user = request.user.phone  # Store user phone for OTP login
         # if not from_otp_verification:
             return redirect('dashboard')  # Redirect if user is already logged in and not coming from OTP
@@ -78,7 +78,7 @@ def login_view(request):
             messages.error(request, 'Invalid credentials')
             return redirect(request.META.get('HTTP_REFERER', '/'))
 
-    return render(request, 'authentication/login.html', {"mobile_no": mobile_no_user})
+    return render(request, 'authentication/login.html')
 
 def generate_otp():
     """Generate a 6-digit OTP."""
