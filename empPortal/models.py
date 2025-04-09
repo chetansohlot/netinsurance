@@ -57,7 +57,6 @@ class QuotationCustomer(models.Model):
     
 class Leads(models.Model):
     lead_id = models.CharField(max_length=20, unique=True)  # Unique customer identifier (e.g., CUS2343545)
-    customer_id = models.CharField(max_length=20, unique=True)  # Unique customer identifier (e.g., CUS2343545)
     mobile_number = models.CharField(max_length=15)  # Customer's mobile number
     email_address = models.CharField(max_length=255)  # Customer's email address
     quote_date = models.DateField(null=True, blank=True)  # Quote date
@@ -68,7 +67,9 @@ class Leads(models.Model):
     city = models.CharField(max_length=100, null=True, blank=True)  # City of the customer
     pincode = models.CharField(max_length=10, null=True, blank=True)  # Pincode of the customer
     address = models.TextField(null=True, blank=True)  # Address of the customer
+    lead_description = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)  # Timestamp when the lead was created
+    created_by = models.CharField(max_length=20, null=True, blank=True)  # PAN card number (optional)
     updated_at = models.DateTimeField(auto_now=True)  # Timestamp when the lead was last updated
     status = models.CharField(max_length=50, default='new')  # Status of the lead (new, contacted, converted, etc.)
     lead_type = models.CharField(
@@ -81,7 +82,7 @@ class Leads(models.Model):
         db_table = 'leads'  # This defines the database table name
 
     def __str__(self):
-        return f"Lead {self.customer_id} - {self.name_as_per_pan}"
+        return f"Lead - {self.name_as_per_pan}"
 
 
 class QuotationVehicleDetail(models.Model):
@@ -812,3 +813,21 @@ class ExamResult(models.Model):
         db_table = 'exam_result'
         verbose_name = "Exam_result"
         verbose_name_plural = "Exam_results"
+        
+
+class IrdaiAgentApiLogs(models.Model):
+    url = models.URLField(null=True, blank=True)
+    user_id = models.IntegerField(null=True, blank=True)
+    request_payload = models.TextField(null=True, blank=True)
+    request_headers = models.TextField(null=True, blank=True)
+    response_status = models.IntegerField(null=True, blank=True)
+    response_body = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Log {self.id} - {self.url} ({self.response_status})"
+    
+    class Meta:
+        db_table = 'irdai_agent_api_logs'
+
+     

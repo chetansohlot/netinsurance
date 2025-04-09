@@ -246,8 +246,457 @@
         });
         
     </script>
+    
+    <script>
+        $(document).ready(function () {
+            // Custom regex validator for PAN
+            jQuery.validator.addMethod("regex", function (value, element, regexp) {
+                let re = new RegExp(regexp);
+                return this.optional(element) || re.test(value);
+            }, "Invalid format.");
         
-
+            // Apply validation rules to the form
+            $("#myPolicyForm").validate({
+                rules: {
+                    // Insured Details
+                    holder_name: {
+                        required: true,
+                        minlength: 3
+                    },
+                    insured_mobile: {
+                        required: true,
+                        digits: true,
+                        minlength: 10,
+                        maxlength: 10
+                    },
+                    insured_email: {
+                        required: true,
+                        email: true
+                    },
+                    insured_address: {
+                        required: true,
+                        minlength: 5
+                    },
+                    insured_pan: {
+                        required: true,
+                        regex: "^[A-Z]{5}[0-9]{4}[A-Z]{1}$"
+                    },
+                    insured_aadhaar: {
+                        required: true,
+                        digits: true,
+                        minlength: 12,
+                        maxlength: 12
+                    },
+        
+                    // Policy Details
+                    insurance_company: { required: true },
+                    location: { required: true },
+                    owner_name: { required: true },
+                    father_name: { required: true },
+                    vehicle_owner_number: { required: true },
+                    registration_city: { required: true },
+                    supervisor_name: { required: true },
+                    policy_type: { required: true },
+                    policy_duration: { required: true },
+                    idv_value: {
+                        required: true,
+                        number: true
+                    },
+                    od_premium: {
+                        required: true,
+                        number: true
+                    },
+                    tp_premium: {
+                        required: true,
+                        number: true
+                    },
+                    pa_count: {
+                        required: true,
+                        digits: true
+                    },
+                    pa_amount: {
+                        required: true,
+                        number: true
+                    },
+                    driver_count: {
+                        required: true,
+                        digits: true
+                    },
+                    driver_amount: {
+                        required: true,
+                        number: true
+                    }
+                },
+                messages: {
+                    holder_name: {
+                        required: "Please enter insured name",
+                        minlength: "Name must be at least 3 characters"
+                    },
+                    insured_mobile: {
+                        required: "Please enter insured mobile number",
+                        digits: "Only digits allowed",
+                        minlength: "Must be 10 digits",
+                        maxlength: "Must be 10 digits"
+                    },
+                    insured_email: {
+                        required: "Please enter insured email",
+                        email: "Enter a valid email"
+                    },
+                    insured_address: {
+                        required: "Please enter address",
+                        minlength: "Address must be at least 5 characters"
+                    },
+                    insured_pan: {
+                        required: "Please enter PAN",
+                        regex: "Enter valid PAN (e.g., ABCDE1234F)"
+                    },
+                    insured_aadhaar: {
+                        required: "Please enter Aadhaar",
+                        digits: "Only digits allowed",
+                        minlength: "Must be 12 digits",
+                        maxlength: "Must be 12 digits"
+                    },
+        
+                    // Policy Details messages
+                    insurance_company: { required: "Enter Insurance Company" },
+                    location: { required: "Enter Service Provider" },
+                    owner_name: { required: "Enter Insurer Name" },
+                    father_name: { required: "Enter Bqp" },
+                    vehicle_owner_number: { required: "Enter Pos Name" },
+                    registration_city: { required: "Enter Branch Name" },
+                    supervisor_name: { required: "Enter Supervisor Name" },
+                    policy_type: { required: "Enter Policy Type" },
+                    policy_duration: { required: "Enter Policy Plan" },
+                    idv_value: {
+                        required: "Enter Sum Insured",
+                        number: "Must be a number"
+                    },
+                    od_premium: {
+                        required: "Enter OD Premium",
+                        number: "Must be a number"
+                    },
+                    tp_premium: {
+                        required: "Enter TP Premium",
+                        number: "Must be a number"
+                    },
+                    pa_count: {
+                        required: "Enter PA Count",
+                        digits: "Must be an integer"
+                    },
+                    pa_amount: {
+                        required: "Enter PA Amount",
+                        number: "Must be a number"
+                    },
+                    driver_count: {
+                        required: "Enter Driver Count",
+                        digits: "Must be an integer"
+                    },
+                    driver_amount: {
+                        required: "Enter Driver Amount",
+                        number: "Must be a number"
+                    }
+                },
+                errorElement: "div",
+                errorPlacement: function (error, element) {
+                    error.addClass("text-danger");
+                    error.insertAfter(element);
+                }
+            });
+        
+            // Save button click handler
+            $("#save-policy-from").on("click", function () {
+                if ($("#myPolicyForm").valid()) {
+                    $("#myPolicyForm").submit();
+                } else {
+                    console.log("Form has validation errors.");
+                }
+            });
+        });
+        </script>
+        
+        
+        <script>
+            $(document).ready(function () {
+                // Add custom regex method if needed
+                jQuery.validator.addMethod("regex", function (value, element, regexp) {
+                    let re = new RegExp(regexp);
+                    return this.optional(element) || re.test(value);
+                }, "Invalid format.");
+            
+                // Validate the vehicle policy form
+                $("#myVehiclePolicyForm").validate({
+                    rules: {
+                        vehicle_type: { required: true },
+                        vehicle_make: { required: true },
+                        vehicle_model: { required: true },
+                        vehicle_variant: { required: true },
+                        fuel_type: { required: true },
+                        gvw: {
+                            required: true,
+                            number: true
+                        },
+                        cubic_capacity: {
+                            required: true,
+                            number: true
+                        },
+                        seating_capacity: {
+                            required: true,
+                            digits: true
+                        },
+                        vehicle_reg_no: { required: true },
+                        engine_number: { required: true },
+                        chassis_number: { required: true },
+                        mgf_year: {
+                            required: true,
+                            digits: true,
+                            minlength: 4,
+                            maxlength: 4
+                        }
+                    },
+                    messages: {
+                        vehicle_type: { required: "Enter vehicle type" },
+                        vehicle_make: { required: "Enter make" },
+                        vehicle_model: { required: "Enter model" },
+                        vehicle_variant: { required: "Enter variant" },
+                        fuel_type: { required: "Select fuel type" },
+                        gvw: {
+                            required: "Enter GVW",
+                            number: "Must be a number"
+                        },
+                        cubic_capacity: {
+                            required: "Enter cubic capacity",
+                            number: "Must be a number"
+                        },
+                        seating_capacity: {
+                            required: "Enter seating capacity",
+                            digits: "Must be digits only"
+                        },
+                        vehicle_reg_no: { required: "Enter vehicle registration number" },
+                        engine_number: { required: "Enter engine number" },
+                        chassis_number: { required: "Enter chassis number" },
+                        mgf_year: {
+                            required: "Enter manufacture year",
+                            digits: "Must be digits",
+                            minlength: "Enter 4-digit year",
+                            maxlength: "Enter 4-digit year"
+                        }
+                    },
+                    errorElement: "div",
+                    errorPlacement: function (error, element) {
+                        error.addClass("text-danger");
+                        error.insertAfter(element);
+                    }
+                });
+            
+                // Handle save button click
+                $("#save-vehicle-policy-form").on("click", function () {
+                    if ($("#myVehiclePolicyForm").valid()) {
+                        $("#myVehiclePolicyForm").submit();
+                    } else {
+                        console.log("Form has validation errors.");
+                    }
+                });
+            });
+            </script>
+            
+            <script>
+                $(document).ready(function () {
+                
+                    // Custom regex validator if needed
+                    jQuery.validator.addMethod("regex", function (value, element, regexp) {
+                        let re = new RegExp(regexp);
+                        return this.optional(element) || re.test(value);
+                    }, "Invalid format.");
+                
+                    // Agent Payment Form Validation
+                    $("#myAgentPaymentForm").validate({
+                        rules: {
+                            agent_name: { required: true },
+                            agent_payment_mod: { required: true },
+                            agent_payment_date: { required: true, date: true },
+                            agent_amount: { required: true, number: true },
+                            agent_remarks: { required: false },
+                            agent_od_comm: { required: false, number: true },
+                            agent_net_comm: { required: false, number: true },
+                            agent_incentive_amount: { required: false, number: true },
+                            agent_tds: { required: false, number: true },
+                            agent_od_amount: { required: false, number: true },
+                            agent_net_amount: { required: false, number: true },
+                            agent_tp_amount: { required: false, number: true },
+                            agent_total_comm_amount: { required: false, number: true },
+                            agent_net_payable_amount: { required: false, number: true },
+                            agent_tds_amount: { required: false, number: true }
+                        },
+                        messages: {
+                            agent_name: { required: "Please enter agent name" },
+                            agent_payment_mod: { required: "Please select payment mode" },
+                            agent_payment_date: { required: "Enter payment date", date: "Enter a valid date" },
+                            agent_amount: { required: "Enter agent amount", number: "Must be a valid number" },
+                            agent_od_comm: { number: "Must be a valid number" },
+                            agent_net_comm: { number: "Must be a valid number" },
+                            agent_incentive_amount: { number: "Must be a valid number" },
+                            agent_tds: { number: "Must be a valid number" },
+                            agent_od_amount: { number: "Must be a valid number" },
+                            agent_net_amount: { number: "Must be a valid number" },
+                            agent_tp_amount: { number: "Must be a valid number" },
+                            agent_total_comm_amount: { number: "Must be a valid number" },
+                            agent_net_payable_amount: { number: "Must be a valid number" },
+                            agent_tds_amount: { number: "Must be a valid number" }
+                        },
+                        errorElement: "div",
+                        errorPlacement: function (error, element) {
+                            error.addClass("text-danger");
+                            error.insertAfter(element);
+                        }
+                    });
+                
+                    // Save and Continue button handler
+                    $("#save-agent-payment-form").on("click", function () {
+                        if ($("#myAgentPaymentForm").valid()) {
+                            $("#myAgentPaymentForm").submit();
+                        } else {
+                            console.log("Agent Payment Form has validation errors.");
+                        }
+                    });
+                
+                });
+                </script>
+                <script>
+                    $(document).ready(function () {
+                      // Custom regex validator if needed
+                      jQuery.validator.addMethod("regex", function (value, element, regexp) {
+                        let re = new RegExp(regexp);
+                        return this.optional(element) || re.test(value);
+                      }, "Invalid format.");
+                  
+                      // Franchise Payment Form Validation
+                      $("#myFranchisePaymentForm").validate({
+                        rules: {
+                        
+                          franchise_od_comm: { number: true },
+                          franchise_net_comm: { number: true },
+                          franchise_tp_comm: { number: true },
+                          franchise_incentive_amount: { number: true },
+                          franchise_tds: { number: true },
+                          franchise_od_amount: { number: true },
+                          franchise_net_amount: { number: true },
+                          franchise_tp_amount: { number: true },
+                          franchise_total_comm_amount: { number: true },
+                          franchise_net_payable_amount: { number: true },
+                          franchise_tds_amount: { number: true }
+                        },
+                        messages: {
+                       
+                          franchise_od_comm: { number: "Must be a valid number" },
+                          franchise_net_comm: { number: "Must be a valid number" },
+                          franchise_tp_comm: { number: "Must be a valid number" },
+                          franchise_incentive_amount: { number: "Must be a valid number" },
+                          franchise_tds: { number: "Must be a valid number" },
+                          franchise_od_amount: { number: "Must be a valid number" },
+                          franchise_net_amount: { number: "Must be a valid number" },
+                          franchise_tp_amount: { number: "Must be a valid number" },
+                          franchise_total_comm_amount: { number: "Must be a valid number" },
+                          franchise_net_payable_amount: { number: "Must be a valid number" },
+                          franchise_tds_amount: { number: "Must be a valid number" }
+                        },
+                        errorElement: "div",
+                        errorPlacement: function (error, element) {
+                          error.addClass("text-danger");
+                          error.insertAfter(element);
+                        }
+                      });
+                  
+                      // Save and Continue button handler
+                      $("#save-franchise-payment-form").on("click", function () {
+                        if ($("#myFranchisePaymentForm").valid()) {
+                          $("#myFranchisePaymentForm").submit();
+                        } else {
+                          console.log("Franchise Payment Form has validation errors.");
+                        }
+                      });
+                    });
+                  </script>
+                  
+                <script>
+                    $(document).ready(function () {
+                  
+                      // Custom regex validator if needed
+                      jQuery.validator.addMethod("regex", function (value, element, regexp) {
+                        let re = new RegExp(regexp);
+                        return this.optional(element) || re.test(value);
+                      }, "Invalid format.");
+                  
+                      // Insurer Payment Form Validation
+                      $("#myInsurerPaymentForm").validate({
+                        rules: {
+                       
+                          insurer_payment_mode: { required: true },
+                          insurer_payment_date: { required: true, date: true },
+                          insurer_amount: { required: true, number: true },
+                          insurer_remarks: { required: false },
+                  
+                          insurer_od_comm: { required: false, number: true },
+                          insurer_net_comm: { required: false, number: true },
+                          insurer_tp_comm: { required: false, number: true },
+                  
+                          insurer_incentive_amount: { required: false, number: true },
+                          insurer_tds: { required: false, number: true },
+                  
+                          insurer_od_amount: { required: false, number: true },
+                          insurer_net_amount: { required: false, number: true },
+                          insurer_tp_amount: { required: false, number: true },
+                  
+                          insurer_total_comm_amount: { required: false, number: true },
+                          insurer_net_payable_amount: { required: false, number: true },
+                          insurer_tds_amount: { required: false, number: true }
+                        },
+                        messages: {
+                        
+                  
+                          insurer_payment_mode: { required: "Please enter payment mode" },
+                          insurer_payment_date: {
+                            required: "Enter payment date",
+                            date: "Enter a valid date"
+                          },
+                          insurer_amount: {
+                            required: "Enter payment amount",
+                            number: "Must be a valid number"
+                          },
+                  
+                          insurer_od_comm: { number: "Must be a valid number" },
+                          insurer_net_comm: { number: "Must be a valid number" },
+                          insurer_tp_comm: { number: "Must be a valid number" },
+                  
+                          insurer_incentive_amount: { number: "Must be a valid number" },
+                          insurer_tds: { number: "Must be a valid number" },
+                  
+                          insurer_od_amount: { number: "Must be a valid number" },
+                          insurer_net_amount: { number: "Must be a valid number" },
+                          insurer_tp_amount: { number: "Must be a valid number" },
+                  
+                          insurer_total_comm_amount: { number: "Must be a valid number" },
+                          insurer_net_payable_amount: { number: "Must be a valid number" },
+                          insurer_tds_amount: { number: "Must be a valid number" }
+                        },
+                        errorElement: "div",
+                        errorPlacement: function (error, element) {
+                          error.addClass("text-danger");
+                          error.insertAfter(element);
+                        }
+                      });
+                  
+                      // Save and Continue button handler
+                      $("#save-insurer-payment-form").on("click", function () {
+                        if ($("#myInsurerPaymentForm").valid()) {
+                          $("#myInsurerPaymentForm").submit();
+                        } else {
+                          console.log("Insurer Payment Form has validation errors.");
+                        }
+                      });
+                  
+                    });
+                  </script>
+                  
   
                             <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
 

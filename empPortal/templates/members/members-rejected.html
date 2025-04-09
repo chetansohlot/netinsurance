@@ -20,9 +20,11 @@
             <div class="container-fluid ">
               <div class="row pt-2 pb-2">
                 <div class="col-sm-6">
-                  <div class="d-flex align-items-center">
                   <h1 class="admin-title m-0 pt-2">Rejected Partner</h1>
-                  </div>
+                  <ul class="breadcrump">
+                    <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
+                    <li>Rejected Partner</li>
+                  </ul>
                 </div>
                 <div class="col-sm-6">
                   <div class="d-flex justify-content-end">
@@ -41,7 +43,7 @@
                             <p class="card-text">
                               Total Partners
                             </p>
-                            <h5 class="card-title card-number">14</h5>
+                            <h5 class="card-title card-number">{{ total_agents }}</h5>
                           </div>
                           
                         </div>
@@ -59,7 +61,7 @@
                             <p class="card-text">
                               Active Partners
                             </p>
-                            <h5 class="card-title card-number">6</h5>
+                            <h5 class="card-title card-number">{{ active_agents }}</h5>
                           </div>
                           
                         </div>
@@ -77,7 +79,7 @@
                             <p class="card-text">
                               Inactive Partners
                             </p>
-                            <h5 class="card-title card-number">3</h5>
+                            <h5 class="card-title card-number">{{ deactive_agents }}</h5>
                           </div>
                           
                         </div>
@@ -95,7 +97,7 @@
                             <p class="card-text">
                               Pending Partners
                             </p>
-                            <h5 class="card-title card-number">0</h5>
+                            <h5 class="card-title card-number">{{ pending_agents }}</h5>
                           </div>
                           
                         </div>
@@ -120,19 +122,22 @@
                         <div class="row">
                           <div class="col-md-6">
                             <div class="table-search-area">
-                              <form>
-                                <select class="table-select-field">
-                                  <option value="">Agent Name</option>
-                                  <option value="">Employee ID</option>
-                                  <option value="">Mobile Number</option>
-                                  <option value="">Email ID</option>
-                                  <option value="">Membership ID</option>
+                              <form method="GET" class="d-flex">
+                                <select class="table-select-field form-select" name="search_field">
+                                    <option value="" disabled selected>Filter By</option>
+                                    <option value="user_gen_id" {% if search_field == "user_gen_id" %}selected{% endif %}>User ID</option>
+                                    <option value="user_name" {% if search_field == "user_name" %}selected{% endif %}>User Name</option>
+                                    <option value="email" {% if search_field == "email" %}selected{% endif %}>Email</option>
+                                    <option value="phone" {% if search_field == "phone" %}selected{% endif %}>Phone Number</option>
                                 </select>
-                                <input type="text" name="" class="table-search-field" placeholder="Search">
-                                <button type="submit" class="table-search-btn">
-                                  <img src="{% static 'dist/img/svg/search-icon.svg' %}" alt="">
+                            
+                                <input type="text" name="search_query" class="table-search-field form-control" 
+                                       placeholder="Search" value="{{ search_query }}">
+                            
+                                <button type="submit" class="table-search-btn btn btn-primary">
+                                    <img src="{% static 'dist/img/svg/search-icon.svg' %}" alt="Search">
                                 </button>
-                              </form>
+                            </form>
                             </div>
                           </div>
                           <div class="col-md-6">
@@ -143,18 +148,22 @@
                                   <span>Short</span>
                                   <img src="{% static 'dist/img/svg/down-arrow-icon.svg' %}" alt="" class="change-arrow">
                                 </div>
-                                <form action="">
-                                  <ul class="dropdown-menu shorting-dropdown-menu">
-                                    <p class="border-bottom pb-1 title2">Short</p>
-                                    <li><input type="radio" name="shorting" id="name-a_z"> <label for="name-a_z">Name A &gt; Z</label></li>
-                                    <li><input type="radio" name="shorting" id="name-z_a"> <label for="name-z_a">Name Z &lt; A</label></li>
-                                    <li><input type="radio" name="shorting" id="recently_activated"> <label for="recently_activated">Recently Activated</label></li>
-                                    <li><input type="radio" name="shorting" id="recently_deactivated"> <label for="recently_deactivated">Recently Deactivated</label></li>
-                                    <div class="d-flex justify-content-center border-top pt-3 mt-2 pb-2">
-                                      <button type="submit" class="dashboard-addbtn w-100">Apply</button>
-                                    </div>   
-                                  </ul>
-                                </form>
+                                <form method="GET" class="d-flex">
+                                  <select class="table-select-field form-select" name="search_field">
+                                      <option value="" disabled selected>Filter By</option>
+                                      <option value="user_gen_id" {% if search_field == "user_gen_id" %}selected{% endif %}>User ID</option>
+                                      <option value="user_name" {% if search_field == "user_name" %}selected{% endif %}>User Name</option>
+                                      <option value="email" {% if search_field == "email" %}selected{% endif %}>Email</option>
+                                      <option value="phone" {% if search_field == "phone" %}selected{% endif %}>Phone Number</option>
+                                  </select>
+                              
+                                  <input type="text" name="search_query" class="table-search-field form-control" 
+                                         placeholder="Search" value="{{ search_query }}">
+                              
+                                  <button type="submit" class="table-search-btn btn btn-primary">
+                                      <img src="{% static 'dist/img/svg/search-icon.svg' %}" alt="Search">
+                                  </button>
+                              </form>
                               </div>  
                               <div class="shorting-select" data-toggle="modal" data-target="#modal-filter">
                                 <img src="{% static 'dist/img/svg/filter-icon.svg' %}" alt="">
@@ -170,33 +179,57 @@
                         {% include "components/members/member-list.html" %}
                       </div>
                     </div>
+                    
+                    
+                    
                     <div class="bottom-fix-pagination">
-                      <div class="d-flex">
-                        <ul class="pagination">
-                          <li class="page-item">
-                            <a class="page-link" href="#" aria-label="Previous">
-                              <span aria-hidden="true">&laquo;</span>
-                              <span class="sr-only">Previous</span>
-                            </a>
-                          </li>
-                          <li class="page-item"><a class="page-link" href="#">1</a></li>
-                          <li class="page-item"><a class="page-link" href="#">2</a></li>
-                          <li class="page-item"><a class="page-link" href="#">3</a></li>
-                          <li class="page-item">
-                            <a class="page-link" href="#" aria-label="Next">
-                              <span aria-hidden="true">&raquo;</span>
-                              <span class="sr-only">Next</span>
-                            </a>
-                          </li>
-                        </ul>
-                        <select class="pagination-dropdown">
-                          <option>10 / Page</option>
-                          <option>20 / Page</option>
-                          <option>50 / Page</option>
-                          <option>100 / Page</option>
-                        </select>
-                      </div>  
-                    </div>  
+                      <div class="d-flex justify-content-between align-items-center">
+                          <ul class="pagination">
+                              {% if page_obj.has_previous %}
+                                  <li class="page-item">
+                                      <a class="page-link" href="?page=1&per_page={{ per_page }}" aria-label="First">
+                                          <span aria-hidden="true">&laquo;&laquo;</span>
+                                      </a>
+                                  </li>
+                                  <li class="page-item">
+                                      <a class="page-link" href="?page={{ page_obj.previous_page_number }}&per_page={{ per_page }}" aria-label="Previous">
+                                          <span aria-hidden="true">&laquo;</span>
+                                      </a>
+                                  </li>
+                              {% endif %}
+              
+                              {% for num in page_obj.paginator.page_range %}
+                                  <li class="page-item {% if num == page_obj.number %}active{% endif %}">
+                                      <a class="page-link" href="?page={{ num }}&per_page={{ per_page }}">{{ num }}</a>
+                                  </li>
+                              {% endfor %}
+              
+                              {% if page_obj.has_next %}
+                                  <li class="page-item">
+                                      <a class="page-link" href="?page={{ page_obj.next_page_number }}&per_page={{ per_page }}" aria-label="Next">
+                                          <span aria-hidden="true">&raquo;</span>
+                                      </a>
+                                  </li>
+                                  <li class="page-item">
+                                      <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&per_page={{ per_page }}" aria-label="Last">
+                                          <span aria-hidden="true">&raquo;&raquo;</span>
+                                      </a>
+                                  </li>
+                              {% endif %}
+                          </ul>
+              
+                          <form method="GET" class="d-flex">
+                              <select class="pagination-dropdown form-select" name="per_page" onchange="this.form.submit()">
+                                  <option value="10" {% if per_page == 10 %}selected{% endif %}>10 / Page</option>
+                                  <option value="20" {% if per_page == 20 %}selected{% endif %}>20 / Page</option>
+                                  <option value="50" {% if per_page == 50 %}selected{% endif %}>50 / Page</option>
+                                  <option value="100" {% if per_page == 100 %}selected{% endif %}>100 / Page</option>
+                              </select>
+                              <input type="hidden" name="page" value="1">
+                          </form>
+                      </div>
+                  </div>
+
                   </div>
                 </div>
               </div>  

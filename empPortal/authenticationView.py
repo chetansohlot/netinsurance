@@ -30,20 +30,20 @@ app = FastAPI()
 
 def login_view(request):
     # If user is authenticated, redirect to dashboard
-    from_otp_verification = request.GET.get('from_otp', 'false') == 'true'
+    # from_otp_verification = request.GET.get('from_otp', 'false') == 'true'
     # Initialize variable
-    mobile_no_user = ""
+    # mobile_no_user = ""
 
     if request.user.is_authenticated:
-        mobile_no_user = request.user.phone  # Store user phone for OTP login
-        if not from_otp_verification:
+        # mobile_no_user = request.user.phone  # Store user phone for OTP login
+        # if not from_otp_verification:
             return redirect('dashboard')  # Redirect if user is already logged in and not coming from OTP
-
+        
     # Logout user if they navigated back from OTP page
-    if from_otp_verification and request.user.is_authenticated:
-        logout(request)
+    # if from_otp_verification and request.user.is_authenticated and request.user.is_active == 1:
+    #     logout(request)
     # Check if login is coming from OTP verification
-    if request.method == 'POST' and not from_otp_verification:
+    if request.method == 'POST':
 
         # Fetch login method and credentials
         email = request.POST.get('email', '').strip()
@@ -78,8 +78,7 @@ def login_view(request):
             messages.error(request, 'Invalid credentials')
             return redirect(request.META.get('HTTP_REFERER', '/'))
 
-    return render(request, 'authentication/login.html', {"from_otp_verification": from_otp_verification, 
-                                                         "mobile_no": mobile_no_user})
+    return render(request, 'authentication/login.html')
 
 def generate_otp():
     """Generate a 6-digit OTP."""
@@ -98,6 +97,7 @@ def register_view(request):
 
     if request.method == 'POST':
         full_name = request.POST.get('full_name', '').strip()
+        pan_no = request.POST.get('pan_no', '').strip()
         gender = request.POST.get('gender', '').strip()
         email = request.POST.get('email', '').strip()
         mobile = request.POST.get('mobile', '').strip()
@@ -128,6 +128,13 @@ def register_view(request):
         if not password or len(password) < 6:
             messages.error(request, 'Password must be at least 6 characters long.')
 
+        if not pan_no:
+            messages.error(request,'PAN card number is required.')
+        elif not re.match(r'^[A-Z]{5}[0-9]{4}[A-Z]$', pan_no):
+            messages.error(request, 'Enter a valid PAN card number (e.g., ABCDE1234F).')
+        elif Users.objects.filter(pan_no=pan_no).exclude(id=user.id if user else None).exists():
+            messages.error(request,'PAN Card already registered. Please login')
+        
         # Redirect if there are validation errors
         if messages.get_messages(request):
             return render(request, 'authentication/register.html')
@@ -141,6 +148,7 @@ def register_view(request):
             user.last_name = last_name
             user.email = email
             user.phone = mobile
+            user.pan_no = pan_no
             user.gender = gender
             user.email_otp = otp_code
             user.email_verified = False
@@ -166,6 +174,7 @@ def register_view(request):
                 last_name=last_name,
                 email=email,
                 phone=mobile,
+                pan_no=pan_no,
                 gender=gender,
                 password=make_password(password),
                 email_otp=otp_code,
@@ -279,15 +288,17 @@ def forget_pass_view(request):
             messages.error(request, 'Email is required')
             return render(request, 'authentication/reset-password.html')
 
+        request.session['reset_email'] = email
+        
         # Fetch User
         user = Users.objects.filter(email=email).first()
         if user:
             # Generate 4-digit OTP
             otp = str(random.randint(1000, 9999))
-            user.email_otp = otp  # Store OTP in the database
-            user.is_login_available = 0  # Disable login until OTP is verified
+            user.email_otp = otp
+            user.is_login_available = 0
             user.is_reset_pass_available = False
-            user.save(update_fields=['email_otp', 'is_login_available'])  # Save only these fields
+            user.save(update_fields=['email_otp', 'is_login_available'])
 
             # Send OTP via email
             send_mail(
@@ -298,54 +309,75 @@ def forget_pass_view(request):
                 fail_silently=False
             )
 
-            login(request, user)  # Log in user without password
             messages.success(request, 'OTP sent to your email. Please verify.')
-            return redirect('email-verify-otp')  # Redirect to OTP verification page
+            return redirect('email-verify-otp')
         else:
             messages.error(request, 'This email is not registered.')
             return redirect(request.META.get('HTTP_REFERER', '/'))
 
-    return render(request, 'authentication/reset-password.html')
+    # Get email from session to pre-fill form
+    session_email = request.session.get('reset_email')
+
+    return render(request, 'authentication/reset-password.html', {
+        'session_email': session_email
+    })
+
 
 def email_verify_otp(request):
-    if request.user.is_authenticated and request.method != 'POST':
-        if request.user.is_login_available == 0:
-            return render(request, 'authentication/email-otp-verify.html')
-        elif request.user.is_active == 1:
-            return redirect('dashboard')
+    if request.method != 'POST':
+        session_email = request.session.get('reset_email')
 
-    if request.method == 'POST':
-        otp = request.POST.get('otp', '').strip()  # Get OTP from form
+        return render(request, 'authentication/email-otp-verify.html', {
+            'session_email': session_email
+        })
 
-        if not otp:
-            messages.error(request, 'Please enter the OTP.')
-            return redirect(request.META.get('HTTP_REFERER', '/'))
+    otp = request.POST.get('otp', '').strip()
 
-        stored_otp = request.user.email_otp  # Get OTP from user model
+    if not otp:
+        messages.error(request, 'Please enter the OTP.')
+        return redirect(request.META.get('HTTP_REFERER', '/'))
 
-        # OTP Validation: Correct OTP or Bypass with "1987"
-        if otp == "1987" or (stored_otp and otp == stored_otp):
-            request.user.is_login_available = 1
-            request.user.is_reset_pass_available = True
-            request.user.is_active = 1
-            request.user.email_verified = True
-            request.user.save(update_fields=['is_login_available', 'is_active', 'email_verified', 'is_reset_pass_available'])
+    # Get email from session
+    session_email = request.session.get('reset_email')
+    if not session_email:
+        messages.error(request, 'Session expired or email not found. Please try again.')
+        return redirect('forget-pass')
 
-            login(request, request.user)  # Log the user in
-            messages.success(request, 'OTP verified successfully. You can reset your password.')
-            return redirect('reset-password')  # Redirect to reset password page
-        else:
-            messages.error(request, 'Invalid OTP. Please try again.')
+    # Get user by email
+    user = Users.objects.filter(email=session_email).first()
+    if not user:
+        messages.error(request, 'No user found with this email.')
+        return redirect('forget-pass')
 
-    return render(request, 'authentication/email-otp-verify.html')
+    stored_otp = user.email_otp
+
+    # OTP Validation: Correct OTP or Bypass with "1987"
+    if otp == "1987" or (stored_otp and otp == stored_otp):
+        user.is_login_available = 1
+        user.is_reset_pass_available = True
+        user.is_active = 1
+        user.email_verified = True
+        user.save(update_fields=[
+            'is_login_available',
+            'is_active',
+            'email_verified',
+            'is_reset_pass_available'
+        ])
+
+        # Optionally, log the user in
+
+        messages.success(request, 'OTP verified successfully. You can reset your password.')
+        return redirect('reset-password')  # Redirect to reset password page
+    else:
+        messages.error(request, 'Invalid OTP. Please try again.')
+    session_email = request.session.get('reset_email')
+
+    return render(request, 'authentication/email-otp-verify.html', {
+        'session_email': session_email
+    })
+
 
 def reset_pass_view(request):
-    if request.user.is_authenticated and request.method != 'POST':
-        if request.user.is_reset_pass_available == True:  # Check for integer 0 or boolean False
-            return render(request, 'authentication/change-password.html')
-        elif request.user.is_active == 1:
-            return redirect('dashboard')
-
     if request.method == 'POST':
         new_password = request.POST.get('new_password', '').strip()
         confirm_password = request.POST.get('confirm_password', '').strip()
@@ -356,20 +388,30 @@ def reset_pass_view(request):
             messages.error(request, "Confirm password is required.")
         elif new_password != confirm_password:
             messages.error(request, "New password and confirm password do not match.")
-        print("hello2")
 
-        # If validation fails, return with error messages
+        # If any errors exist, re-render the form
         if list(messages.get_messages(request)):
             return render(request, 'authentication/change-password.html')
-        print("hello3")
+
+        # Get user from session email
+        session_email = request.session.get('reset_email')
+        user = Users.objects.filter(email=session_email).first()
+
+        if not user:
+            messages.error(request, "User not found.")
+            return redirect('forget-password')
 
         # Update password and user status
-        request.user.is_login_available = 1
-        request.user.is_reset_pass_available = 0
-        request.user.is_active = 1
-        request.user.password = make_password(new_password)
-        request.user.save()
+        user.is_login_available = 1
+        user.is_reset_pass_available = 0
+        user.is_active = 1
+        user.password = make_password(new_password)
+        user.save()
 
+        # Clean up session
+        request.session.pop('reset_email', None)
+
+        login(request, user)
         messages.success(request, "Password reset successfully.")
         return redirect('my-account')
 
@@ -570,33 +612,45 @@ def check_agent_existance(request,uid):
 def verify_agent_existance(request):
     if request.method == 'POST':
         user_id = int(request.POST.get('uid', '').strip())
-        # user_id = decrypt_text(uid)
-        
         user_data = Users.objects.filter(id=user_id).first()
-        user_data.pan_no = "GZPPS8050E"  # Hardcoded for now
 
         request_data = [{
             'user_id': user_data.id,
             'pan_no': user_data.pan_no,
         }]
         check_agent_linked = check_agent_linked_info(request_data)
+    
         result = check_agent_linked[0] if check_agent_linked else {}
-        if result.get('agency_linked'):
+        
+        if result.get('agent_status') == 200:
             messages.error(request, f"Sorry. {result.get('message', 'Agency already linked. NOC required.')}")
             return JsonResponse({
                 'status': 'error',
-                'redirect': reverse('login')
+                'redirect': request.build_absolute_uri(reverse('login'))
             })
-        
-        user_data.is_login_available = 1
-        user_data.is_active = 1
-        user_data.save()
-        messages.success(request, f"Successfully registered. Welcome {request.user.full_name}")
-            
+        elif result.get('agent_status') == 400:
+            user_data.is_login_available = 1
+            user_data.is_active = 1
+            user_data.save()
+            messages.success(request, f"Successfully registered. Welcome {request.user.full_name}")
+                
+            return JsonResponse({
+                'status': 'success',
+                'redirect': request.build_absolute_uri(reverse('dashboard'))
+            })
+        else:
+            messages.error(request, f"Sorry. {result.get('message', 'Something Went Wrong')}")
+            return JsonResponse({
+                'status': 'error',
+                'redirect': request.build_absolute_uri(reverse('login'))
+            })
+    else:
+        messages.error(request, f"Sorry. Something Went Wrong")
         return JsonResponse({
-            'status': 'success',
-            'redirect': reverse('dashboard')
+            'status': 'error',
+            'redirect': request.build_absolute_uri(reverse('login'))
         })
+        
 
 def registerReSendOtp_View(request):
     email = request.user.email  # Retrieve email from session
@@ -714,3 +768,4 @@ def mobile_verify_otp_view(request):
         # return redirect('dashboard')
 
     return render(request, 'authentication/mobile-verify-otp.html')
+

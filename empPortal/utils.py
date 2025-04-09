@@ -12,7 +12,7 @@ from django.http import HttpResponse,JsonResponse
 IST = pytz.timezone("Asia/Kolkata")
 
 from django.shortcuts import render,redirect, get_object_or_404
-from .models import Commission, Users, QuotationCustomer, Leads, VehicleInfo, QuotationVehicleDetail
+from .models import Commission, Users, QuotationCustomer, Leads, VehicleInfo, QuotationVehicleDetail,IrdaiAgentApiLogs
 from django.contrib import messages
 from django.urls import reverse
 import base64
@@ -73,23 +73,43 @@ def check_agent_linked_info(data_list):
         try:
             response = requests.post(url, headers=headers, data=payload)
             status_code = response.status_code
-            res_data = response.json()
+            try:
+                res_data = response.json()
+            except ValueError:
+                res_data = {"status":500,"error": "Invalid JSON response"}
 
+            IrdaiAgentApiLogs.objects.create(
+                url=url,
+                user_id=user_id,
+                request_payload=json.dumps(payload),
+                request_headers=json.dumps(headers),
+                response_status=status_code,
+                response_body=json.dumps(res_data)
+            )
+            
             agency_linked = False
             message = ""
-
-            if status_code == 200 and res_data.get('success', False):
+            agent_status = 500
+            
+            
+                        
+            if status_code == 200:
                 results_data = res_data.get('data', {}).get('results', [])
                 if results_data:
+                    agent_status = 200
                     agency_linked = True
                     agency_name = results_data[0].get('insurer_type', 'the existing agency')
                     message = f"Please get a NOC from {agency_name}"
-
+            elif status_code == 422:
+                agency_linked = False
+                agent_status = 400
+           
             results.append({
                 'user_id': user_id,
                 'pan_no': pan_no,
                 'agency_linked': agency_linked,
-                'message': message
+                'message': message,
+                'agent_status': agent_status
             })
 
         except Exception as e:
@@ -97,6 +117,7 @@ def check_agent_linked_info(data_list):
                 'user_id': user_id,
                 'pan_no': pan_no,
                 'agency_linked': False,
+                'agent_status': 500,
                 'error': str(e)
             })
 
@@ -158,7 +179,6 @@ def create_or_update_lead(request, cus_id):
 
     # Prepare the data to store
     lead_data = {
-        'customer_id': customer.customer_id,
         'mobile_number': customer.mobile_number,
         'email_address': customer.email_address,
         'quote_date': customer.quote_date,

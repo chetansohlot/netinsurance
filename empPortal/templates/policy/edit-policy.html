@@ -45,7 +45,7 @@
                 <div class="card box-shadow-none p-3">
                   <div class="card-body px-0 pb-0 pt-0">
 
-                    <form autocomplete="off" id="myForm" name="updatePolicy" action="{% url 'edit-policy-data' policy_data.id %}" method="post">
+                    <form autocomplete="off" id="myPolicyForm" name="updatePolicy" action="{% url 'edit-policy-data' policy_data.id %}" method="post">
                         {% csrf_token %}
                       
                         <input type="hidden" class="form-field" name="policy_id" id="policy_id" value="{{ policy_data.id }}">
@@ -218,7 +218,7 @@
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl">Supervisor Name</label>
-                                      <input type="text" class="form-field" name="vehicle_type" placeholder="Supervisor Name" value="{{ policy.supervisor_name|default:'' }}">
+                                      <input type="text" class="form-field" name="supervisor_name" placeholder="Supervisor Name" value="{{ policy.supervisor_name|default:'' }}">
                                     </div>
                                   </div>
                             
@@ -291,7 +291,7 @@
                             
 
                             <div class="d-flex justify-content-end mt-4">
-                              <button type="submit" class="dashboard-addbtn">Save and Continue</button>
+                              <button type="button" id="save-policy-from" class="dashboard-addbtn">Save and Continue</button>
                             </div>  
                           </div>
                         </div>
@@ -318,7 +318,7 @@
     {% include "footer.html" %}
     {% include "footer-script.html" %}
     <script>
-      document.getElementById("myForm").addEventListener("submit", function() {
+      document.getElementById("myPolicyForm").addEventListener("submit", function() {
           document.getElementById("loader").style.display = "flex";
       });
     </script>
