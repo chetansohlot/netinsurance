@@ -715,7 +715,7 @@ def policyData(request):
     role_id = Users.objects.filter(id=user_id).values_list('role_id', flat=True).first()
 
     # Base queryset
-    if role_id == 2:
+    if role_id != 1:
         queryset = PolicyDocument.objects.filter(status=1, rm_id=user_id)
     else:
         queryset = PolicyDocument.objects.filter(status=1)
