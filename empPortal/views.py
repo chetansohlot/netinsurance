@@ -4,7 +4,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.template import loader
-from .models import Roles,Users, Department,PolicyDocument,BulkPolicyLog, PolicyInfo, Branch, UserFiles,UnprocessedPolicyFiles, Commission, Branch
+from .models import Roles,Users, Department,PolicyDocument,BulkPolicyLog, PolicyInfo, Branch, UserFiles,UnprocessedPolicyFiles, Commission, Branch, FileAnalysis, ExtractedFile
 from django.contrib.auth import authenticate, login ,logout
 from django.core.files.storage import FileSystemStorage
 import re
@@ -21,6 +21,10 @@ from django.conf import settings
 from datetime import datetime
 from io import BytesIO
 from django.db.models import Q
+from .models import UploadedZip
+from django.core.files.base import ContentFile
+from .tasks import process_zip_file
+from django_q.tasks import async_task
 
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 
@@ -529,7 +533,7 @@ def browsePolicy(request):
                 insurer_tp_commission   = insurer_rate.tp_percentage,
                 insurer_od_commission   = insurer_rate.od_percentage,
                 insurer_net_commission  = insurer_rate.net_percentage,
-                status=2,
+                status=3,
             )
             
             messages.error(request, f"Failed to process policy")
@@ -579,7 +583,7 @@ def browsePolicy(request):
                 insurer_od_commission   = insurer_rate.od_percentage,
                 insurer_net_commission  = insurer_rate.net_percentage,
 
-                status=1,
+                status=6,
             )
             messages.success(request, "PDF uploaded and processed successfully.")
             
@@ -716,9 +720,9 @@ def policyData(request):
 
     # Base queryset
     if role_id == 2:
-        queryset = PolicyDocument.objects.filter(status=1, rm_id=user_id)
+        queryset = PolicyDocument.objects.filter(status=6, rm_id=user_id)
     else:
-        queryset = PolicyDocument.objects.filter(status=1)
+        queryset = PolicyDocument.objects.filter(status=6)
 
     # Handle search filters
     search_field = request.GET.get('search_field')
@@ -893,219 +897,69 @@ def updatePolicy(request):
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
 def bulkBrowsePolicy(request):
-    if request.method == "POST" and request.FILES.get("zip_file"):
-        zip_file = request.FILES["zip_file"]
-        camp_name = request.POST.get("camp_name") 
-        rm_id = request.POST.get("rm_id")
-        
-        # Validate ZIP file format
-        if not zip_file or not zip_file.name.lower().endswith(".zip"):
-            messages.error(request, "Invalid file format. Only ZIP files are allowed.")
-            return redirect("bulk-policy-mgt")
-         
-        if zip_file.size > 50 * 1024 * 1024:
-            messages.error(request, "File too large. Maximum allowed size is 50 MB.")
-            return redirect("bulk-policy-mgt")  
-         
-       
-        try:
-            with zipfile.ZipFile(BytesIO(zip_file.read())) as zf:
-                if len(zf.infolist()) > 50:
-                    messages.error(request, "ZIP contains more than 50 files.")
-                    return redirect("bulk-policy-mgt")
-                
-                # Check that all files are PDFs
-                non_pdf_files = [f.filename for f in zf.infolist() if not f.filename.lower().endswith(".pdf")]
-                if non_pdf_files:
-                    messages.error(request, "ZIP must contain only PDF files.")
-                    return redirect("bulk-policy-mgt")
-        except zipfile.BadZipFile:
-            messages.error(request, "The uploaded ZIP file is corrupted or invalid.")
-            return redirect("bulk-policy-mgt")
-        
-        if not camp_name:
-            messages.error(request, "Campaign Name is mandatory.")
-            return redirect("bulk-policy-mgt")
-        
-        if rm_id:
-            rm_name = getUserNameByUserId(rm_id)
+    if request.user.is_authenticated:
+        if request.method == "POST" and request.FILES.get("zip_file"):
+            zip_file = request.FILES["zip_file"]
+            camp_name = request.POST.get("camp_name") 
+            rm_id = request.POST.get("rm_id")
+            
+            # Validate ZIP file format
+            if not zip_file or not zip_file.name.lower().endswith(".zip"):
+                messages.error(request, "Invalid file format. Only ZIP files are allowed.")
+                return redirect("bulk-policy-mgt")
+            
+            if zip_file.size > 50 * 1024 * 1024:
+                messages.error(request, "File too large. Maximum allowed size is 50 MB.")
+                return redirect("bulk-policy-mgt")  
+            
+            try:
+                zip_bytes = BytesIO(zip_file.read())
+                with zipfile.ZipFile(zip_bytes) as zf:
+                    file_list = zf.infolist()
+                    total_files = len(file_list)
+                    pdf_files = [f for f in file_list if f.filename.lower().endswith(".pdf")]
+                    non_pdf_files = [f for f in file_list if not f.filename.lower().endswith(".pdf")]
+                    
+                    pdf_count = len(pdf_files)
+                    non_pdf_count = len(non_pdf_files)
+                    
+                    if total_files > 50:
+                        messages.error(request, "ZIP contains more than 50 files.")
+                        return redirect("bulk-policy-mgt")
+                    
+                    if non_pdf_files:
+                        messages.error(request, "ZIP must contain only PDF files.")
+                        return redirect("bulk-policy-mgt")
+            except zipfile.BadZipFile:
+                messages.error(request, "The uploaded ZIP file is corrupted or invalid.")
+                return redirect("bulk-policy-mgt")
+            
+            if not camp_name:
+                messages.error(request, "Campaign Name is mandatory.")
+                return redirect("bulk-policy-mgt")
+            
+            rm_name = getUserNameByUserId(rm_id) if rm_id else None
+            
+            zip_instance = UploadedZip.objects.create(
+                file=ContentFile(zip_bytes.getvalue(), name=zip_file.name),
+                campaign_name=camp_name,
+                rm_id=rm_id,
+                rm_name=rm_name,
+                created_by=request.user,
+                total_files=total_files,        
+                pdf_files_count=pdf_count,      
+                non_pdf_files_count=non_pdf_count  
+            )
+                        
+            # Start background processing
+            async_task('empPortal.tasks.create_bulk_log', zip_instance.id)
+            
+            messages.success(request, "ZIP uploaded successfully. Processing started in background.")
+            return redirect("bulk-upload-logs")
         else:
-            rm_name = None
-                    
-        # Save ZIP file
-        fs = FileSystemStorage()
-        filename = fs.save(zip_file.name, zip_file)
-        zip_filepath = fs.path(filename)  # Get full path of the saved ZIP file
-        file_url = fs.url(filename)
-         
-        timestamp = str(int(time.time()))  # Unique folder name
-        extract_path = os.path.join(fs.location, "extracted", timestamp)
-        os.makedirs(extract_path, exist_ok=True)
-
-        # Extract ZIP file
-        try:
-            with zipfile.ZipFile(zip_filepath, "r") as zip_ref:
-                zip_ref.extractall(extract_path)
-        except zipfile.BadZipFile:
-            messages.error(request, "Invalid ZIP file. Please upload a valid ZIP.")
             return redirect("bulk-policy-mgt")
-        
-        # Initialize Counters
-        total_files = 0
-        not_pdf = 0
-        pdf_files = 0
-        error_pdf_files = 0
-        error_process_pdf_files = 0
-        uploaded_files = 0
-        duplicate_files = 0
-        bulk_log = BulkPolicyLog.objects.create(
-            camp_name=camp_name,
-            file_name=filename,
-            count_total_files=0,
-            count_not_pdf=0,
-            count_pdf_files=0,
-            file_url=file_url,
-            count_error_pdf_files=0,
-            count_error_process_pdf_files=0,
-            count_uploaded_files=0,
-            count_duplicate_files=0,
-            rm_id=rm_id,  
-            created_by=request.user.id,
-            status=0,
-        )
-        
-        # return HttpResponse()
-
-        for file_name in os.listdir(extract_path):
-            total_files += 1
-            file_path = os.path.join(extract_path, file_name)
-            file_path_url = os.path.join(fs.base_url, "extracted", timestamp, file_name)
-            if file_name.endswith(".pdf"):
-                pdf_files += 1
-                extracted_text = extract_text_from_pdf(file_path)
-
-                if "Error" in extracted_text:
-                    error_pdf_files += 1
-                    # messages.error(request, f"Error processing {file_name}: {extracted_text}")
-                    continue
-
-                processed_text = process_text_with_chatgpt(extracted_text)
-                # processed_text = '"\"{\n    \"error\": \"API Errorgit : 429\",\n    \"details\": \"{\\n    \\\"error\\\": {\\n        \\\"message\\\": \\\"Rate limit reached for gpt-4o in organization org-J5bqoyjjQpjdpBBMDG7A31ip on tokens per min (TPM): Limit 30000, Used 25671, Requested 7836. Please try again in 7.014s. Visit https://platform.openai.com/account/rate-limits to learn more.\\\",\\n        \\\"type\\\": \\\"tokens\\\",\\n        \\\"param\\\": null,\\n        \\\"code\\\": \\\"rate_limit_exceeded\\\"\\n    }\\n}\\n\"\n}\""'
-                commision_rate = commisionRateByMemberId(rm_id)
-                insurer_rate = insurercommisionRateByMemberId(1)
-                
-                if commision_rate:
-                    od_percentage = commision_rate.od_percentage
-                    net_percentage = commision_rate.net_percentage
-                    tp_percentage = commision_rate.tp_percentage
-                else:
-                    od_percentage = 0.0
-                    net_percentage = 0.0
-                    tp_percentage = 0.0
-        
-                if "error" in processed_text:
-                    error_process_pdf_files += 1
-                    policy_doc = PolicyDocument.objects.create(
-                        filename=file_name,
-                        extracted_text=processed_text,
-                        filepath=file_path_url,
-                        rm_name=rm_name,
-                        rm_id=rm_id,
-                        bulk_log_id=bulk_log.id,
-                        od_percent=od_percentage,
-                        tp_percent=tp_percentage,
-                        net_percent=net_percentage,
-                        status=2,
-                    )
-                    
-                    UnprocessedPolicyFiles.objects.create(
-                        policy_document=policy_doc.id,
-                        doc_name=policy_doc.filename,
-                        bulk_log_id=bulk_log.id,
-                        file_path=file_path_url,
-                        error_message=processed_text,
-                        status="Pending",
-                    )
-                    
-                else:
-                    policy_number = processed_text.get("policy_number", None)
-                    if PolicyDocument.objects.filter(policy_number=policy_number).exists():
-                        duplicate_files += 1
-                        continue
-                    
-                    vehicle_number = re.sub(r"[^a-zA-Z0-9]", "", processed_text.get("vehicle_number", ""))
-                    coverage_details = processed_text.get("coverage_details", [{}])
-                    first_coverage = coverage_details if coverage_details else {}
-
-                    od_premium = first_coverage.get('own_damage', {}).get('premium', 0)
-                    tp_premium = first_coverage.get('third_party', {}).get('premium', 0)
-
-                    PolicyDocument.objects.create(
-                        filename=file_name,
-                        extracted_text=processed_text,
-                        filepath=file_path_url,
-                        rm_name=rm_name,
-                        rm_id=rm_id,
-                        insurance_provider=processed_text.get("insurance_company", ""),
-                        vehicle_number=vehicle_number,
-                        policy_number=policy_number,
-                        policy_issue_date=processed_text.get("issue_date", None),
-                        policy_expiry_date=processed_text.get("expiry_date", None),
-                        policy_period=processed_text.get("policy_period", ""),
-                        holder_name=processed_text.get("insured_name", ""),
-                        policy_total_premium=processed_text.get("gross_premium", 0),
-                        policy_premium=processed_text.get("net_premium", 0),
-                        sum_insured=processed_text.get("sum_insured", 0),
-                        coverage_details=processed_text.get("coverage_details", ""),
-
-                        policy_start_date=processed_text.get('start_date', None),
-                        payment_status='Confirmed',
-                        policy_type=processed_text.get('additional_details', {}).get('policy_type', ""),
-                        vehicle_type=processed_text.get('vehicle_details', {}).get('vehicle_type', ""),
-                        vehicle_make=processed_text.get('vehicle_details', {}).get('make', ""),                      
-                        vehicle_model=processed_text.get('vehicle_details', {}).get('model', ""),                      
-                        vehicle_gross_weight=processed_text.get('vehicle_details', {}).get('vehicle_gross_weight', ""),                     
-                        vehicle_manuf_date=processed_text.get('vehicle_details', {}).get('registration_year', ""),                      
-                        gst=processed_text.get('gst_premium', 0),                      
-                        od_premium=od_premium,
-                        tp_premium=tp_premium,
-                        od_percent=od_percentage,
-                        tp_percent=tp_percentage,
-                        net_percent=net_percentage,
-                        insurer_tp_commission   = insurer_rate.tp_percentage,
-                        insurer_od_commission   = insurer_rate.od_percentage,
-                        insurer_net_commission  = insurer_rate.net_percentage,
-                        status=1,
-                        bulk_log_id=bulk_log.id,
-                    )
-
-                    uploaded_files += 1
-            else:
-                not_pdf += 1
-
-        bulk_log.count_total_files = total_files
-        bulk_log.count_not_pdf = not_pdf
-        bulk_log.count_pdf_files = pdf_files
-        bulk_log.count_error_pdf_files = error_pdf_files
-        bulk_log.count_error_process_pdf_files = error_process_pdf_files
-        bulk_log.count_uploaded_files = uploaded_files
-        bulk_log.count_duplicate_files = duplicate_files
-        bulk_log.status = 1
-        bulk_log.save()
-
-        messages.success(
-            request,
-            f"ZIP file uploaded and extracted successfully. "
-            f"Total Files: {total_files}, PDFs: {pdf_files}, Non-PDFs: {not_pdf}, "
-            f"Uploaded: {uploaded_files}, Extraction Errors: {error_pdf_files}, Processing Errors: {error_process_pdf_files}, Duplicate Files: {duplicate_files}",
-        )
-
-        return redirect("policy-data")
-
     else:
-        messages.error(request, "Invalid request. Only ZIP files are allowed.")
-
-    return redirect("bulk-policy-mgt")
+        return redirect('login')
 
 def bulkUploadLogs(request):
 
@@ -1113,9 +967,9 @@ def bulkUploadLogs(request):
         # Fetch policies
     role_id = Users.objects.filter(id=id,status=1).values_list('role_id', flat=True).first()
     if role_id == 2:
-     logs =  BulkPolicyLog.objects.filter(rm_id=id,status=1).exclude(rm_id__isnull=True).order_by('-id')
+     logs =  BulkPolicyLog.objects.filter(rm_id=id).exclude(rm_id__isnull=True).order_by('-id')
     else:
-      logs = BulkPolicyLog.objects.filter(status=1).order_by('-id')
+      logs = BulkPolicyLog.objects.all().order_by('-id')
     
 
     return render(request,'policy/bulk-upload-logs.html',{'logs': logs})
@@ -1160,14 +1014,22 @@ def userLogout(request):
     else:
         return redirect("login")
         
-def policyUploadView(request, id):
+def failedPolicyUploadView(request, id):
     if not request.user.is_authenticated:
         return redirect('login')
 
     # Correct the filter logic
-    unprocessable_files = UnprocessedPolicyFiles.objects.filter(bulk_log_id=id, status="Pending")
+    unprocessable_files = UnprocessedPolicyFiles.objects.filter(bulk_log_id=id, status=1)
 
     return render(request, 'policy/unprocessable-files.html', {'files': unprocessable_files})
+  
+def bulkPolicyView(request, id):
+    if not request.user.is_authenticated and request.user.is_active == 1:
+        return redirect('login')
+    # Correct the filter logic
+    policy_files = PolicyDocument.objects.filter(bulk_log_id=id)
+
+    return render(request, 'policy/policy-files.html', {'files': policy_files})
   
 def reprocessBulkPolicies(request):
     if request.method == "POST":
@@ -1245,7 +1107,7 @@ def reprocessBulkPolicies(request):
                     policy_doc.gst=processed_text.get('gst_premium', 0)
                     policy_doc.od_premium=od_premium
                     policy_doc.tp_premium=tp_premium
-                    policy_doc.status=1
+                    policy_doc.status=6
                     policy_doc.save()
                     
                     bulk_log = BulkPolicyLog.objects.filter(id=bulk_log_id).first()
@@ -1260,6 +1122,42 @@ def reprocessBulkPolicies(request):
                     
             except UnprocessedPolicyFiles.DoesNotExist:
                 print(f"File with ID {file_id} not found")
+
+        return redirect('bulk-upload-logs')
+    else:
+        messages.error(request, 'Invalid URL')
+        return redirect(request.META.get('HTTP_REFERER', '/'))
+
+def continueBulkPolicies(request):
+    if request.method == "POST":
+        reprocessFiles = request.POST.get('continue_bulk_policies', '')
+        
+        if not reprocessFiles:
+            messages.error(request,'Select Atleast One Policy')
+            return redirect(request.META.get('HTTP_REFERER', '/'))
+            
+        reprocessFilesList = reprocessFiles.split(",") if reprocessFiles else []
+        
+        for file_id in reprocessFilesList:
+            try:
+                file_data = PolicyDocument.objects.get(id=file_id)
+                file_status = file_data.status
+                if file_status == 5 or file_status == 3:
+                    file_obj = FileAnalysis.objects.filter(policy_id=file_id).last()
+                    async_task('empPortal.tasks.process_text_from_chatgpt', file_obj.id)
+               
+                if file_status == 1:
+                    file_obj = ExtractedFile.objects.filter(policy_id=file_id).last()
+                    async_task('empPortal.tasks.extract_pdf_text_task', file_obj.id)
+               
+            except PolicyDocument.DoesNotExist:
+                print(f"File with ID {file_id} not found in Policy Details")
+            
+            except FileAnalysis.DoesNotExist:
+                print(f"File with ID {file_id} not found in analysing")
+                
+            except ExtractedFile.DoesNotExist:
+                print(f"File with ID {file_id} not found in extraction")
 
         return redirect('bulk-upload-logs')
     else:

@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'empPortal'
+    'empPortal',
+    'django_q',
 ]
 
 MIDDLEWARE = [
@@ -140,7 +141,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 
@@ -196,3 +197,30 @@ EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True") == "True"
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
+Q_CLUSTER = {
+    'name': 'DjangoQ',
+    'workers': 4,
+    'recycle': 500,
+    'timeout': 60,
+    'retry': 90,
+    'queue_limit': 50,
+    'bulk': 10,
+    'orm': 'default',  # use Django ORM
+}
+
+Q2_CLUSTER_NAME = 'mycluster'
+
+Q2_CONFIG = {
+    'name': Q2_CLUSTER_NAME,
+    'workers': 4,
+    'recycle': 500,
+    'timeout': 120,
+    'compress': True,
+    'save_limit': 250,
+    'queue_limit': 500,
+    'cpu_affinity': 1,
+    'label': 'Django Q2 Cluster',
+    'orm': 'default',
+}

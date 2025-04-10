@@ -4,6 +4,8 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from datetime import datetime
 from django.utils.timezone import now
 
+from django.conf import settings
+
 class Roles(models.Model):
     roleGenID = models.CharField(max_length=255)
     roleName = models.CharField(max_length=255)
@@ -419,27 +421,7 @@ class CommissionHistory(models.Model):
     def __str__(self):
         return f"Commission {self.id} - {self.od_percentage}% / {self.net_percentage}%"
         
-class BulkPolicyLog(models.Model):
-    camp_name = models.CharField(max_length=255)
-    file_name = models.CharField(max_length=255)
-    file_url = models.URLField(max_length=255)
-    count_total_files = models.IntegerField(default=0)
-    count_not_pdf = models.IntegerField(default=0)
-    count_pdf_files = models.IntegerField(default=0)
-    count_error_pdf_files = models.IntegerField(default=0)
-    count_error_process_pdf_files = models.IntegerField(default=0)
-    count_uploaded_files = models.IntegerField(default=0)
-    count_duplicate_files = models.IntegerField(default=0)
-    status = models.SmallIntegerField(default=0)
-    created_at = models.DateTimeField(default=timezone.now)
-    created_by = models.IntegerField()
-    rm_id = models.IntegerField()
-    def created_date(self):
-        return self.created_at.strftime("%d-%m-%Y %H:%M:%S") if self.created_at else None
-    
-    class Meta:
-        db_table = 'bulk_policy_log'
-        
+ 
 class UsersManager(BaseUserManager):
     def create_user(self,email,phone=None,password=None,**extra_fields):
         # create and return a user with a email phone and password
@@ -828,3 +810,99 @@ class IrdaiAgentApiLogs(models.Model):
     
     class Meta:
         db_table = 'irdai_agent_api_logs'
+        
+
+# class UploadedZip(models.Model):
+#     file = models.FileField(upload_to='zips/')
+#     uploaded_at = models.DateTimeField(auto_now_add=True)
+#     campaign_name = models.CharField(max_length=255)
+#     rm_id = models.CharField(max_length=100, null=True, blank=True)
+#     rm_name = models.CharField(max_length=255, null=True, blank=True)
+#     is_processed = models.BooleanField(default=False)
+    
+#     class Meta:
+#         db_table = 'uploaded_zip'
+
+
+class BulkPolicyLog(models.Model):
+    camp_name = models.CharField(max_length=255)
+    file_name = models.CharField(max_length=255)
+    file_url = models.URLField(max_length=255)
+    count_total_files = models.IntegerField(default=0)
+    count_not_pdf = models.IntegerField(default=0)
+    count_pdf_files = models.IntegerField(default=0)
+    count_error_pdf_files = models.IntegerField(default=0)
+    count_error_process_pdf_files = models.IntegerField(default=0)
+    count_uploaded_files = models.IntegerField(default=0)
+    count_duplicate_files = models.IntegerField(default=0)
+    status = models.SmallIntegerField(default=0)
+    created_at = models.DateTimeField(default=timezone.now)
+    created_by = models.IntegerField()
+    rm_id = models.IntegerField()
+    def created_date(self):
+        return self.created_at.strftime("%d-%m-%Y %H:%M:%S") if self.created_at else None
+    
+    class Meta:
+        db_table = 'bulk_policy_log'
+       
+       
+class UploadedZip(models.Model):
+    file = models.FileField(upload_to='zips/')
+    file_name = models.CharField(max_length=255, blank=True)
+    file_url = models.URLField(blank=True)
+    total_files = models.IntegerField(default=0)
+    pdf_files_count = models.IntegerField(default=0)
+    non_pdf_files_count = models.IntegerField(default=0)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    campaign_name = models.CharField(max_length=255)
+    rm_id = models.CharField(max_length=100, null=True, blank=True)
+    rm_name = models.CharField(max_length=255, null=True, blank=True)
+    is_processed = models.BooleanField(default=False)
+    bulk_log = models.ForeignKey(BulkPolicyLog, on_delete=models.CASCADE)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+
+    class Meta:
+        db_table = 'uploaded_zip'
+
+    def save(self, *args, **kwargs):
+        if self.file:
+            self.file_name = self.file.name
+            self.file_url = self.file.url  # Make sure MEDIA_URL is properly set
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.file_name or f"Uploaded Zip #{self.pk}"
+    
+class ExtractedFile(models.Model):
+    zip_ref = models.ForeignKey(UploadedZip, on_delete=models.CASCADE)
+    file_path = models.FileField(upload_to='pdf_files/')
+    filename = models.CharField(max_length=255)
+    content = models.TextField(blank=True, null=True)
+    is_extracted = models.BooleanField(default=False)
+    extracted_at = models.DateTimeField(auto_now_add=True)
+    policy = models.ForeignKey(PolicyDocument, on_delete=models.CASCADE)
+    file_url = models.URLField(blank=True, null=True)
+    
+    def __str__(self):
+        return self.filename
+    
+    class Meta:
+        db_table = 'extracted_file'
+        
+class FileAnalysis(models.Model):
+    zip = models.ForeignKey(UploadedZip, on_delete=models.CASCADE)
+    filename = models.CharField(max_length=255)
+    extracted_text = models.TextField()
+    extracted_file = models.ForeignKey(ExtractedFile, on_delete=models.CASCADE)
+    policy = models.ForeignKey(PolicyDocument, on_delete=models.CASCADE)
+    gpt_response = models.JSONField()
+    status = models.CharField(max_length=50, default="pending")
+    
+    class Meta:
+        db_table = 'file_analysis'
+        
