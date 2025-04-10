@@ -115,9 +115,9 @@ def commission_report(request):
     # Fetch policies
     role_id = Users.objects.filter(id=id).values_list('role_id', flat=True).first()
     if role_id != 1:
-        policies = PolicyDocument.objects.filter(status=1,rm_id=id).exclude(rm_id__isnull=True).all().order_by('-id')
+        policies = PolicyDocument.objects.filter(status=6,rm_id=id).exclude(rm_id__isnull=True).all().order_by('-id')
     else:
-        policies = PolicyDocument.objects.filter(status=1).exclude(rm_id__isnull=True).all().order_by('-id')
+        policies = PolicyDocument.objects.filter(status=6).exclude(rm_id__isnull=True).all().order_by('-id')
 
     # Apply filters only if values are provided
     if policy_no:
@@ -627,10 +627,10 @@ def download_policy_data(request):
     id  = request.user.id
     # Fetch policies
     role_id = Users.objects.filter(id=id).values_list('role_id', flat=True).first()
-    if role_id == 2:
-        policies = PolicyDocument.objects.filter(status=1,rm_id=id).all().order_by('-id')
+    if role_id != 1:
+        policies = PolicyDocument.objects.filter(status=6,rm_id=id).all().order_by('-id')
     else:
-        policies = PolicyDocument.objects.filter(status=1).all().order_by('-id')
+        policies = PolicyDocument.objects.filter(status=6).all().order_by('-id')
 
     for policy in policies:
         issue_month = policy.policy_start_date.strftime("%b-%Y") if policy.policy_start_date else "-"

@@ -35,74 +35,6 @@ class Commission(models.Model):
     
     from django.db import models
 
-class QuotationCustomer(models.Model):
-    customer_id = models.CharField(max_length=20, unique=True)  # For values like CUS2343545
-    mobile_number = models.CharField(max_length=15, null=True, blank=True)
-    email_address = models.CharField(max_length=255, null=True, blank=True)
-    quote_date = models.DateField(null=True, blank=True)
-    name_as_per_pan = models.CharField(max_length=255, null=True, blank=True)
-    pan_card_number = models.CharField(max_length=10, null=True, blank=True)
-    date_of_birth = models.DateField(null=True, blank=True)
-    state = models.CharField(max_length=100, null=True, blank=True)
-    city = models.CharField(max_length=100, null=True, blank=True)
-    pincode = models.CharField(max_length=10, null=True, blank=True)
-    address = models.TextField(null=True, blank=True)
-    active = models.BooleanField(default=True)  # 1 for active, 0 for inactive
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        db_table = "quotation_customers"
-
-    def __str__(self):
-        return f"QuotationCustomer {self.customer_id} - {self.name_as_per_pan}"
-    
-class Leads(models.Model):
-    lead_id = models.CharField(max_length=20, unique=True)  # Unique customer identifier (e.g., CUS2343545)
-    mobile_number = models.CharField(max_length=15)  # Customer's mobile number
-    email_address = models.CharField(max_length=255)  # Customer's email address
-    quote_date = models.DateField(null=True, blank=True)  # Quote date
-    name_as_per_pan = models.CharField(max_length=255)  # Customer's name as per PAN
-    pan_card_number = models.CharField(max_length=20, null=True, blank=True)  # PAN card number (optional)
-    date_of_birth = models.DateField(null=True, blank=True)  # Customer's date of birth (optional)
-    state = models.CharField(max_length=100, null=True, blank=True)  # State of the customer
-    city = models.CharField(max_length=100, null=True, blank=True)  # City of the customer
-    pincode = models.CharField(max_length=10, null=True, blank=True)  # Pincode of the customer
-    address = models.TextField(null=True, blank=True)  # Address of the customer
-    lead_description = models.TextField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)  # Timestamp when the lead was created
-    created_by = models.CharField(max_length=20, null=True, blank=True)  # PAN card number (optional)
-    updated_at = models.DateTimeField(auto_now=True)  # Timestamp when the lead was last updated
-    status = models.CharField(max_length=50, default='new')  # Status of the lead (new, contacted, converted, etc.)
-    lead_type = models.CharField(
-        max_length=10, 
-        choices=[('MOTOR', 'MOTOR'), ('HEALTH', 'HEALTH'), ('TERM', 'TERM')], 
-        default='MOTOR'
-    )  # Type of lead (MOTOR, HEALTH, TERM)
-
-    class Meta:
-        db_table = 'leads'  # This defines the database table name
-
-    def __str__(self):
-        return f"Lead - {self.name_as_per_pan}"
-
-
-class QuotationVehicleDetail(models.Model):
-    registration_number = models.CharField(max_length=20, null=True, blank=True)
-    vehicle_details = models.TextField(null=True, blank=True)
-    active = models.BooleanField(default=True)  # Default to active (1)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        db_table = "quotation_vehicle_details"
-
-    def __str__(self):
-        return f"Vehicle {self.registration_number or 'N/A'}"
-
-from django.db import models
-from django.utils.timezone import now
-
 class VehicleInfo(models.Model):
     customer_id = models.CharField(max_length=20, null=True, blank=True)  # Nullable as per SQL table
     registration_number = models.CharField(max_length=20, null=True, blank=True)
@@ -154,6 +86,76 @@ class VehicleInfo(models.Model):
 
     def __str__(self):
         return f"VehicleInfo {self.registration_number} - {self.customer_id}"
+
+
+
+class QuotationCustomer(models.Model):
+    customer_id = models.CharField(max_length=20, unique=True)  # For values like CUS2343545
+    mobile_number = models.CharField(max_length=15, null=True, blank=True)
+    email_address = models.CharField(max_length=255, null=True, blank=True)
+    quote_date = models.DateField(null=True, blank=True)
+    name_as_per_pan = models.CharField(max_length=255, null=True, blank=True)
+    pan_card_number = models.CharField(max_length=10, null=True, blank=True)
+    date_of_birth = models.DateField(null=True, blank=True)
+    state = models.CharField(max_length=100, null=True, blank=True)
+    city = models.CharField(max_length=100, null=True, blank=True)
+    pincode = models.CharField(max_length=10, null=True, blank=True)
+    address = models.TextField(null=True, blank=True)
+    active = models.BooleanField(default=True)  # 1 for active, 0 for inactive
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    # vehicleinfo = models.ForeignKey(VehicleInfo, on_delete=models.CASCADE)
+    class Meta:
+        db_table = "quotation_customers"
+
+    def __str__(self):
+        return f"QuotationCustomer {self.customer_id} - {self.name_as_per_pan}"
+    
+class Leads(models.Model):
+    lead_id = models.CharField(max_length=20, unique=True)  # Unique customer identifier (e.g., CUS2343545)
+    mobile_number = models.CharField(max_length=15)  # Customer's mobile number
+    email_address = models.CharField(max_length=255)  # Customer's email address
+    quote_date = models.DateField(null=True, blank=True)  # Quote date
+    name_as_per_pan = models.CharField(max_length=255)  # Customer's name as per PAN
+    pan_card_number = models.CharField(max_length=20, null=True, blank=True)  # PAN card number (optional)
+    date_of_birth = models.DateField(null=True, blank=True)  # Customer's date of birth (optional)
+    state = models.CharField(max_length=100, null=True, blank=True)  # State of the customer
+    city = models.CharField(max_length=100, null=True, blank=True)  # City of the customer
+    pincode = models.CharField(max_length=10, null=True, blank=True)  # Pincode of the customer
+    address = models.TextField(null=True, blank=True)  # Address of the customer
+    lead_description = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)  # Timestamp when the lead was created
+    created_by = models.CharField(max_length=20, null=True, blank=True)  # PAN card number (optional)
+    updated_at = models.DateTimeField(auto_now=True)  # Timestamp when the lead was last updated
+    status = models.CharField(max_length=50, default='new')  # Status of the lead (new, contacted, converted, etc.)
+    lead_type = models.CharField(
+        max_length=10, 
+        choices=[('MOTOR', 'MOTOR'), ('HEALTH', 'HEALTH'), ('TERM', 'TERM')], 
+        default='MOTOR'
+    )  # Type of lead (MOTOR, HEALTH, TERM)
+
+    class Meta:
+        db_table = 'leads'  # This defines the database table name
+
+    def __str__(self):
+        return f"Lead - {self.name_as_per_pan}"
+
+
+class QuotationVehicleDetail(models.Model):
+    registration_number = models.CharField(max_length=20, null=True, blank=True)
+    vehicle_details = models.TextField(null=True, blank=True)
+    active = models.BooleanField(default=True)  # Default to active (1)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "quotation_vehicle_details"
+
+    def __str__(self):
+        return f"Vehicle {self.registration_number or 'N/A'}"
+
+from django.db import models
+from django.utils.timezone import now
 
 
 
