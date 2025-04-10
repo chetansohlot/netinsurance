@@ -34,9 +34,21 @@ def dashboard(request):
     # return HttpResponse()
     if request.user.is_authenticated:
         user = request.user
-        return render(request,'dashboard.html',{'user':user})
+
+        
+        if request.user.role_id != 1:
+            policy_count = PolicyDocument.objects.filter(status=6, rm_id=request.user.id).count()
+        else:
+            policy_count = PolicyDocument.objects.filter(status=6).count()
+
+        return render(request,'dashboard.html',{
+            'user':user,
+            "policy_count": policy_count,
+            })
     else:
         return redirect('login')
+
+
 
 def billings(request):
     if request.user.is_authenticated:
