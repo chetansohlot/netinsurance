@@ -717,7 +717,7 @@ def process_text_with_chatgpt(text):
 from django.core.paginator import Paginator
 
 def policyData(request):
-    if not request.user.is_authenticated or request.user.is_active != 1 :
+    if not request.user.is_authenticated:
         return redirect('login')
     user_id = request.user.id
     role_id = Users.objects.filter(id=user_id).values_list('role_id', flat=True).first()
