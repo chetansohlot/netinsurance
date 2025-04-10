@@ -481,6 +481,8 @@ def policyMgt(request):
     return render(request,'policy/policy-mgt.html')
 
 def bulkPolicyMgt(request):
+    if not request.user.is_authenticated and request.user.is_active != 1:
+        return redirect('login')
     rms = Users.objects.all()
     return render(request,'policy/bulk-policy-mgt.html',{'users':rms})
 
@@ -715,6 +717,8 @@ def process_text_with_chatgpt(text):
 from django.core.paginator import Paginator
 
 def policyData(request):
+    if not request.user.is_authenticated or request.user.is_active != 1 :
+        return redirect('login')
     user_id = request.user.id
     role_id = Users.objects.filter(id=user_id).values_list('role_id', flat=True).first()
 
@@ -748,9 +752,9 @@ def policyData(request):
 
     # Base queryset
     if role_id != 1:
-        policy_count = PolicyDocument.objects.filter(status=1, rm_id=user_id).count()
+        policy_count = PolicyDocument.objects.filter(status=6, rm_id=user_id).count()
     else:
-        policy_count = PolicyDocument.objects.filter(status=1).count()
+        policy_count = PolicyDocument.objects.filter(status=6).count()
 
     # Pagination
     per_page = request.GET.get('per_page', 10)
@@ -1028,7 +1032,7 @@ def failedPolicyUploadView(request, id):
     return render(request, 'policy/unprocessable-files.html', {'files': unprocessable_files})
   
 def bulkPolicyView(request, id):
-    if not request.user.is_authenticated and request.user.is_active == 1:
+    if not request.user.is_authenticated or request.user.is_active != 1:
         return redirect('login')
     # Correct the filter logic
     policy_files = PolicyDocument.objects.filter(bulk_log_id=id)
@@ -1135,7 +1139,7 @@ def reprocessBulkPolicies(request):
         return redirect(request.META.get('HTTP_REFERER', '/'))
 
 def continueBulkPolicies(request):
-    if not request.user.is_authenticated and request.user.is_active == 1:
+    if not request.user.is_authenticated or request.user.is_active != 1:
         return redirect('login')
     if request.method == "POST":
         log_id = request.POST.get('log_id', None)
