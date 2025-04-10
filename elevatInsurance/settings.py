@@ -61,6 +61,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
 ]
+MIDDLEWARE += ['empPortal.middleware.AutoLogoutMiddleware.AutoLogoutMiddleware']
 
 ROOT_URLCONF = 'elevatInsurance.urls'
 
@@ -82,6 +83,16 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'elevatInsurance.wsgi.application'
+
+# Expires session when browser is closed
+# Session will expire when the browser is closed
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# Inactivity timeout — auto logout after 10 minutes of no activity
+SESSION_COOKIE_AGE = 600  # in seconds (600s = 10 minutes)
+
+# Refresh the session expiry time with every request
+SESSION_SAVE_EVERY_REQUEST = True
 
 
 # Database

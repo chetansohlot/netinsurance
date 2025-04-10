@@ -20,6 +20,7 @@ from django.utils.timezone import now
 from django.core.paginator import Paginator
 import helpers  
 from django.core.paginator import Paginator
+from django.http import JsonResponse
 
 def dictfetchall(cursor):
     "Returns all rows from a cursor as a dict"
@@ -35,6 +36,7 @@ def index(request):
     per_page = request.GET.get('per_page', 10)
     search_field = request.GET.get('search_field', '')  # Field to search
     search_query = request.GET.get('search_query', '')  # Search value
+    sort_by = request.GET.get('sort_by', '')
 
     try:
         per_page = int(per_page)
@@ -47,6 +49,19 @@ def index(request):
     if search_field and search_query:
         filter_args = {f"{search_field}__icontains": search_query}
         franchises = franchises.filter(**filter_args)
+
+    ## Sort Criteria ##
+    if sort_by == "name_asc":
+        franchises = franchises.order_by('name')
+    elif sort_by == "name_desc":
+        franchises = franchises.order_by('-name')
+    elif sort_by == "recently_activated":
+        franchises = franchises.order_by('-created_at')
+    elif sort_by == "recently_deactivated":
+        franchises = franchises.order_by('-updated_at')
+    else:
+        franchises = franchises.order_by('-created_at') # deafault sort values
+       
 
     total_count = franchises.count()
 
@@ -61,6 +76,7 @@ def index(request):
         'search_field': search_field,
         'search_query': search_query,
         'per_page': per_page,
+        'sort_by' : sort_by,
     })
 
 
@@ -132,3 +148,25 @@ def create_or_edit(request, franchise_id=None):
 
             messages.success(request, f"Franchise created successfully! Franchise ID: {new_franchise.id}")
             return redirect(reverse("franchise-management"))  # Redirect to franchise listing
+
+
+def franchise_toggle_status(request, franchise_id):
+    if request.method == "POST":  # Use POST instead of GET
+        franchise = get_object_or_404(Franchises, id=franchise_id)
+
+        # Toggle status
+        if franchise.status == "Active":
+            franchise.status = "Inactive"
+        else:
+            franchise.status = "Active"
+
+        franchise.save()
+
+        return JsonResponse({
+            "success": True,
+            "message": f"Franchise status changed to {franchise.status}",
+            "status": franchise.status,
+            "franchise_id": franchise.id
+        })
+
+    return JsonResponse({"success": False, "message": "Invalid request method!"}, status=400)

@@ -9,7 +9,6 @@
             <label for="checkall"></label>
           </th>
           <th>Lead ID</th>
-          <th>Customer ID</th>
           <th>Contact Details</th>
           <th>Name (as per PAN)</th>
           <th>PAN Card Number</th>
@@ -28,7 +27,6 @@
               <label for="check{{ lead.id }}"></label>
             </td>
             <td>{{ lead.lead_id }}</td>
-            <td>{{ lead.customer_id }}</td>
             <td>
               {{ lead.mobile_number }} 
               <span class="text-gray d-block small">{{ lead.email_address }}</span>
@@ -54,7 +52,6 @@
               <div class="dropdown">
                 <img src="{% static 'dist/img/svg/menu-dot-vr.svg' %}" alt="" class="table-doticon" data-toggle="dropdown" aria-expanded="false">
                 <ul class="dropdown-menu table-dropdown-menu">
-                  <li><a class="dropdown-item" href="{% url 'lead-view' lead_id=lead.id %}">View Lead</a></li>
                   <li><a class="dropdown-item" href="{% url 'leads-mgt-edit' lead_id=lead.id %}">Edit Lead</a></li>
                 </ul>
               </div>

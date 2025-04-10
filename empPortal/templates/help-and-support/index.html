@@ -86,27 +86,35 @@
                             <div class="table-responsive table-ht">
                               
                               <table class="table table-design table-border-line">
+                               
                                 <tbody>
                                     <tr>
                                         <td class="table-thead-bg-light"><strong>Branch</strong></td>
                                         <td>{{ branch.branch_name|default:"N/A" }}</td>
-                                        <td>{{ branch.mobile|default:"N/A" }}</td>
                                         <td>{{ branch.email|default:"N/A" }}</td>
+                                        <td>{{ branch.mobile|default:"N/A" }}</td>
                                     </tr>
                                     <tr>
                                         <td class="table-thead-bg-light"><strong>Manager</strong></td>
-                                        <td>{{ branch_manager.full_name|default:"N/A" }}</td>
-                                        <td>{{ branch_manager.phone|default:"N/A" }}</td>
-                                        <td>{{ branch_manager.email|default:"N/A" }}</td>
+                                        <td>{{ manager_details.full_name|default:"N/A" }}</td>
+                                        <td>{{ manager_details.email|default:"N/A" }}</td>
+                                        <td>{{ manager_details.phone|default:"N/A" }}</td>
                                     </tr>
                                     <tr>
-                                        <td class="table-thead-bg-light"><strong>Sales Manager</strong></td>
-                                        <td>{{ sales_manager.full_name|default:"N/A" }}</td>
-                                        <td>{{ sales_manager.phone|default:"N/A" }}</td>
-                                        <td>{{ sales_manager.email|default:"N/A" }}</td>
+                                        <td class="table-thead-bg-light"><strong>Team Leader</strong></td>
+                                        <td>{{ tl_details.full_name|default:"N/A" }}</td>
+                                        <td>{{ tl_details.email|default:"N/A" }}</td>
+                                        <td>{{ tl_details.phone|default:"N/A" }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="table-thead-bg-light"><strong>Relationship Member</strong></td>
+                                        <td>{{ rm_details.full_name|default:"N/A" }}</td>
+                                        <td>{{ rm_details.email|default:"N/A" }}</td>
+                                        <td>{{ rm_details.phone|default:"N/A" }}</td>
                                     </tr>
                                 </tbody>
                             </table>
+                            
                             
                             </div>
                           </div>

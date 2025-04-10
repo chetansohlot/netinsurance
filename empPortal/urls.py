@@ -7,6 +7,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import re_path
 
+
 motor_patterns = [
     path('quote-management/', quoteManagement.index, name='quote-management'),
     path('fetch-customer/', quoteManagement.fetch_customer, name='fetch-customer'),
@@ -62,22 +63,27 @@ urlpatterns = [
     path('franchise-management/', Franchises.index, name='franchise-management'),
     path('franchise-management/create-franchise', Franchises.create_or_edit, name='franchise-management-create'),
     path('franchise-management/<str:franchise_id>/', Franchises.create_or_edit, name='franchise-management-edit'),
+    path("toggle-franchise-status/<int:franchise_id>/", Franchises.franchise_toggle_status, name="franchise-toggle-status"),
+
 
     path('branch-management/', Branches.index, name='branch-management'),
     path("check-branch-email/", Branches.check_branch_email, name="check-branch-email"),
     path('branch-management/create-branch', Branches.create_or_edit, name='branch-management-create'),
     path('branch-management/<str:branch_id>/', Branches.create_or_edit, name='branch-management-edit'),
+    path('branch/toggle-status/<int:branch_id>/', Branches.toggle_branch_status, name='branch-toggle-status'),
 
 
     path('department-management/', Department.index, name='department-management'),
     path('department-management/create-department', Department.create_or_edit, name='department-management-create'),
     path('department-management/<str:department_id>/', Department.create_or_edit, name='department-management-edit'),
+    path('department/toggle-status/<int:department_id>/', Department.toggle_department_status, name='department-toggle-status'),
 
 
     path('employee-management/', Employee.index, name='employee-management'),
     path('employee-management/create-employee', Employee.create_or_edit, name='employee-management-create'),
     path('employee-management/<str:employee_id>/', Employee.create_or_edit, name='employee-management-edit'),
     path('employee-management/employee-allocation-employee/<str:employee_id>', Employee.create_or_edit_allocation, name='employee-allocation-update'),
+     
 
     path('my-account/', profile.myAccount, name='my-account'),
     path('download-certificate-pdf/<str:cus_id>/', profile.downloadCertificatePdf, name='download-certificate'),
@@ -185,7 +191,7 @@ urlpatterns = [
     path('store-customer/', customers.store, name='store-customer'),
     path('customers/create', customers.create_or_edit, name='quotation-customer-create'),
     path('customers/<str:customer_id>/', customers.create_or_edit, name='quotation-customer-edit'),
-
+    path('toggle-customer-status/<int:customer_id>/', customers.toggle_customer_status, name='customer-toggle-status'),
 
     path('motor/', include(motor_patterns)),
     path('health/', include(health_patterns)),

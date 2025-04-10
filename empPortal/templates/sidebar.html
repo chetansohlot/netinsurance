@@ -204,7 +204,7 @@
             </li>
           {% else %}
           <li class="nav-item">
-            <a href="{% url 'leads-mgt' %}" class="nav-link {% if request.path == '/leads-mgt/' %} active {% endif %}">
+            <a href="{% url 'leads-mgt' %}" class="nav-link {% if request.path|slice:9 == '/lead-mgt' %} active {% endif %}">
               <svg class="sidbarmenu-svg">
                 <use xlink:href="#members" />
               </svg>

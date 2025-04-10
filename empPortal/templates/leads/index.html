@@ -148,18 +148,48 @@
                                   <span>Short</span>
                                   <img src="{% static 'dist/img/svg/down-arrow-icon.svg' %}" alt="" class="change-arrow">
                                 </div>
-                                <form action="">
+                                
+                                <form action="" method="GET">
                                   <ul class="dropdown-menu shorting-dropdown-menu">
-                                    <p class="border-bottom pb-1 title2">Short</p>
-                                    <li><input type="radio" name="shorting" id="name-a_z"> <label for="name-a_z">Name A &gt; Z</label></li>
-                                    <li><input type="radio" name="shorting" id="name-z_a"> <label for="name-z_a">Name Z &lt; A</label></li>
-                                    <li><input type="radio" name="shorting" id="recently_activated"> <label for="recently_activated">Recently Activated</label></li>
-                                    <li><input type="radio" name="shorting" id="recently_deactivated"> <label for="recently_deactivated">Recently Deactivated</label></li>
+                                    <fieldset class="border-0 m-0 p-0">
+                                      <legend class="border-bottom pb-1 title2">Sort</legend>
+                                
+                                      <li>
+                                        <label>
+                                          <input type="radio" name="shorting" value="name_asc" {% if shorting == 'name_asc' %}checked{% endif %}>
+                                          Name A &gt; Z
+                                        </label>
+                                      </li>
+                                
+                                      <li>
+                                        <label>
+                                          <input type="radio" name="shorting" value="name_desc" {% if shorting == 'name_desc' %}checked{% endif %}>
+                                          Name Z &lt; A
+                                        </label>
+                                      </li>
+                                
+                                      <li>
+                                        <label>
+                                          <input type="radio" name="shorting" value="recently_added" {% if shorting == 'recently_added' %}checked{% endif %}>
+                                          Recently Added
+                                        </label>
+                                      </li>
+                                
+                                      <li>
+                                        <label>
+                                          <input type="radio" name="shorting" value="recently_updated" {% if shorting == 'recently_updated' %}checked{% endif %}>
+                                          Recently Updated
+                                        </label>
+                                      </li>
+                                    </fieldset>
+                                
                                     <div class="d-flex justify-content-center border-top pt-3 mt-2 pb-2">
                                       <button type="submit" class="dashboard-addbtn w-100">Apply</button>
-                                    </div>   
+                                    </div>
                                   </ul>
                                 </form>
+                                
+                                
                               </div>  
                               <div class="shorting-select" data-toggle="modal" data-target="#modal-filter">
                                 <img src="{% static 'dist/img/svg/filter-icon.svg' %}" alt="">

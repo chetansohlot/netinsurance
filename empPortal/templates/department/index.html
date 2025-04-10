@@ -121,14 +121,15 @@ Department
                             </form>
                             </div>
                           </div>
-                          <div class="col-md-6">
+                           <!-- <div class="col-md-6">
                             <div class=" d-flex justify-content-end">
                               <div class="dropdown">
                                 <div class="shorting-select"  data-toggle="dropdown" aria-expanded="false">
                                   <img src="{% static 'dist/img/svg/shorting-icon.svg' %}" alt="">
                                   <span>Short</span>
                                   <img src="{% static 'dist/img/svg/down-arrow-icon.svg' %}" alt="" class="change-arrow">
-                                </div>
+                                </div> -->
+                                <!--
                                 <form action="">
                                   <ul class="dropdown-menu shorting-dropdown-menu">
                                     <p class="border-bottom pb-1 title2">Short</p>
@@ -141,7 +142,53 @@ Department
                                     </div>   
                                   </ul>
                                 </form>
-                              </div>  
+                              </div>   -->
+
+                              <div class="col-md-6">
+                              <div class=" d-flex justify-content-end">
+                              <div class="dropdown">
+                                <div class="shorting-select" data-toggle="dropdown" aria-expanded="false">
+                                  <img src="{% static 'dist/img/svg/shorting-icon.svg' %}" alt="">
+                                  <span>Short</span>
+                                  <img src="{% static 'dist/img/svg/down-arrow-icon.svg' %}" alt="" class="change-arrow">
+                                </div>
+                              
+                                <form method="get">
+                                  <ul class="dropdown-menu shorting-dropdown-menu">
+                                    <p class="border-bottom pb-1 title2">Sort</p>
+                              
+                                    <li>
+                                      <input type="radio" name="sort_by" id="name-a_z" value="name-a_z"
+                                        {% if sort_by == 'name-a_z' %}checked{% endif %}>
+                                      <label for="name-a_z">Name A &gt; Z</label>
+                                    </li>
+                              
+                                    <li>
+                                      <input type="radio" name="sort_by" id="name-z_a" value="name-z_a"
+                                        {% if sort_by == 'name-z_a' %}checked{% endif %}>
+                                      <label for="name-z_a">Name Z &lt; A</label>
+                                    </li>
+                              
+                                    <li>
+                                      <input type="radio" name="sort_by" id="recently_activated" value="recently_activated"
+                                        {% if sort_by == 'recently_activated' %}checked{% endif %}>
+                                      <label for="recently_activated">Recently Activated</label>
+                                    </li>
+                              
+                                    <li>
+                                      <input type="radio" name="sort_by" id="recently_deactivated" value="recently_deactivated"
+                                        {% if sort_by == 'recently_deactivated' %}checked{% endif %}>
+                                      <label for="recently_deactivated">Recently Deactivated</label>
+                                    </li>
+                              
+                                    <div class="d-flex justify-content-center border-top pt-3 mt-2 pb-2">
+                                      <button type="submit" class="dashboard-addbtn w-100">Apply</button>
+                                    </div>
+                                  </ul>
+                                </form>
+                              </div>
+                          
+                              
                               <div class="shorting-select" data-toggle="modal" data-target="#modal-filter">
                                 <img src="{% static 'dist/img/svg/filter-icon.svg' %}" alt="">
                                 <span>Filter</span>

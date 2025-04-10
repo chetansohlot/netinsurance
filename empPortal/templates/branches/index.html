@@ -189,18 +189,39 @@ Branches
                                         <td>{{ branch.city|default:"-" }}</td>
                                         <td>{{ branch.state|default:"-" }}</td>
                                         <td>
-                                            <span class="badge {% if branch.status == 'Active' %}bg-success{% else %}bg-danger{% endif %}">
-                                                {{ branch.status }}
-                                            </span>
+                                          <span id="status-badge-{{ branch.id }}" class="badge {% if branch.status == 'Active' %}badge-success{% else %}badge-danger{% endif %}">
+                                            {{ branch.status }}
+                                        </span>
                                         </td>
                                         <td>
                                             <i class="fas fa-clock text-primary"></i> {{ branch.updated_at|date:"d M Y, H:i:s" }} <br>
                                             <i class="fas fa-calendar-alt text-secondary"></i> {{ branch.created_at|date:"d M Y, H:i:s" }}
                                         </td>
                                         <td>
-                                            <a href="{% url 'branch-management-edit' branch_id=branch.id %}" class="btn btn-xs btn-warning">
+                                          <div style="display: flex; gap: 5px; justify-content: center; align-items: center;">
+                                            <!-- Edit Button -->
+                                            <a href="{% url 'branch-management-edit' branch.id %}" class="btn btn-xs btn-warning">
                                                 <i class="fas fa-edit"></i>
                                             </a>
+                                    
+                                            <!-- Delete Button -->
+                                               <!-- Activate Button (Check Circle) -->
+                                                    <a href="#" class="btn btn-xs btn-info toggle-status"
+                                                        data-url="{% url 'branch-toggle-status' branch.id %}"
+                                                          data-action="activate"
+                                                    {% if branch.status == "Active" %}style="display: none;"{% endif %}
+                                                  id="activate-btn-{{ branch.id }}">
+                                                <i class="fas fa-check-circle"></i>
+                                                </a>
+
+                                              <!-- Deactivate Button (Trash) -->
+                                    <a href="#" class="btn btn-xs btn-danger toggle-status"
+                                    data-url="{% url 'branch-toggle-status' branch.id %}"
+                                    data-action="deactivate"
+                                      {% if branch.status == "Inactive" %}style="display: none;"{% endif %}
+                                id="deactivate-btn-{{ branch.id }}">
+                                <i class="fas fa-trash"></i>
+                                </a>
                                         </td>
                                     </tr>
                                     {% endfor %}
@@ -329,5 +350,71 @@ Branches
     
     
     </body>
-
+    <script>
+      $(document).ready(function () {
+        $(".toggle-status").click(function (e) {
+            e.preventDefault();
+    
+            var button = $(this);
+            var branchId = button.data("url").split("/").slice(-2, -1)[0]; // Extract branch ID
+            var url = button.data("url");
+            var action = button.data("action");  // Get action type (activate/deactivate)
+    
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You want to " + (action === "activate" ? "activate" : "deactivate") + " this branch!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, " + (action === "activate" ? "activate" : "deactivate") + " it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: url,
+                        type: "POST",  // Use POST instead of GET
+                        data: { action: action },
+                        dataType: "json",
+                        headers: { "X-CSRFToken": getCSRFToken() },  // Include CSRF token
+                        success: function (response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    title: "Updated!",
+                                    text: response.message,
+                                    icon: "success",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
+    
+                                // Update status badge dynamically
+                                var statusBadge = $("#status-badge-" + branchId);
+                                if (response.status === "Active") {
+                                    statusBadge.text("Active").removeClass("badge-danger").addClass("badge-success");
+                                    $("#activate-btn-" + branchId).hide();
+                                    $("#deactivate-btn-" + branchId).show();
+                                } else {
+                                    statusBadge.text("Inactive").removeClass("badge-success").addClass("badge-danger");
+                                    $("#activate-btn-" + branchId).show();
+                                    $("#deactivate-btn-" + branchId).hide();
+                                }
+                            } else {
+                                Swal.fire("Error!", response.message, "error");
+                            }
+                        },
+                        error: function (xhr) {
+                            console.log("AJAX Error:", xhr.responseText);
+                            Swal.fire("Error!", "Something went wrong!", "error");
+                        }
+                    });
+                }
+            });
+        });
+    
+        function getCSRFToken() {
+            return document.querySelector("[name=csrfmiddlewaretoken]").value;
+        }
+    });
+    
+    
+    </script>
 {% endblock %}

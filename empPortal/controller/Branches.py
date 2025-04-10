@@ -7,7 +7,7 @@ from django.urls import reverse
 import pprint  # Import pprint for better formatting
 from django.http import JsonResponse
 import pdfkit
-import os
+# import os
 from django.conf import settings
 import os
 from dotenv import load_dotenv
@@ -18,6 +18,7 @@ from django.forms.models import model_to_dict
 import json
 from django.utils.timezone import now
 from django.core.paginator import Paginator
+from django.http import JsonResponse
 
 def dictfetchall(cursor):
     "Returns all rows from a cursor as a dict"
@@ -33,6 +34,7 @@ def index(request):
     per_page = request.GET.get('per_page', 10)
     search_field = request.GET.get('search_field', '')  # Field to search
     search_query = request.GET.get('search_query', '')  # Search value
+    sort_by =request.GET.get('sort_by','')  # Sort Criteria ----parth
 
     try:
         per_page = int(per_page)
@@ -45,6 +47,19 @@ def index(request):
     if search_field and search_query:
         filter_args = {f"{search_field}__icontains": search_query}
         branches = branches.filter(**filter_args)
+
+    # Sort Criteria ----parth ####
+    if sort_by == 'name-a_z':
+        branches = branches.order_by('branch_name')
+    elif sort_by == 'name-z_a':
+        branches = branches.order_by('-branch_name')
+    elif sort_by == 'recently_activated':
+        branches = branches.order_by('-created_at')
+    elif sort_by == 'recently_deactivated':
+        branches = branches.order_by('-updated_at')
+    else:
+        branches = branches.order_by('-created_at')  # default sort  
+
 
     total_count = branches.count()
 
@@ -59,6 +74,7 @@ def index(request):
         'search_field': search_field,
         'search_query': search_query,
         'per_page': per_page,
+        'sort_by': sort_by,  ## -----send back to templates for radio selected ratio --parth---
     })
 
 
@@ -141,3 +157,28 @@ def create_or_edit(request, branch_id=None):
 
             messages.success(request, f"Branch created successfully! Branch ID: {new_branch.id}")
             return redirect(reverse("branch-management"))  # Redirect to branch listing
+
+def toggle_branch_status(request, branch_id):
+    """Toggle branch status based on user action (Activate/Deactivate)"""
+    if request.method == "POST":  # Accept only POST requests
+        branch = get_object_or_404(Branch, id=branch_id)
+        action = request.POST.get("action")  # Get action from AJAX request
+
+        # Debugging Log
+        print(f"Branch: {branch.branch_name}, Current Status: {branch.status}, Action: {action}")
+
+        # Update status
+        if action == "activate":
+            branch.status = "Active"
+        elif action == "deactivate":
+            branch.status = "Inactive"
+        else:
+            return JsonResponse({'success': False, 'message': 'Invalid action!'}, status=400)
+
+        branch.save()
+
+        print(f"Updated Status in Database: {branch.status}")  # Debugging log
+
+        return JsonResponse({'success': True, 'message': f"Branch status updated to {branch.status}", 'status': branch.status})
+
+    return JsonResponse({'success': False, 'message': 'Invalid request method!'}, status=405)

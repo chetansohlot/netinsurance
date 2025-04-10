@@ -6,6 +6,8 @@
   
 {% block content %}
 {% load static %}
+{% include "css-code.html" %}
+
 
 <!-- Bootstrap CSS -->
 <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> -->
@@ -13,6 +15,8 @@
 <!-- Bootstrap Bundle with Popper.js -->
 <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> -->
 
+  
+  
 <body class="hold-transition sidebar-mini">
     <div class="wrapper">
         {% include 'navbar.html' %}
@@ -301,36 +305,42 @@
                           <div class="tab-content tab-scrollbar">
                             
                             <div class="tab-pane" id="allocation-tab">
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th>Type</th>
-                                                <th>Name</th>
-                                                <th>Email</th>
-                                                <th>Contact No</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>Branch</td>
-                                                <td>{{ branch.branch_name|default:"N/A" }}</td>
-                                                <td>{{ branch.email|default:"N/A" }}</td>
-                                                <td>{{ branch.mobile|default:"N/A" }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Branch Manager</td>
-                                                <td>{{ branch_manager.full_name|default:"N/A" }}</td>
-                                                <td>{{ branch_manager.email|default:"N/A" }}</td>
-                                                <td>{{ branch_manager.phone|default:"N/A" }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Sales Manager</td>
-                                                <td>{{ sales_manager.full_name|default:"N/A" }}</td>
-                                                <td>{{ sales_manager.email|default:"N/A" }}</td>
-                                                <td>{{ sales_manager.phone|default:"N/A" }}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Type</th>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Contact No</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Branch</td>
+                                            <td>{{ branch.branch_name|default:"N/A" }}</td>
+                                            <td>{{ branch.email|default:"N/A" }}</td>
+                                            <td>{{ branch.mobile|default:"N/A" }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Manager</td>
+                                            <td>{{ manager_details.full_name|default:"N/A" }}</td>
+                                            <td>{{ manager_details.email|default:"N/A" }}</td>
+                                            <td>{{ manager_details.phone|default:"N/A" }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Team leader</td>
+                                            <td>{{ tl_details.full_name|default:"N/A" }}</td>
+                                            <td>{{ tl_details.email|default:"N/A" }}</td>
+                                            <td>{{ tl_details.phone|default:"N/A" }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Relationship Member</td>
+                                            <td>{{ rm_details.full_name|default:"N/A" }}</td>
+                                            <td>{{ rm_details.email|default:"N/A" }}</td>
+                                            <td>{{ rm_details.phone|default:"N/A" }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                                 
                             </div>
                             <div class="active tab-pane" id="membership-tab">
@@ -472,18 +482,6 @@
                                             <p class="userdetail-highligt" id="accountHolderName">
                                                 {% if bank_details %}
                                                     {{ bank_details.account_holder_name }}
-                                                {% else %}
-                                                    -
-                                                {% endif %}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div class="col-6 col-sm-6 col-md-4 col-lg-4">
-                                        <div class="userdetail-group">
-                                            <p class="userdetail-lbl">Re Enter Account Number</p>
-                                            <p class="userdetail-highligt" id="reEnterAccountNumber">
-                                                {% if bank_details %}
-                                                    {{ bank_details.re_enter_account_number }}
                                                 {% else %}
                                                     -
                                                 {% endif %}
@@ -671,11 +669,18 @@
                                                 <!-- Aadhaar Card Front -->
                                                 <tr>
                                                     <td>
-                                                        <a href="{{ docs.aadhaar_card_front.url }}" data-lightbox="aadhaar-set" data-title="Aadhaar Card Front">
-                                                            <img class="preview-img" id="aadhaar_card_front_preview" src="{{ docs.aadhaar_card_front.url }}" 
-                                                                alt="Aadhaar Front" onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';" width="80">
+                                                        <a href="javascript:void(0);" 
+                                                           data-toggle="modal" 
+                                                           data-target="#docViewerModal" 
+                                                           data-url="{{ docs.aadhaar_card_front.url }}" 
+                                                           data-title="Aadhaar Card Front">
+                                                          <img class="preview-img" id="aadhaar_card_front_preview" src="{{ docs.aadhaar_card_front.url }}" 
+                                                               alt="Aadhaar Front" 
+                                                               onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';" 
+                                                               width="80">
                                                         </a>
-                                                    </td>
+                                                      </td>
+                                                      
                                                     <td>Aadhaar Card Front</td>
                                                     <td>
                                                         {{ docs.aadhaar_number|default:"-" }} 
@@ -709,11 +714,18 @@
                                                 <!-- Aadhaar Card Back -->
                                                 <tr>
                                                     <td>
-                                                        <a href="{{ docs.aadhaar_card_back.url }}" data-lightbox="aadhaar-set" data-title="Aadhaar Card Back">
-                                                            <img class="preview-img" id="aadhaar_card_back_preview" src="{{ docs.aadhaar_card_back.url }}" 
-                                                                alt="Aadhaar Back" onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';" width="80">
+                                                        <a href="javascript:void(0);" 
+                                                           data-toggle="modal" 
+                                                           data-target="#docViewerModal" 
+                                                           data-url="{{ docs.aadhaar_card_back.url }}" 
+                                                           data-title="Aadhaar Card Back">
+                                                          <img class="preview-img" id="aadhaar_card_back_preview" src="{{ docs.aadhaar_card_back.url }}" 
+                                                               alt="Aadhaar Back" 
+                                                               onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';" 
+                                                               width="80">
                                                         </a>
-                                                    </td>
+                                                      </td>
+                                                      
                                                     <td>Aadhaar Card Back</td>
                                                     <td>{{ docs.aadhaar_number|default:"-" }}</td>
                                                     <td>{{ docs.aadhaar_card_back_updated_at|date:"Y-m-d H:i:s" }}</td>
@@ -744,11 +756,17 @@
                                                 <!-- Pan Card -->
                                                 <tr>
                                                     <td>
-                                                        <a href="{{ docs.upload_pan.url }}" data-lightbox="pan-set" data-title="Pan Card">
-                                                            <img class="preview-img" id="upload_pan_preview" src="{{ docs.upload_pan.url }}" 
-                                                                alt="Pan Card" onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';" width="80">
+                                                        <a href="javascript:void(0);" 
+                                                           data-toggle="modal" 
+                                                           data-target="#docViewerModal" 
+                                                           data-url="{{ docs.upload_pan.url }}" 
+                                                           data-title="PAN Card">
+                                                          <img class="preview-img" id="upload_pan_preview" src="{{ docs.upload_pan.url }}" 
+                                                               alt="PAN Card" 
+                                                               onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';" 
+                                                               width="80">
                                                         </a>
-                                                    </td>
+                                                      </td>
                                                     <td>PAN Card</td>
                                                     <td>
                                                         {{ docs.pan_number|default:"-" }} 
@@ -780,11 +798,18 @@
                                                 <!-- Cancelled Cheque -->
                                                 <tr>
                                                     <td>
-                                                        <a href="{{ docs.upload_cheque.url }}" data-lightbox="cheque-set" data-title="Cancelled Cheque">
-                                                            <img class="preview-img" id="upload_cheque_preview" src="{{ docs.upload_cheque.url }}" 
-                                                                alt="Cheque" onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';" width="80">
+                                                        <a href="javascript:void(0);" 
+                                                           data-toggle="modal" 
+                                                           data-target="#docViewerModal" 
+                                                           data-url="{{ docs.upload_cheque.url }}" 
+                                                           data-title="Cancelled Cheque">
+                                                          <img class="preview-img" id="upload_cheque_preview" src="{{ docs.upload_cheque.url }}" 
+                                                               alt="Cheque" 
+                                                               onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';" 
+                                                               width="80">
                                                         </a>
-                                                    </td>
+                                                      </td>
+                                                      
                                                     <td>Cancelled Cheque</td>
                                                     <td>
                                                         {{ docs.cheque_number|default:"-" }} 
@@ -818,11 +843,18 @@
                                                 <!-- 10th Marksheet -->
                                                 <tr>
                                                     <td>
-                                                        <a href="{{ docs.tenth_marksheet.url }}" data-lightbox="marksheet-set" data-title="10th Marksheet">
-                                                            <img class="preview-img" id="tenth_marksheet_preview" src="{{ docs.tenth_marksheet.url }}" 
-                                                                alt="10th Marksheet" onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';" width="80">
+                                                        <a href="javascript:void(0);" 
+                                                           data-toggle="modal" 
+                                                           data-target="#docViewerModal" 
+                                                           data-url="{{ docs.tenth_marksheet.url }}" 
+                                                           data-title="10th Marksheet">
+                                                          <img class="preview-img" id="tenth_marksheet_preview" src="{{ docs.tenth_marksheet.url }}" 
+                                                               alt="10th Marksheet" 
+                                                               onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';" 
+                                                               width="80">
                                                         </a>
-                                                    </td>
+                                                      </td>
+                                                      
                                                     <td>10th Marksheet</td>
                                                     <td>
                                                         {{ docs.role_no|default:"-" }} 
@@ -864,6 +896,7 @@
                                 </div>
                             </div>
                             <!-- MODAL  --> 
+                              
                              <!-- Edit Document Modal -->
                             <div class="modal fade" id="editDocumentModal" tabindex="-1" aria-labelledby="editDocumentModalLabel" aria-hidden="true">
                                 <div class="modal-dialog">
@@ -993,8 +1026,8 @@
                                                 <div class="row">
                                                     <div class="col-md-4">
                                                         <div class="mb-3">
-                                                            <label class="form-lbl">Cheque Number</label>
-                                                            <input type="text" class="form-field" name="cheque_number" placeholder="Cheque Number">
+                                                            <label class="form-lbl">Account Number</label>
+                                                            <input type="text" class="form-field" name="cheque_number" placeholder="Account Number">
                                                         </div>
                                                     </div>
                                                     <div class="col-md">
@@ -1008,8 +1041,8 @@
                                                 <div class="row">
                                                     <div class="col-md-4">
                                                         <div class="mb-3">
-                                                            <label class="form-lbl">Role No</label>
-                                                            <input type="text" class="form-field" name="role_no" placeholder="Role No">
+                                                            <label class="form-lbl">Roll No</label>
+                                                            <input type="text" class="form-field" name="role_no" placeholder="Roll No">
                                                         </div>
                                                     </div>
                                                     <div class="col-md">
@@ -1346,6 +1379,8 @@ function updateDocument() {
 
     </script>
     
+    {% include "js-code.html" %}
+      
     </body>
 
 {% endblock %}

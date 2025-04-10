@@ -7,6 +7,7 @@
 {% block content %}
 {% load static %}
 
+{% include "css-code.html" %}
 
 <body class="hold-transition sidebar-mini">
     <div class="wrapper">
@@ -549,18 +550,7 @@
                                             </p>
                                         </div>
                                     </div>
-                                    <div class="col-6 col-sm-6 col-md-4 col-lg-4">
-                                        <div class="userdetail-group">
-                                            <p class="userdetail-lbl">Re Enter Account Number</p>
-                                            <p class="userdetail-highligt" id="reEnterAccountNumber">
-                                                {% if bank_details %}
-                                                    {{ bank_details.re_enter_account_number }}
-                                                {% else %}
-                                                    -
-                                                {% endif %}
-                                            </p>
-                                        </div>
-                                    </div>
+                                    
                                     <div class="col-6 col-sm-6 col-md-4 col-lg-4">
                                         <div class="userdetail-group">
                                             <p class="userdetail-lbl">Account Number</p>
@@ -656,7 +646,7 @@
                                                 <div class="col-sm-12">
                                                     <hr>
                                                     <div class="ml-3 pl-1">
-                                                        <p class="wrap-prgh font-weight-bold mb-0 pb-0">Cheque Number</p>
+                                                        <p class="wrap-prgh font-weight-bold mb-0 pb-0">Account Number</p>
                                                         <p class="wrap-small text-uppercase">{{ docs.cheque_number|default:"-" }}</p>
                                                     </div>  
                                                 </div>
@@ -762,12 +752,19 @@
                                             <tbody>
                                                 <!-- Aadhaar Card Front -->
                                                 <tr>
+                                                    
                                                     <td>
-                                                        <a href="{{ docs.aadhaar_card_front.url }}" data-lightbox="aadhaar-set" data-title="Aadhaar Card Front">
-                                                            <img class="preview-img" id="aadhaar_card_front_preview" src="{{ docs.aadhaar_card_front.url }}" 
-                                                                alt="Aadhaar front" onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';" width="80">
+                                                        <a href="javascript:void(0);" 
+                                                           data-toggle="modal" 
+                                                           data-target="#docViewerModal" 
+                                                           data-url="{{ docs.aadhaar_card_front.url }}" 
+                                                           data-title="Aadhaar Card Front">
+                                                          <img class="preview-img" id="aadhaar_card_front_preview" src="{{ docs.aadhaar_card_front.url }}" 
+                                                               alt="Aadhaar Front" 
+                                                               onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';" 
+                                                               width="80">
                                                         </a>
-                                                    </td>
+                                                      </td>
                                                     <td>Aadhaar Card front</td>
                                                     <td>{{ docs.aadhaar_number|default:"-" }}</td>
                                                     <td>{{ docs.aadhaar_card_front_updated_at|date:"Y-m-d H:i:s" }}</td>
@@ -799,11 +796,17 @@
                                                 <!-- Aadhaar Card Back -->
                                                 <tr>
                                                     <td>
-                                                        <a href="{{ docs.aadhaar_card_back.url }}" data-lightbox="aadhaar-set" data-title="Aadhaar Card Back">
-                                                            <img class="preview-img" id="aadhaar_card_back_preview" src="{{ docs.aadhaar_card_back.url }}" 
-                                                                alt="Aadhaar Back" onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';" width="80">
+                                                        <a href="javascript:void(0);" 
+                                                           data-toggle="modal" 
+                                                           data-target="#docViewerModal" 
+                                                           data-url="{{ docs.aadhaar_card_back.url }}" 
+                                                           data-title="Aadhaar Card Back">
+                                                          <img class="preview-img" id="aadhaar_card_back_preview" src="{{ docs.aadhaar_card_back.url }}" 
+                                                               alt="Aadhaar Back" 
+                                                               onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';" 
+                                                               width="80">
                                                         </a>
-                                                    </td>
+                                                      </td>
                                                     <td>Aadhaar Card Back</td>
                                                     <td>{{ docs.aadhaar_number|default:"-" }}</td>
                                                     <td>{{ docs.aadhaar_card_back_updated_at|date:"Y-m-d H:i:s" }}</td>
@@ -833,11 +836,17 @@
                                                 <!-- Pan Card -->
                                                 <tr>
                                                     <td>
-                                                        <a href="{{ docs.upload_pan.url }}" data-lightbox="pan-set" data-title="Pan Card">
-                                                            <img class="preview-img" id="upload_pan_preview" src="{{ docs.upload_pan.url }}" 
-                                                                alt="Pan Card" onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';" width="80">
+                                                        <a href="javascript:void(0);" 
+                                                           data-toggle="modal" 
+                                                           data-target="#docViewerModal" 
+                                                           data-url="{{ docs.upload_pan.url }}" 
+                                                           data-title="PAN Card">
+                                                          <img class="preview-img" id="upload_pan_preview" src="{{ docs.upload_pan.url }}" 
+                                                               alt="PAN Card" 
+                                                               onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';" 
+                                                               width="80">
                                                         </a>
-                                                    </td>
+                                                      </td>
                                                     <td>PAN Card</td>
                                                     <td>{{ docs.pan_number|default:"-" }}</td>
                                                     <td>{{ docs.upload_pan_updated_at|date:"Y-m-d H:i:s" }}</td>
@@ -867,11 +876,17 @@
                                                 <!-- Cancelled Cheque -->
                                                 <tr>
                                                     <td>
-                                                        <a href="{{ docs.upload_cheque.url }}" data-lightbox="cheque-set" data-title="Cancelled Cheque">
-                                                            <img class="preview-img" id="upload_cheque_preview" src="{{ docs.upload_cheque.url }}" 
-                                                                alt="Cheque" onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';" width="80">
+                                                        <a href="javascript:void(0);" 
+                                                           data-toggle="modal" 
+                                                           data-target="#docViewerModal" 
+                                                           data-url="{{ docs.upload_cheque.url }}" 
+                                                           data-title="Cancelled Cheque">
+                                                          <img class="preview-img" id="upload_cheque_preview" src="{{ docs.upload_cheque.url }}" 
+                                                               alt="Cheque" 
+                                                               onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';" 
+                                                               width="80">
                                                         </a>
-                                                    </td>
+                                                      </td>
                                                     <td>Cancelled Cheque</td>
                                                     <td>{{ docs.cheque_number|default:"-" }}</td>
                                                     <td>{{ docs.upload_cheque_updated_at|date:"Y-m-d H:i:s" }}</td>
@@ -901,11 +916,17 @@
                                                 <!-- 10th Marksheet -->
                                                 <tr>
                                                     <td>
-                                                        <a href="{{ docs.tenth_marksheet.url }}" data-lightbox="marksheet-set" data-title="10th Marksheet">
-                                                            <img class="preview-img" id="tenth_marksheet_preview" src="{{ docs.tenth_marksheet.url }}" 
-                                                                alt="10th Marksheet" onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';" width="80">
+                                                        <a href="javascript:void(0);" 
+                                                           data-toggle="modal" 
+                                                           data-target="#docViewerModal" 
+                                                           data-url="{{ docs.tenth_marksheet.url }}" 
+                                                           data-title="10th Marksheet">
+                                                          <img class="preview-img" id="tenth_marksheet_preview" src="{{ docs.tenth_marksheet.url }}" 
+                                                               alt="10th Marksheet" 
+                                                               onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';" 
+                                                               width="80">
                                                         </a>
-                                                    </td>
+                                                      </td>
                                                     <td>10th Marksheet</td>
                                                     <td>{{ docs.role_no|default:"-" }}</td>
                                                     <td>{{ docs.tenth_marksheet_updated_at|date:"Y-m-d H:i:s" }}</td>
@@ -1303,6 +1324,7 @@
 
     </script>
     
+    {% include "js-code.html" %}
     
     
     </body>

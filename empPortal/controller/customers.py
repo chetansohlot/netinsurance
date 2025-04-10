@@ -13,6 +13,9 @@ from datetime import datetime
 from django.urls import reverse
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
 
 def dictfetchall(cursor):
     "Returns all rows from a cursor as a dict"
@@ -216,3 +219,24 @@ def store(request):
     else:
         messages.error(request, "Invalid request.")
         return redirect('add-commission')
+
+
+@csrf_exempt
+def toggle_customer_status(request, customer_id):
+    if request.method == "POST":  # Ensure it's a POST request
+        try:
+            customer = get_object_or_404(QuotationCustomer, id=customer_id)
+            status = request.POST.get("status")  # Get status from AJAX request
+
+            if status == "1":
+                customer.active = True  # Set Active
+            else:
+                customer.active = False  # Set Inactive
+
+            customer.save()  # Save changes in the database
+
+            return JsonResponse({"success": True, "status": customer.active})
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)})
+    
+    return JsonResponse({"success": False, "error": "Invalid request method"})

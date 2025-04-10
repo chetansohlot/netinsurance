@@ -114,7 +114,7 @@ def commission_report(request):
     id  = request.user.id
     # Fetch policies
     role_id = Users.objects.filter(id=id).values_list('role_id', flat=True).first()
-    if role_id == 2:
+    if role_id != 1:
         policies = PolicyDocument.objects.filter(status=1,rm_id=id).exclude(rm_id__isnull=True).all().order_by('-id')
     else:
         policies = PolicyDocument.objects.filter(status=1).exclude(rm_id__isnull=True).all().order_by('-id')

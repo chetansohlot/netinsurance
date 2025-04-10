@@ -32,7 +32,7 @@ app = FastAPI()
 
 def dashboard(request):
     # return HttpResponse()
-    if request.user.is_authenticated and request.user.is_active == 1:
+    if request.user.is_authenticated:
         user = request.user
         return render(request,'dashboard.html',{'user':user})
     else:
@@ -719,7 +719,7 @@ def policyData(request):
     role_id = Users.objects.filter(id=user_id).values_list('role_id', flat=True).first()
 
     # Base queryset
-    if role_id == 2:
+    if role_id != 1:
         queryset = PolicyDocument.objects.filter(status=6, rm_id=user_id)
     else:
         queryset = PolicyDocument.objects.filter(status=6)
@@ -746,7 +746,11 @@ def policyData(request):
             except json.JSONDecodeError:
                 data.extracted_text = {}
 
-    policy_count = queryset.count()
+    # Base queryset
+    if role_id != 1:
+        policy_count = PolicyDocument.objects.filter(status=1, rm_id=user_id).count()
+    else:
+        policy_count = PolicyDocument.objects.filter(status=1).count()
 
     # Pagination
     per_page = request.GET.get('per_page', 10)
@@ -966,7 +970,7 @@ def bulkUploadLogs(request):
     id  = request.user.id
         # Fetch policies
     role_id = Users.objects.filter(id=id,status=1).values_list('role_id', flat=True).first()
-    if role_id == 2:
+    if role_id != 1:
      logs =  BulkPolicyLog.objects.filter(rm_id=id).exclude(rm_id__isnull=True).order_by('-id')
     else:
       logs = BulkPolicyLog.objects.all().order_by('-id')
