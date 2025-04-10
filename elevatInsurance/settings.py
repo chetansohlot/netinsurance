@@ -32,7 +32,7 @@ IRDAI_API_TOKEN = os.getenv('IRDAI_API_TOKEN','eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1N
 # SECURITY WARNING: don't run with debug turned on in production!
 APPLY_STATIC = os.getenv('APPLY_STATIC', 'FALSE').upper()
 
-DEBUG = True if APPLY_STATIC == 'TRUE' else False
+DEBUG = False if APPLY_STATIC == 'TRUE' else False
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 
