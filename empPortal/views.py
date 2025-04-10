@@ -574,15 +574,15 @@ def browsePolicy(request):
                 insurance_provider=processed_text.get("insurance_company", ""),
                 vehicle_number=vehicle_number,
                 policy_number=policy_number,
-                policy_issue_date=processed_text.get("issue_date", None),
-                policy_expiry_date=processed_text.get("expiry_date", None),
+                policy_issue_date=processed_text.get("issue_date", ""),
+                policy_expiry_date=processed_text.get("expiry_date", ""),
+                policy_start_date=processed_text.get('start_date', ""),
                 policy_period=processed_text.get("policy_period", ""),
                 holder_name=processed_text.get("insured_name", ""),
                 policy_total_premium=processed_text.get("gross_premium", 0),
                 policy_premium=processed_text.get("net_premium", 0),
                 sum_insured=processed_text.get("sum_insured", 0),
                 coverage_details=processed_text.get("coverage_details", ""),
-                policy_start_date=processed_text.get('start_date', None),
                 payment_status='Confirmed',
                 policy_type=processed_text.get('additional_details', {}).get('policy_type', ""),
                 vehicle_type=processed_text.get('vehicle_details', {}).get('vehicle_type', ""),
@@ -610,6 +610,14 @@ def browsePolicy(request):
         messages.error(request, "Please upload a PDF file.")
 
     return redirect('policy-mgt')
+
+def parse_date(date_str):
+    try:
+        if date_str:
+            return datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
+    except Exception:
+        pass
+    return None
 
 def extract_text_from_pdf(pdf_path):
     try:

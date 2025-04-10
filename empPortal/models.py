@@ -163,8 +163,8 @@ class PolicyDocument(models.Model):
     filename = models.CharField(max_length=255)
     insurance_provider = models.CharField(max_length=255)
     policy_number = models.CharField(max_length=255)
-    policy_issue_date = models.DateTimeField()
-    policy_expiry_date = models.DateTimeField()
+    policy_issue_date = models.CharField(max_length=255)
+    policy_expiry_date = models.CharField(max_length=255)
     vehicle_number = models.CharField(max_length=255)
     holder_name = models.CharField(max_length=255)
     policy_period = models.CharField(max_length=255)
@@ -178,7 +178,7 @@ class PolicyDocument(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.IntegerField()
     coverage_details = models.JSONField()
-    policy_start_date = models.DateTimeField()
+    policy_start_date = models.CharField(max_length=255)
     payment_status = models.CharField(max_length=255)
     policy_type = models.CharField(max_length=255)
     vehicle_type = models.CharField(max_length=255)
@@ -205,16 +205,26 @@ class PolicyDocument(models.Model):
          return Commission.objects.filter(member_id=self.rm_id ).first()
 
     @property
-
     def start_date(self):
-        return self.policy_start_date.strftime("%d-%m-%Y") if self.policy_start_date else None
-    
-    def issue_date(self):
-        return self.policy_issue_date.strftime("%d-%m-%Y") if self.policy_issue_date else None
-    
-    def expiry_date(self):
-        return self.policy_expiry_date.strftime("%d-%m-%Y") if self.policy_expiry_date else None
+        try:
+            return datetime.strptime(self.policy_start_date, "%Y-%m-%d %H:%M:%S").strftime("%d-%m-%Y")
+        except (ValueError, TypeError):
+            return None
 
+    @property
+    def issue_date(self):
+        try:
+            return datetime.strptime(self.policy_issue_date, "%Y-%m-%d %H:%M:%S").strftime("%d-%m-%Y")
+        except (ValueError, TypeError):
+            return None
+
+    @property
+    def expiry_date(self):
+        try:
+            return datetime.strptime(self.policy_expiry_date, "%Y-%m-%d %H:%M:%S").strftime("%d-%m-%Y")
+        except (ValueError, TypeError):
+            return None
+        
     class Meta:
         db_table = 'policydocument'
 
