@@ -1033,9 +1033,11 @@ def bulkPolicyView(request, id):
     # Correct the filter logic
     policy_files = PolicyDocument.objects.filter(bulk_log_id=id)
 
-    return render(request, 'policy/policy-files.html', {'files': policy_files})
+    return render(request, 'policy/policy-files.html', {'files': policy_files,'log_id':id})
   
 def reprocessBulkPolicies(request):
+    if not request.user.is_authenticated and request.user.is_active == 1:
+        return redirect('login')
     if request.method == "POST":
         unprocessFiles = request.POST.get('reprocess_bulk_policies', '')
         
@@ -1133,7 +1135,13 @@ def reprocessBulkPolicies(request):
         return redirect(request.META.get('HTTP_REFERER', '/'))
 
 def continueBulkPolicies(request):
+    if not request.user.is_authenticated and request.user.is_active == 1:
+        return redirect('login')
     if request.method == "POST":
+        log_id = request.POST.get('log_id', None)
+        if log_id == None:
+            return redirect('bulk-upload-logs')
+        
         reprocessFiles = request.POST.get('continue_bulk_policies', '')
         
         if not reprocessFiles:
@@ -1163,7 +1171,7 @@ def continueBulkPolicies(request):
             except ExtractedFile.DoesNotExist:
                 print(f"File with ID {file_id} not found in extraction")
 
-        return redirect('bulk-upload-logs')
+        return redirect('bulk-policies',log_id)
     else:
         messages.error(request, 'Invalid URL')
         return redirect(request.META.get('HTTP_REFERER', '/'))

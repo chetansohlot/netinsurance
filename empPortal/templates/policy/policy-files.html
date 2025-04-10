@@ -28,6 +28,7 @@ Policy Data
                     <form id="myForm" action="{% url 'continue-bulk-policies' %}" method="post">
                             {% csrf_token %}
                         <input type="hidden" id="continue-bulk-policies" name="continue_bulk_policies">
+                        <input type="hidden" id="log_id" name="log_id" value="{{log_id}}">
                         <button type="submit" class="breadcrump-addbtn mx-1" id="">Re Process</button>
                     </form>
                 </div>
