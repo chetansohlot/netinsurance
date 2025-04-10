@@ -52,7 +52,6 @@ Policy Data
                         <thead class="table-thead-bg-light table-header-fix">
                           <tr>
                             <th></th>
-                            <th>File ID</th>
                             <th>File Name</th>
                             <th>Date of Upload</th>
                             <th>File URL</th>
@@ -74,7 +73,6 @@ Policy Data
                                       id="checkbox-{{ data.id }}">
                                     </td>
                                     <!-- <td><input type="checkbox" name="reupload[]" class="reprocess" value="{{ data.id }}" {% if data.status == 6 or data.status == 7 %}disabled{% endif %}></td> -->
-                                    <td>{{data.id}}</td>
                                     <td>{{data.filename}}</td>
                                     <td>{{data.created_at}}</td>
                                     <td>{{data.filepath}}</td>
