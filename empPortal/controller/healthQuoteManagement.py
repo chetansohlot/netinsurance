@@ -23,7 +23,7 @@ def dictfetchall(cursor):
     return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
 def index(request):
-    if not request.user.is_authenticated:
+    if not request.user.is_authenticated or request.user.is_active != 1:
         return redirect('login')
 
     # Get filters from request
@@ -47,16 +47,16 @@ def index(request):
         quotations = quotations.filter(name_as_per_pan__icontains=customer_name)
     if customer_mobile:
         quotations = quotations.filter(mobile_number__icontains=customer_mobile)
-    if policy_type:
-        quotations = quotations.filter(vehicleinfo__policy_type__icontains=policy_type)
-    if quote_status:
-        quotations = quotations.filter(status__icontains=quote_status)
-    if vehicle_type:
-        quotations = quotations.filter(vehicleinfo__vehicle_type__icontains=vehicle_type)
-    if ncb:
-        quotations = quotations.filter(vehicleinfo__ncb_percentage=ncb)
-    if insurer_name:
-        quotations = quotations.filter(vehicleinfo__insurer_name__icontains=insurer_name)
+    # if policy_type:
+    #     quotations = quotations.filter(vehicleinfo__policy_type__icontains=policy_type)
+    # if quote_status:
+    #     quotations = quotations.filter(status__icontains=quote_status)
+    # if vehicle_type:
+    #     quotations = quotations.filter(vehicleinfo__vehicle_type__icontains=vehicle_type)
+    # if ncb:
+    #     quotations = quotations.filter(vehicleinfo__ncb_percentage=ncb)
+    # if insurer_name:
+    #     quotations = quotations.filter(vehicleinfo__insurer_name__icontains=insurer_name)
 
     # Handle date range filtering
     if quote_date_range:
