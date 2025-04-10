@@ -63,9 +63,9 @@
                                               <label class="signup-form-lbl">Password <span class="asterisk">*</span></label>     
                                               <div class="position-relative">                   
                                                   <input type="password" name="password" class="signup-form-field" placeholder="*********" id="login_password_id" autocomplete="off" />
-                                                  <!-- <span class="inputicon-right showhide-password" onclick="seePassword()">
+                                                  <span class="inputicon-right showhide-password">
                                                       <i class="fa-solid fa-eye"></i>
-                                                  </span> -->
+                                                  </span>
                                               </div>  
                                               <span class="error password_err"></span>
                                           </div>    
@@ -166,24 +166,8 @@
         </div>
       </div>
     </section>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script type="text/javascript">
-        function seePassword() {
-          var passwordInput = $('#login_password_id');
-          var type = passwordInput.prop('type');
-          if(type == "password"){
-            console.log('password');
-            passwordInput.prop('type', 'text');
-          }else{
-            console.log('text');
-            passwordInput.prop('type','password');
-          }
-        }
-        
-        $('.showhide-password').click(function () {
-          $('.showhide-password i').toggleClass('fa-eye fa-eye-slash')
-        })
-
+     
         $(document).ready(function () {
           $("input[name='loginvia']").change(function () {
             if ($("#login_via_email").is(":checked")) {
