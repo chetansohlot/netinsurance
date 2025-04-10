@@ -125,6 +125,12 @@
             },
             terms: {
                 required: true
+            },
+            pan_no:{
+                required: true,
+                maxlength:10,
+                minlength:10,
+                regex: "[A-Z]{5}[0-9]{4}[A-Z]{1}" 
             }
         },
         messages: {
@@ -155,6 +161,12 @@
             },
             terms: {
                 required: "You must agree to the Terms & Conditions"
+            },
+            pan_no: {
+                required: "Please enter your pan number",
+                maxlength : "Pan Number Must Be of 10 Characters",
+                minlength : "Pan Number Must Be of 10 Characters",
+                regex: "Please enter a valid PAN number (e.g., ABCDE1234F)."
             }
         },
         errorElement: "div",
