@@ -10,7 +10,7 @@
 10. pip install openpyxl
 12. pip install frontend
 13. pip install tools
-
+14. pip install django_q
 or 
 pip install django requests python-magic openai pymysql python-dotenv fastapi PyMuPDF pandas faker openpyxl watchdog frontend tools pdfkit
 
@@ -23,3 +23,6 @@ watchdog = watchmedo auto-restart --patterns="*.py;*.html;*.css" --recursive -- 
 
 
 wkhtmltopdf = /usr/local/bin/wkhtmltopdf
+
+to run bulk uppload use 
+python manage.py qcluster
