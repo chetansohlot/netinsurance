@@ -59,7 +59,7 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button"
                     data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="{% static 'dist/img/admin-logo-mini.png' %}" alt="User Image" class="rounded-circle me-2" style="width: 30px; height: 30px;">
+                        <img src="{% static 'dist/img/avatar5.png' %}" alt="User Image" class="rounded-circle me-2" style="width: 30px; height: 30px; margin-top:-4px;">
                         <span>{{ request.user.full_name|default:request.user.first_name }}</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
@@ -68,7 +68,6 @@
                                 {% if request.user.phone %} +91 {{ request.user.phone }} {% endif %}
                             </p>
                         </li>
-                        <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item text-primary" href="{% url 'my-account' %}">My Account</a></li>
                         <li><a class="dropdown-item text-success" href="{% url 'change-password' %}">Change Password</a></li>
                         <li>
