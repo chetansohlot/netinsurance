@@ -184,6 +184,6 @@ def create_or_edit_lead(request, lead_id=None):
                 created_at=now(),
                 updated_at=now()
             )
-            messages.success(request, f"Lead created successfully! Lead ID: {new_lead.lead_id}")
+            messages.success(request, f"Lead created successfully!")
         
         return redirect("leads-mgt")
