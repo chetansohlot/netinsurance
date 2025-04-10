@@ -45,47 +45,61 @@ def dictfetchall(cursor):
     columns = [col[0] for col in cursor.description]
     return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
+
 def index(request):
     if not request.user.is_authenticated:
         return redirect('login')
 
     per_page = request.GET.get('per_page', 10)
-    search_field = request.GET.get('search_field', '')  # Which field to search
-    search_query = request.GET.get('search_query', '')  # Search value
+    search_field = request.GET.get('search_field', '')
+    search_query = request.GET.get('search_query', '')
     global_search = request.GET.get('global_search', '').strip()
+    shorting = request.GET.get('shorting', '')  # Get sorting preference
 
     try:
         per_page = int(per_page)
     except ValueError:
-        per_page = 10  # Default to 10 if invalid value is given
+        per_page = 10
 
+    # Base queryset
     if request.user.role_id != 1:
-        leads = Leads.objects.filter(created_by=request.user.id).order_by('-created_at')
+        leads = Leads.objects.filter(created_by=request.user.id)
     else:
-        leads = Leads.objects.all().order_by('-created_at')
+        leads = Leads.objects.all()
 
-
+    # Global search
     if global_search:
         leads = leads.filter(
-            Q(name_as_per_pan__icontains=global_search) |  # Search by name
-            Q(email_address__icontains=global_search) |  # Search by email
-            Q(mobile_number__icontains=global_search) |  # Search by mobile number
-            Q(pan_card_number__icontains=global_search) |  # Search by PAN card number
-            Q(state__icontains=global_search) |  # Search by state
-            Q(city__icontains=global_search) |  # Search by city
-            Q(lead_id__icontains=global_search)  # Search by city
+            Q(name_as_per_pan__icontains=global_search) |
+            Q(email_address__icontains=global_search) |
+            Q(mobile_number__icontains=global_search) |
+            Q(pan_card_number__icontains=global_search) |
+            Q(state__icontains=global_search) |
+            Q(city__icontains=global_search) |
+            Q(lead_id__icontains=global_search)
         )
 
-    # Apply filtering if search_field and search_query are provided
+    # Field-specific search
     if search_field and search_query:
         filter_args = {f"{search_field}__icontains": search_query}
         leads = leads.filter(**filter_args)
 
-    if request.user.role_id != 1:
-        total_leads = Leads.objects.filter(created_by=request.user.id).order_by('-created_at').count()
+    # Sorting
+    if shorting == 'name_asc':
+        leads = leads.order_by('name_as_per_pan')
+    elif shorting == 'name_desc':
+        leads = leads.order_by('-name_as_per_pan')
+    elif shorting == 'recently_added':
+        leads = leads.order_by('-created_at')
+    elif shorting == 'recently_updated':
+        leads = leads.order_by('-updated_at')
     else:
-        total_leads = Leads.objects.all().order_by('-created_at').count()
-    # Paginate results
+        leads = leads.order_by('-created_at')  # Default sort
+
+    # Count
+    total_leads = leads.count()
+
+    # Pagination
     paginator = Paginator(leads, per_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -96,7 +110,9 @@ def index(request):
         'per_page': per_page,
         'search_field': search_field,
         'search_query': search_query,
+        'shorting': shorting,  # Pass to template to retain selected option
     })
+
     
 def viewlead(request, lead_id):
     if request.user.is_authenticated:
