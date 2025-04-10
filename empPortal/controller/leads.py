@@ -134,28 +134,41 @@ def termlead(request):
         return redirect('login')
 
 
-
+from datetime import datetime
 
 def create_or_edit_lead(request, lead_id=None):
     if not request.user.is_authenticated:
         return redirect('login')
     
     customers = QuotationCustomer.objects.all()
-    
     lead = None
+
     if lead_id:
         lead = get_object_or_404(Leads, id=lead_id)
     
     if request.method == "GET":
-        return render(request, 'leads/create.html', {'lead': lead, 'customers': customers})
-    
+        return render(request, 'leads/create.html', {
+            'lead': lead,
+            'customers': customers
+        })
+
     elif request.method == "POST":
         mobile_number = request.POST.get("mobile_number", "").strip()
         email_address = request.POST.get("email_address", "").strip()
         quote_date = request.POST.get("quote_date", None)
         name_as_per_pan = request.POST.get("name_as_per_pan", "").strip()
         pan_card_number = request.POST.get("pan_card_number", "").strip() or None
-        date_of_birth = request.POST.get("date_of_birth", None)
+        
+        # ✅ Handle date_of_birth safely
+        date_of_birth_str = request.POST.get("date_of_birth", "").strip()
+        date_of_birth = None
+        if date_of_birth_str:
+            try:
+                date_of_birth = datetime.strptime(date_of_birth_str, "%Y-%m-%d").date()
+            except ValueError:
+                messages.error(request, "Invalid date format for Date of Birth. Please use YYYY-MM-DD.")
+                return redirect(request.path)
+
         state = request.POST.get("state", "").strip()
         city = request.POST.get("city", "").strip()
         pincode = request.POST.get("pincode", "").strip()
@@ -182,7 +195,7 @@ def create_or_edit_lead(request, lead_id=None):
             lead.save()
             messages.success(request, f"Lead updated successfully! Lead ID: {lead.lead_id}")
         else:
-            new_lead = Leads.objects.create(
+            Leads.objects.create(
                 mobile_number=mobile_number,
                 email_address=email_address,
                 quote_date=quote_date,
@@ -201,5 +214,5 @@ def create_or_edit_lead(request, lead_id=None):
                 updated_at=now()
             )
             messages.success(request, f"Lead created successfully!")
-        
+
         return redirect("leads-mgt")

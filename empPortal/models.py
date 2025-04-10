@@ -115,10 +115,10 @@ class Leads(models.Model):
     lead_id = models.CharField(max_length=20, unique=True)  # Unique customer identifier (e.g., CUS2343545)
     mobile_number = models.CharField(max_length=15)  # Customer's mobile number
     email_address = models.CharField(max_length=255)  # Customer's email address
-    quote_date = models.DateField(null=True, blank=True)  # Quote date
+    quote_date = models.CharField(max_length=25,null=True, blank=True)  # Quote date
     name_as_per_pan = models.CharField(max_length=255)  # Customer's name as per PAN
     pan_card_number = models.CharField(max_length=20, null=True, blank=True)  # PAN card number (optional)
-    date_of_birth = models.DateField(null=True, blank=True)  # Customer's date of birth (optional)
+    date_of_birth = models.CharField(max_length=25,null=True, blank=True)  # Customer's date of birth (optional)
     state = models.CharField(max_length=100, null=True, blank=True)  # State of the customer
     city = models.CharField(max_length=100, null=True, blank=True)  # City of the customer
     pincode = models.CharField(max_length=10, null=True, blank=True)  # Pincode of the customer
