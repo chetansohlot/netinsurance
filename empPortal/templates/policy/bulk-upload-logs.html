@@ -57,6 +57,7 @@ Policy Data
                     <table class="table table-design table-width-design">
                       <thead class="table-thead-bg-light table-header-fix">
                         <tr>
+                          <th>View Uploaded Files</th>
                           <th>Campaign Name</th>
                           <th>File Name</th>
                           <th>File URL</th>
@@ -73,6 +74,7 @@ Policy Data
                       <tbody>
                         {% for log in logs %}
                           <tr>
+                            <td><a href="{% url 'bulk-policies'  id=log.id %}">Click Here</a></td>
                             <td>{{ log.camp_name }}</td>
                             <td>{{ log.file_name }}</td>
                             <td>
@@ -83,11 +85,15 @@ Policy Data
                             <td>{{ log.count_not_pdf }}</td>
                             <td>{{ log.count_error_pdf_files }} / {{ log.count_error_process_pdf_files }}</td>
                             <td>{{ log.count_uploaded_files }}</td>
-                            <td><a href="{% url 'policy-upload-view'  id=log.id %}"><i class="fa-solid fa-eye"></i></a></td>
+                            <td><a href="{% url 'failed-policy-upload-view'  id=log.id %}"><i class="fa-solid fa-eye"></i></a></td>
                             <td>{{ log.created_date }}</td>
                             <td>
                               {% if log.status == 1 %}
-                                <span class="badge badge-success">Completed</span>
+                                <span class="badge badge-info">Zip Uploaded</span>
+                              {% elif log.status == 2 %}
+                                <span class="badge badge-dark">In Progress</span>
+                              {% elif log.status == 3 %}
+                                <span class="badge badge-success">Complete</span>
                               {% else %}
                                 <span class="badge badge-warning">Pending</span>
                               {% endif %}

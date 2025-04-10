@@ -214,3 +214,17 @@ def store_log(log_type, log_for, message, user_id=None, ip_address=None):
             INSERT INTO logs (log_type, log_for, message, user_id, ip_address, created_at, updated_at)
             VALUES (%s, %s, %s, %s, %s, %s, %s)
         """, (log_type, log_for, message, user_id, ip_address, ist_now, ist_now))
+
+def getUserNameByUserId(user_id):
+    try:
+        return Users.objects.get(id=user_id).full_name
+    except Users.DoesNotExist:
+        return None
+
+def commisionRateByMemberId(member_id):
+    commission_data = Commission.objects.filter(member_id=member_id).first()
+    return commission_data
+
+def insurercommisionRateByMemberId(member_id):
+    commission_data = Commission.objects.filter(member_id=member_id).first()
+    return commission_data
