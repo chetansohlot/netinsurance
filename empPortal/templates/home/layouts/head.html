@@ -60,7 +60,7 @@
                     <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button"
                     data-bs-toggle="dropdown" aria-expanded="false">
                         <img src="{% static 'dist/img/avatar5.png' %}" alt="User Image" class="rounded-circle me-2" style="width: 30px; height: 30px; margin-top:-4px;">
-                        <span>{{ request.user.full_name|default:request.user.first_name }}</span>
+                        <span style="position: relative; top:-2px;">{{ request.user.full_name|default:request.user.first_name }}</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                         <li>
