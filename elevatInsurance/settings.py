@@ -31,9 +31,8 @@ IRDAI_AGENT_CHECK_URL = os.getenv('IRDAI_AGENT_CHECK_URL','https://sandbox.surep
 IRDAI_API_TOKEN = os.getenv('IRDAI_API_TOKEN','eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc0MzA2MzU1NiwianRpIjoiOWVmZThhMWQtN2Y1NS00NjBkLTg4OWItODY1YjJjMTYyYjRlIiwidHlwZSI6ImFjY2VzcyIsImlkZW50aXR5IjoiZGV2Lm5ldGxlYWZpbmZvc29mdEBzdXJlcGFzcy5pbyIsIm5iZiI6MTc0MzA2MzU1NiwiZXhwIjoxNzQ1NjU1NTU2LCJlbWFpbCI6Im5ldGxlYWZpbmZvc29mdEBzdXJlcGFzcy5pbyIsInRlbmFudF9pZCI6Im1haW4iLCJ1c2VyX2NsYWltcyI6eyJzY29wZXMiOlsidXNlciJdfX0.bZ8TiTwB2icgumtCCp-MTzI3uamEm4b7gTYT7JC4Yn0')
 # SECURITY WARNING: don't run with debug turned on in production!
 APPLY_STATIC = os.getenv('APPLY_STATIC', 'FALSE').upper()
-DEBUG_CHECK = os.getenv('DEBUG_CHECK', 'FALSE').upper()
 
-DEBUG = True if DEBUG_CHECK == 'TRUE' else False
+DEBUG = True if APPLY_STATIC == 'TRUE' else False
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 
@@ -180,10 +179,10 @@ if APPLY_STATIC or IS_WINDOWS:  # Windows (Development)
     MEDIA_ROOT = os.path.join(BASE_DIR, 'empPortal', 'media')  # Windows-friendly path
 
 else:  # Linux (Production with Nginx)
-    STATIC_URL = '/static/'
+    STATIC_URL = '/empPortal/static/'
     STATIC_ROOT = '/usr/share/nginx/html/netinsurance/empPortal/static/'
 
-    MEDIA_URL = "/media/"
+    MEDIA_URL = "/empPortal/media/"
     MEDIA_ROOT = '/usr/share/nginx/html/netinsurance/empPortal/media/'
 
 # Default primary key field type
