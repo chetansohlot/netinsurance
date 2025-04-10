@@ -448,7 +448,7 @@ def memberView(request, user_id):
             product_id = commission.get('product_id')
             commission['product_name'] = product_dict.get(int(product_id), 'Unknown') if product_id is not None else 'Unknown'
 
-        branches = Branch.objects.all().order_by('-created_at')
+        branches = Branch.objects.filter(status='Active').order_by('-created_at')
 
         manager_list = []
         branch = None

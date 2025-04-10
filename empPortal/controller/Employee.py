@@ -276,7 +276,8 @@ def create_or_edit_allocation(request, employee_id=None):
 
     # Fetch necessary data for the form
     departments = Department.objects.all().order_by('name')
-    branches = Branch.objects.all().order_by('branch_name')
+    branches = Branch.objects.filter(status='Active').order_by('-created_at')
+
     roles = Roles.objects.exclude(id__in=[1, 4])
     senior_users = Users.objects.filter(role_id=2).values('id', 'first_name', 'last_name', 'senior_id')  # Managers
 
