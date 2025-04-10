@@ -305,36 +305,42 @@
                           <div class="tab-content tab-scrollbar">
                             
                             <div class="tab-pane" id="allocation-tab">
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th>Type</th>
-                                                <th>Name</th>
-                                                <th>Email</th>
-                                                <th>Contact No</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>Branch</td>
-                                                <td>{{ branch.branch_name|default:"N/A" }}</td>
-                                                <td>{{ branch.email|default:"N/A" }}</td>
-                                                <td>{{ branch.mobile|default:"N/A" }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Branch Manager</td>
-                                                <td>{{ branch_manager.full_name|default:"N/A" }}</td>
-                                                <td>{{ branch_manager.email|default:"N/A" }}</td>
-                                                <td>{{ branch_manager.phone|default:"N/A" }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Sales Manager</td>
-                                                <td>{{ sales_manager.full_name|default:"N/A" }}</td>
-                                                <td>{{ sales_manager.email|default:"N/A" }}</td>
-                                                <td>{{ sales_manager.phone|default:"N/A" }}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Type</th>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Contact No</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Branch</td>
+                                            <td>{{ branch.branch_name|default:"N/A" }}</td>
+                                            <td>{{ branch.email|default:"N/A" }}</td>
+                                            <td>{{ branch.mobile|default:"N/A" }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Manager</td>
+                                            <td>{{ manager_details.full_name|default:"N/A" }}</td>
+                                            <td>{{ manager_details.email|default:"N/A" }}</td>
+                                            <td>{{ manager_details.phone|default:"N/A" }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Team leader</td>
+                                            <td>{{ tl_details.full_name|default:"N/A" }}</td>
+                                            <td>{{ tl_details.email|default:"N/A" }}</td>
+                                            <td>{{ tl_details.phone|default:"N/A" }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Relationship Member</td>
+                                            <td>{{ rm_details.full_name|default:"N/A" }}</td>
+                                            <td>{{ rm_details.email|default:"N/A" }}</td>
+                                            <td>{{ rm_details.phone|default:"N/A" }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                                 
                             </div>
                             <div class="active tab-pane" id="membership-tab">

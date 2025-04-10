@@ -48,21 +48,45 @@ def index(request):
         user_details = Users.objects.get(id=request.user.id)  # Fetching the user's details
 
         
+        
+        branches = Branch.objects.all().order_by('-created_at')
+
+        manager_list = []
         branch = None
         if user_details.branch_id:
             branch = Branch.objects.filter(id=user_details.branch_id).first()
+            managers = Users.objects.filter(branch_id=user_details.branch_id, role_id=2)
+            manager_list = [{'id': m.id, 'full_name': f'{m.first_name} {m.last_name}'} for m in managers]
                 
-        senior = None
+        rm = None
         if user_details.senior_id:
-            senior = Users.objects.filter(id=user_details.senior_id).first()
+            rm = Users.objects.filter(id=user_details.senior_id).first()
+
+        rm_list = []
+        tl = None
+        if rm and rm.senior_id:
+            rms = Users.objects.filter(senior_id=rm.senior_id, role_id=5)
+            rm_list = [{'id': r.id, 'full_name': f'{r.first_name} {r.last_name}'} for r in rms]
+            tl = Users.objects.filter(id=rm.senior_id).first()
 
         manager = None
-        if senior and senior.senior_id:  # Ensure senior is not None before accessing senior_id
-            manager = Users.objects.filter(id=senior.senior_id).first()
+        tl_list = []
+
+        if tl and tl.senior_id: 
+            tls = Users.objects.filter(senior_id=tl.senior_id, role_id=3)
+            tl_list = [{'id': t.id, 'full_name': f'{t.first_name} {t.last_name}'} for t in tls]
+            manager = Users.objects.filter(id=tl.senior_id).first()
             
         return render(request, 'help-and-support/index.html', {
             'user_details': user_details,
-            'sales_manager': senior,
+            'manager_list': manager_list,
+            'rm_list': rm_list,
+            'tl_list': tl_list,
+            'branches': branches,
+            'rm_details': rm,
+            'tl_details': tl,
+            'branch': branch,
+            'manager_details': manager,
             'branch': branch,
             'branch_manager': manager,
         })
