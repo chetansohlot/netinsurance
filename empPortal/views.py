@@ -25,26 +25,29 @@ from .models import UploadedZip
 from django.core.files.base import ContentFile
 from .tasks import process_zip_file
 from django_q.tasks import async_task
-
+from django.db.models import Sum
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 
 app = FastAPI()
 
+
 def dashboard(request):
-    # return HttpResponse()
     if request.user.is_authenticated:
         user = request.user
 
-        
         if request.user.role_id != 1:
-            policy_count = PolicyDocument.objects.filter(status=6, rm_id=request.user.id).count()
+            policy_qs = PolicyDocument.objects.filter(status=6, rm_id=request.user.id)
         else:
-            policy_count = PolicyDocument.objects.filter(status=6).count()
+            policy_qs = PolicyDocument.objects.filter(status=6)
 
-        return render(request,'dashboard.html',{
-            'user':user,
-            "policy_count": policy_count,
-            })
+        policy_count = policy_qs.count()
+        total_revenue = policy_qs.aggregate(Sum('policy_premium'))['policy_premium__sum'] or 0
+
+        return render(request, 'dashboard.html', {
+            'user': user,
+            'policy_count': policy_count,
+            'total_revenue': total_revenue,
+        })
     else:
         return redirect('login')
 
