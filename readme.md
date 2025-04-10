@@ -10,7 +10,8 @@
 10. pip install openpyxl
 12. pip install frontend
 13. pip install tools
-14. pip install django_q
+14. pip install django_q2
+15. pip install dramatiq
 or 
 pip install django requests python-magic openai pymysql python-dotenv fastapi PyMuPDF pandas faker openpyxl watchdog frontend tools pdfkit
 

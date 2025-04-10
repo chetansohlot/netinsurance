@@ -23,7 +23,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.core.mail import send_mail
 import random
-from .utils import encrypt_text,decrypt_text,check_agent_linked_info
+from .utils import check_agent_linked_info
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 
 app = FastAPI()
