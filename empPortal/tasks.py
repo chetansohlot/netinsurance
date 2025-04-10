@@ -408,9 +408,9 @@ def update_policy_data(file_id):
             policy_doc.policy_premium = processed_text.get("net_premium", 0)
             policy_doc.sum_insured = processed_text.get("sum_insured", 0)
             policy_doc.coverage_details = coverage_details
-            policy_doc.policy_issue_date = processed_text.get("issue_date", None)
-            policy_doc.policy_expiry_date = processed_text.get("expiry_date",None)
-            policy_doc.policy_start_date = processed_text.get("start_date",None)
+            policy_doc.policy_issue_date = processed_text.get("issue_date", "")
+            policy_doc.policy_expiry_date = processed_text.get("expiry_date","")
+            policy_doc.policy_start_date = processed_text.get("start_date","")
             policy_doc.payment_status = 'Confirmed'
             policy_doc.policy_type = processed_text.get('additional_details', {}).get('policy_type', "")
             vehicle_details = processed_text.get('vehicle_details', {})

@@ -824,32 +824,31 @@ def editPolicy(request, id):
   
 def get_pdf_path(request, filepath):
     """
-    Returns a full URL for the media file if the filepath starts with '/media/'.
-    Otherwise, attempts to build a valid URL by checking file existence.
+    Returns the absolute URI to the PDF file if it exists, otherwise an empty string.
     """
     if not filepath:
         return ""
 
     filepath_str = str(filepath).replace('\\', '/')
+    rel_path = ""
+    
+    if 'media/' in filepath_str:
+        rel_path = filepath_str.split('media/')[-1]
+        absolute_file_path = os.path.join(settings.MEDIA_ROOT, rel_path)
 
-    # Case 1: Already a media URL (starts with /media/)
-    if filepath_str.startswith('/media/'):
-        return request.build_absolute_uri(filepath_str)
+        if not os.path.exists(absolute_file_path):
+            # Try fallback inside empPortal/media
+            fallback_path = os.path.join(settings.BASE_DIR, 'empPortal', 'media', rel_path)
+            if os.path.exists(fallback_path):
+                absolute_file_path = fallback_path
+            else:
+                rel_path = ""  # File not found in either location
 
-    # Case 2: Clean path (filename only or relative)
-    rel_path = filepath_str.lstrip('/')
+        if rel_path:
+            media_url_path = urljoin(settings.MEDIA_URL, rel_path.replace('\\', '/'))
+            return request.build_absolute_uri(media_url_path)
 
-    # Check default MEDIA_ROOT
-    absolute_file_path = os.path.join(settings.MEDIA_ROOT, rel_path)
-    if not os.path.exists(absolute_file_path):
-        # Fallback to empPortal/media
-        fallback_path = os.path.join(settings.BASE_DIR, 'empPortal', 'media', rel_path)
-        if not os.path.exists(fallback_path):
-            return ""
-
-    # Return URL
-    media_url_path = urljoin(settings.MEDIA_URL, rel_path)
-    return request.build_absolute_uri(media_url_path)
+    return ""
 
 def parse_date(date_str):
     """Convert DD-MM-YYYY to YYYY-MM-DD format."""
