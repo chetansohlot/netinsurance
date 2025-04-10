@@ -180,10 +180,10 @@ if APPLY_STATIC or IS_WINDOWS:  # Windows (Development)
     MEDIA_ROOT = os.path.join(BASE_DIR, 'empPortal', 'media')  # Windows-friendly path
 
 else:  # Linux (Production with Nginx)
-    STATIC_URL = '/empPortal/static/'
+    STATIC_URL = '/static/'
     STATIC_ROOT = '/usr/share/nginx/html/netinsurance/empPortal/static/'
 
-    MEDIA_URL = "/empPortal/media/"
+    MEDIA_URL = "/media/"
     MEDIA_ROOT = '/usr/share/nginx/html/netinsurance/empPortal/media/'
 
 # Default primary key field type
