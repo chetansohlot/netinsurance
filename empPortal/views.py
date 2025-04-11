@@ -4,10 +4,10 @@ from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.template import loader
-from .models import Roles,Users, Department,PolicyDocument,BulkPolicyLog, PolicyInfo, Branch, UserFiles,UnprocessedPolicyFiles, Commission, Branch, FileAnalysis, ExtractedFile
+from .models import Roles,Users, Department,PolicyDocument,BulkPolicyLog, PolicyInfo, Branch, UserFiles,UnprocessedPolicyFiles, Commission, Branch, FileAnalysis, ExtractedFile, ChatGPTLog
 from django.contrib.auth import authenticate, login ,logout
 from django.core.files.storage import FileSystemStorage
-import re
+import re, logging
 import requests
 from fastapi import FastAPI, File, UploadFile
 import fitz
@@ -26,7 +26,11 @@ from django.core.files.base import ContentFile
 from .tasks import process_zip_file
 from django_q.tasks import async_task
 from django.db.models import Sum
+from django.utils import timezone
+from django.utils.timezone import now
+
 OPENAI_API_KEY = settings.OPENAI_API_KEY
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
@@ -493,6 +497,9 @@ def updateUserStatus(request):
         return redirect('login')
     
 def policyMgt(request):
+    if not request.user.is_authenticated and request.user.is_active != 1:
+        messages.error(request, "Please Login First")
+        return redirect('login')
     return render(request,'policy/policy-mgt.html')
 
 def bulkPolicyMgt(request):
@@ -502,6 +509,9 @@ def bulkPolicyMgt(request):
     return render(request,'policy/bulk-policy-mgt.html',{'users':rms})
 
 def browsePolicy(request):
+    if not request.user.is_authenticated and request.user.is_active != 1:
+        messages.error(request, "Please Login First")
+        return redirect('login')
     if request.method == "POST" and request.FILES.get("image"):
         image = request.FILES["image"]
          # Validate ZIP file format
@@ -724,17 +734,56 @@ def process_text_with_chatgpt(text):
     }
 
     try:
+        log_entry = ChatGPTLog.objects.create(
+            prompt=prompt,
+            created_at=now()
+        )
+    except:
+        logger.error(f"Error In ChatGPT logentry")
+        
+    try:
         response = requests.post(api_url, json=data, headers=headers)
-        if response.status_code == 200:
+
+        if hasattr(response, "status_code"):
+            log_entry.status_code = response.status_code
+            
+        if hasattr(response, "status_code") and response.status_code == 200:
+
             result = response.json()
             raw_output = result["choices"][0]["message"]["content"].strip()
-            clean_json = re.sub(r"```json\n|\n```", "", raw_output).strip()
-            return json.loads(clean_json)
+            
+            try:
+                clean_json = re.sub(r"```json\n|\n```|```", "", raw_output).strip()
+                
+                parsed_json = json.loads(clean_json)
+                log_entry.response = json.dumps(parsed_json, indent=4)
+                log_entry.is_successful = True
+                log_entry.save()
+                return parsed_json
+            except json.JSONDecodeError as e:
+                logger.error(f"JSON decode error {str(e)}")
+                log_entry.response = raw_output
+                log_entry.error_message = f"JSON decode error: {str(e)}"
+                log_entry.save()
+                
+                return json.dumps({
+                    "error": "JSON decode error",
+                    "raw_output": raw_output,
+                    "details": str(e)
+                }, indent=4)
         else:
+            log_entry.error_message = response.text
+            log_entry.save()
             return json.dumps({"error": f"API Error: {response.status_code}", "details": response.text}, indent=4)
     
     except requests.exceptions.RequestException as e:
+        logger.error(f"Request failed ,details: {str(e)}")
+        
+        log_entry.error_message = str(e)
+        log_entry.save()
+        
         return json.dumps({"error": "Request failed", "details": str(e)}, indent=4)
+
 
 
 from django.core.paginator import Paginator

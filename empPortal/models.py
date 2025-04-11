@@ -919,6 +919,19 @@ class FileAnalysis(models.Model):
     class Meta:
         db_table = 'file_analysis'
         
+class ChatGPTLog(models.Model):
+    prompt = models.TextField()
+    response = models.TextField(blank=True, null=True)
+    status_code = models.IntegerField(null=True, blank=True)
+    is_successful = models.BooleanField(default=False)
+    error_message = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
-
-     
+    def __str__(self):
+        return f"ChatGPT Log - {self.created_at}"
+    
+    class Meta:
+        db_table = 'chatgptlog'
+        managed = True
+        verbose_name = 'ChatGPTLog'
+        verbose_name_plural = 'ChatGPTLogs'
