@@ -124,8 +124,10 @@ class Leads(models.Model):
     pincode = models.CharField(max_length=10, null=True, blank=True)  # Pincode of the customer
     address = models.TextField(null=True, blank=True)  # Address of the customer
     lead_description = models.TextField(null=True, blank=True)
+    lead_source = models.CharField(max_length=25, null=True, blank=True)  
+    referral_by = models.CharField(max_length=25, null=True, blank=True)  
     created_at = models.DateTimeField(auto_now_add=True)  # Timestamp when the lead was created
-    created_by = models.CharField(max_length=20, null=True, blank=True)  # PAN card number (optional)
+    created_by = models.CharField(max_length=20, null=True, blank=True)  
     updated_at = models.DateTimeField(auto_now=True)  # Timestamp when the lead was last updated
     status = models.CharField(max_length=50, default='new')  # Status of the lead (new, contacted, converted, etc.)
     lead_type = models.CharField(

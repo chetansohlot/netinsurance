@@ -10,6 +10,12 @@ class Referral(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     active = models.BooleanField(default=True)
 
+    ####  new add fields -----parth ####
+    dob = models.DateField(null=True, blank=True)
+    date_of_anniversary = models.DateField(null=True, blank=True)
+    pan_card_number = models.CharField(max_length=10, null=True, blank=True)
+    aadhar_no = models.CharField(max_length=15,null=True, blank=True)
+
     def __str__(self):
         return f"{self.name} - {self.referral_code}"
 
