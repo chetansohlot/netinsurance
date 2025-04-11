@@ -1,5 +1,5 @@
 from .models import UploadedZip, FileAnalysis, ExtractedFile, BulkPolicyLog, Commission, PolicyDocument, UnprocessedPolicyFiles, ChatGPTLog
-import django, dramatiq, fitz, os, zipfile, requests, re, json, traceback, time, logging
+import django, dramatiq, fitz, os, zipfile, requests, re, json, traceback, time, logging, shutil
 from django.conf import settings
 from django.utils import timezone
 from django.utils.timezone import now
@@ -47,6 +47,10 @@ def process_zip_file(zip_id):
     pdf_file_ids = []
     
     extract_dir = os.path.join(settings.MEDIA_ROOT, 'extracted', str(zip_id))
+    if os.path.exists(extract_dir):
+        shutil.rmtree(extract_dir)
+
+    # Now create a fresh folder
     os.makedirs(extract_dir, exist_ok=True)
 
     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
