@@ -669,16 +669,24 @@
                                                 <!-- Aadhaar Card Front -->
                                                 <tr>
                                                     <td>
-                                                        <a href="javascript:void(0);" 
-                                                           data-toggle="modal" 
-                                                           data-target="#docViewerModal" 
-                                                           data-url="{{ docs.aadhaar_card_front.url }}" 
-                                                           data-title="Aadhaar Card Front">
-                                                          <img class="preview-img" id="aadhaar_card_front_preview" src="{{ docs.aadhaar_card_front.url }}" 
-                                                               alt="Aadhaar Front" 
-                                                               onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';" 
-                                                               width="80">
-                                                        </a>
+                                                        <div class="doc-img">
+                                                            <a href="javascript:void(0);" 
+                                                            data-toggle="modal" 
+                                                            data-target="#docViewerModal" 
+                                                            data-url="{{ docs.aadhaar_card_front.url }}" 
+                                                            data-title="Aadhaar Card Front" >
+                                                            <img class="preview-img" id="aadhaar_card_front_preview" src="{{ docs.aadhaar_card_front.url }}" 
+                                                                alt="Aadhaar Front" 
+                                                                onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';" 
+                                                                width="80">
+                                                                <!-- <div class="doc-hover-icon">
+                                                                    <div>
+                                                                        <a href="#"><i class="fa-solid fa-eye"></i></a>
+                                                                        <a href="#"><i class="fa-solid fa-pen-to-square"></i></a>
+                                                                    </div>    
+                                                                </div> -->
+                                                            </a>
+                                                        </div>
                                                       </td>
                                                       
                                                     <td>Aadhaar Card Front</td>

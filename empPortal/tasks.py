@@ -1,7 +1,8 @@
-from .models import UploadedZip, FileAnalysis, ExtractedFile, BulkPolicyLog, Commission, PolicyDocument, UnprocessedPolicyFiles
+from .models import UploadedZip, FileAnalysis, ExtractedFile, BulkPolicyLog, Commission, PolicyDocument, UnprocessedPolicyFiles, ChatGPTLog
 import django, dramatiq, fitz, os, zipfile, requests, re, json, traceback, time, logging
 from django.conf import settings
 from django.utils import timezone
+from django.utils.timezone import now
 from django_q.tasks import async_task
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 from django.db.models import F
@@ -190,7 +191,6 @@ def extract_pdf_text_task(file_id):
             # Proceed to AI processing task (uncomment if needed)
             async_task('empPortal.tasks.process_text_from_chatgpt', file_analysis.id)
 
-            logger.info(f"Text extracted successfully for: {file_obj.id}")
 
     except Exception as e:
         handle_extraction_error(f"Exception occurred during extraction: {e}")
@@ -360,25 +360,54 @@ def process_text_with_chatgpt(text):
     }
 
     try:
+        log_entry = ChatGPTLog.objects.create(
+            prompt=prompt,
+            created_at=now()
+        )
+    except:
+        logger.error(f"Error In ChatGPT logentry")
+  
+    try:
         response = requests.post(api_url, json=data, headers=headers)
+
+        if hasattr(response, "status_code"):
+            log_entry.status_code = response.status_code
+            
         if hasattr(response, "status_code") and response.status_code == 200:
+
             result = response.json()
             raw_output = result["choices"][0]["message"]["content"].strip()
+            
             try:
                 clean_json = re.sub(r"```json\n|\n```|```", "", raw_output).strip()
-                return json.loads(clean_json)
+                
+                parsed_json = json.loads(clean_json)
+                log_entry.response = json.dumps(parsed_json, indent=4)
+                log_entry.is_successful = True
+                log_entry.save()
+                return parsed_json
             except json.JSONDecodeError as e:
                 logger.error(f"JSON decode error {str(e)}")
+                log_entry.response = raw_output
+                log_entry.error_message = f"JSON decode error: {str(e)}"
+                log_entry.save()
+                
                 return json.dumps({
                     "error": "JSON decode error",
                     "raw_output": raw_output,
                     "details": str(e)
                 }, indent=4)
         else:
+            log_entry.error_message = response.text
+            log_entry.save()
             return json.dumps({"error": f"API Error: {response.status_code}", "details": response.text}, indent=4)
     
     except requests.exceptions.RequestException as e:
         logger.error(f"Request failed ,details: {str(e)}")
+        
+        log_entry.error_message = str(e)
+        log_entry.save()
+        
         return json.dumps({"error": "Request failed", "details": str(e)}, indent=4)
 
 
@@ -400,7 +429,7 @@ def update_policy_data(file_id):
         if not policy_number:
             policy_obj.status = 4
             policy_obj.save()
-            raise ValueError("Policy number is missing in processed_text.")
+            # logger.warning(f"Policy number is missing in processed_text")
 
         # Check for duplicates
         if PolicyDocument.objects.filter(policy_number=policy_number).exists():
