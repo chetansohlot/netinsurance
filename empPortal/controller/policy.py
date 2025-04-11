@@ -40,7 +40,6 @@ OPENAI_API_KEY = settings.OPENAI_API_KEY
 app = FastAPI()
 
 # views.py
-from django.http import JsonResponse
 from ..utils import send_sms_post
 from datetime import datetime
 
@@ -185,8 +184,6 @@ def get_pdf_path(request, filepath):
     return ""
 
 
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 
 def edit_policy_docs(request, policy_no):
     policy_no = unquote(policy_no)
