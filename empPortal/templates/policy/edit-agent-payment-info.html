@@ -156,14 +156,14 @@
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl">Agent OD Comm</label>
-                                      <input type="text" class="form-field" name="agent_od_comm" placeholder="Agent OD Comm" value="{{ agent_payment.agent_od_comm }}">
+                                      <input type="text" class="form-field" name="agent_od_comm" placeholder="Agent OD Comm" value="{{ agent_payment.agent_od_comm|default:policy_data.od_percent }}">
                                     </div>
                                   </div>
                             
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl">Agent Net Comm</label>
-                                      <input type="text" class="form-field" name="agent_net_comm" placeholder="Agent Net Comm" value="{{ agent_payment.agent_net_comm }}">
+                                      <input type="text" class="form-field" name="agent_net_comm" placeholder="Agent Net Comm" value="{{ agent_payment.agent_net_comm|default:policy_data.net_percent }}">
                                     </div>
                                   </div>
                             
