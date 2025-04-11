@@ -66,7 +66,6 @@ Policy Data
                           <th>Non-PDF Files</th>
                           <th>Errors</th>
                           <th>Uploaded Files</th>
-                          <th>View Failed Files</th>
                           <th>Date of Upload</th>
                           <th>Status</th>
                         </tr>
@@ -85,7 +84,6 @@ Policy Data
                             <td>{{ log.count_not_pdf }}</td>
                             <td>{{ log.count_error_pdf_files }} / {{ log.count_error_process_pdf_files }}</td>
                             <td>{{ log.count_uploaded_files }}</td>
-                            <td><a href="{% url 'failed-policy-upload-view'  id=log.id %}"><i class="fa-solid fa-eye"></i></a></td>
                             <td>{{ log.created_date }}</td>
                             <td>
                               {% if log.status == 1 %}

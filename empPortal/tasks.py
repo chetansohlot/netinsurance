@@ -191,7 +191,6 @@ def extract_pdf_text_task(file_id):
             # Proceed to AI processing task (uncomment if needed)
             async_task('empPortal.tasks.process_text_from_chatgpt', file_analysis.id)
 
-            logger.info(f"Text extracted successfully for: {file_obj.id}")
 
     except Exception as e:
         handle_extraction_error(f"Exception occurred during extraction: {e}")
@@ -430,7 +429,7 @@ def update_policy_data(file_id):
         if not policy_number:
             policy_obj.status = 4
             policy_obj.save()
-            raise ValueError("Policy number is missing in processed_text.")
+            # logger.warning(f"Policy number is missing in processed_text")
 
         # Check for duplicates
         if PolicyDocument.objects.filter(policy_number=policy_number).exists():
