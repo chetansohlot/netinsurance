@@ -155,7 +155,16 @@
                                       <div class="form-group">
                                         <label class="form-lbl">Insurer OD Comm</label>
                                         <input type="text" class="form-field" name="insurer_od_comm" placeholder="OD Commission (%)"
-                                              value="{{ insurer_payment.insurer_od_comm }}">
+                                              value="{{ insurer_payment.insurer_od_comm|default:policy_data.insurer_od_commission }}">
+                                      </div>
+                                    </div>
+
+
+                                    <div class="col-sm-6 col-md-4 col-lg-3">
+                                      <div class="form-group">
+                                        <label class="form-lbl">Insurer TP Comm</label>
+                                        <input type="text" class="form-field" name="insurer_tp_comm" placeholder="TP Commission (%)"
+                                              value="{{ insurer_payment.insurer_tp_comm|default:policy_data.insurer_tp_commission }}">
                                       </div>
                                     </div>
 
@@ -163,18 +172,9 @@
                                       <div class="form-group">
                                         <label class="form-lbl">Insurer Net Comm</label>
                                         <input type="text" class="form-field" name="insurer_net_comm" placeholder="Net Commission (%)"
-                                              value="{{ insurer_payment.insurer_net_comm }}">
+                                              value="{{ insurer_payment.insurer_net_comm|default:policy_data.insurer_net_commission }}">
                                       </div>
                                     </div>
-
-                                    <div class="col-sm-6 col-md-4 col-lg-3">
-                                      <div class="form-group">
-                                        <label class="form-lbl">Insurer TP Comm</label>
-                                        <input type="text" class="form-field" name="insurer_tp_comm" placeholder="TP Commission (%)"
-                                              value="{{ insurer_payment.insurer_tp_comm }}">
-                                      </div>
-                                    </div>
-
                                     <!-- Incentives and TDS -->
                                     <div class="col-sm-6 col-md-4 col-lg-3">
                                       <div class="form-group">
