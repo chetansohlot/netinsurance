@@ -34,6 +34,7 @@ from django.template.loader import render_to_string
 from pprint import pprint 
 from django.core.paginator import Paginator
 from django.db.models import Q
+from empPortal.model import Referral
 
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 
@@ -142,6 +143,7 @@ def create_or_edit_lead(request, lead_id=None):
     
     customers = QuotationCustomer.objects.all()
     lead = None
+    referrals = Referral.objects.all()
 
     if lead_id:
         lead = get_object_or_404(Leads, id=lead_id)
@@ -149,6 +151,7 @@ def create_or_edit_lead(request, lead_id=None):
     if request.method == "GET":
         return render(request, 'leads/create.html', {
             'lead': lead,
+            'referrals': referrals,
             'customers': customers
         })
 
@@ -173,6 +176,10 @@ def create_or_edit_lead(request, lead_id=None):
         city = request.POST.get("city", "").strip()
         pincode = request.POST.get("pincode", "").strip()
         address = request.POST.get("address", "").strip()
+        lead_source = request.POST.get("lead_source", "").strip()
+        referral_by = request.POST.get("referral_by", "").strip()
+        if lead_source != 'referral_partner':
+            referral_by = ''
         lead_description = request.POST.get("lead_description", "").strip()
         lead_type = request.POST.get("lead_type", "MOTOR").strip()
         status = request.POST.get("status", "new").strip()
@@ -190,6 +197,8 @@ def create_or_edit_lead(request, lead_id=None):
             lead.address = address
             lead.lead_description = lead_description
             lead.lead_type = lead_type
+            lead.lead_source = lead_source
+            lead.referral_by = referral_by
             lead.status = status
             lead.updated_at = now()
             lead.save()
@@ -207,7 +216,8 @@ def create_or_edit_lead(request, lead_id=None):
                 pincode=pincode,
                 address=address,
                 lead_description=lead_description,
-                lead_type=lead_type,
+                lead_source=lead_source,
+                referral_by=referral_by,
                 status=status,
                 created_by=request.user.id,
                 created_at=now(),
