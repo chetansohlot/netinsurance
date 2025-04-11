@@ -235,3 +235,46 @@ Q2_CONFIG = {
     'label': 'Django Q2 Cluster',
     'orm': 'default',
 }
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False, 
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname}: {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': 'django_app.log',
+            'formatter': 'verbose',
+        },
+        'policies': {
+            'class': 'logging.FileHandler',
+            'filename': 'policies.log',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        # For all app modules
+        '': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',  # Can be INFO, WARNING, ERROR in production
+        },
+        'empPortal.tasks': {
+            'handlers': ['policies'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}
