@@ -24,6 +24,7 @@ Policy Data
           <div class="col-sm-12">
             <div class="d-flex align-items-center justify-content-between">
                 <div><a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Policy Files View</a></div>
+                
                 <div>
                     <form id="myForm" action="{% url 'continue-bulk-policies' %}" method="post">
                             {% csrf_token %}
@@ -34,11 +35,33 @@ Policy Data
                 </div>
             </div>
           </div>
+          
         </div>
       </div>
     </div>
     <!-- /.content-header -->
-
+    <div class="row">
+      <div class="col-xs-6 col-sm-4 col-md-3">
+        <a href="#">
+          <div class="card counter-img-card active">
+            <div class="card-body">
+              <div class="row">
+                <div class="col">
+                  <p class="card-text">
+                    Total Policy
+                  </p>
+                  <h5 class="card-title card-number">
+                    {% if files %}
+                    {{ files|length }}
+                    {% endif %}
+                  </h5>
+                </div>
+              </div>
+            </div>
+          </div>
+        </a>   
+      </div>  
+    </div>
     <!-- Main content -->
     <div class="content">
       <div class="container-fluid">
