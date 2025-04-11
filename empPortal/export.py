@@ -633,8 +633,15 @@ def download_policy_data(request):
         policies = PolicyDocument.objects.filter(status=6).all().order_by('-id')
 
     for policy in policies:
-        issue_month = policy.policy_start_date.strftime("%b-%Y") if policy.policy_start_date else "-"
-        issue_date = policy.policy_start_date.strftime("%m-%d-%Y") if policy.policy_start_date else "-"
+        issue_month = "-"
+        issue_date = "-"
+        if policy.policy_start_date:
+            try:
+                start_date_obj = policy.policy_start_date if isinstance(policy.policy_start_date, datetime) else datetime.strptime(policy.policy_start_date, "%Y-%m-%d")
+                issue_month = start_date_obj.strftime("%b-%Y")
+                issue_date = start_date_obj.strftime("%m-%d-%Y")
+            except Exception as e:
+                print(f"Date conversion error: {e}")
         risk_start_date = policy.start_date or "-"
         
         od_premium = float(policy.od_premium.replace(',', '')) if policy.od_premium else 0.0  
