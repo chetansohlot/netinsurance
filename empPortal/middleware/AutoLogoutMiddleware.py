@@ -11,7 +11,7 @@ class AutoLogoutMiddleware:
         if request.user.is_authenticated:
             last_activity = request.session.get('last_activity')
             now = timezone.now().timestamp()
-            timeout = 600  # 10 minutes
+            timeout = 1200  # 10 minutes
 
             if last_activity and (now - last_activity > timeout):
                 from django.contrib.auth import logout
