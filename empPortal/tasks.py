@@ -471,10 +471,10 @@ def update_policy_data(file_id):
         logger.error(f"File not found with the given ID")
         return json.dumps({"error": "File not found with the given ID."}, indent=4)
     except ObjectDoesNotExist as e:
-        logger.error(f"Object not found")
+        logger.error(f"Object not found Error: {str(e)}")
         return json.dumps({"error": "Object not found", "details": str(e)}, indent=4)
     except ValueError as ve:
-        logger.error(f"Value error: {str(e)}")
+        logger.error(f"Value error: {str(ve)}")
         return json.dumps({"error": "Value error", "details": str(ve)}, indent=4)
     except json.JSONDecodeError:
         logger.error(f"Invalid JSON in GPT response for policy_id : {policy_obj.id}")
