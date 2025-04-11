@@ -811,6 +811,7 @@ def editPolicy(request, id):
         policy_number = policy_data.policy_number
         policy = PolicyInfo.objects.filter(policy_number=policy_number).first()
         pdf_path = get_pdf_path(request, policy_data.filepath)
+        branches = Branch.objects.filter(status='Active').order_by('-created_at')
 
         extracted_data = {}
         if policy_data and policy_data.extracted_text:
@@ -824,6 +825,7 @@ def editPolicy(request, id):
         return render(request, 'policy/edit-policy.html', {
             'policy_data': policy_data,
             'policy': policy,
+            'branches': branches,
             'pdf_path': pdf_path,
             'extracted_data': extracted_data,
             'file_path': policy_data.filepath,

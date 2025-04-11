@@ -205,21 +205,28 @@
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl">Pos Name</label>
-                                      <input type="text" class="form-field" name="vehicle_owner_number" placeholder="Pos Name" value="{{ policy.pos_name|default:'' }}">
+                                      <input type="text" class="form-field" name="vehicle_owner_number" placeholder="Pos Name" value="{{ policy.pos_name|default:'Elevate Insurance' }}">
                                     </div>
                                   </div>
                             
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl">Branch Name</label>
-                                      <input type="text" class="form-field" name="registration_city" placeholder="Branch Name" value="{{ policy.branch_name|default:'' }}">
+                                      <select id="branch" name="registration_city" class="form-field">
+                                          <option value="">Select Branch</option>
+                                          {% for branch in branches %}
+                                          <option value="{{ branch.id }}" {% if branch.id|stringformat:"s" == policy.branch_name|stringformat:"s" %}selected{% endif %}>
+                                              {{ branch.branch_name }}
+                                          </option>
+                                          {% endfor %}
+                                      </select>
                                     </div>
                                   </div>
                             
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl">Supervisor Name</label>
-                                      <input type="text" class="form-field" name="supervisor_name" placeholder="Supervisor Name" value="{{ policy.supervisor_name|default:'' }}">
+                                      <input type="text" class="form-field" name="supervisor_name" placeholder="Supervisor Name" value="{{ policy.supervisor_name|default:request.user.full_name }}">
                                     </div>
                                   </div>
                             
