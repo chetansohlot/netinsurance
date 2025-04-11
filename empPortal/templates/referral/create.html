@@ -1,0 +1,120 @@
+{% extends 'master.html' %}
+
+{% load static %}
+
+{% block title %}
+    Create Referral
+{% endblock %}
+
+{% block content %}
+
+<body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+    
+        {% include "navbar.html" %}
+        {% include "sidebar.html" %}
+    
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <div class="content-header breadcrump-bg">
+          <div class="container-fluid">
+            <div class="row py-2">
+              <div class="col-sm-6">
+                <div class="d-flex align-items-center">
+                  <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Create Referral</a>
+                </div>
+                <ul class="breadcrump">
+                  <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
+                  <li> <a href="#">Referral Mgmt.</a> <i class="fas fa-chevron-right"></i></li>
+                  <li>Add Referral</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /.content-header -->
+    
+        <!-- Main content -->
+        <div class="content">
+          <div class="container-fluid">
+            <div class="row">
+              
+              <div class="col-sm-12">  
+                <div class="card box-shadow-none p-md-5 p-3">
+                  <div class="card-body px-0 pb-0 pt-0">
+                    
+
+                    
+                    <form autocomplete="off" id="referralForm" name="referralForm"
+                        action="{% if referral and referral.id %}{% url 'referral-management-edit' referral.id %}{% else %}{% url 'referral-management-create' %}{% endif %}"
+                        method="post">
+                        {% csrf_token %}
+
+                        <div class="row">
+                            <!-- Name -->
+                            <div class="form-group col-md-6">
+                                <label for="name">Name</label>
+                                <input type="text" class="form-control" name="name" id="name" 
+                                    placeholder="Enter Name" maxlength="255"
+                                    value="{{ referral.name|default_if_none:'' }}">
+                            </div>
+
+                            <!-- Mobile Number -->
+                            <div class="form-group col-md-6">
+                                <label for="mobile">Mobile</label>
+                                <input type="tel" class="form-control" name="mobile" id="mobile" 
+                                    placeholder="Enter Mobile Number" pattern="[0-9]{10}"
+                                    value="{{ referral.mobile|default_if_none:'' }}">
+                            </div>
+
+                            <!-- Email -->
+                            <div class="form-group col-md-6">
+                                <label for="email">Email</label>
+                                <input type="email" class="form-control" name="email" id="email" 
+                                    placeholder="Enter Email" maxlength="255"
+                                    value="{{ referral.email|default_if_none:'' }}">
+                            </div>
+
+                            <!-- Address -->
+                            <div class="form-group col-md-12">
+                                <label for="address">Address</label>
+                                <textarea class="form-control" name="address" id="address" placeholder="Enter Address">{{ referral.address|default_if_none:'' }}</textarea>
+                            </div>
+
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-primary mt-3">
+                            {% if referral %}Update Referral{% else %}Add Referral{% endif %}
+                        </button>
+                    </form>
+
+
+
+                    
+                  </div>
+                  <div id="loader" class="form-loader" style="display: none;">
+                    <div>
+                      <div class="spinner-border text-primary mx-auto d-block" role="status"></div>
+                      <span class="visually-hidden d-block pt-2">Loading...</span>
+                    </div>  
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>  
+        </div>
+      </div>
+        
+    </div>
+    
+    {% include "footer.html" %}
+    {% include "footer-script.html" %}
+    <script>
+      document.getElementById("myForm").addEventListener("submit", function() {
+          document.getElementById("loader").style.display = "flex";
+      });
+    </script>
+</body>
+{% endblock %}

@@ -28,7 +28,7 @@ from urllib.parse import quote
 from urllib.parse import urljoin
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
-
+from urllib.parse import unquote
 from django.views.decorators.csrf import csrf_exempt
 from pprint import pprint 
 import pdfkit
@@ -40,7 +40,6 @@ OPENAI_API_KEY = settings.OPENAI_API_KEY
 app = FastAPI()
 
 # views.py
-from django.http import JsonResponse
 from ..utils import send_sms_post
 from datetime import datetime
 
@@ -108,14 +107,16 @@ def edit_policy(request, policy_id):
         policy.save()
         messages.success(request, "Policy Updated successfully!")
 
-        return redirect('edit-policy-vehicle-details', policy_no=quote(policy.policy_number))
+        return redirect('edit-policy-vehicle-details', policy_no=quote(policy.policy_number, safe=''))
 
 
 
 def edit_vehicle_details(request, policy_no):
-    policy = get_object_or_404(PolicyInfo, policy_number=policy_no)
-    policy_data = PolicyDocument.objects.filter(policy_number=policy_no).first()
+    decoded_policy_no = unquote(policy_no)
 
+    policy = get_object_or_404(PolicyInfo, policy_number=decoded_policy_no)
+    policy_data = PolicyDocument.objects.filter(policy_number=decoded_policy_no).first()
+    
     try:
         vehicle = PolicyVehicleInfo.objects.get(policy_number=policy.policy_number)
     except PolicyVehicleInfo.DoesNotExist:
@@ -141,13 +142,25 @@ def edit_vehicle_details(request, policy_no):
         vehicle.save()
         messages.success(request, "Policy Vehicle details Updated successfully!")
 
-        return redirect('edit-policy-docs', policy_no=quote(policy.policy_number))
+        return redirect('edit-policy-docs', policy_no=quote(policy.policy_number, safe=''))
+
     pdf_path = get_pdf_path(request, policy_data.filepath)
+
+    extracted_data = {}
+    if policy_data and policy_data.extracted_text:
+        if isinstance(policy_data.extracted_text, str):
+            try:
+                extracted_data = json.loads(policy_data.extracted_text)
+            except json.JSONDecodeError:
+                extracted_data = {}
+        elif isinstance(policy_data.extracted_text, dict):
+            extracted_data = policy_data.extracted_text  # already a dict
 
     return render(request, 'policy/edit-policy-vehicle.html', {
         'policy': policy,
         'policy_data': policy_data,
         'pdf_path': pdf_path,
+        'extracted_data': extracted_data,
         'vehicle': vehicle
     })
 
@@ -182,10 +195,10 @@ def get_pdf_path(request, filepath):
     return ""
 
 
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 
 def edit_policy_docs(request, policy_no):
+    policy_no = unquote(policy_no)
+
     policy = get_object_or_404(PolicyInfo, policy_number=policy_no)
     policy_data = PolicyDocument.objects.filter(policy_number=policy_no).first()
 
@@ -230,6 +243,8 @@ def edit_policy_docs(request, policy_no):
 
 
 def edit_agent_payment_info(request, policy_no):
+    policy_no = unquote(policy_no)
+
     policy = get_object_or_404(PolicyInfo, policy_number=policy_no)
     policy_data = PolicyDocument.objects.filter(policy_number=policy_no).first()
 
@@ -272,6 +287,8 @@ def edit_agent_payment_info(request, policy_no):
 
 
 def edit_insurer_payment_info(request, policy_no):
+    policy_no = unquote(policy_no)
+
     policy = get_object_or_404(PolicyInfo, policy_number=policy_no)
     policy_data = PolicyDocument.objects.filter(policy_number=policy_no).first()
 
@@ -324,6 +341,8 @@ def edit_insurer_payment_info(request, policy_no):
 
 
 def edit_franchise_payment_info(request, policy_no):
+    policy_no = unquote(policy_no)
+
     policy = get_object_or_404(PolicyInfo, policy_number=policy_no)
     policy_data = PolicyDocument.objects.filter(policy_number=policy_no).first()
 

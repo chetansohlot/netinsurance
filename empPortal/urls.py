@@ -2,7 +2,7 @@ from django.urls import path, include
 from . import views,export
 from . import views
 from . import authenticationView
-from .controller import commissions, profile,policy, globalController, helpAndSupport, Employee, leads, sellMotor, sellHealth, sellTerm, Franchises, Department, Branches, members, customers, quoteManagement, healthQuoteManagement, homeManagement, exams
+from .controller import commissions, profile,policy, Referral, globalController, helpAndSupport, Employee, leads, sellMotor, sellHealth, sellTerm, Franchises, Department, Branches, members, customers, quoteManagement, healthQuoteManagement, homeManagement, exams
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import re_path
@@ -130,7 +130,11 @@ urlpatterns = [
     path('lead-mgt/term-lead', leads.termlead, name='term-lead'),
     path('lead-mgt/lead-view/<int:lead_id>/', leads.viewlead, name='lead-view'),
 
-    # LEADS 
+    # REFERRAL 
+    path('referral-management/', Referral.index, name='referral-management'),
+    path('referral-management/create-referral', Referral.create_or_edit, name='referral-management-create'),
+    path('referral-management/<str:referral_id>/', Referral.create_or_edit, name='referral-management-edit'),
+    path('referral/toggle-status/<int:referral_id>/', Referral.toggle_referral_status, name='referral-toggle-status'),
 
     # SELL-ONLINE 
         # MOTOR

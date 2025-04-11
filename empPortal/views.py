@@ -812,10 +812,20 @@ def editPolicy(request, id):
         policy = PolicyInfo.objects.filter(policy_number=policy_number).first()
         pdf_path = get_pdf_path(request, policy_data.filepath)
 
+        extracted_data = {}
+        if policy_data and policy_data.extracted_text:
+            if isinstance(policy_data.extracted_text, str):
+                try:
+                    extracted_data = json.loads(policy_data.extracted_text)
+                except json.JSONDecodeError:
+                    extracted_data = {}
+            elif isinstance(policy_data.extracted_text, dict):
+                extracted_data = policy_data.extracted_text  # already a dict
         return render(request, 'policy/edit-policy.html', {
             'policy_data': policy_data,
             'policy': policy,
             'pdf_path': pdf_path,
+            'extracted_data': extracted_data,
             'file_path': policy_data.filepath,
         })
     else:
