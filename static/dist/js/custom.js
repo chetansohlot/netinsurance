@@ -126,3 +126,45 @@ $(document).on('input', '.mobile', function() {
 
     $(this).val(sanitizedMobile);
 });
+
+$(document).on('input', '.aadhar', function() {
+    var aadhar = $(this).val();
+    var error_class = $(this).attr('name') + '_err';
+
+    // Remove non-numeric characters
+    var sanitizedAadhar = aadhar.replace(/[^0-9]/g, '');
+
+    // Max length 10 
+    sanitizedAadhar = sanitizedAadhar.substring(0, 12);
+    
+    // Check if first digit is greater than 5
+    if (sanitizedAadhar.length > 0 && sanitizedAadhar.charAt(0) == '0') {
+        $('.' + error_class).show().text('Invalid Aadhar Number.');
+    } else {
+        $('.' + error_class).hide().text('');
+    }
+
+    $(this).val(sanitizedAadhar);
+});
+
+$(document).on('input', '.pan', function() {
+    var pan = $(this).val().toUpperCase(); // Convert to uppercase for consistency
+    var error_class = $(this).attr('name') + '_err';
+
+    // Allow only alphanumeric characters
+    var sanitizedPan = pan.replace(/[^A-Z0-9]/gi, '');
+
+    // Limit to 10 characters
+    sanitizedPan = sanitizedPan.substring(0, 10);
+
+    // PAN regex pattern: 5 letters, 4 digits, 1 letter
+    var panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+
+    if (sanitizedPan.length === 10 && !panRegex.test(sanitizedPan)) {
+        $('.' + error_class).show().text('Invalid PAN format.');
+    } else {
+        $('.' + error_class).hide().text('');
+    }
+
+    $(this).val(sanitizedPan);
+});
