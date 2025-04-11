@@ -155,28 +155,25 @@ def extract_pdf_text_task(file_id):
         )
     except Exception as e:
         logger.error(f"Error in file analysing file_id {file_id} : {str(e)}")
-        
-    def handle_extraction_error(reason):
-        logger.error(f"[ERROR] {reason}")
-        BulkPolicyLog.objects.filter(id=file_obj.zip_ref.bulk_log.id).update(
-            count_error_pdf_files=F('count_error_pdf_files') + 1
-        )
-        try:
-            UnprocessedPolicyFiles.objects.create(
-                policy_document=policy_obj.id,
-                doc_name=file_obj.filename,
-                bulk_log_id=policy_obj.bulk_log_id,
-                file_path=policy_obj.filepath,
-                status=1,  # pending
-            )
-        except Exception as e:
-            logger.error(f"Error in Unprocessing File file_id {file_id} : {str(e)}")
-        file_analysis.status = 2  #failed in extarction
-        file_analysis.save()
 
     try:
         if "Error" in text:
-            handle_extraction_error(text)
+            BulkPolicyLog.objects.filter(id=file_obj.zip_ref.bulk_log.id).update(
+                count_error_pdf_files=F('count_error_pdf_files') + 1
+            )
+            try:
+                UnprocessedPolicyFiles.objects.create(
+                    policy_document=policy_obj.id,
+                    doc_name=file_obj.filename,
+                    bulk_log_id=policy_obj.bulk_log_id,
+                    file_path=policy_obj.filepath,
+                    status=1,  # pending
+                )
+            except Exception as e:
+                logger.error(f"Error in Unprocessing File file_id {file_id} : {str(e)}")
+            file_analysis.status = 2  #failed in extarction
+            file_analysis.save()
+            
         else:
             file_analysis.status = 1    #extraction complete
             file_analysis.save()
@@ -193,8 +190,23 @@ def extract_pdf_text_task(file_id):
 
 
     except Exception as e:
-        handle_extraction_error(f"Exception occurred during extraction: {e}")
+        BulkPolicyLog.objects.filter(id=file_obj.zip_ref.bulk_log.id).update(
+            count_error_pdf_files=F('count_error_pdf_files') + 1
+        )
+        try:
+            UnprocessedPolicyFiles.objects.create(
+                policy_document=policy_obj.id,
+                doc_name=file_obj.filename,
+                bulk_log_id=policy_obj.bulk_log_id,
+                file_path=policy_obj.filepath,
+                status=1,  # pending
+            )
+        except Exception as e:
+            logger.error(f"Error in Unprocessing File file_id {file_id} : {str(e)}")
+        file_analysis.status = 2  #failed in extarction
+        file_analysis.save()
    
+
 def extract_text_from_pdf(pdf_path):
     try:
         doc = fitz.open(pdf_path)
