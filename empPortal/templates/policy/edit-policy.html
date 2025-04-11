@@ -177,7 +177,7 @@
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl">Insurance Company</label>
-                                      <input type="text" class="form-field" name="insurance_company" placeholder="Insurance Company" value="{{ policy.insurance_company|default:'' }}">
+                                      <input type="text" class="form-field" name="insurance_company" placeholder="Insurance Company" value="{{ policy.insurance_company|default:policy_data.insurance_provider }}">
                                     </div>
                                   </div>
                             
@@ -226,7 +226,7 @@
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl">Policy Type</label>
-                                      <input type="text" class="form-field" name="policy_type" placeholder="Policy Type" value="{{ policy.policy_type|default:'' }}">
+                                      <input type="text" class="form-field" name="policy_type" placeholder="Policy Type" value="{{ policy.policy_type|default:policy_data.policy_type }}">
                                     </div>
                                   </div>
                             
@@ -240,7 +240,7 @@
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl">Sum Insured</label>
-                                      <input type="text" class="form-field" name="idv_value" placeholder="Sum Insured" value="{{ policy.sum_insured|default:'' }}">
+                                      <input type="text" class="form-field" name="idv_value" placeholder="Sum Insured" value="{{ policy.sum_insured|default:policy_data.sum_insured }}">
                                     </div>
                                   </div>
                             
