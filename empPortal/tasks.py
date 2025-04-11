@@ -486,3 +486,9 @@ def update_policy_data(file_id):
         logger.error(f"Unexpected error for policy_id :{policy_obj.id} : error:{str(e)}")
         return json.dumps({"error": "Unexpected error", "details": str(e)}, indent=4)
     
+def handle_failure(task):
+    attempts = task.attempt_count if hasattr(task, 'attempt_count') else 'Unknown'
+    task_name = task.name if hasattr(task, 'name') else 'Unknown Task'
+    task_id = task.id if hasattr(task, 'id') else 'No ID'
+    if task.get('success') is False:
+        logger.error(f"Task {task_id} named {task_name} failed after {attempts}")
