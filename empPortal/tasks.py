@@ -190,7 +190,7 @@ def extract_pdf_text_task(file_id):
             # Proceed to AI processing task (uncomment if needed)
             async_task('empPortal.tasks.process_text_from_chatgpt', file_analysis.id)
 
-            logger.success(f"Text extracted successfully for: {file_obj.id}")
+            logger.info(f"Text extracted successfully for: {file_obj.id}")
 
     except Exception as e:
         handle_extraction_error(f"Exception occurred during extraction: {e}")
