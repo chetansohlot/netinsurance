@@ -446,71 +446,71 @@ def update_policy_data(file_id):
             policy_obj.status = 4
             policy_obj.save()
             raise ValueError("Policy number is missing in processed_text.")
-
-        # Check for duplicates
-        if PolicyDocument.objects.filter(policy_number=policy_number).exists():
-            bulk_log.count_duplicate_files += 1
-            bulk_log.save()
-            
-            policy_obj.status = 7
-            policy_obj.save()
-            bulk_log.count_uploaded_files += 1
-            bulk_log.save()
-            if bulk_log.count_uploaded_files == bulk_log.count_pdf_files:
-                bulk_log.status = 3
-                bulk_log.save()
         else:
-            try:
+            # Check for duplicates
+            if PolicyDocument.objects.filter(policy_number=policy_number).exists():
+                bulk_log.count_duplicate_files += 1
+                bulk_log.save()
                 
-                vehicle_number = re.sub(r"[^a-zA-Z0-9]", "", processed_text.get("vehicle_number", ""))
-
-                coverage_details = processed_text.get("coverage_details", [{}])
-                if isinstance(coverage_details, list) and coverage_details:
-                    first_coverage = coverage_details[0]
-                elif isinstance(coverage_details, dict):
-                    first_coverage = coverage_details
-                else:
-                    first_coverage = {}
-
-                od_premium = first_coverage.get('own_damage', {}).get('premium', 0)
-                tp_premium = first_coverage.get('third_party', {}).get('premium', 0)
-
-                policy_doc = policy_obj
-            
-                policy_doc.insurance_provider = processed_text.get("insurance_company", "")
-                policy_doc.vehicle_number = vehicle_number
-                policy_doc.policy_number = policy_number
-                policy_doc.policy_period = processed_text.get("policy_period", "")
-                policy_doc.holder_name = processed_text.get("insured_name", "")
-                policy_doc.policy_total_premium = processed_text.get("gross_premium", 0)
-                policy_doc.policy_premium = processed_text.get("net_premium", 0)
-                policy_doc.sum_insured = processed_text.get("sum_insured", 0)
-                policy_doc.coverage_details = coverage_details
-                policy_doc.policy_issue_date = processed_text.get("issue_date", "")
-                policy_doc.policy_expiry_date = processed_text.get("expiry_date","")
-                policy_doc.policy_start_date = processed_text.get("start_date","")
-                policy_doc.payment_status = 'Confirmed'
-                policy_doc.policy_type = processed_text.get('additional_details', {}).get('policy_type', "")
-                vehicle_details = processed_text.get('vehicle_details', {})
-                policy_doc.vehicle_type = vehicle_details.get('vehicle_type', "")
-                policy_doc.vehicle_make = vehicle_details.get('make', "")
-                policy_doc.vehicle_model = vehicle_details.get('model', "")
-                policy_doc.vehicle_gross_weight = vehicle_details.get('vehicle_gross_weight', "")
-                policy_doc.vehicle_manuf_date = vehicle_details.get('registration_year', "")
-                policy_doc.gst = processed_text.get('gst_premium', 0)
-                policy_doc.od_premium = od_premium
-                policy_doc.tp_premium = tp_premium
-                policy_doc.status = 6
-                policy_doc.save()
-                # Update Bulk Log
+                policy_obj.status = 7
+                policy_obj.save()
                 bulk_log.count_uploaded_files += 1
                 bulk_log.save()
                 if bulk_log.count_uploaded_files == bulk_log.count_pdf_files:
                     bulk_log.status = 3
                     bulk_log.save()
-            except Exception as e:
-                logger.error(f"Error in Policy Update for policy_id {policy_obj.id}")
-        
+            else:
+                try:
+                    
+                    vehicle_number = re.sub(r"[^a-zA-Z0-9]", "", processed_text.get("vehicle_number", ""))
+
+                    coverage_details = processed_text.get("coverage_details", [{}])
+                    if isinstance(coverage_details, list) and coverage_details:
+                        first_coverage = coverage_details[0]
+                    elif isinstance(coverage_details, dict):
+                        first_coverage = coverage_details
+                    else:
+                        first_coverage = {}
+
+                    od_premium = first_coverage.get('own_damage', {}).get('premium', 0)
+                    tp_premium = first_coverage.get('third_party', {}).get('premium', 0)
+
+                    policy_doc = policy_obj
+                
+                    policy_doc.insurance_provider = processed_text.get("insurance_company", "")
+                    policy_doc.vehicle_number = vehicle_number
+                    policy_doc.policy_number = policy_number
+                    policy_doc.policy_period = processed_text.get("policy_period", "")
+                    policy_doc.holder_name = processed_text.get("insured_name", "")
+                    policy_doc.policy_total_premium = processed_text.get("gross_premium", 0)
+                    policy_doc.policy_premium = processed_text.get("net_premium", 0)
+                    policy_doc.sum_insured = processed_text.get("sum_insured", 0)
+                    policy_doc.coverage_details = coverage_details
+                    policy_doc.policy_issue_date = processed_text.get("issue_date", "")
+                    policy_doc.policy_expiry_date = processed_text.get("expiry_date","")
+                    policy_doc.policy_start_date = processed_text.get("start_date","")
+                    policy_doc.payment_status = 'Confirmed'
+                    policy_doc.policy_type = processed_text.get('additional_details', {}).get('policy_type', "")
+                    vehicle_details = processed_text.get('vehicle_details', {})
+                    policy_doc.vehicle_type = vehicle_details.get('vehicle_type', "")
+                    policy_doc.vehicle_make = vehicle_details.get('make', "")
+                    policy_doc.vehicle_model = vehicle_details.get('model', "")
+                    policy_doc.vehicle_gross_weight = vehicle_details.get('vehicle_gross_weight', "")
+                    policy_doc.vehicle_manuf_date = vehicle_details.get('registration_year', "")
+                    policy_doc.gst = processed_text.get('gst_premium', 0)
+                    policy_doc.od_premium = od_premium
+                    policy_doc.tp_premium = tp_premium
+                    policy_doc.status = 6
+                    policy_doc.save()
+                    # Update Bulk Log
+                    bulk_log.count_uploaded_files += 1
+                    bulk_log.save()
+                    if bulk_log.count_uploaded_files == bulk_log.count_pdf_files:
+                        bulk_log.status = 3
+                        bulk_log.save()
+                except Exception as e:
+                    logger.error(f"Error in Policy Update for policy_id {policy_obj.id}")
+            
 
     except FileAnalysis.DoesNotExist:
         logger.error(f"File not found with the given ID")
