@@ -216,7 +216,7 @@ Q_CLUSTER = {
     'recycle': 500,
     'timeout': 60,
     'retry': 90,
-    'queue_limit': 50,
+    'queue_limit': 500,
     'bulk': 10,
     'orm': 'default',  # use Django ORM
 }
