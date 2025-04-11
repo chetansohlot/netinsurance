@@ -441,7 +441,7 @@ def update_policy_data(file_id):
         if not policy_number:
             policy_obj.status = 4
             policy_obj.save()
-            # logger.warning(f"Policy number is missing in processed_text")
+            raise ValueError("Policy number is missing in processed_text.")
 
         # Check for duplicates
         if PolicyDocument.objects.filter(policy_number=policy_number).exists():
