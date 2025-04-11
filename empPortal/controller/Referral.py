@@ -105,6 +105,12 @@ def create_or_edit(request, referral_id=None):
         email = request.POST.get("email", "").strip()
         address = request.POST.get("address", "").strip()
 
+        ## add field ## ---parth
+        dob = request.POST.get("dob", "").strip()
+        date_of_anniversary = request.POST.get("date_of_anniversary", "").strip()
+        pan_card_number = request.POST.get("pan", "").strip()
+        aadhar = request.POST.get("aadhar", "").strip()
+        # print(aadhar)
         referral_code = (
             referral.referral_code if referral
             else generate_referral_code()
@@ -116,6 +122,10 @@ def create_or_edit(request, referral_id=None):
             "mobile": mobile,
             "email": email,
             "address": address,
+            "dob": dob,
+            "date_of_anniversary": date_of_anniversary,
+            "pan_card_number": pan_card_number,
+            "aadhar_no": aadhar,
             "referral_code": referral_code,
         }
 
@@ -141,6 +151,12 @@ def create_or_edit(request, referral_id=None):
             referral.email = email
             referral.mobile = mobile
             referral.address = address
+
+            referral.dob = dob or None
+            referral.date_of_anniversary = date_of_anniversary or None
+            referral.pan_card_number = pan_card_number
+            referral.aadhar_no = aadhar
+
             referral.updated_at = now()
             referral.save()
 
@@ -169,6 +185,12 @@ def create_or_edit(request, referral_id=None):
                 mobile=mobile,
                 address=address,
                 referral_code=referral_code,
+
+                dob=dob or None,
+                date_of_anniversary=date_of_anniversary or None,
+                pan_card_number=pan_card_number,
+                aadhar_no=aadhar,
+
                 created_at=now(),
                 updated_at=now(),
             )

@@ -64,7 +64,7 @@
                             <div class="form-group col-md-6">
                                 <label for="mobile">Mobile</label>
                                 <input type="tel" class="form-control" name="mobile" id="mobile" 
-                                    placeholder="Enter Mobile Number" pattern="[0-9]{10}"
+                                    placeholder="Enter Mobile Number"
                                     value="{{ referral.mobile|default_if_none:'' }}">
                             </div>
 
@@ -74,6 +74,36 @@
                                 <input type="email" class="form-control" name="email" id="email" 
                                     placeholder="Enter Email" maxlength="255"
                                     value="{{ referral.email|default_if_none:'' }}">
+                            </div>
+
+                            <!-- Date of Birth -->
+                            <div class="form-group col-md-6">
+                                <label for="dob">Date of Birth</label>
+                                <input type="date" class="form-control" name="dob" id="dob"
+                                    value="{{ referral.dob|date:'Y-m-d' }}">
+                            </div>
+
+                            <!-- Date of Anniversary -->
+                            <div class="form-group col-md-6">
+                                <label for="anniversary">Date of Anniversary</label>
+                                <input type="date" class="form-control " name="date_of_anniversary" id="anniversary"
+                                    value="{{ referral.date_of_anniversary|date:'Y-m-d' }}">
+                            </div>
+
+                            <!-- PAN Card Number -->
+                           <div class="form-group col-md-6">
+                              <label for="pan">PAN Card Number</label>
+                              <input type="text" class="form-control pan" name="pan" id="pan"
+                                  placeholder="Enter PAN Card Number"
+                                  value="{{ referral.pan_card_number|default_if_none:'' }}" maxlength="10" minlength="10" >
+                            </div>
+
+                            <!-- Aadhar Number -->
+                            <div class="form-group col-md-6">
+                                <label for="aadhar">Aadhar Number</label>
+                                <input type="text" class="form-control aadhar" name="aadhar" id="aadhar"
+                                    placeholder="Enter Aadhar Number" pattern="[0-9]{12}" minlength="12" maxlength="12"
+                                    value="{{ referral.aadhar_no|default_if_none:'' }}">
                             </div>
 
                             <!-- Address -->

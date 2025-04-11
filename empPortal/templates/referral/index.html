@@ -209,8 +209,8 @@ Referral Mgmt.
                                             <label for="checkall"></label>
                                         </th>
                                         <th>Referral Name</th>
-                                        <th>Mobile</th>
-                                        <th>Email</th>
+                                        <th>Contact Info</th>
+                                        <th>KYC Info</th>
                                         <th>Referral Code</th>
                                         <th>Status</th>
                                         <th>Info</th>
@@ -230,8 +230,12 @@ Referral Mgmt.
                                                 <span class="text-gray d-block small">#{{ referral.id }}</span>
                                             </a>
                                         </td>
-                                        <td>{{ referral.mobile }}</td>
-                                        <td>{{ referral.email }}</td>
+                                        <td>{{ referral.mobile }}
+                                          <span class="text-gray d-block small">{{ referral.email }}</span>
+                                        </td>
+                                        <td>Pan No.{{ referral.pan_card_number }}
+                                          <span class="text-gray d-block small">Aadhar No.{{ referral.aadhar_no }}</span>
+                                        </td>
                                         <td>{{ referral.referral_code }}</td>
                                         <td>
                                             <span class="badge {% if referral.active %}bg-success{% else %}bg-danger{% endif %}">
