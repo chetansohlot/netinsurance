@@ -278,13 +278,24 @@
                                       <input type="text" class="form-field" name="od_premium" placeholder="OD Premium" value="{{ policy.od_premium|default:policy_data.od_premium }}">
                                     </div>
                                   </div>
-                            
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
-                                      <label class="form-lbl">TP Premium</label>
-                                      <input type="text" class="form-field" name="tp_premium" placeholder="TP Premium" value="{{ policy.tp_premium|default:policy_data.tp_premium }}">
+                                      <label class="form-lbl">
+                                        TP Premium
+                                        <span class="hint-icon" data-toggle="tooltip" data-placement="top" 
+                                          title="TP Additional Premium: {{ extracted_data.coverage_details.third_party.additional_premiums }} 
+                                          & TP premium: {{ extracted_data.coverage_details.third_party.premium }}">
+                                          <i class="fas fa-info-circle"></i> <!-- FontAwesome info icon -->
+                                        </span>
+                                      </label>
+                                      <input type="text" class="form-field" name="tp_premium" placeholder="TP Premium" 
+                                        value="{{ policy.tp_premium|default:policy_data.tp_premium }}">
                                     </div>
                                   </div>
+                                  
+                                
+                                
+                                
                             
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
