@@ -2661,10 +2661,9 @@ a:hover .dr-pdficon {
 .doc-img:hover .doc-hover-icon {display: flex; transform: scale(1.2);}
 .doc-hover-icon a {color:#fff; trannsition:0.3s ease-in-out;}
 .sidebar-menutext {display: flex; gap:5px;}
+.action-btns {display: flex; gap:5px; align-items:center;}
 
-.table-width-policy-log {
-    width:1600px;
-}
+.bulk-info {display: flex; align-items: center; gap: 10px;}
 @media (max-width:767px) {
     .banner-hding {font-size: 30px;}
     .banner-subhding {font-size:20px;}

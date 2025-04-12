@@ -18,12 +18,20 @@ Policy Data
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper white-bg">
     <!-- Content Header (Page header) -->
-    <div class="content-header breadcrump-bg">
+    <div class="content-header header-content-bg">
       <div class="container-fluid ">
         <div class="row py-2">
           <div class="col-sm-12">
             <div class="d-flex align-items-center justify-content-between">
-                <div><a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Policy Files View</a></div>
+                <div>
+                  <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Policy Files View</a>
+                  <ul class="breadcrump">
+                    <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
+                    <li><a href="#">Policy Mgt.</a> <i class="fas fa-chevron-right"></i></li>
+                    <li><a href="#">Policy Logs</a> <i class="fas fa-chevron-right"></i></li>
+                    <li>Policy Files View</li>
+                  </ul>
+                </div>
                 
                 <div>
                     <form id="myForm" action="{% url 'continue-bulk-policies' %}" method="post">
@@ -37,31 +45,32 @@ Policy Data
           </div>
           
         </div>
+        <div class="row">
+          <div class="col-xs-6 col-sm-4 col-md-3">
+            <a href="#">
+              <div class="card counter-img-card active">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col">
+                      <p class="card-text">
+                        Total Policy
+                      </p>
+                      <h5 class="card-title card-number">
+                        {% if files %}
+                        {{ files|length }}
+                        {% endif %}
+                      </h5>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a>   
+          </div>  
+        </div>
       </div>
     </div>
     <!-- /.content-header -->
-    <div class="row">
-      <div class="col-xs-6 col-sm-4 col-md-3">
-        <a href="#">
-          <div class="card counter-img-card active">
-            <div class="card-body">
-              <div class="row">
-                <div class="col">
-                  <p class="card-text">
-                    Total Policy
-                  </p>
-                  <h5 class="card-title card-number">
-                    {% if files %}
-                    {{ files|length }}
-                    {% endif %}
-                  </h5>
-                </div>
-              </div>
-            </div>
-          </div>
-        </a>   
-      </div>  
-    </div>
+    
     <!-- Main content -->
     <div class="content">
       <div class="container-fluid">
@@ -99,7 +108,7 @@ Policy Data
                                     <td>{{data.filename}}</td>
                                     <td>{{data.created_at}}</td>
                                     <td>{{data.filepath}}</td>
-                                    <td><a href="{{data.filepath}}" target="_blank" download>Download</a></td>
+                                    <td><a href="{{data.filepath}}" target="_blank" class="btn btn-success btn-xs" download><i class="fa-solid fa-download"></i></a></td>
                                     <td>
                                         {% if data.status == 0 %}
                                           <span class="badge badge-info">File Uploaded</span>
