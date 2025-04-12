@@ -1067,8 +1067,26 @@ def bulkUploadLogs(request):
     else:
       logs = BulkPolicyLog.objects.all().order_by('-id')
     
+    policy_files = PolicyDocument.objects.all()
+    statuses = Counter(file.status for file in policy_files)
 
-    return render(request,'policy/bulk-upload-logs.html',{'logs': logs})
+    # Ensure all statuses are included in the count, even if they're 0
+    status_counts = {
+        0: statuses.get(0, 0),
+        1: statuses.get(1, 0),
+        2: statuses.get(2, 0),
+        3: statuses.get(3, 0),
+        4: statuses.get(4, 0),
+        5: statuses.get(5, 0),
+        6: statuses.get(6, 0),
+        7: statuses.get(7, 0),
+    }
+
+    return render(request,'policy/bulk-upload-logs.html',{
+        'logs': logs,
+        'status_counts': status_counts,
+        'total_files': len(policy_files)
+    })
 
 def changePassword(request):
     return render(request, 'change-password.html')

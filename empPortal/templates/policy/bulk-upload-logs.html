@@ -39,6 +39,79 @@ Policy Data
             </div>
           </div>
         </div>
+        <div class="row">
+          <div class="col-xs-6 col-sm-4 col-md-3">
+              <div class="card counter-img-card active">
+                  <div class="card-body">
+                      <p class="card-text">File Uploaded</p>
+                      <h5 class="card-title card-number">{{ total_files }}</h5>
+                  </div>
+              </div>
+          </div>
+        
+          <div class="col-xs-6 col-sm-4 col-md-3">
+            <div class="card counter-img-card">
+              <div class="card-body">
+                <p class="card-text text-info">File Reading</p>
+                <h5 class="card-title card-number text-info">{{ status_counts.1|default:"0" }}</h5>
+              </div>
+            </div>
+          </div>
+        
+          <div class="col-xs-6 col-sm-4 col-md-3">
+            <div class="card counter-img-card">
+              <div class="card-body">
+                <p class="card-text success-color">Reading Complete</p>
+                <h5 class="card-title card-number success-color">{{ status_counts.2|default:"0" }}</h5>
+              </div>
+            </div>
+          </div>
+        
+          <div class="col-xs-6 col-sm-4 col-md-3">
+            <div class="card counter-img-card">
+              <div class="card-body">
+                <p class="card-text warning-color">File Analysing</p>
+                <h5 class="card-title card-number warning-color">{{ status_counts.3|default:"0" }}</h5>
+              </div>
+            </div>
+          </div>
+        
+          <div class="col-xs-6 col-sm-4 col-md-3">
+            <div class="card counter-img-card">
+              <div class="card-body">
+                <p class="card-text text-primary">File Analysed</p>
+                <h5 class="card-title card-number text-primary">{{ status_counts.4|default:"0" }}</h5>
+              </div>
+            </div>
+          </div>
+        
+          <div class="col-xs-6 col-sm-4 col-md-3">
+            <div class="card counter-img-card">
+              <div class="card-body">
+                <p class="card-text text-dark">Policy Creating</p>
+                <h5 class="card-title card-number text-dark">{{ status_counts.5|default:"0" }}</h5>
+              </div>
+            </div>
+          </div>
+        
+          <div class="col-xs-6 col-sm-4 col-md-3">
+            <div class="card counter-img-card">
+              <div class="card-body">
+                <p class="card-text success-color">Complete</p>
+                <h5 class="card-title card-number success-color">{{ status_counts.6|default:"0" }}</h5>
+              </div>
+            </div>
+          </div>
+        
+          <div class="col-xs-6 col-sm-4 col-md-3">
+            <div class="card counter-img-card">
+              <div class="card-body">
+                <p class="card-text danger-color">Duplicate File</p>
+                <h5 class="card-title card-number danger-color">{{ status_counts.7|default:"0" }}</h5>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <!-- /.content-header -->
