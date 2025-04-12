@@ -1269,7 +1269,7 @@ def continueBulkPolicies(request):
             try:
                 file_data = PolicyDocument.objects.get(id=file_id)
                 file_status = file_data.status
-                if file_status == 5 or file_status == 3:
+                if file_status == 5 or file_status == 3 or file_status == 4:
                     file_obj = FileAnalysis.objects.filter(policy_id=file_id).last()
                     async_task('empPortal.tasks.process_text_from_chatgpt', file_obj.id)
                
