@@ -31,6 +31,12 @@
                   <li>Edit Policy</li>
                 </ul>
               </div>
+                  
+              <div class="col-sm-6">
+                  <div class="d-flex justify-content-end">
+                    <a href="{% url 'policy-data' %}" class="breadcrump-addbtn mx-1">Back</a>
+                  </div>
+              </div>
             </div>
           </div>
         </div>
@@ -183,22 +189,8 @@
                             
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
-                                      <label class="form-lbl">Service Provider</label>
-                                      <input type="text" class="form-field" name="location" placeholder="Service Provider" value="{{ policy.service_provider|default:'' }}">
-                                    </div>
-                                  </div>
-                            
-                                  <div class="col-sm-6 col-md-4 col-lg-3">
-                                    <div class="form-group">
-                                      <label class="form-lbl">Insurer Name</label>
-                                      <input type="text" class="form-field" name="owner_name" placeholder="Insurer Name" value="{{ policy.insurer_name|default:'' }}">
-                                    </div>
-                                  </div>
-                            
-                                  <div class="col-sm-6 col-md-4 col-lg-3">
-                                    <div class="form-group">
-                                      <label class="form-lbl">Bqp</label>
-                                      <input type="text" class="form-field" name="father_name" placeholder="Bqp" value="{{ policy.bqp|default:'' }}">
+                                      <label class="form-lbl">BQP</label>
+                                      <input type="text" class="form-field" name="father_name" placeholder="Enter BQP" value="{{ policy.bqp|default:'' }}">
                                     </div>
                                   </div>
                             
@@ -222,13 +214,27 @@
                                       </select>
                                     </div>
                                   </div>
-                            
+                                  
                                   <div class="col-sm-6 col-md-4 col-lg-3">
+                                    <div class="form-group">
+                                      <label class="form-lbl">Referral by</label>
+                                      <select class="form-field" name="referral_by" id="referral_by">
+                                        <option value="">Select Referral</option>
+                                        {% for referral in referrals %}
+                                        <option value="{{ referral.id }}" {% if referral.id|stringformat:"s" == policy.referral_by|stringformat:"s" %}selected{% endif %}>
+                                            {{ referral.name }} - {{ referral.referral_code }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                    </div>
+                                  </div>
+                            
+                                  {% comment %} <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl">Supervisor Name</label>
                                       <input type="text" class="form-field" name="supervisor_name" placeholder="Supervisor Name" value="{{ policy.supervisor_name|default:request.user.full_name }}">
                                     </div>
-                                  </div>
+                                  </div> {% endcomment %}
                             
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
@@ -236,7 +242,28 @@
                                       <input type="text" class="form-field" name="policy_type" placeholder="Policy Type" value="{{ policy.policy_type|default:policy_data.policy_type }}">
                                     </div>
                                   </div>
-                            
+
+
+                                  <div class="col-sm-6 col-md-4 col-lg-3">
+                                    <div class="form-group">
+                                      <label class="form-lbl" for="fuel_type">Fuel Type</label>
+                                      {% with policy.fuel_type|default:extracted_data.vehicle_details.fuel_type|title as selected_fuel %}
+                                        <select class="form-field" name="fuel_type" id="fuel_type">
+                                          <option value="">Select</option>
+                                          <option value="Petrol" {% if selected_fuel == 'Petrol' %}selected{% endif %}>Petrol</option>
+                                          <option value="Diesel" {% if selected_fuel == 'Diesel' %}selected{% endif %}>Diesel</option>
+                                          <option value="Cng" {% if selected_fuel == 'Cng' %}selected{% endif %}>Cng</option>
+                                        </select>
+                                      {% endwith %}
+                                    </div>
+                                  </div>
+                                  <div class="col-sm-6 col-md-4 col-lg-3">
+                                    <div class="form-group">
+                                      <label class="form-lbl">Be-Fuel Amount</label>
+                                      <input type="text" class="form-field" name="be_fuel_amount" placeholder="Be-Fuel Amount" value="{{ policy.be_fuel_amount|default:''|default:'0.00' }}">
+                                    </div>
+                                  </div>
+
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl">Policy Plan</label>
@@ -257,13 +284,24 @@
                                       <input type="text" class="form-field" name="od_premium" placeholder="OD Premium" value="{{ policy.od_premium|default:policy_data.od_premium }}">
                                     </div>
                                   </div>
-                            
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
-                                      <label class="form-lbl">TP Premium</label>
-                                      <input type="text" class="form-field" name="tp_premium" placeholder="TP Premium" value="{{ policy.tp_premium|default:policy_data.tp_premium }}">
+                                      <label class="form-lbl">
+                                        TP Premium
+                                        <span class="hint-icon" data-toggle="tooltip" data-placement="top" 
+                                          title="TP Additional Premium: {{ extracted_data.coverage_details.third_party.additional_premiums }} 
+                                          & TP premium: {{ extracted_data.coverage_details.third_party.premium }}">
+                                          <i class="fas fa-info-circle"></i> <!-- FontAwesome info icon -->
+                                        </span>
+                                      </label>
+                                      <input type="text" class="form-field" name="tp_premium" placeholder="TP Premium" 
+                                        value="{{ policy.tp_premium|default:policy_data.tp_premium }}">
                                     </div>
                                   </div>
+                                  
+                                
+                                
+                                
                             
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
@@ -292,6 +330,22 @@
                                       <input type="text" class="form-field" name="driver_amount" placeholder="Driver Amount" value="{{ policy.driver_amount|default:''|default:'0.00' }}">
                                     </div>
                                   </div>
+
+
+                                  <div class="col-sm-6 col-md-4 col-lg-3">
+                                    <div class="form-group">
+                                      <label class="form-lbl">Gross Premium</label>
+                                      <input type="text" class="form-field" name="gross_premium" placeholder="Gross Premium" value="{{ policy.gross_premium|default:extracted_data.gross_premium|default:'' }}">
+                                    </div>
+                                  </div>
+                                  
+                                  <div class="col-sm-6 col-md-4 col-lg-3">
+                                    <div class="form-group">
+                                      <label class="form-lbl">Net Premium</label>
+                                      <input type="text" class="form-field" name="net_premium" placeholder="Net Premium" value="{{ policy.net_premium|default:extracted_data.net_premium|default:'' }}">
+                                    </div>
+                                  </div>
+
                                 </div>
                               </div>
                             </div>

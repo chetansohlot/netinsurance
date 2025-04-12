@@ -1,6 +1,7 @@
 {% extends 'master.html' %}
 
 {% load static %}
+{% load custom_filters %}
 
 {% block title %}
     Edit Insurer Payment Info
@@ -29,6 +30,14 @@
                   <li> <a href="#">Policy Mgt</a> <i class="fas fa-chevron-right"></i></li>
                   <li>Edit Policy</li>
                 </ul>
+              </div>
+              
+              <div class="col-sm-6">
+                  <div class="d-flex justify-content-end">
+                    <a href="{% url 'edit-agent-payment-info' policy_data.policy_number %}" class="breadcrump-addbtn mx-1">Back</a>
+                    <a href="{% url 'policy-data' %}" class="breadcrump-addbtn mx-1">Exit</a>
+
+                  </div>
               </div>
             </div>
           </div>
@@ -118,8 +127,14 @@
                                     <div class="col-sm-6 col-md-4 col-lg-3">
                                       <div class="form-group">
                                         <label class="form-lbl">Insurer Payment Mode</label>
-                                        <input type="text" class="form-field" name="insurer_payment_mode" placeholder="Payment Mode"
-                                              value="{{ insurer_payment.insurer_payment_mode }}">
+                                        <select class="form-field" name="insurer_payment_mode">
+                                          <option value="Online" {% if insurer_payment.insurer_payment_mode == "Online" %}selected{% endif %}>Online</option>
+                                          <option value="Pending" {% if insurer_payment.insurer_payment_mode == "Pending" %}selected{% endif %}>Pending</option>
+                                          <option value="Float" {% if insurer_payment.insurer_payment_mode == "Float" %}selected{% endif %}>Float</option>
+                                          <option value="Cheque/Demand Draft" {% if insurer_payment.insurer_payment_mode == "Cheque/Demand Draft" %}selected{% endif %}>Cheque/Demand Draft</option>
+                                          <option value="PayTM/UPI/Wallet" {% if insurer_payment.insurer_payment_mode == "PayTM/UPI/Wallet" %}selected{% endif %}>PayTM/UPI/Wallet</option>
+                                          <option value="NEFT/IMPS/RTGS" {% if insurer_payment.insurer_payment_mode == "NEFT/IMPS/RTGS" %}selected{% endif %}>NEFT/IMPS/RTGS</option>
+                                        </select>
                                       </div>
                                     </div>
 
@@ -128,7 +143,7 @@
                                       <div class="form-group">
                                         <label class="form-lbl">Insurer Payment Date</label>
                                         <input type="date" class="form-field" name="insurer_payment_date" placeholder="DD-MM-YYYY"
-                                              value="{{ insurer_payment.insurer_payment_date }}">
+                                              value="{{ insurer_payment.insurer_payment_mode|default_if_none:'' }}">
                                       </div>
                                     </div>
 
@@ -137,7 +152,7 @@
                                       <div class="form-group">
                                         <label class="form-lbl">Insurer Amount</label>
                                         <input type="text" class="form-field" name="insurer_amount" placeholder="Amount"
-                                              value="{{ insurer_payment.insurer_amount }}">
+       value="{{ insurer_payment.insurer_amount|blank_if_none_or_text_none }}">
                                       </div>
                                     </div>
 
@@ -146,7 +161,7 @@
                                       <div class="form-group">
                                         <label class="form-lbl">Insurer Remarks</label>
                                         <input type="text" class="form-field" name="insurer_remarks" placeholder="Remarks"
-                                              value="{{ insurer_payment.insurer_remarks }}">
+                                              value="{{ insurer_payment.insurer_remarks|blank_if_none_or_text_none }}">
                                       </div>
                                     </div>
 
@@ -180,7 +195,7 @@
                                       <div class="form-group">
                                         <label class="form-lbl">Insurer Incentive Amount</label>
                                         <input type="text" class="form-field" name="insurer_incentive_amount" placeholder="Incentive Amount"
-                                              value="{{ insurer_payment.insurer_incentive_amount }}">
+                                              value="{{ insurer_payment.insurer_incentive_amount|blank_if_none_or_text_none }}">
                                       </div>
                                     </div>
 
@@ -188,7 +203,7 @@
                                       <div class="form-group">
                                         <label class="form-lbl">Insurer TDS</label>
                                         <input type="text" class="form-field" name="insurer_tds" placeholder="TDS (%)"
-                                              value="{{ insurer_payment.insurer_tds }}">
+                                              value="{{ insurer_payment.insurer_tds|blank_if_none_or_text_none }}">
                                       </div>
                                     </div>
 
@@ -197,7 +212,7 @@
                                       <div class="form-group">
                                         <label class="form-lbl">Insurer OD Amount</label>
                                         <input type="text" class="form-field" name="insurer_od_amount" placeholder="OD Amount"
-                                              value="{{ insurer_payment.insurer_od_amount }}">
+                                              value="{{ insurer_payment.insurer_od_amount|blank_if_none_or_text_none }}">
                                       </div>
                                     </div>
 
@@ -205,7 +220,7 @@
                                       <div class="form-group">
                                         <label class="form-lbl">Insurer Net Amount</label>
                                         <input type="text" class="form-field" name="insurer_net_amount" placeholder="Net Amount"
-                                              value="{{ insurer_payment.insurer_net_amount }}">
+                                              value="{{ insurer_payment.insurer_net_amount|blank_if_none_or_text_none }}">
                                       </div>
                                     </div>
 
@@ -213,7 +228,7 @@
                                       <div class="form-group">
                                         <label class="form-lbl">Insurer TP Amount</label>
                                         <input type="text" class="form-field" name="insurer_tp_amount" placeholder="TP Amount"
-                                              value="{{ insurer_payment.insurer_tp_amount }}">
+                                              value="{{ insurer_payment.insurer_tp_amount|blank_if_none_or_text_none }}">
                                       </div>
                                     </div>
 
@@ -221,7 +236,7 @@
                                       <div class="form-group">
                                         <label class="form-lbl">Total Commission Amount</label>
                                         <input type="text" class="form-field" name="insurer_total_comm_amount" placeholder="Total Commission"
-                                              value="{{ insurer_payment.insurer_total_comm_amount }}">
+                                              value="{{ insurer_payment.insurer_total_comm_amount|blank_if_none_or_text_none }}">
                                       </div>
                                     </div>
 
@@ -229,7 +244,7 @@
                                       <div class="form-group">
                                         <label class="form-lbl">Net Payable Amount</label>
                                         <input type="text" class="form-field" name="insurer_net_payable_amount" placeholder="Net Payable"
-                                              value="{{ insurer_payment.insurer_net_payable_amount }}">
+                                              value="{{ insurer_payment.insurer_net_payable_amount|blank_if_none_or_text_none }}">
                                       </div>
                                     </div>
 
@@ -237,12 +252,15 @@
                                       <div class="form-group">
                                         <label class="form-lbl">TDS Amount</label>
                                         <input type="text" class="form-field" name="insurer_tds_amount" placeholder="TDS Amount"
-                                              value="{{ insurer_payment.insurer_tds_amount }}">
+                                              value="{{ insurer_payment.insurer_tds_amount|blank_if_none_or_text_none }}">
                                       </div>
                                     </div>
                                   </div>
                                 </div>
                               </div>
+
+
+
                             <div class="d-flex justify-content-end mt-4">
                               <button type="button" id="save-insurer-payment-form" class="dashboard-addbtn">Save and Continue</button>
                             </div>  

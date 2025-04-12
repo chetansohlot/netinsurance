@@ -431,18 +431,13 @@
                         vehicle_type: { required: true },
                         vehicle_make: { required: true },
                         vehicle_model: { required: true },
-                        vehicle_variant: { required: true },
-                        fuel_type: { required: true },
                         gvw: {
-                            required: true,
                             number: true
                         },
                         cubic_capacity: {
-                            required: true,
                             number: true
                         },
                         seating_capacity: {
-                            required: true,
                             digits: true
                         },
                         vehicle_reg_no: { required: true },
@@ -633,20 +628,20 @@
                         rules: {
                        
                           insurer_payment_mode: { required: true },
-                          insurer_payment_date: { required: true, date: true },
-                          insurer_amount: { required: true, number: true },
+                          insurer_payment_date: {  date: true },
+                          insurer_amount: {  number: true },
                           insurer_remarks: { required: false },
                   
                           insurer_od_comm: { required: false, number: true },
                           insurer_net_comm: { required: false, number: true },
                           insurer_tp_comm: { required: false, number: true },
                   
-                          insurer_incentive_amount: { required: false, number: true },
-                          insurer_tds: { required: false, number: true },
+                          insurer_incentive_amount: {  number: true },
+                          insurer_tds: {  number: true },
                   
-                          insurer_od_amount: { required: false, number: true },
-                          insurer_net_amount: { required: false, number: true },
-                          insurer_tp_amount: { required: false, number: true },
+                          insurer_od_amount: {  number: true },
+                          insurer_net_amount: {  number: true },
+                          insurer_tp_amount: {  number: true },
                   
                           insurer_total_comm_amount: { required: false, number: true },
                           insurer_net_payable_amount: { required: false, number: true },

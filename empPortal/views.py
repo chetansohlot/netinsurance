@@ -28,6 +28,7 @@ from django_q.tasks import async_task
 from django.db.models import Sum
 from django.utils import timezone
 from django.utils.timezone import now
+from empPortal.model import Referral
 
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 logger = logging.getLogger(__name__)
@@ -861,6 +862,7 @@ def editPolicy(request, id):
         policy = PolicyInfo.objects.filter(policy_number=policy_number).first()
         pdf_path = get_pdf_path(request, policy_data.filepath)
         branches = Branch.objects.filter(status='Active').order_by('-created_at')
+        referrals = Referral.objects.all()
 
         extracted_data = {}
         if policy_data and policy_data.extracted_text:
@@ -874,6 +876,7 @@ def editPolicy(request, id):
         return render(request, 'policy/edit-policy.html', {
             'policy_data': policy_data,
             'policy': policy,
+            'referrals': referrals,
             'branches': branches,
             'pdf_path': pdf_path,
             'extracted_data': extracted_data,

@@ -8,7 +8,11 @@ register = template.Library()
 def fallback(primary, secondary):
     return primary or secondary
 
-
+@register.filter
+def blank_if_none_or_text_none(value):
+    if value in [None, 'None']:
+        return ''
+    return value
 
 @register.filter
 def indian_currency(value):
