@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'empPortal',
     'django_q',
+    'django_cron',
 ]
 
 MIDDLEWARE = [
