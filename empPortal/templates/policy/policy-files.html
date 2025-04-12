@@ -56,64 +56,64 @@ Policy Data
           </div>
         
           <div class="col-xs-6 col-sm-4 col-md-3">
-            <div class="card counter-img-card active">
+            <div class="card counter-img-card">
               <div class="card-body">
-                <p class="card-text">File Reading</p>
-                <h5 class="card-title card-number">{{ status_counts.1|default:"0" }}</h5>
+                <p class="card-text text-info">File Reading</p>
+                <h5 class="card-title card-number text-info">{{ status_counts.1|default:"0" }}</h5>
               </div>
             </div>
           </div>
         
           <div class="col-xs-6 col-sm-4 col-md-3">
-            <div class="card counter-img-card active">
+            <div class="card counter-img-card">
               <div class="card-body">
-                <p class="card-text">Reading Complete</p>
-                <h5 class="card-title card-number">{{ status_counts.2|default:"0" }}</h5>
+                <p class="card-text success-color">Reading Complete</p>
+                <h5 class="card-title card-number success-color">{{ status_counts.2|default:"0" }}</h5>
               </div>
             </div>
           </div>
         
           <div class="col-xs-6 col-sm-4 col-md-3">
-            <div class="card counter-img-card active">
+            <div class="card counter-img-card">
               <div class="card-body">
-                <p class="card-text">File Analysing</p>
-                <h5 class="card-title card-number">{{ status_counts.3|default:"0" }}</h5>
+                <p class="card-text warning-color">File Analysing</p>
+                <h5 class="card-title card-number warning-color">{{ status_counts.3|default:"0" }}</h5>
               </div>
             </div>
           </div>
         
           <div class="col-xs-6 col-sm-4 col-md-3">
-            <div class="card counter-img-card active">
+            <div class="card counter-img-card">
               <div class="card-body">
-                <p class="card-text">File Analysed</p>
-                <h5 class="card-title card-number">{{ status_counts.4|default:"0" }}</h5>
+                <p class="card-text text-primary">File Analysed</p>
+                <h5 class="card-title card-number text-primary">{{ status_counts.4|default:"0" }}</h5>
               </div>
             </div>
           </div>
         
           <div class="col-xs-6 col-sm-4 col-md-3">
-            <div class="card counter-img-card active">
+            <div class="card counter-img-card">
               <div class="card-body">
-                <p class="card-text">Policy Creating</p>
-                <h5 class="card-title card-number">{{ status_counts.5|default:"0" }}</h5>
+                <p class="card-text text-dark">Policy Creating</p>
+                <h5 class="card-title card-number text-dark">{{ status_counts.5|default:"0" }}</h5>
               </div>
             </div>
           </div>
         
           <div class="col-xs-6 col-sm-4 col-md-3">
-            <div class="card counter-img-card active">
+            <div class="card counter-img-card">
               <div class="card-body">
-                <p class="card-text">Complete</p>
-                <h5 class="card-title card-number">{{ status_counts.6|default:"0" }}</h5>
+                <p class="card-text success-color">Complete</p>
+                <h5 class="card-title card-number success-color">{{ status_counts.6|default:"0" }}</h5>
               </div>
             </div>
           </div>
         
           <div class="col-xs-6 col-sm-4 col-md-3">
-            <div class="card counter-img-card active">
+            <div class="card counter-img-card">
               <div class="card-body">
-                <p class="card-text">Duplicate File</p>
-                <h5 class="card-title card-number">{{ status_counts.7|default:"0" }}</h5>
+                <p class="card-text danger-color">Duplicate File</p>
+                <h5 class="card-title card-number danger-color">{{ status_counts.7|default:"0" }}</h5>
               </div>
             </div>
           </div>
@@ -138,7 +138,7 @@ Policy Data
                             <th></th>
                             <th>File Name</th>
                             <th>Date of Upload</th>
-                            <th>File URL</th>
+                            <!-- <th>File URL</th> -->
                             <th>File</th>
                             <th>Action</th>
                           </tr>
@@ -147,7 +147,7 @@ Policy Data
                             {% for data in files %}
                                 <tr>
                                   <td>
-                                  <input type="checkbox"
+                                    <input type="checkbox"
                                       name="reupload[]"
                                       class="reprocess"
                                       value="{{ data.id }}"
@@ -157,9 +157,9 @@ Policy Data
                                       id="checkbox-{{ data.id }}">
                                     </td>
                                     <!-- <td><input type="checkbox" name="reupload[]" class="reprocess" value="{{ data.id }}" {% if data.status == 6 or data.status == 7 %}disabled{% endif %}></td> -->
-                                    <td>{{data.filename}}</td>
+                                    <td>{{data.filename}} <span class="tooltip-sec text-info" data-title="{{data.filepath}}"><i class="fa-solid fa-circle-info"></i></span></td>
                                     <td>{{data.created_at}}</td>
-                                    <td>{{data.filepath}}</td>
+                                    <!-- <td>{{data.filepath}}</td> -->
                                     <td><a href="{{data.filepath}}" target="_blank" class="btn btn-success btn-xs" download><i class="fa-solid fa-download"></i></a></td>
                                     <td>
                                         {% if data.status == 0 %}

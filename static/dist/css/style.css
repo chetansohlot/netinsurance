@@ -2662,6 +2662,9 @@ a:hover .dr-pdficon {
 .doc-hover-icon a {color:#fff; trannsition:0.3s ease-in-out;}
 .sidebar-menutext {display: flex; gap:5px;}
 .action-btns {display: flex; gap:5px; align-items:center;}
+.success-color {color:#47b875 !important;}
+.danger-color {color:#f5222d !important;}
+.warning-color {color:#c49300 !important;}
 
 .bulk-info {display: flex; align-items: center; gap: 10px;}
 @media (max-width:767px) {
