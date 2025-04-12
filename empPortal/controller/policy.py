@@ -103,6 +103,11 @@ def edit_policy(request, policy_id):
         policy.pa_amount = request.POST.get('pa_amount', '0.00')
         policy.driver_count = request.POST.get('driver_count', '0')
         policy.driver_amount = request.POST.get('driver_amount', '0.00')
+        policy.referral_by = request.POST.get('referral_by')
+        policy.fuel_type = request.POST.get('fuel_type')
+        policy.be_fuel_amount = request.POST.get('be_fuel_amount')
+        policy.gross_premium = request.POST.get('gross_premium')
+        policy.net_premium = request.POST.get('net_premium')
 
         policy.save()
         messages.success(request, "Policy Updated successfully!")

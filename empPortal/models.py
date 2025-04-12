@@ -265,10 +265,14 @@ class PolicyInfo(models.Model):
     od_premium = models.CharField(max_length=20, null=True, blank=True)
     tp_premium = models.CharField(max_length=20, null=True, blank=True)
     pa_count = models.CharField(max_length=20, default='0', null=True, blank=True)
-    pa_amount = models.CharField(max_length=20, default='0.00', null=True, blank=True)
-    driver_count = models.CharField(max_length=20, default='0', null=True, blank=True)
-    driver_amount = models.CharField(max_length=20, default='0.00', null=True, blank=True)
-
+    pa_amount = models.CharField(max_length=20, null=True, blank=True)
+    driver_count = models.CharField(max_length=20, null=True, blank=True)
+    driver_amount = models.CharField(max_length=20, null=True, blank=True)
+    referral_by = models.CharField(max_length=50, null=True, blank=True)
+    fuel_type = models.CharField(max_length=50, null=True, blank=True)
+    be_fuel_amount = models.CharField(max_length=50, null=True, blank=True)
+    gross_premium = models.CharField(max_length=50, null=True, blank=True)
+    net_premium = models.CharField(max_length=50, null=True, blank=True)
     active = models.CharField(max_length=1, choices=[('0', 'Inactive'), ('1', 'Active')], default='1')
 
     created_at = models.DateTimeField(auto_now_add=True)
