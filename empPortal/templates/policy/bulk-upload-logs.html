@@ -54,11 +54,12 @@ Policy Data
                     <div class="table-responsive table-ht">
                       
                        <!-- Logs Table -->
-                    <table class="table table-design table-width-design">
+                    <table class="table table-design table-width-policy-log">
                       <thead class="table-thead-bg-light table-header-fix">
                         <tr>
-                          <th>View Uploaded Files</th>
                           <th>Campaign Name</th>
+                          <th>View Uploaded Files</th>
+                          
                           <th>File Name</th>
                           <th>File URL</th>
                           <th>Total Files</th>
@@ -73,8 +74,9 @@ Policy Data
                       <tbody>
                         {% for log in logs %}
                           <tr>
-                            <td><a href="{% url 'bulk-policies'  id=log.id %}">Click Here</a></td>
                             <td>{{ log.camp_name }}</td>
+                            <td><a href="{% url 'bulk-policies'  id=log.id %}">Click Here</a></td>
+                            
                             <td>{{ log.file_name }}</td>
                             <td>
                               <a href="{{ log.file_url }}" target="_blank" class="btn btn-primary btn-xs"><i class="fa-solid fa-download"></i> Download</a>
