@@ -127,9 +127,14 @@
                                     <div class="col-sm-6 col-md-4 col-lg-3">
                                       <div class="form-group">
                                         <label class="form-lbl">Insurer Payment Mode</label>
-                                        <input type="text" class="form-field" name="insurer_payment_mode" placeholder="Payment Mode"
-       value="{{ insurer_payment.insurer_payment_mode|blank_if_none_or_text_none }}">
-
+                                        <select class="form-field" name="insurer_payment_mode">
+                                          <option value="Online" {% if insurer_payment.insurer_payment_mode == "Online" %}selected{% endif %}>Online</option>
+                                          <option value="Pending" {% if insurer_payment.insurer_payment_mode == "Pending" %}selected{% endif %}>Pending</option>
+                                          <option value="Float" {% if insurer_payment.insurer_payment_mode == "Float" %}selected{% endif %}>Float</option>
+                                          <option value="Cheque/Demand Draft" {% if insurer_payment.insurer_payment_mode == "Cheque/Demand Draft" %}selected{% endif %}>Cheque/Demand Draft</option>
+                                          <option value="PayTM/UPI/Wallet" {% if insurer_payment.insurer_payment_mode == "PayTM/UPI/Wallet" %}selected{% endif %}>PayTM/UPI/Wallet</option>
+                                          <option value="NEFT/IMPS/RTGS" {% if insurer_payment.insurer_payment_mode == "NEFT/IMPS/RTGS" %}selected{% endif %}>NEFT/IMPS/RTGS</option>
+                                        </select>
                                       </div>
                                     </div>
 

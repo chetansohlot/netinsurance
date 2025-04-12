@@ -128,17 +128,20 @@
                                       <input type="text" class="form-field" name="agent_name" placeholder="Agent Name" value="{{ agent_payment.agent_name }}">
                                     </div>
                                   </div>
-                            
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl">Agent Payment Mod</label>
                                       <select class="form-field" name="agent_payment_mod">
                                         <option value="Online" {% if agent_payment.agent_payment_mod == "Online" %}selected{% endif %}>Online</option>
-                                        <option value="Cash" {% if agent_payment.agent_payment_mod == "Cash" %}selected{% endif %}>Cash</option>
-                                        <option value="Cheque" {% if agent_payment.agent_payment_mod == "Cheque" %}selected{% endif %}>Cheque</option>
+                                        <option value="Pending" {% if agent_payment.agent_payment_mod == "Pending" %}selected{% endif %}>Pending</option>
+                                        <option value="Float" {% if agent_payment.agent_payment_mod == "Float" %}selected{% endif %}>Float</option>
+                                        <option value="Cheque/Demand Draft" {% if agent_payment.agent_payment_mod == "Cheque/Demand Draft" %}selected{% endif %}>Cheque/Demand Draft</option>
+                                        <option value="PayTM/UPI/Wallet" {% if agent_payment.agent_payment_mod == "PayTM/UPI/Wallet" %}selected{% endif %}>PayTM/UPI/Wallet</option>
+                                        <option value="NEFT/IMPS/RTGS" {% if agent_payment.agent_payment_mod == "NEFT/IMPS/RTGS" %}selected{% endif %}>NEFT/IMPS/RTGS</option>
                                       </select>
                                     </div>
                                   </div>
+                                  
                             
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
