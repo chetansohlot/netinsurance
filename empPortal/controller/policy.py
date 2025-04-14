@@ -5,6 +5,8 @@ from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib import messages
 from django.template import loader
 from ..models import Commission,Users, PolicyUploadDoc,Branch,PolicyInfo,PolicyDocument, DocumentUpload, FranchisePayment, InsurerPaymentDetails, PolicyVehicleInfo, AgentPaymentDetails
+from empPortal.model import Referral
+
 from empPortal.model import BankDetails
 from ..forms import DocumentUploadForm
 from django.contrib.auth import authenticate, login ,logout
@@ -90,8 +92,8 @@ def edit_policy(request, policy_id):
         policy.insurance_company = request.POST.get('insurance_company')
         policy.service_provider = request.POST.get('location')
         policy.insurer_contact_name = request.POST.get('owner_name')
-        policy.bqp = request.POST.get('father_name')
-        policy.pos_name = request.POST.get('vehicle_owner_number')
+        # policy.bqp = request.POST.get('father_name')
+        # policy.pos_name = request.POST.get('vehicle_owner_number')
         policy.branch_name = request.POST.get('registration_city')
         policy.supervisor_name = request.POST.get('supervisor_name')
         policy.policy_type = request.POST.get('policy_type')
@@ -103,7 +105,7 @@ def edit_policy(request, policy_id):
         policy.pa_amount = request.POST.get('pa_amount', '0.00')
         policy.driver_count = request.POST.get('driver_count', '0')
         policy.driver_amount = request.POST.get('driver_amount', '0.00')
-        policy.referral_by = request.POST.get('referral_by')
+        # policy.referral_by = request.POST.get('referral_by')
         policy.fuel_type = request.POST.get('fuel_type')
         policy.be_fuel_amount = request.POST.get('be_fuel_amount')
         policy.gross_premium = request.POST.get('gross_premium')
@@ -252,7 +254,8 @@ def edit_agent_payment_info(request, policy_no):
 
     policy = get_object_or_404(PolicyInfo, policy_number=policy_no)
     policy_data = PolicyDocument.objects.filter(policy_number=policy_no).first()
-
+    referrals = Referral.objects.all()
+     
     try:
         agent_payment = AgentPaymentDetails.objects.get(policy_number=policy.policy_number)
     except AgentPaymentDetails.DoesNotExist:
@@ -276,6 +279,11 @@ def edit_agent_payment_info(request, policy_no):
         agent_payment.agent_tds_amount = request.POST.get('agent_tds_amount')
 
         agent_payment.save()
+        
+        policy.bqp = request.POST.get('bqp')
+        policy.pos_name = request.POST.get('pos_name')
+        policy.referral_by = request.POST.get('referral_by')
+        policy.save()
         messages.success(request, "Policy Agent Payment Updated successfully!")
 
         return redirect('edit-insurer-payment-info', policy_no=quote(policy.policy_number))
@@ -286,7 +294,8 @@ def edit_agent_payment_info(request, policy_no):
         'policy': policy,
         'pdf_path': pdf_path,
         'policy_data': policy_data,
-        'agent_payment': agent_payment
+        'agent_payment': agent_payment,
+        'referrals':referrals
     })
 
 

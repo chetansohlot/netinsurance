@@ -292,6 +292,7 @@ class AgentPaymentDetails(models.Model):
     agent_amount = models.CharField(max_length=255)
     agent_remarks = models.CharField(max_length=255)
     agent_od_comm = models.CharField(max_length=255)
+    agent_tp_comm = models.CharField(max_length=255)
     agent_net_comm = models.CharField(max_length=255)
     agent_incentive_amount = models.CharField(max_length=255)
     agent_tds = models.CharField(max_length=255)

@@ -189,20 +189,6 @@
                             
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
-                                      <label class="form-lbl">BQP</label>
-                                      <input type="text" class="form-field" name="father_name" placeholder="Enter BQP" value="{{ policy.bqp|default:'' }}">
-                                    </div>
-                                  </div>
-                            
-                                  <div class="col-sm-6 col-md-4 col-lg-3">
-                                    <div class="form-group">
-                                      <label class="form-lbl">Pos Name</label>
-                                      <input type="text" class="form-field" name="vehicle_owner_number" placeholder="Pos Name" value="{{ policy.pos_name|default:'Elevate Insurance' }}">
-                                    </div>
-                                  </div>
-                            
-                                  <div class="col-sm-6 col-md-4 col-lg-3">
-                                    <div class="form-group">
                                       <label class="form-lbl">Branch Name</label>
                                       <select id="branch" name="registration_city" class="form-field">
                                           <option value="">Select Branch</option>
@@ -215,19 +201,7 @@
                                     </div>
                                   </div>
                                   
-                                  <div class="col-sm-6 col-md-4 col-lg-3">
-                                    <div class="form-group">
-                                      <label class="form-lbl">Referral by</label>
-                                      <select class="form-field" name="referral_by" id="referral_by">
-                                        <option value="">Select Referral</option>
-                                        {% for referral in referrals %}
-                                        <option value="{{ referral.id }}" {% if referral.id|stringformat:"s" == policy.referral_by|stringformat:"s" %}selected{% endif %}>
-                                            {{ referral.name }} - {{ referral.referral_code }}
-                                        </option>
-                                        {% endfor %}
-                                    </select>
-                                    </div>
-                                  </div>
+                                  
                             
                                   {% comment %} <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">

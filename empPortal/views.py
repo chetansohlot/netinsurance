@@ -697,10 +697,12 @@ def process_text_with_chatgpt(text):
             "model": "XXXX",
             "variant": "XXXX",
             "registration_year": YYYY,
+            "manufacture_year": YYYY,
             "engine_number": "XXXXXXXXXXXX",
             "chassis_number": "XXXXXXXXXXXX",
             "fuel_type": "XXXX",     # diesel/petrol/cng/lpg/ev 
             "cubic_capacity": XXXX,  
+            "seating_capacity": XXXX,  
             "vehicle_gross_weight": XXXX,   # in kg
             "vehicle_type": "XXXX XXXX",    # private / commercial
             "commercial_vehicle_detail": "XXXX XXXX"    
@@ -715,7 +717,9 @@ def process_text_with_chatgpt(text):
         "contact_information": {{
             "address": "XXXXXX",
             "phone_number": "XXXXXXXXXX",
-            "email": "XXXXXX"
+            "email": "XXXXXX",
+            "pan_no": "XXXXX1111X",
+            "aadhar_no": "XXXXXXXXXXXX"
         }}
     }}
     

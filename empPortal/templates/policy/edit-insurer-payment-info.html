@@ -242,19 +242,21 @@
 
                                     <div class="col-sm-6 col-md-4 col-lg-3">
                                       <div class="form-group">
+                                        <label class="form-lbl">TDS Amount</label>
+                                        <input type="text" class="form-field" name="insurer_tds_amount" placeholder="TDS Amount"
+                                              value="{{ insurer_payment.insurer_tds_amount|blank_if_none_or_text_none }}">
+                                      </div>
+                                    </div>
+                                    
+                                    <div class="col-sm-6 col-md-4 col-lg-3">
+                                      <div class="form-group">
                                         <label class="form-lbl">Net Payable Amount</label>
                                         <input type="text" class="form-field" name="insurer_net_payable_amount" placeholder="Net Payable"
                                               value="{{ insurer_payment.insurer_net_payable_amount|blank_if_none_or_text_none }}">
                                       </div>
                                     </div>
 
-                                    <div class="col-sm-6 col-md-4 col-lg-3">
-                                      <div class="form-group">
-                                        <label class="form-lbl">TDS Amount</label>
-                                        <input type="text" class="form-field" name="insurer_tds_amount" placeholder="TDS Amount"
-                                              value="{{ insurer_payment.insurer_tds_amount|blank_if_none_or_text_none }}">
-                                      </div>
-                                    </div>
+                                    
                                   </div>
                                 </div>
                               </div>

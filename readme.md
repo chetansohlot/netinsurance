@@ -12,8 +12,9 @@
 13. pip install tools
 14. pip install django_q2
 15. pip install dramatiq
+16. pip instal django_cron
 or 
-pip install django requests python-magic openai pymysql python-dotenv fastapi PyMuPDF pandas faker openpyxl watchdog frontend tools pdfkit
+pip install django requests python-magic openai pymysql python-dotenv fastapi PyMuPDF pandas faker openpyxl watchdog frontend tools pdfkit django_cron django_q2 dramatiq
 
 
 
