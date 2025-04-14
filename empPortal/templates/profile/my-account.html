@@ -294,10 +294,10 @@
                       <div class="card member-detail-right-card">
                         
                         <ul class="nav nav-pills profile-tab">
-                            <li class="nav-item text-bold"><a class="nav-link active" href="#membership-tab" data-toggle="tab">Payout Details</a></li>
+                            <li class="nav-item text-bold"><a class="nav-link active" href="#personal-detail-tab" data-toggle="tab">Documents</a></li>
                             <li class="nav-item text-bold"><a class="nav-link" href="#allocation-tab" data-toggle="tab">Allocation </a></li>
                             <li class="nav-item text-bold"><a class="nav-link" href="#organisation-tab" data-toggle="tab">Bank Details </a></li>
-                            <li class="nav-item text-bold"><a class="nav-link" href="#personal-detail-tab" data-toggle="tab">Documents</a></li>
+                            <li class="nav-item text-bold"><a class="nav-link" href="#membership-tab" data-toggle="tab">Payout Details</a></li>
                         </ul>
                         
                         <!-- /.card-header -->
@@ -343,7 +343,7 @@
                                 </table>
                                 
                             </div>
-                            <div class="active tab-pane" id="membership-tab">
+                            <div class="tab-pane" id="membership-tab">
                               
                               {% if request.user.role_id == 1 %}
                               <div class="row mb-3">
@@ -643,7 +643,7 @@
 
                             <!-- /.tab-pane -->
                             
-                            <div class="tab-pane" id="personal-detail-tab">
+                            <div class="tab-pane active" id="personal-detail-tab">
                                 <div class="row mt-3">
                                     <div class="col-md-12">
                                         <div class="d-flex justify-content-between align-items-start">
