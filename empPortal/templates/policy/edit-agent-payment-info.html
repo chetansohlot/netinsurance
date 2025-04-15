@@ -122,16 +122,16 @@
                               <div class="form-padding">
                                 <div class="row">
                                   
-                                  <div class="col-sm-6 col-md-4 col-lg-3">
+                                  <!-- <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
-                                      <label class="form-lbl">Agent Name</label>
-                                      <input type="text" class="form-field" name="agent_name" placeholder="Agent Name" value="{{ agent_payment.agent_name }}">
+                                      <label class="form-lbl">Referral Name</label>
+                                      <input type="text" class="form-field" name="agent_name" placeholder="Referral Name" value="{{ agent_payment.agent_name }}">
                                     </div>
-                                  </div>
+                                  </div> -->
                                   
-                                  <div class="col-sm-6 col-md-4 col-lg-3">
+                                  <div class="col-sm-6">
                                     <div class="form-group">
-                                      <label class="form-lbl">Referral by</label>
+                                      <label class="form-lbl">Referral Name</label>
                                       <select class="form-field" name="referral_by" id="referral_by">
                                         <option value="">Select Referral</option>
                                         {% for referral in referrals %}
@@ -143,24 +143,24 @@
                                     </div>
                                   </div>
                                   
-                                  <div class="col-sm-6 col-md-4 col-lg-3">
+                                  <div class="col-sm-6">
                                     <div class="form-group">
                                       <label class="form-lbl">BQP</label>
                                       <input type="text" class="form-field" name="bqp" placeholder="Enter BQP" value="{{ policy.bqp|default:'' }}">
                                     </div>
                                   </div>
                             
-                                  <div class="col-sm-6 col-md-4 col-lg-3">
+                                  <div class="col-sm-6">
                                     <div class="form-group">
-                                      <label class="form-lbl">Pos Name</label>
-                                      <input type="text" class="form-field" name="pos_name" placeholder="Pos Name" value="{{ policy.pos_name|default:'Elevate Insurance' }}">
+                                      <label class="form-lbl">POS Name</label>
+                                      <input type="text" class="form-field" name="pos_name" placeholder="Pos Name" value="{{ policy.pos_name|default:'Subash Bisnoi' }}">
                                     </div>
                                   </div>
 
                                   
-                                  <div class="col-sm-6 col-md-4 col-lg-3">
+                                  <div class="col-sm-6">
                                     <div class="form-group">
-                                      <label class="form-lbl">Agent Payment Mod</label>
+                                      <label class="form-lbl">Agent Payment Mode</label>
                                       <select class="form-field" name="agent_payment_mod">
                                         <option value="Online" {% if agent_payment.agent_payment_mod == "Online" %}selected{% endif %}>Online</option>
                                         <option value="Pending" {% if agent_payment.agent_payment_mod == "Pending" %}selected{% endif %}>Pending</option>
@@ -173,122 +173,123 @@
                                   </div>
                                   
                             
-                                  <div class="col-sm-6 col-md-4 col-lg-3">
+                                  <div class="col-sm-6">
+                                    <div class="form-group">
+                                      <label class="form-lbl">Transaction ID / Check Number</label>
+                                      <input type="text" class="form-field" name="transaction_id" value="{{ agent_payment.transaction_id }}" placeholder="Transaction Id / Check Number">
+                                    </div>
+                                  </div>
+
+                                  <div class="col-sm-6">
                                     <div class="form-group">
                                       <label class="form-lbl">Agent Payment Date</label>
                                       <input type="date" class="form-field" name="agent_payment_date" value="{{ agent_payment.agent_payment_date }}">
                                     </div>
                                   </div>
-                            
-                                  <div class="col-sm-6 col-md-4 col-lg-3">
+
+                                  <div class="col-sm-6">
                                     <div class="form-group">
                                       <label class="form-lbl">Agent Amount</label>
                                       <input type="text" class="form-field" name="agent_amount" placeholder="Agent Amount" value="{{ agent_payment.agent_amount }}">
                                     </div>
                                   </div>
-                            
-                                  <div class="col-sm-6 col-md-4 col-lg-3">
+                                 
+                                  <div class="col-sm-6">
                                     <div class="form-group">
                                       <label class="form-lbl">Agent Remarks</label>
                                       <input type="text" class="form-field" name="agent_remarks" placeholder="Agent Remarks" value="{{ agent_payment.agent_remarks }}">
                                     </div>
                                   </div>
-                            
-                                  <div class="col-sm-6 col-md-4 col-lg-3">
-                                    <div class="form-group">
-                                      <label class="form-lbl">Agent OD Comm (in %)</label>
-                                      <input type="text" class="form-field" name="agent_od_comm" placeholder="Agent OD Comm" value="{{ agent_payment.agent_od_comm|default:policy_data.od_percent }}">
-                                    </div>
-                                  </div>
-                            
-                                  <div class="col-sm-6 col-md-4 col-lg-3">
-                                    <div class="form-group">
-                                      <label class="form-lbl">Agent TP Comm  (in %)</label>
-                                      <input type="text" class="form-field" name="agent_tp_comm" placeholder="Agent TP Comm" value="{{ agent_payment.agent_tp_comm|default:policy_data.tp_percent }}">
-                                    </div>
-                                  </div>
-
-                                  <div class="col-sm-6 col-md-4 col-lg-3">
-                                    <div class="form-group">
-                                      <label class="form-lbl">Agent Net Comm  (in %)</label>
-                                      <input type="text" class="form-field" name="agent_net_comm" placeholder="Agent Net Comm" value="{{ agent_payment.agent_net_comm|default:policy_data.net_percent }}">
-                                    </div>
-                                  </div>
-
-                                  
-                                  <div class="col-sm-6 col-md-4 col-lg-3">
-                                    <div class="form-group">
-                                      <label class="form-lbl">Agent TDS</label>
-                                      <input type="text" class="form-field" name="agent_tds" placeholder="Agent TDS" value="{{ agent_payment.agent_tds }}">
-                                    </div>
-                                  </div>
-                            
-                                  <div class="col-sm-6 col-md-4 col-lg-3">
-                                    <div class="form-group">
-                                      <label class="form-lbl">Agent OD Amount</label>
-                                      <input type="text" class="form-field" name="agent_od_amount" placeholder="Agent OD Amount" value="{{ agent_payment.agent_od_amount }}">
-                                    </div>
-                                  </div>
-                            
-                                  <div class="col-sm-6 col-md-4 col-lg-3">
-                                    <div class="form-group">
-                                      <label class="form-lbl">Agent TP Amount</label>
-                                      <input type="text" class="form-field" name="agent_tp_amount" placeholder="Agent TP Amount" value="{{ agent_payment.agent_tp_amount }}">
-                                    </div>
-                                  </div>
-
-                                  <div class="col-sm-6 col-md-4 col-lg-3">
-                                    <div class="form-group">
-                                      <label class="form-lbl">Agent Net Amount</label>
-                                      <input type="text" class="form-field" name="agent_net_amount" placeholder="Agent Net Amount" value="{{ agent_payment.agent_net_amount }}">
-                                    </div>
-                                  </div>
-
-                                  <div class="col-sm-6 col-md-4 col-lg-3">
-                                    <div class="form-group">
-                                      <label class="form-lbl">Agent Incentive Amount</label>
-                                      <input type="text" class="form-field" name="agent_incentive_amount" placeholder="Agent Incentive Amount" value="{{ agent_payment.agent_incentive_amount }}">
-                                    </div>
-                                  </div>
-                            
-                            
-                                  <div class="col-sm-6 col-md-4 col-lg-3">
-                                    <div class="form-group">
-                                      <label class="form-lbl">Agent Total Comm Amount</label>
-                                      <input type="text" class="form-field" name="agent_total_comm_amount" placeholder="Agent Total Comm Amount" value="{{ agent_payment.agent_total_comm_amount }}">
-                                    </div>
-                                  </div>
-                            
-                                  <div class="col-sm-6 col-md-4 col-lg-3">
-                                    <div class="form-group">
-                                      <label class="form-lbl">Agent Net Payable Amount</label>
-                                      <input type="text" class="form-field" name="agent_net_payable_amount" placeholder="Agent Net Payable Amount" value="{{ agent_payment.agent_net_payable_amount }}">
-                                    </div>
-                                  </div>
-                            
-                                  <div class="col-sm-6 col-md-4 col-lg-3">
-                                    <div class="form-group">
-                                      <label class="form-lbl">Agent TDS Amount</label>
-                                      <input type="text" class="form-field" name="agent_tds_amount" placeholder="Agent TDS Amount" value="{{ agent_payment.agent_tds_amount }}">
-                                    </div>
-                                  </div>
-                            
                                 </div>
                               </div>
                             </div>
+                             <div class="form-box-shadow">
+                              <h2 class="form-bg-title">Agent Commission Details</h2>
+                              <div class="form-padding">
+                                <div class="row">
+                                  <div class="col-sm-6">
+                                    <div class="form-group">
+                                      <label class="form-lbl">Agent OD Comm (in %)</label>
+                                      <input type="text" class="form-field percentage" name="agent_od_comm" placeholder="Agent OD Comm" value="{{ agent_payment.agent_od_comm|default:policy_data.od_percent }}">
+                                    </div>
+                                  </div>
                             
-                            
+                                  <div class="col-sm-6">
+                                    <div class="form-group">
+                                      <label class="form-lbl">Agent OD Comm Amount</label>
+                                      <input type="text" class="form-field number" name="agent_od_amount" id="agent_od_amount" placeholder="Agent OD Amount" value="{{ agent_payment.agent_od_amount }}">
+                                    </div>
+                                  </div>
 
-                            
+                                  <div class="col-sm-6">
+                                    <div class="form-group">
+                                      <label class="form-lbl">Agent TP Comm  (in %)</label>
+                                      <input type="text" class="form-field percentage" name="agent_tp_comm" placeholder="Agent TP Comm" value="{{ agent_payment.agent_tp_comm|default:policy_data.tp_percent }}">
+                                    </div>
+                                  </div>
 
+                                  <div class="col-sm-6">
+                                    <div class="form-group">
+                                      <label class="form-lbl">Agent TP Comm Amount</label>
+                                      <input type="text" class="form-field number" name="agent_tp_amount" id="agent_tp_amount" placeholder="Agent TP Amount" value="{{ agent_payment.agent_tp_amount }}">
+                                    </div>
+                                  </div>
+
+                                  <div class="col-sm-6">
+                                    <div class="form-group">
+                                      <label class="form-lbl">Agent Net Comm (in %)</label>
+                                      <input type="text" class="form-field percentage" name="agent_net_comm" placeholder="Agent Net Comm" value="{{ agent_payment.agent_net_comm|default:policy_data.net_percent }}">
+                                    </div>
+                                  </div>
+
+                                  <div class="col-sm-6">
+                                    <div class="form-group">
+                                      <label class="form-lbl">Agent Net Comm Amount</label>
+                                      <input type="text" class="form-field number" name="agent_net_amount" id="agent_net_amount" placeholder="Agent Net Amount" value="{{ agent_payment.agent_net_amount }}">
+                                    </div>
+                                  </div>
+
+                                  <div class="col-sm-6">
+                                    <div class="form-group">
+                                      <label class="form-lbl">Agent Incentive Amount</label>
+                                      <input type="text" class="form-field number"  name="agent_incentive_amount" id="agent_incentive_amount" placeholder="Agent Incentive Amount" value="{{ agent_payment.agent_incentive_amount }}">
+                                    </div>
+                                  </div>
+
+                                  <div class="col-sm-6">
+                                    <div class="form-group">
+                                      <label class="form-lbl">Agent Total Comm Amount</label>
+                                      <input type="text" class="form-field number" name="agent_total_comm_amount" id="agent_total_comm_amount" placeholder="Agent Total Comm Amount" value="{{ agent_payment.agent_total_comm_amount }}" readonly>
+                                    </div>
+                                  </div>
+
+                                  <div class="col-sm-6">
+                                    <div class="form-group">
+                                      <label class="form-lbl">Agent TDS  (in %)</label>
+                                      <input type="text" class="form-field percentage" name="agent_tds" id="agent_tds" placeholder="Agent TDS" value="{{ agent_payment.agent_tds }}">
+                                    </div>
+                                  </div>
+
+                                  <div class="col-sm-6">
+                                    <div class="form-group">
+                                      <label class="form-lbl">Agent TDS Amount</label>
+                                      <input type="text" class="form-field number" name="agent_tds_amount" id="agent_tds_amount" placeholder="Agent TDS Amount" value="{{ agent_payment.agent_tds_amount }}" readonly>
+                                    </div>
+                                  </div>
+                                  <div class="col-sm-6">
+                                    <div class="form-group">
+                                      <label class="form-lbl">Agent Net Payable Amount</label>
+                                      <input type="text" class="form-field number" name="agent_net_payable_amount" id="agent_net_payable_amount" placeholder="Agent Net Payable Amount" value="{{ agent_payment.agent_net_payable_amount }}" readonly>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
                             <div class="d-flex justify-content-end mt-4">
                               <button type="button" id="save-agent-payment-form" class="dashboard-addbtn">Save and Continue</button>
                             </div>  
                           </div>
                         </div>
-                        
-                        
-                        
                     </form>
                     <div id="loader" class="form-loader" style="display: none;">
                       <div>
@@ -312,6 +313,41 @@
       document.getElementById("myAgentPaymentForm").addEventListener("submit", function() {
           document.getElementById("loader").style.display = "flex";
       });
+
+      $(document).ready(function(){
+        updateTotalCommissionAmount(); 
+        updateTDSAmount();       
+      });
+      function updateTotalCommissionAmount(){
+        let od_amount = parseFloat($('#agent_od_amount').val()) || 0;
+        let tp_amount = parseFloat($('#agent_tp_amount').val()) || 0;
+        let net_amount = parseFloat($('#agent_net_amount').val()) || 0;
+        let incentive_amount = parseFloat($('#agent_incentive_amount').val()) || 0;
+    
+        let total_commission_amount = od_amount + tp_amount + net_amount + incentive_amount;
+        $('#agent_total_comm_amount').val(total_commission_amount.toFixed(2));
+        updateTDSAmount();
+      }
+
+      function updateTDSAmount(){
+        agent_tds = parseFloat($('#agent_tds').val()) || 0;
+        agent_comm_amt = parseFloat($('#agent_total_comm_amount').val()) || 0;
+        agent_tds_amount = parseFloat(agent_comm_amt*agent_tds/100) || 0;
+        net_payable_amt = parseFloat(agent_comm_amt-agent_tds_amount) || 0;
+
+        $('#agent_tds_amount').val(agent_tds_amount);
+        $('#agent_net_payable_amount').val(net_payable_amt);
+      }
+
+      $('#agent_od_amount, #agent_tp_amount, #agent_net_amount, #agent_incentive_amount').on('input', function() {
+        updateTotalCommissionAmount(); 
+      });
+
+      $('#agent_tds').on('input',function(){
+        updateTDSAmount();
+      });
+
     </script>
+    
 </body>
 {% endblock %}

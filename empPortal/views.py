@@ -708,7 +708,7 @@ def process_text_with_chatgpt(text):
             "commercial_vehicle_detail": "XXXX XXXX"    
         }},
         "additional_details": {{
-            "policy_type": "XXXX",        # motor stand alone policy/ motor third party liablity policy / motor pakage policy   only in these texts
+            "policy_type": "XXXX",        # motor stand alone policy/ motor third party liablity policy / motor package policy   only in these texts
             "ncb": XX,     # in percentage
             "addons": ["XXXX", "XXXX"], 
             "previous_insurer": "XXXX",

@@ -235,7 +235,7 @@
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl">Be-Fuel Amount</label>
-                                      <input type="text" class="form-field" name="be_fuel_amount" placeholder="Be-Fuel Amount" value="{{ policy.be_fuel_amount|default:''|default:'0.00' }}">
+                                      <input type="text" class="form-field" name="be_fuel_amount" id="be_fuel_amount" placeholder="Be-Fuel Amount" value="{{ policy.be_fuel_amount|default:''|default:'0.00' }}">
                                     </div>
                                   </div>
 
@@ -358,6 +358,24 @@
       document.getElementById("myPolicyForm").addEventListener("submit", function() {
           document.getElementById("loader").style.display = "flex";
       });
+
+      $(document).ready(function(){
+        var fuel_type = $('#fuel_type').val();
+        updaterFuelAmount(fuel_type);
+      });
+
+      $('#fuel_type').on('change',function(){
+        var fuel_type = $(this).val();
+        updaterFuelAmount(fuel_type);
+      });
+
+      function updaterFuelAmount(fuel_type){
+        if(fuel_type === "Be-Fuel"){
+          $('#be_fuel_amount').val(60);
+        }else{
+          $('#be_fuel_amount').val(0);
+        }
+      }
     </script>
 </body>
 {% endblock %}

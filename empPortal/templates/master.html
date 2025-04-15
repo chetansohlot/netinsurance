@@ -506,7 +506,8 @@
                     // Agent Payment Form Validation
                     $("#myAgentPaymentForm").validate({
                         rules: {
-                            agent_name: { required: true },
+                            agent_name: { required: false },
+                            referral_by: { required: true },
                             agent_payment_mod: { required: true },
                             agent_payment_date: { required: true, date: true },
                             agent_amount: { required: true, number: true },
@@ -524,7 +525,8 @@
                             agent_tds_amount: { required: false, number: true }
                         },
                         messages: {
-                            agent_name: { required: "Please enter agent name" },
+                            agent_name: { required: "Please enter referral name" },
+                            referral_by: { required: "Please select referral name" },
                             agent_payment_mod: { required: "Please select payment mode" },
                             agent_payment_date: { required: "Enter payment date", date: "Enter a valid date" },
                             agent_amount: { required: "Enter agent amount", number: "Must be a valid number" },
