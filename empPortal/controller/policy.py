@@ -4,14 +4,14 @@ from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib import messages
 from django.template import loader
-from ..models import Commission,Users, PolicyUploadDoc,Branch,PolicyInfo,PolicyDocument, DocumentUpload, FranchisePayment, InsurerPaymentDetails, PolicyVehicleInfo, AgentPaymentDetails
+from ..models import Commission,Users, PolicyUploadDoc,Branch,PolicyInfo,PolicyDocument, DocumentUpload, FranchisePayment, InsurerPaymentDetails, PolicyVehicleInfo, AgentPaymentDetails, UploadedExcel
 from empPortal.model import Referral
 
 from empPortal.model import BankDetails
 from ..forms import DocumentUploadForm
 from django.contrib.auth import authenticate, login ,logout
 from django.core.files.storage import FileSystemStorage
-import re
+import re,openpyxl
 from django.db import IntegrityError
 import requests
 from fastapi import FastAPI, File, UploadFile
@@ -36,6 +36,7 @@ from pprint import pprint
 import pdfkit
 from django.templatetags.static import static  # ✅ Import static
 from django.template.loader import render_to_string
+from django_q.tasks import async_task
 
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 
@@ -119,6 +120,11 @@ def edit_policy(request, policy_id):
 
 
 def edit_vehicle_details(request, policy_no):
+    
+    if not request.user.is_authenticated and request.user.is_active != 1:
+        messages.error(request, "Please Login First")
+        return redirect('login')
+    
     decoded_policy_no = unquote(policy_no)
 
     policy = get_object_or_404(PolicyInfo, policy_number=decoded_policy_no)
@@ -204,6 +210,10 @@ def get_pdf_path(request, filepath):
 
 
 def edit_policy_docs(request, policy_no):
+    if not request.user.is_authenticated and request.user.is_active != 1:
+        messages.error(request, "Please Login First")
+        return redirect('login')
+    
     policy_no = unquote(policy_no)
 
     policy = get_object_or_404(PolicyInfo, policy_number=policy_no)
@@ -250,6 +260,10 @@ def edit_policy_docs(request, policy_no):
 
 
 def edit_agent_payment_info(request, policy_no):
+    if not request.user.is_authenticated and request.user.is_active != 1:
+        messages.error(request, "Please Login First")
+        return redirect('login')
+    
     policy_no = unquote(policy_no)
 
     policy = get_object_or_404(PolicyInfo, policy_number=policy_no)
@@ -262,12 +276,15 @@ def edit_agent_payment_info(request, policy_no):
         agent_payment = AgentPaymentDetails(policy_number=policy.policy_number)
 
     if request.method == 'POST':
-        agent_payment.agent_name = request.POST.get('agent_name')
+        # agent_payment.agent_name = request.POST.get('agent_name')
+        agent_payment.agent_name = request.POST.get('referral_by')
         agent_payment.agent_payment_mod = request.POST.get('agent_payment_mod')
+        agent_payment.transaction_id = request.POST.get('transaction_id')
         agent_payment.agent_payment_date = request.POST.get('agent_payment_date')
         agent_payment.agent_amount = request.POST.get('agent_amount')
         agent_payment.agent_remarks = request.POST.get('agent_remarks')
         agent_payment.agent_od_comm = request.POST.get('agent_od_comm')
+        agent_payment.agent_tp_comm = request.POST.get('agent_tp_comm')
         agent_payment.agent_net_comm = request.POST.get('agent_net_comm')
         agent_payment.agent_incentive_amount = request.POST.get('agent_incentive_amount')
         agent_payment.agent_tds = request.POST.get('agent_tds')
@@ -301,6 +318,10 @@ def edit_agent_payment_info(request, policy_no):
 
 
 def edit_insurer_payment_info(request, policy_no):
+    if not request.user.is_authenticated and request.user.is_active != 1:
+        messages.error(request, "Please Login First")
+        return redirect('login')
+    
     policy_no = unquote(policy_no)
 
     policy = get_object_or_404(PolicyInfo, policy_number=policy_no)
@@ -323,17 +344,24 @@ def edit_insurer_payment_info(request, policy_no):
         insurer_payment.insurer_remarks = request.POST.get('insurer_remarks')
 
         insurer_payment.insurer_od_comm = request.POST.get('insurer_od_comm')
-        insurer_payment.insurer_net_comm = request.POST.get('insurer_net_comm')
-        insurer_payment.insurer_tp_comm = request.POST.get('insurer_tp_comm')
-        insurer_payment.insurer_incentive_amount = request.POST.get('insurer_incentive_amount')
-        insurer_payment.insurer_tds = request.POST.get('insurer_tds')
-
         insurer_payment.insurer_od_amount = request.POST.get('insurer_od_amount')
-        insurer_payment.insurer_net_amount = request.POST.get('insurer_net_amount')
+
+        insurer_payment.insurer_tp_comm = request.POST.get('insurer_tp_comm')
         insurer_payment.insurer_tp_amount = request.POST.get('insurer_tp_amount')
+
+        insurer_payment.insurer_net_comm = request.POST.get('insurer_net_comm')
+        insurer_payment.insurer_net_amount = request.POST.get('insurer_net_amount')
+        
+        insurer_payment.insurer_tds = request.POST.get('insurer_tds')
+        insurer_payment.insurer_tds_amount = request.POST.get('insurer_tds_amount')
+        
+        insurer_payment.insurer_incentive_amount = request.POST.get('insurer_incentive_amount')
         insurer_payment.insurer_total_comm_amount = request.POST.get('insurer_total_comm_amount')
         insurer_payment.insurer_net_payable_amount = request.POST.get('insurer_net_payable_amount')
-        insurer_payment.insurer_tds_amount = request.POST.get('insurer_tds_amount')
+        
+        insurer_payment.insurer_total_commission = request.POST.get('insurer_total_commission')
+        insurer_payment.insurer_receive_amount = request.POST.get('insurer_receive_amount')
+        insurer_payment.insurer_balance_amount = request.POST.get('insurer_balance_amount')
 
         insurer_payment.active = '1'
         insurer_payment.save()
@@ -355,6 +383,10 @@ def edit_insurer_payment_info(request, policy_no):
 
 
 def edit_franchise_payment_info(request, policy_no):
+    if not request.user.is_authenticated and request.user.is_active != 1:
+        messages.error(request, "Please Login First")
+        return redirect('login')
+    
     policy_no = unquote(policy_no)
 
     policy = get_object_or_404(PolicyInfo, policy_number=policy_no)
@@ -399,3 +431,53 @@ def edit_franchise_payment_info(request, policy_no):
         'vehicle': vehicle,
         'franchise_payment': franchise_payment
     })
+    
+def editBulkPolicy(request):
+    if not request.user.is_authenticated and request.user.is_active != 1:
+        messages.error(request, "Please Login First")
+        return redirect('login')
+    
+    return render(request,'policy/edit-bulk-policy.html')
+    
+def updateBulkPolicy(request):
+    if request.method == "POST" and request.FILES.get("file"):
+        file = request.FILES["file"]
+        camp_name = request.POST.get("camp_name")
+
+        # Validate Excel file format
+        if not file.name.lower().endswith(".xlsx"):
+            messages.error(request, "Invalid file format. Only .xlsx files are allowed.")
+            return redirect("edit-bulk-policy")
+
+        # Validate size
+        if file.size > 20 * 1024 * 1024:
+            messages.error(request, "File too large. Maximum allowed size is 20 MB.")
+            return redirect("edit-bulk-policy")
+
+        if not camp_name:
+            messages.error(request, "Campaign Name is mandatory.")
+            return redirect("edit-bulk-policy")
+
+        try:
+            wb = openpyxl.load_workbook(file, data_only=True)
+            sheet = wb.active
+            total_rows = sheet.max_row
+        except Exception as e:
+            messages.error(request, f"Error reading Excel file: {str(e)}")
+            return redirect("edit-bulk-policy")
+
+        # Save the file to model
+        excelInstance = UploadedExcel.objects.create(
+            file=file,
+            campaign_name=camp_name,
+            created_by=request.user,
+            total_rows=total_rows
+        )
+
+        # Optionally: Trigger background task
+        async_task('empPortal.tasks.updateBulkPolicies', excelInstance.id)
+
+        messages.success(request, "Excel uploaded successfully. Processing started in background.")
+        return redirect("edit-bulk-policy")
+
+    return redirect("edit-bulk-policy")

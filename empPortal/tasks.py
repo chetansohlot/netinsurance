@@ -1,4 +1,4 @@
-from .models import UploadedZip, FileAnalysis, ExtractedFile, BulkPolicyLog, Commission, PolicyDocument, UnprocessedPolicyFiles, ChatGPTLog
+from .models import UploadedZip, FileAnalysis, ExtractedFile, BulkPolicyLog, Commission, PolicyDocument, UnprocessedPolicyFiles, ChatGPTLog, UploadedExcel
 import django, dramatiq, fitz, os, zipfile, requests, re, json, traceback, time, logging, shutil
 from django.conf import settings
 from django.utils import timezone
@@ -9,6 +9,8 @@ from django.db.models import F
 from .utils import getUserNameByUserId, commisionRateByMemberId, insurercommisionRateByMemberId
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.encoding import filepath_to_uri
+import pandas as pd
+
 logger = logging.getLogger(__name__)
 
 def create_bulk_log(file_id):
@@ -541,3 +543,44 @@ def handle_failure(task):
     task_id = task.id if hasattr(task, 'id') else 'No ID'
     if task.get('success') is False:
         logger.error(f"Task {task_id} named {task_name} failed after {attempts}")
+        
+def updateBulkPolicies(file_id):
+    try:
+        excel_instance = UploadedExcel.objects.get(id=file_id)
+        file_path = excel_instance.file.path
+
+        df = pd.read_excel(file_path)
+        errors = []
+        success_count = 0
+        
+        if 'policy_number' not in df.columns:
+            excel_instance.is_processed = True
+            excel_instance.save()
+            return ["'policy_number' column not found."]
+
+        for index, row in df.iterrows():
+            policy_number = str(row.get('policy_number', '')).strip()
+            if not policy_number:
+                errors.append(f"Row {index + 2}: Missing policy number.")
+                continue
+
+            try:
+                policy_doc = PolicyDocument.objects.get(policy_number=policy_number)
+                policy_doc.insured_name = row.get('insured_name')
+                policy_doc.insured_mobile = row.get('insured_mobile')
+                policy_doc.insured_email = row.get('insured_email')
+                policy_doc.save()
+                success_count += 1
+            except PolicyDocument.DoesNotExist:
+                errors.append(f"Row {index + 2}: Policy not found: {policy_number}")
+            except Exception as e:
+                errors.append(f"Row {index + 2}: Error - {str(e)}")
+
+        # Update processing status
+        excel_instance.is_processed = True
+        excel_instance.save()
+
+        return [f"{success_count} policies updated.", *errors]
+
+    except Exception as e:
+        return [f"Error: {str(e)}"]

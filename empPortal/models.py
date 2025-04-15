@@ -288,6 +288,7 @@ class AgentPaymentDetails(models.Model):
     policy_number = models.CharField(max_length=255)
     agent_name = models.CharField(max_length=255)
     agent_payment_mod = models.CharField(max_length=255)
+    transaction_id = models.CharField(max_length=255)
     agent_payment_date = models.CharField(max_length=255)
     agent_amount = models.CharField(max_length=255)
     agent_remarks = models.CharField(max_length=255)
@@ -377,6 +378,10 @@ class InsurerPaymentDetails(models.Model):
     insurer_total_comm_amount = models.CharField(max_length=50, blank=True, null=True)
     insurer_net_payable_amount = models.CharField(max_length=50, blank=True, null=True)
     insurer_tds_amount = models.CharField(max_length=50, blank=True, null=True)
+    
+    insurer_total_commission = models.CharField(max_length=50, blank=True, null=True)
+    insurer_receive_amount = models.CharField(max_length=50, blank=True, null=True)
+    insurer_balance_amount = models.CharField(max_length=50, blank=True, null=True)
 
     active = models.CharField(max_length=1, choices=[('0', 'Inactive'), ('1', 'Active')], default='1')
     created_at = models.DateTimeField(auto_now_add=True)
@@ -897,7 +902,7 @@ class UploadedZip(models.Model):
 
     def __str__(self):
         return self.file_name or f"Uploaded Zip #{self.pk}"
-    
+     
 class ExtractedFile(models.Model):
     zip_ref = models.ForeignKey(UploadedZip, on_delete=models.CASCADE)
     file_path = models.FileField(upload_to='pdf_files/')
@@ -942,3 +947,31 @@ class ChatGPTLog(models.Model):
         managed = True
         verbose_name = 'ChatGPTLog'
         verbose_name_plural = 'ChatGPTLogs'
+        
+class UploadedExcel(models.Model):
+    file = models.FileField(upload_to='excels/')
+    file_name = models.CharField(max_length=255, blank=True)
+    file_url = models.URLField(blank=True)
+    total_rows = models.IntegerField(default=0)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    campaign_name = models.CharField(max_length=255)
+    is_processed = models.BooleanField(default=False)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+
+    class Meta:
+        db_table = 'uploaded_excels'
+
+    def save(self, *args, **kwargs):
+        if self.file:
+            self.file_name = self.file.name
+            self.file_url = self.file.url  # Make sure MEDIA_URL is properly set
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.file_name or f"Uploaded Excel #{self.pk}"
+   

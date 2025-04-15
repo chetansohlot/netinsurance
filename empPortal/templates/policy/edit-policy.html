@@ -63,7 +63,7 @@
                               <div class="col-sm-6 col-md-4 col-lg-3">
                                 <div class="form-group">
                                   <label class="form-lbl" for="policy_number">Policy Number</label>
-                                  <input type="text" class="form-field" name="policy_number" id="policy_number" placeholder="Policy Number" value="{{ policy_data.policy_number }}">
+                                  <input type="text" class="form-field" name="policy_number" id="policy_number" placeholder="Policy Number" value="{{ policy_data.policy_number }}" readonly>
                                 </div>
                               </div>
                         
@@ -183,7 +183,7 @@
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl">Insurance Company</label>
-                                      <input type="text" class="form-field" name="insurance_company" placeholder="Insurance Company" value="{{ policy.insurance_company|default:policy_data.insurance_provider }}">
+                                      <input type="text" class="form-field" name="insurance_company" placeholder="Insurance Company" value="{{ policy.insurance_company|default:policy_data.insurance_provider }}" readonly>
                                     </div>
                                   </div>
                             

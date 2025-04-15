@@ -235,6 +235,9 @@ urlpatterns = [
     re_path(r'^edit-franchise-payment-info/(?P<policy_no>.+)/$', policy.edit_franchise_payment_info, name='edit-franchise-payment-info'),
 
     path('update-policy/', views.updatePolicy, name='update-policy'),
+    path('edit-bulk-policy/', policy.editBulkPolicy, name='edit-bulk-policy'),
+    path('update-bulk-policies/', policy.updateBulkPolicy, name='update-bulk-policies'),
+    
     path('reprocess-bulk-policies',views.reprocessBulkPolicies,name="reprocess-bulk-policies"),
     path('continue-bulk-policies',views.continueBulkPolicies,name="continue-bulk-policies"),
     path('bulk-upload-logs/',views.bulkUploadLogs,name='bulk-upload-logs'),
