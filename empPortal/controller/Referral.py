@@ -165,6 +165,15 @@ def create_or_edit(request, referral_id=None):
                     'referral': form_data,
                     'is_editing': True,
                 })
+            
+            if not email or "@" not in email:
+                  messages.error(request,"Invalid email address.")
+                  return render(request, 'referral/create.html', {
+                    'referral': form_data,
+                    'is_editing': True,
+                })
+
+        
 
             # Save updates
             referral.name = name
