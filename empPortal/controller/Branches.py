@@ -142,14 +142,11 @@ def create_or_edit(request, branch_id=None):
 
             messages.success(request, f"Branch created successfully! Branch ID: {new_branch.id}")
             return redirect(reverse("branch-management"))  # Redirect to branch listing
-
+#Anjali
 def toggle_branch_status(request, branch_id):
-    """Toggle branch status based on user action (Activate/Deactivate)"""
-    if request.method == "POST":  # Accept only POST requests
+    if request.method == "POST":  
         branch = get_object_or_404(Branch, id=branch_id)
-        action = request.POST.get("action")  # Get action from AJAX request
-
-        # Debugging Log
+        action = request.POST.get("action")  
         print(f"Branch: {branch.branch_name}, Current Status: {branch.status}, Action: {action}")
 
         # Update status
@@ -162,7 +159,7 @@ def toggle_branch_status(request, branch_id):
 
         branch.save()
 
-        print(f"Updated Status in Database: {branch.status}")  # Debugging log
+        print(f"Updated Status in Database: {branch.status}")  
 
         return JsonResponse({'success': True, 'message': f"Branch status updated to {branch.status}", 'status': branch.status})
 

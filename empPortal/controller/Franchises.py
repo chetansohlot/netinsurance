@@ -134,7 +134,7 @@ def create_or_edit(request, franchise_id=None):
             messages.success(request, f"Franchise created successfully! Franchise ID: {new_franchise.id}")
             return redirect(reverse("franchise-management"))  # Redirect to franchise listing
 
-
+#Anjali
 def franchise_toggle_status(request, franchise_id):
     if request.method == "POST":  # Use POST instead of GET
         franchise = get_object_or_404(Franchises, id=franchise_id)

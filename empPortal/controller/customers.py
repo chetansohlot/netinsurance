@@ -220,10 +220,10 @@ def store(request):
         messages.error(request, "Invalid request.")
         return redirect('add-commission')
 
-
+#Anjali
 @csrf_exempt
 def toggle_customer_status(request, customer_id):
-    if request.method == "POST":  # Ensure it's a POST request
+    if request.method == "POST": 
         try:
             customer = get_object_or_404(QuotationCustomer, id=customer_id)
             status = request.POST.get("status")  # Get status from AJAX request

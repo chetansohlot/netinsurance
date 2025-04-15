@@ -37,6 +37,14 @@ from django.core.paginator import Paginator
 
 from django.db.models.functions import Concat
 from django.db.models import Q, Value
+from django.contrib.auth.hashers import make_password
+import datetime
+import re
+import pandas as pd
+from django.contrib.auth.hashers import make_password
+import openpyxl
+from dateutil import parser  # Add this
+
 
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 
@@ -881,3 +889,207 @@ def updateUserStatus(doc_id, user_id):
     elif any(status == 'Rejected' for status in statuses):
         user.activation_status = 5  # At least one rejected
         user.save()
+
+def add_partner(request):
+    if request.method == 'POST':
+        # Extract form data
+        full_name = request.POST.get('full_name', '').strip()
+        gender = request.POST.get('gender', '').strip()
+        email = request.POST.get('email', '').strip()
+        mobile = request.POST.get('mobile', '').strip()
+        password = request.POST.get('password', '').strip()
+        dob = request.POST.get('dob', '').strip()
+        pan_no = request.POST.get('pan_no', '').strip().upper()
+
+        # Splitting full name into first and last name
+        name_parts = full_name.split()
+        first_name = name_parts[0] if name_parts else ''
+        last_name = " ".join(name_parts[1:]) if len(name_parts) > 1 else ''
+
+        # Use a dictionary for field-specific errors
+        errors = {}
+
+        if not full_name:
+            errors['full_name'] = 'Full Name is required.'
+        if not gender:
+            errors['gender'] = 'Gender is required.'
+        if not email:
+            errors['email'] = 'Email Address is required.'
+        elif not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email):
+            errors['email'] = 'Invalid email format.'
+        elif Users.objects.filter(email=email).exists():
+            errors['email'] = 'This email is already registered.'
+        if not mobile:
+            errors['mobile'] = 'Mobile Number is required.'
+        elif not mobile.isdigit():
+            errors['mobile'] = 'Mobile number must contain only digits.'
+        elif len(mobile) != 10:
+            errors['mobile'] = 'Mobile number must be 10 digits long.'
+        elif Users.objects.filter(phone=mobile).exists():
+            errors['mobile'] = 'This mobile number is already registered.'
+        if not password:
+            errors['password'] = 'Password is required.'
+        elif len(password) < 6:
+            errors['password'] = 'Password must be at least 6 characters long.'
+        if not dob:
+            errors['dob'] = 'Date of Birth is required.'
+        else:
+            try:
+                dob_date = datetime.datetime.strptime(dob, '%Y-%m-%d').date()
+                today = datetime.date.today()
+
+                if dob_date >= today:
+                    errors['dob'] = 'Date of Birth must be in the past.'
+                else:
+                    age = (today - dob_date).days // 365
+                    if age < 18:
+                        errors['dob'] = 'You must be at least 18 years old.'
+            except ValueError:
+                errors['dob'] = 'Invalid date format. Use YYYY-MM-DD.'
+
+        if not pan_no:
+            errors['pan_no'] = 'PAN Number is required.'
+        elif not re.match(r'^[A-Z]{5}[0-9]{4}[A-Z]$', pan_no):
+            errors['pan_no'] = 'Invalid PAN number format. Format should be ABCDE1234F.'
+
+        # If there are errors, re-render the form with field values and errors.
+        if errors:
+            return render(request, 'members/add_partner.html', {
+                'full_name': full_name,
+                'gender': gender,
+                'email': email,
+                'mobile': mobile,
+                'dob': dob,
+                'pan_no': pan_no,
+                'errors': errors,
+            })
+
+        # Generate User ID
+        last_user = Users.objects.all().order_by('-id').first()
+        if last_user and last_user.user_gen_id.startswith('UR-'):
+            last_user_gen_id = int(last_user.user_gen_id.split('-')[1])
+            new_gen_id = f"UR-{last_user_gen_id + 1:04d}"
+        else:
+            new_gen_id = "UR-0001"
+
+        # Hash password
+        hashed_password = make_password(password)
+
+        # Create new user
+        user = Users(
+            user_gen_id=new_gen_id,
+            role_id=4,  # Assuming role is assigned later
+            role_name="User",
+            user_name=full_name,
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            phone=mobile,
+            gender=gender,
+            password=hashed_password,
+            dob=dob,
+            pan_no=pan_no,
+            status=1,
+            is_active=1
+        )
+        user.save()
+
+        messages.success(request, "Partner added successfully!")
+        return redirect('members')  # Redirect to a desired page
+
+    return render(request, 'members/add_partner.html')
+
+
+def upload_excel_users(request):
+    if request.method == "POST" and request.FILES.get("excel_file"):
+        excel_file = request.FILES["excel_file"]
+
+        # ✅ Check file extension
+        ext = os.path.splitext(excel_file.name)[1]
+        if ext.lower() not in [".xlsx", ".xls"]:
+            messages.error(request, "Only Excel files (.xlsx, .xls) are allowed!")
+            return redirect("members")
+
+        try:
+            wb = openpyxl.load_workbook(excel_file)
+            sheet = wb.active
+            valid_data_found = False
+            duplicate_data_found = False
+
+            for row in sheet.iter_rows(min_row=2, values_only=True):
+                full_name, gender_str, email, mobile, password, dob, pan_no = [str(cell).strip() if cell else '' for cell in row]
+
+                if not all([full_name, gender_str, email, mobile, password, dob, pan_no]):
+                    continue
+
+                gender_map = {'male': 1, 'female': 2}
+                gender = gender_map.get(gender_str.lower())
+                if not gender:
+                    continue
+
+                if not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email):
+                    continue
+
+                if Users.objects.filter(email=email).exists() or Users.objects.filter(phone=mobile).exists():
+                    duplicate_data_found = True
+                    continue
+
+                if not mobile.isdigit() or len(mobile) != 10:
+                    continue
+
+                try:
+                    dob_date = parser.parse(dob).date()
+                    today = datetime.date.today()
+                    if dob_date >= today or ((today - dob_date).days // 365) < 18:
+                        continue
+                except:
+                    continue
+
+                if not re.match(r'^[A-Z]{5}[0-9]{4}[A-Z]$', pan_no.upper()):
+                    continue
+
+                name_parts = full_name.split()
+                first_name = name_parts[0] if name_parts else ''
+                last_name = " ".join(name_parts[1:]) if len(name_parts) > 1 else ''
+
+                last_user = Users.objects.order_by("-id").first()
+                if last_user and last_user.user_gen_id and last_user.user_gen_id.startswith("UR-"):
+                    last_id = int(last_user.user_gen_id.split("-")[1])
+                    user_gen_id = f"UR-{last_id + 1:04d}"
+                else:
+                    user_gen_id = "UR-0001"
+
+                hashed_password = make_password(password)
+
+                Users.objects.create(
+                    user_gen_id=user_gen_id,
+                    role_id=4,
+                    role_name="User",
+                    user_name=full_name,
+                    first_name=first_name,
+                    last_name=last_name,
+                    email=email,
+                    phone=mobile,
+                    gender=gender,
+                    password=hashed_password,
+                    dob=dob_date,
+                    pan_no=pan_no.upper(),
+                    status=1,
+                    is_active=1
+                )
+
+                valid_data_found = True
+
+            if valid_data_found:
+                messages.success(request, "Excel data uploaded successfully!")
+            elif duplicate_data_found:
+                messages.warning(request, "This data already exists or this file was already uploaded!")
+            else:
+                messages.warning(request, "No valid data found in Excel file!")
+
+        except Exception as e:
+            messages.error(request, f"Error processing file: {e}")
+
+        return redirect("upload-partners-excel")
+
+    return render(request, "members/upload_excel.html")

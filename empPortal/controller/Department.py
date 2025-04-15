@@ -114,7 +114,7 @@ def create_or_edit(request, department_id=None):
             messages.success(request, f"Department created successfully! Department ID: {new_department.id}")
             return redirect(reverse("department-management"))  
 
-
+#Anjali
 def toggle_department_status(request, department_id):
     """Toggle department status based on user action (Activate/Deactivate)"""
     if request.method == "POST":

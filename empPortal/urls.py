@@ -63,20 +63,20 @@ urlpatterns = [
     path('franchise-management/', Franchises.index, name='franchise-management'),
     path('franchise-management/create-franchise', Franchises.create_or_edit, name='franchise-management-create'),
     path('franchise-management/<str:franchise_id>/', Franchises.create_or_edit, name='franchise-management-edit'),
-    path("toggle-franchise-status/<int:franchise_id>/", Franchises.franchise_toggle_status, name="franchise-toggle-status"),
+    path("toggle-franchise-status/<int:franchise_id>/", Franchises.franchise_toggle_status, name="franchise-toggle-status"), #Anjali
 
 
     path('branch-management/', Branches.index, name='branch-management'),
     path("check-branch-email/", Branches.check_branch_email, name="check-branch-email"),
     path('branch-management/create-branch', Branches.create_or_edit, name='branch-management-create'),
     path('branch-management/<str:branch_id>/', Branches.create_or_edit, name='branch-management-edit'),
-    path('branch/toggle-status/<int:branch_id>/', Branches.toggle_branch_status, name='branch-toggle-status'),
+    path('branch/toggle-status/<int:branch_id>/', Branches.toggle_branch_status, name='branch-toggle-status'),  #Anjali
 
 
     path('department-management/', Department.index, name='department-management'),
     path('department-management/create-department', Department.create_or_edit, name='department-management-create'),
     path('department-management/<str:department_id>/', Department.create_or_edit, name='department-management-edit'),
-    path('department/toggle-status/<int:department_id>/', Department.toggle_department_status, name='department-toggle-status'),
+    path('department/toggle-status/<int:department_id>/', Department.toggle_department_status, name='department-toggle-status'),  #Anjali
 
 
     path('employee-management/', Employee.index, name='employee-management'),
@@ -121,7 +121,10 @@ urlpatterns = [
     path('member/login-activate-user/<str:user_id>',members.loginActivateUser, name='login-activate-user'),
     path('member/deactivate-user/<str:user_id>',members.deactivateUser, name='deactivate-user'),
     path('update-commission/', commissions.update_commission, name='update-commission'),
+    path('add-partner/', members.add_partner, name='add-partner'),
+    path('upload-partners/', members.upload_excel_users, name='upload-partners-excel'),
 
+    
     # LEADS 
     path('lead-mgt/', leads.index, name='leads-mgt'),
     path('lead-mgt/create', leads.create_or_edit_lead, name='leads-mgt-create'),
@@ -191,7 +194,7 @@ urlpatterns = [
     path('store-customer/', customers.store, name='store-customer'),
     path('customers/create', customers.create_or_edit, name='quotation-customer-create'),
     path('customers/<str:customer_id>/', customers.create_or_edit, name='quotation-customer-edit'),
-    path('toggle-customer-status/<int:customer_id>/', customers.toggle_customer_status, name='customer-toggle-status'),
+    path('toggle-customer-status/<int:customer_id>/', customers.toggle_customer_status, name='customer-toggle-status'),  #Anjali
 
     path('motor/', include(motor_patterns)),
     path('health/', include(health_patterns)),
