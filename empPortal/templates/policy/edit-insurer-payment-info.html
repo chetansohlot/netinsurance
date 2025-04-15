@@ -124,7 +124,7 @@
                                 <div class="form-padding">
                                   <div class="row">
                                     <!-- Payment Mode -->
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-6 col-md-4">
                                       <div class="form-group">
                                         <label class="form-lbl">Insurer Payment Mode</label>
                                         <select class="form-field" name="insurer_payment_mode">
@@ -139,7 +139,7 @@
                                     </div>
 
                                     <!-- Payment Date -->
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-6 col-md-4">
                                       <div class="form-group">
                                         <label class="form-lbl">Insurer Payment Date</label>
                                         <input type="date" class="form-field" name="insurer_payment_date" placeholder="DD-MM-YYYY"
@@ -148,7 +148,7 @@
                                     </div>
 
                                     <!-- Amount -->
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-6 col-md-4">
                                       <div class="form-group">
                                         <label class="form-lbl">Insurer Amount</label>
                                         <input type="text" class="form-field number" name="insurer_amount" placeholder="Amount"
@@ -157,7 +157,7 @@
                                     </div>
 
                                     <!-- Remarks -->
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-6 col-md-4">
                                       <div class="form-group">
                                         <label class="form-lbl">Insurer Remarks</label>
                                         <input type="text" class="form-field" name="insurer_remarks" placeholder="Remarks"
@@ -166,7 +166,7 @@
                                     </div>
 
                                     <!-- Commissions -->
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-6 col-md-4">
                                       <div class="form-group">
                                         <label class="form-lbl">Insurer OD Comm (in %)</label>
                                         <input type="text" class="form-field percentage" name="insurer_od_comm" placeholder="OD Commission (%)"
@@ -174,7 +174,7 @@
                                       </div>
                                     </div>
 
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-6 col-md-4">
                                       <div class="form-group">
                                         <label class="form-lbl">Insurer OD Amount</label>
                                         <input type="text" class="form-field number" name="insurer_od_amount" placeholder="OD Amount"
@@ -183,7 +183,7 @@
                                     </div>
 
 
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-6 col-md-4">
                                       <div class="form-group">
                                         <label class="form-lbl">Insurer TP Comm (in %)</label>
                                         <input type="text" class="form-field percentage" name="insurer_tp_comm" placeholder="TP Commission (%)"
@@ -191,7 +191,7 @@
                                       </div>
                                     </div>
                                     
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-6 col-md-4">
                                       <div class="form-group">
                                         <label class="form-lbl">Insurer TP Amount</label>
                                         <input type="text" class="form-field number" name="insurer_tp_amount" placeholder="TP Amount"
@@ -202,7 +202,7 @@
                                     
                                     
 
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-6 col-md-4">
                                       <div class="form-group">
                                         <label class="form-lbl">Insurer Net Comm (in %)</label>
                                         <input type="text" class="form-field percentage" name="insurer_net_comm" placeholder="Net Commission (%)"
@@ -210,7 +210,7 @@
                                       </div>
                                     </div>
 
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-6 col-md-4">
                                       <div class="form-group">
                                         <label class="form-lbl">Insurer Net Amount</label>
                                         <input type="text" class="form-field number" name="insurer_net_amount" placeholder="Net Amount"
@@ -218,14 +218,14 @@
                                       </div>
                                     </div>
 
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-6 col-md-4">
                                       <div class="form-group">
                                         <label class="form-lbl">Insurer TDS (in %) </label>
                                         <input type="text" class="form-field percentage" name="insurer_tds" placeholder="TDS (%)"
                                               value="{{ insurer_payment.insurer_tds|blank_if_none_or_text_none }}">
                                       </div>
                                     </div>
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-6 col-md-4">
                                       <div class="form-group">
                                         <label class="form-lbl">TDS Amount</label>
                                         <input type="text" class="form-field number" name="insurer_tds_amount" placeholder="TDS Amount"
@@ -235,7 +235,7 @@
 
 
                                     <!-- Incentives and TDS -->
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-6 col-md-4">
                                       <div class="form-group">
                                         <label class="form-lbl">Insurer Incentive Amount</label>
                                         <input type="text" class="form-field number" name="insurer_incentive_amount" placeholder="Incentive Amount"
@@ -246,7 +246,7 @@
                                     <!-- Amounts -->
                                     
 
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-6 col-md-4">
                                       <div class="form-group">
                                         <label class="form-lbl">Total Commission Amount</label>
                                         <input type="text" class="form-field number" name="insurer_total_comm_amount" placeholder="Total Commission"
@@ -256,18 +256,22 @@
                                     
                                     
                                     
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-6 col-md-4">
                                       <div class="form-group">
                                         <label class="form-lbl">Net Payable Amount</label>
                                         <input type="text" class="form-field number" name="insurer_net_payable_amount" placeholder="Net Payable"
                                               value="{{ insurer_payment.insurer_net_payable_amount|blank_if_none_or_text_none }}">
                                       </div>
                                     </div>
-
-                                    <hr>
-                                    
-                                    <h1>Payment Receivables</h1>
-                                    <div class="col-sm-6">
+                                  </div>
+                                </div>
+                                <h2 class="form-bg-title">Payment Receivables</h2>
+                                <div class="form-padding">
+                                  <div class="row">
+                                    <div class="col-sm-12">
+                                      
+                                    </div>
+                                    <div class="col-sm-6 col-md-4">
                                       <div class="form-group">
                                         <label class="form-lbl">Total Commission</label>
                                         <input type="text" class="form-field number" name="insurer_total_commission" placeholder="Total Commission"
@@ -275,7 +279,7 @@
                                       </div>
                                     </div>
 
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-6 col-md-4">
                                       <div class="form-group">
                                         <label class="form-lbl">Received Amount</label>
                                         <input type="text" class="form-field number" name="insurer_receive_amount" placeholder="Received Amount"
@@ -283,7 +287,7 @@
                                       </div>
                                     </div>
 
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-6 col-md-4">
                                       <div class="form-group">
                                         <label class="form-lbl">Balance Amount</label>
                                         <input type="text" class="form-field number" name="insurer_balance_amount" placeholder="Balance Amount"
