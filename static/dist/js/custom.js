@@ -126,3 +126,79 @@ $(document).on('input', '.mobile', function() {
 
     $(this).val(sanitizedMobile);
 });
+
+$(document).on('input', '.aadhar', function() {
+    var aadhar = $(this).val();
+    var error_class = $(this).attr('name') + '_err';
+
+    // Remove non-numeric characters
+    var sanitizedAadhar = aadhar.replace(/[^0-9]/g, '');
+
+    // Max length 10 
+    sanitizedAadhar = sanitizedAadhar.substring(0, 12);
+    
+    // Check if first digit is greater than 5
+    if (sanitizedAadhar.length > 0 && sanitizedAadhar.charAt(0) == '0') {
+        $('.' + error_class).show().text('Invalid Aadhar Number.');
+    } else {
+        $('.' + error_class).hide().text('');
+    }
+
+    $(this).val(sanitizedAadhar);
+});
+
+$(document).on('input', '.pan', function() {
+    var pan = $(this).val().toUpperCase(); // Convert to uppercase for consistency
+    var error_class = $(this).attr('name') + '_err';
+
+    // Allow only alphanumeric characters
+    var sanitizedPan = pan.replace(/[^A-Z0-9]/gi, '');
+
+    // Limit to 10 characters
+    sanitizedPan = sanitizedPan.substring(0, 10);
+
+    // PAN regex pattern: 5 letters, 4 digits, 1 letter
+    var panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+
+    if (sanitizedPan.length === 10 && !panRegex.test(sanitizedPan)) {
+        $('.' + error_class).show().text('Invalid PAN format.');
+    } else {
+        $('.' + error_class).hide().text('');
+    }
+
+    $(this).val(sanitizedPan);
+});
+
+$(document).on('input', '.number', function() {
+    var value = $(this).val();
+    var error_class = $(this).attr('name') + '_err';
+
+    // Allow only numbers with up to 2 decimal places
+    if (!/^\d{0,10}(\.\d{0,2})?$/.test(value)) {
+        $('.' + error_class).show().text('Enter a valid percentage (max 2 digits, up to 2 decimal places).');
+    } else {
+        $('.' + error_class).hide().text('');
+    }
+
+    // Remove non-numeric and multiple decimal points
+    var sanitizedValue = value.replace(/[^0-9.]/g, ''); // Remove alphabets and special characters except '.'
+
+    var parts = sanitizedValue.split('.');
+    
+    // Ensure only one decimal point
+    if (parts.length > 2) {
+        sanitizedValue = parts[0] + '.' + parts.slice(1).join('');
+    }
+
+    // Limit integer part to 2 digits
+    if (parts[0].length > 10) {
+        sanitizedValue = parts[0].slice(0, 10) + (parts.length > 1 ? '.' + parts[1] : '');
+    }
+
+    // Limit decimal part to 2 digits
+    if (parts.length === 2 && parts[1].length > 2) {
+        sanitizedValue = parts[0] + '.' + parts[1].substring(0, 2);
+    }
+
+    $(this).val(sanitizedValue);
+});

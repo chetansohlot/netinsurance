@@ -4,10 +4,10 @@ from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.template import loader
-from .models import Roles,Users, Department,PolicyDocument,BulkPolicyLog, PolicyInfo, Branch, UserFiles,UnprocessedPolicyFiles, Commission, Branch, FileAnalysis, ExtractedFile
+from .models import Roles,Users, Department,PolicyDocument,BulkPolicyLog, PolicyInfo, Branch, UserFiles,UnprocessedPolicyFiles, Commission, Branch, FileAnalysis, ExtractedFile, ChatGPTLog
 from django.contrib.auth import authenticate, login ,logout
 from django.core.files.storage import FileSystemStorage
-import re
+import re, logging
 import requests
 from fastapi import FastAPI, File, UploadFile
 import fitz
@@ -26,7 +26,12 @@ from django.core.files.base import ContentFile
 from .tasks import process_zip_file
 from django_q.tasks import async_task
 from django.db.models import Sum
+from django.utils import timezone
+from django.utils.timezone import now
+from empPortal.model import Referral
+
 OPENAI_API_KEY = settings.OPENAI_API_KEY
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
@@ -493,6 +498,9 @@ def updateUserStatus(request):
         return redirect('login')
     
 def policyMgt(request):
+    if not request.user.is_authenticated and request.user.is_active != 1:
+        messages.error(request, "Please Login First")
+        return redirect('login')
     return render(request,'policy/policy-mgt.html')
 
 def bulkPolicyMgt(request):
@@ -502,6 +510,9 @@ def bulkPolicyMgt(request):
     return render(request,'policy/bulk-policy-mgt.html',{'users':rms})
 
 def browsePolicy(request):
+    if not request.user.is_authenticated and request.user.is_active != 1:
+        messages.error(request, "Please Login First")
+        return redirect('login')
     if request.method == "POST" and request.FILES.get("image"):
         image = request.FILES["image"]
          # Validate ZIP file format
@@ -686,16 +697,18 @@ def process_text_with_chatgpt(text):
             "model": "XXXX",
             "variant": "XXXX",
             "registration_year": YYYY,
+            "manufacture_year": YYYY,
             "engine_number": "XXXXXXXXXXXX",
             "chassis_number": "XXXXXXXXXXXX",
             "fuel_type": "XXXX",     # diesel/petrol/cng/lpg/ev 
             "cubic_capacity": XXXX,  
+            "seating_capacity": XXXX,  
             "vehicle_gross_weight": XXXX,   # in kg
             "vehicle_type": "XXXX XXXX",    # private / commercial
             "commercial_vehicle_detail": "XXXX XXXX"    
         }},
         "additional_details": {{
-            "policy_type": "XXXX",        # motor stand alone policy/ motor third party liablity policy / motor pakage policy   only in these texts
+            "policy_type": "XXXX",        # motor stand alone policy/ motor third party liablity policy / motor package policy   only in these texts
             "ncb": XX,     # in percentage
             "addons": ["XXXX", "XXXX"], 
             "previous_insurer": "XXXX",
@@ -704,7 +717,9 @@ def process_text_with_chatgpt(text):
         "contact_information": {{
             "address": "XXXXXX",
             "phone_number": "XXXXXXXXXX",
-            "email": "XXXXXX"
+            "email": "XXXXXX",
+            "pan_no": "XXXXX1111X",
+            "aadhar_no": "XXXXXXXXXXXX"
         }}
     }}
     
@@ -724,17 +739,56 @@ def process_text_with_chatgpt(text):
     }
 
     try:
+        log_entry = ChatGPTLog.objects.create(
+            prompt=prompt,
+            created_at=now()
+        )
+    except:
+        logger.error(f"Error In ChatGPT logentry")
+        
+    try:
         response = requests.post(api_url, json=data, headers=headers)
-        if response.status_code == 200:
+
+        if hasattr(response, "status_code"):
+            log_entry.status_code = response.status_code
+            
+        if hasattr(response, "status_code") and response.status_code == 200:
+
             result = response.json()
             raw_output = result["choices"][0]["message"]["content"].strip()
-            clean_json = re.sub(r"```json\n|\n```", "", raw_output).strip()
-            return json.loads(clean_json)
+            
+            try:
+                clean_json = re.sub(r"```json\n|\n```|```", "", raw_output).strip()
+                
+                parsed_json = json.loads(clean_json)
+                log_entry.response = json.dumps(parsed_json, indent=4)
+                log_entry.is_successful = True
+                log_entry.save()
+                return parsed_json
+            except json.JSONDecodeError as e:
+                logger.error(f"JSON decode error {str(e)}")
+                log_entry.response = raw_output
+                log_entry.error_message = f"JSON decode error: {str(e)}"
+                log_entry.save()
+                
+                return json.dumps({
+                    "error": "JSON decode error",
+                    "raw_output": raw_output,
+                    "details": str(e)
+                }, indent=4)
         else:
+            log_entry.error_message = response.text
+            log_entry.save()
             return json.dumps({"error": f"API Error: {response.status_code}", "details": response.text}, indent=4)
     
     except requests.exceptions.RequestException as e:
+        logger.error(f"Request failed ,details: {str(e)}")
+        
+        log_entry.error_message = str(e)
+        log_entry.save()
+        
         return json.dumps({"error": "Request failed", "details": str(e)}, indent=4)
+
 
 
 from django.core.paginator import Paginator
@@ -811,6 +865,8 @@ def editPolicy(request, id):
         policy_number = policy_data.policy_number
         policy = PolicyInfo.objects.filter(policy_number=policy_number).first()
         pdf_path = get_pdf_path(request, policy_data.filepath)
+        branches = Branch.objects.filter(status='Active').order_by('-created_at')
+        referrals = Referral.objects.all()
 
         extracted_data = {}
         if policy_data and policy_data.extracted_text:
@@ -824,6 +880,8 @@ def editPolicy(request, id):
         return render(request, 'policy/edit-policy.html', {
             'policy_data': policy_data,
             'policy': policy,
+            'referrals': referrals,
+            'branches': branches,
             'pdf_path': pdf_path,
             'extracted_data': extracted_data,
             'file_path': policy_data.filepath,
@@ -1013,8 +1071,26 @@ def bulkUploadLogs(request):
     else:
       logs = BulkPolicyLog.objects.all().order_by('-id')
     
+    policy_files = PolicyDocument.objects.all()
+    statuses = Counter(file.status for file in policy_files)
 
-    return render(request,'policy/bulk-upload-logs.html',{'logs': logs})
+    # Ensure all statuses are included in the count, even if they're 0
+    status_counts = {
+        0: statuses.get(0, 0),
+        1: statuses.get(1, 0),
+        2: statuses.get(2, 0),
+        3: statuses.get(3, 0),
+        4: statuses.get(4, 0),
+        5: statuses.get(5, 0),
+        6: statuses.get(6, 0),
+        7: statuses.get(7, 0),
+    }
+
+    return render(request,'policy/bulk-upload-logs.html',{
+        'logs': logs,
+        'status_counts': status_counts,
+        'total_files': len(policy_files)
+    })
 
 def changePassword(request):
     return render(request, 'change-password.html')
@@ -1065,14 +1141,37 @@ def failedPolicyUploadView(request, id):
 
     return render(request, 'policy/unprocessable-files.html', {'files': unprocessable_files})
   
+
+from collections import Counter
+
+
 def bulkPolicyView(request, id):
     if not request.user.is_authenticated or request.user.is_active != 1:
         return redirect('login')
-    # Correct the filter logic
-    policy_files = PolicyDocument.objects.filter(bulk_log_id=id)
 
-    return render(request, 'policy/policy-files.html', {'files': policy_files,'log_id':id})
-  
+    # Fetch policy documents based on bulk_log_id
+    policy_files = PolicyDocument.objects.filter(bulk_log_id=id)
+    statuses = Counter(file.status for file in policy_files)
+
+    # Ensure all statuses are included in the count, even if they're 0
+    status_counts = {
+        0: statuses.get(0, 0),
+        1: statuses.get(1, 0),
+        2: statuses.get(2, 0),
+        3: statuses.get(3, 0),
+        4: statuses.get(4, 0),
+        5: statuses.get(5, 0),
+        6: statuses.get(6, 0),
+        7: statuses.get(7, 0),
+    }
+
+    return render(request, 'policy/policy-files.html', {
+        'files': policy_files,
+        'total_files': len(policy_files),
+        'log_id': id,
+        'status_counts': status_counts
+    })
+
 def reprocessBulkPolicies(request):
     if not request.user.is_authenticated and request.user.is_active == 1:
         return redirect('login')
@@ -1192,7 +1291,7 @@ def continueBulkPolicies(request):
             try:
                 file_data = PolicyDocument.objects.get(id=file_id)
                 file_status = file_data.status
-                if file_status == 5 or file_status == 3:
+                if file_status == 5 or file_status == 3 or file_status == 4:
                     file_obj = FileAnalysis.objects.filter(policy_id=file_id).last()
                     async_task('empPortal.tasks.process_text_from_chatgpt', file_obj.id)
                

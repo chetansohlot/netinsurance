@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'empPortal',
     'django_q',
+    'django_cron',
 ]
 
 MIDDLEWARE = [
@@ -87,6 +88,12 @@ WSGI_APPLICATION = 'elevatInsurance.wsgi.application'
 # Expires session when browser is closed
 # Session will expire when the browser is closed
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+
+CRON_CLASSES = [
+    'empPortal.crons.ReprocessPoliciesCronJob',
+]
+
 
 # Inactivity timeout — auto logout after 10 minutes of no activity
 SESSION_COOKIE_AGE = 600  # in seconds (600s = 10 minutes)
@@ -216,7 +223,7 @@ Q_CLUSTER = {
     'recycle': 500,
     'timeout': 60,
     'retry': 90,
-    'queue_limit': 50,
+    'queue_limit': 500,
     'bulk': 10,
     'orm': 'default',  # use Django ORM
 }

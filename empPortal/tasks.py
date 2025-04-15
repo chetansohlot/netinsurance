@@ -1,13 +1,16 @@
-from .models import UploadedZip, FileAnalysis, ExtractedFile, BulkPolicyLog, Commission, PolicyDocument, UnprocessedPolicyFiles
-import django, dramatiq, fitz, os, zipfile, requests, re, json, traceback, time, logging
+from .models import UploadedZip, FileAnalysis, ExtractedFile, BulkPolicyLog, Commission, PolicyDocument, UnprocessedPolicyFiles, ChatGPTLog, UploadedExcel
+import django, dramatiq, fitz, os, zipfile, requests, re, json, traceback, time, logging, shutil
 from django.conf import settings
 from django.utils import timezone
+from django.utils.timezone import now
 from django_q.tasks import async_task
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 from django.db.models import F
 from .utils import getUserNameByUserId, commisionRateByMemberId, insurercommisionRateByMemberId
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.encoding import filepath_to_uri
+import pandas as pd
+
 logger = logging.getLogger(__name__)
 
 def create_bulk_log(file_id):
@@ -46,6 +49,10 @@ def process_zip_file(zip_id):
     pdf_file_ids = []
     
     extract_dir = os.path.join(settings.MEDIA_ROOT, 'extracted', str(zip_id))
+    if os.path.exists(extract_dir):
+        shutil.rmtree(extract_dir)
+
+    # Now create a fresh folder
     os.makedirs(extract_dir, exist_ok=True)
 
     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
@@ -154,9 +161,41 @@ def extract_pdf_text_task(file_id):
         )
     except Exception as e:
         logger.error(f"Error in file analysing file_id {file_id} : {str(e)}")
-        
-    def handle_extraction_error(reason):
-        logger.error(f"[ERROR] {reason}")
+
+    try:
+        if "Error" in text:
+            BulkPolicyLog.objects.filter(id=file_obj.zip_ref.bulk_log.id).update(
+                count_error_pdf_files=F('count_error_pdf_files') + 1
+            )
+            try:
+                UnprocessedPolicyFiles.objects.create(
+                    policy_document=policy_obj.id,
+                    doc_name=file_obj.filename,
+                    bulk_log_id=policy_obj.bulk_log_id,
+                    file_path=policy_obj.filepath,
+                    status=1,  # pending
+                )
+            except Exception as e:
+                logger.error(f"Error in Unprocessing File file_id {file_id} : {str(e)}")
+            file_analysis.status = 2  #failed in extarction
+            file_analysis.save()
+            
+        else:
+            file_analysis.status = 1    #extraction complete
+            file_analysis.save()
+
+            file_obj.content = text.strip()
+            file_obj.is_extracted = True
+            file_obj.save()
+
+            policy_obj.status = 2
+            policy_obj.save()
+
+            # Proceed to AI processing task (uncomment if needed)
+            async_task('empPortal.tasks.process_text_from_chatgpt', file_analysis.id)
+
+
+    except Exception as e:
         BulkPolicyLog.objects.filter(id=file_obj.zip_ref.bulk_log.id).update(
             count_error_pdf_files=F('count_error_pdf_files') + 1
         )
@@ -172,29 +211,8 @@ def extract_pdf_text_task(file_id):
             logger.error(f"Error in Unprocessing File file_id {file_id} : {str(e)}")
         file_analysis.status = 2  #failed in extarction
         file_analysis.save()
-
-    try:
-        if "Error" in text:
-            handle_extraction_error(text)
-        else:
-            file_analysis.status = 1    #extraction complete
-            file_analysis.save()
-
-            file_obj.content = text.strip()
-            file_obj.is_extracted = True
-            file_obj.save()
-
-            policy_obj.status = 2
-            policy_obj.save()
-
-            # Proceed to AI processing task (uncomment if needed)
-            async_task('empPortal.tasks.process_text_from_chatgpt', file_analysis.id)
-
-            logger.info(f"Text extracted successfully for: {file_obj.id}")
-
-    except Exception as e:
-        handle_extraction_error(f"Exception occurred during extraction: {e}")
    
+
 def extract_text_from_pdf(pdf_path):
     try:
         doc = fitz.open(pdf_path)
@@ -322,16 +340,18 @@ def process_text_with_chatgpt(text):
             "model": "XXXX",
             "variant": "XXXX",
             "registration_year": YYYY,
+            "manufacture_year": YYYY,
             "engine_number": "XXXXXXXXXXXX",
             "chassis_number": "XXXXXXXXXXXX",
             "fuel_type": "XXXX",     # diesel/petrol/cng/lpg/ev 
             "cubic_capacity": XXXX,  
+            "seating_capacity": XXXX,  
             "vehicle_gross_weight": XXXX,   # in kg
             "vehicle_type": "XXXX XXXX",    # private / commercial
             "commercial_vehicle_detail": "XXXX XXXX"    
         }},
         "additional_details": {{
-            "policy_type": "XXXX",        # motor stand alone policy/ motor third party liablity policy / motor pakage policy   only in these texts
+            "policy_type": "XXXX",        # motor stand alone policy/ motor third party liablity policy / motor package policy   only in these texts
             "ncb": XX,     # in percentage
             "addons": ["XXXX", "XXXX"], 
             "previous_insurer": "XXXX",
@@ -340,7 +360,9 @@ def process_text_with_chatgpt(text):
         "contact_information": {{
             "address": "XXXXXX",
             "phone_number": "XXXXXXXXXX",
-            "email": "XXXXXX"
+            "email": "XXXXXX",
+            "pan_no": "XXXXX1111X",
+            "aadhar_no": "XXXXXXXXXXXX"
         }}
     }}
     
@@ -360,25 +382,54 @@ def process_text_with_chatgpt(text):
     }
 
     try:
+        log_entry = ChatGPTLog.objects.create(
+            prompt=prompt,
+            created_at=now()
+        )
+    except:
+        logger.error(f"Error In ChatGPT logentry")
+  
+    try:
         response = requests.post(api_url, json=data, headers=headers)
+
+        if hasattr(response, "status_code"):
+            log_entry.status_code = response.status_code
+            
         if hasattr(response, "status_code") and response.status_code == 200:
+
             result = response.json()
             raw_output = result["choices"][0]["message"]["content"].strip()
+            
             try:
                 clean_json = re.sub(r"```json\n|\n```|```", "", raw_output).strip()
-                return json.loads(clean_json)
+                
+                parsed_json = json.loads(clean_json)
+                log_entry.response = json.dumps(parsed_json, indent=4)
+                log_entry.is_successful = True
+                log_entry.save()
+                return parsed_json
             except json.JSONDecodeError as e:
                 logger.error(f"JSON decode error {str(e)}")
+                log_entry.response = raw_output
+                log_entry.error_message = f"JSON decode error: {str(e)}"
+                log_entry.save()
+                
                 return json.dumps({
                     "error": "JSON decode error",
                     "raw_output": raw_output,
                     "details": str(e)
                 }, indent=4)
         else:
+            log_entry.error_message = response.text
+            log_entry.save()
             return json.dumps({"error": f"API Error: {response.status_code}", "details": response.text}, indent=4)
     
     except requests.exceptions.RequestException as e:
         logger.error(f"Request failed ,details: {str(e)}")
+        
+        log_entry.error_message = str(e)
+        log_entry.save()
+        
         return json.dumps({"error": "Request failed", "details": str(e)}, indent=4)
 
 
@@ -401,71 +452,71 @@ def update_policy_data(file_id):
             policy_obj.status = 4
             policy_obj.save()
             raise ValueError("Policy number is missing in processed_text.")
-
-        # Check for duplicates
-        if PolicyDocument.objects.filter(policy_number=policy_number).exists():
-            bulk_log.count_duplicate_files += 1
-            bulk_log.save()
-            
-            policy_obj.status = 7
-            policy_obj.save()
-            bulk_log.count_uploaded_files += 1
-            bulk_log.save()
-            if bulk_log.count_uploaded_files == bulk_log.count_pdf_files:
-                bulk_log.status = 3
-                bulk_log.save()
         else:
-            try:
+            # Check for duplicates
+            if PolicyDocument.objects.filter(policy_number=policy_number).exists():
+                bulk_log.count_duplicate_files += 1
+                bulk_log.save()
                 
-                vehicle_number = re.sub(r"[^a-zA-Z0-9]", "", processed_text.get("vehicle_number", ""))
-
-                coverage_details = processed_text.get("coverage_details", [{}])
-                if isinstance(coverage_details, list) and coverage_details:
-                    first_coverage = coverage_details[0]
-                elif isinstance(coverage_details, dict):
-                    first_coverage = coverage_details
-                else:
-                    first_coverage = {}
-
-                od_premium = first_coverage.get('own_damage', {}).get('premium', 0)
-                tp_premium = first_coverage.get('third_party', {}).get('premium', 0)
-
-                policy_doc = policy_obj
-            
-                policy_doc.insurance_provider = processed_text.get("insurance_company", "")
-                policy_doc.vehicle_number = vehicle_number
-                policy_doc.policy_number = policy_number
-                policy_doc.policy_period = processed_text.get("policy_period", "")
-                policy_doc.holder_name = processed_text.get("insured_name", "")
-                policy_doc.policy_total_premium = processed_text.get("gross_premium", 0)
-                policy_doc.policy_premium = processed_text.get("net_premium", 0)
-                policy_doc.sum_insured = processed_text.get("sum_insured", 0)
-                policy_doc.coverage_details = coverage_details
-                policy_doc.policy_issue_date = processed_text.get("issue_date", "")
-                policy_doc.policy_expiry_date = processed_text.get("expiry_date","")
-                policy_doc.policy_start_date = processed_text.get("start_date","")
-                policy_doc.payment_status = 'Confirmed'
-                policy_doc.policy_type = processed_text.get('additional_details', {}).get('policy_type', "")
-                vehicle_details = processed_text.get('vehicle_details', {})
-                policy_doc.vehicle_type = vehicle_details.get('vehicle_type', "")
-                policy_doc.vehicle_make = vehicle_details.get('make', "")
-                policy_doc.vehicle_model = vehicle_details.get('model', "")
-                policy_doc.vehicle_gross_weight = vehicle_details.get('vehicle_gross_weight', "")
-                policy_doc.vehicle_manuf_date = vehicle_details.get('registration_year', "")
-                policy_doc.gst = processed_text.get('gst_premium', 0)
-                policy_doc.od_premium = od_premium
-                policy_doc.tp_premium = tp_premium
-                policy_doc.status = 6
-                policy_doc.save()
-                # Update Bulk Log
+                policy_obj.status = 7
+                policy_obj.save()
                 bulk_log.count_uploaded_files += 1
                 bulk_log.save()
                 if bulk_log.count_uploaded_files == bulk_log.count_pdf_files:
                     bulk_log.status = 3
                     bulk_log.save()
-            except Exception as e:
-                logger.error(f"Error in Policy Update for policy_id {policy_obj.id}")
-        
+            else:
+                try:
+                    
+                    vehicle_number = re.sub(r"[^a-zA-Z0-9]", "", processed_text.get("vehicle_number", ""))
+
+                    coverage_details = processed_text.get("coverage_details", [{}])
+                    if isinstance(coverage_details, list) and coverage_details:
+                        first_coverage = coverage_details[0]
+                    elif isinstance(coverage_details, dict):
+                        first_coverage = coverage_details
+                    else:
+                        first_coverage = {}
+
+                    od_premium = first_coverage.get('own_damage', {}).get('premium', 0)
+                    tp_premium = first_coverage.get('third_party', {}).get('premium', 0)
+
+                    policy_doc = policy_obj
+                
+                    policy_doc.insurance_provider = processed_text.get("insurance_company", "")
+                    policy_doc.vehicle_number = vehicle_number
+                    policy_doc.policy_number = policy_number
+                    policy_doc.policy_period = processed_text.get("policy_period", "")
+                    policy_doc.holder_name = processed_text.get("insured_name", "")
+                    policy_doc.policy_total_premium = processed_text.get("gross_premium", 0)
+                    policy_doc.policy_premium = processed_text.get("net_premium", 0)
+                    policy_doc.sum_insured = processed_text.get("sum_insured", 0)
+                    policy_doc.coverage_details = coverage_details
+                    policy_doc.policy_issue_date = processed_text.get("issue_date", "")
+                    policy_doc.policy_expiry_date = processed_text.get("expiry_date","")
+                    policy_doc.policy_start_date = processed_text.get("start_date","")
+                    policy_doc.payment_status = 'Confirmed'
+                    policy_doc.policy_type = processed_text.get('additional_details', {}).get('policy_type', "")
+                    vehicle_details = processed_text.get('vehicle_details', {})
+                    policy_doc.vehicle_type = vehicle_details.get('vehicle_type', "")
+                    policy_doc.vehicle_make = vehicle_details.get('make', "")
+                    policy_doc.vehicle_model = vehicle_details.get('model', "")
+                    policy_doc.vehicle_gross_weight = vehicle_details.get('vehicle_gross_weight', "")
+                    policy_doc.vehicle_manuf_date = vehicle_details.get('registration_year', "")
+                    policy_doc.gst = processed_text.get('gst_premium', 0)
+                    policy_doc.od_premium = od_premium
+                    policy_doc.tp_premium = tp_premium
+                    policy_doc.status = 6
+                    policy_doc.save()
+                    # Update Bulk Log
+                    bulk_log.count_uploaded_files += 1
+                    bulk_log.save()
+                    if bulk_log.count_uploaded_files == bulk_log.count_pdf_files:
+                        bulk_log.status = 3
+                        bulk_log.save()
+                except Exception as e:
+                    logger.error(f"Error in Policy Update for policy_id {policy_obj.id}")
+            
 
     except FileAnalysis.DoesNotExist:
         logger.error(f"File not found with the given ID")
@@ -486,3 +537,50 @@ def update_policy_data(file_id):
         logger.error(f"Unexpected error for policy_id :{policy_obj.id} : error:{str(e)}")
         return json.dumps({"error": "Unexpected error", "details": str(e)}, indent=4)
     
+def handle_failure(task):
+    attempts = task.attempt_count if hasattr(task, 'attempt_count') else 'Unknown'
+    task_name = task.name if hasattr(task, 'name') else 'Unknown Task'
+    task_id = task.id if hasattr(task, 'id') else 'No ID'
+    if task.get('success') is False:
+        logger.error(f"Task {task_id} named {task_name} failed after {attempts}")
+        
+def updateBulkPolicies(file_id):
+    try:
+        excel_instance = UploadedExcel.objects.get(id=file_id)
+        file_path = excel_instance.file.path
+
+        df = pd.read_excel(file_path)
+        errors = []
+        success_count = 0
+        
+        if 'policy_number' not in df.columns:
+            excel_instance.is_processed = True
+            excel_instance.save()
+            return ["'policy_number' column not found."]
+
+        for index, row in df.iterrows():
+            policy_number = str(row.get('policy_number', '')).strip()
+            if not policy_number:
+                errors.append(f"Row {index + 2}: Missing policy number.")
+                continue
+
+            try:
+                policy_doc = PolicyDocument.objects.get(policy_number=policy_number)
+                policy_doc.insured_name = row.get('insured_name')
+                policy_doc.insured_mobile = row.get('insured_mobile')
+                policy_doc.insured_email = row.get('insured_email')
+                policy_doc.save()
+                success_count += 1
+            except PolicyDocument.DoesNotExist:
+                errors.append(f"Row {index + 2}: Policy not found: {policy_number}")
+            except Exception as e:
+                errors.append(f"Row {index + 2}: Error - {str(e)}")
+
+        # Update processing status
+        excel_instance.is_processed = True
+        excel_instance.save()
+
+        return [f"{success_count} policies updated.", *errors]
+
+    except Exception as e:
+        return [f"Error: {str(e)}"]

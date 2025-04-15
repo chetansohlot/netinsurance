@@ -31,6 +31,12 @@
                   <li>Edit Policy</li>
                 </ul>
               </div>
+                  
+              <div class="col-sm-6">
+                  <div class="d-flex justify-content-end">
+                    <a href="{% url 'policy-data' %}" class="breadcrump-addbtn mx-1">Back</a>
+                  </div>
+              </div>
             </div>
           </div>
         </div>
@@ -57,7 +63,7 @@
                               <div class="col-sm-6 col-md-4 col-lg-3">
                                 <div class="form-group">
                                   <label class="form-lbl" for="policy_number">Policy Number</label>
-                                  <input type="text" class="form-field" name="policy_number" id="policy_number" placeholder="Policy Number" value="{{ policy_data.policy_number }}">
+                                  <input type="text" class="form-field" name="policy_number" id="policy_number" placeholder="Policy Number" value="{{ policy_data.policy_number }}" readonly>
                                 </div>
                               </div>
                         
@@ -177,51 +183,32 @@
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl">Insurance Company</label>
-                                      <input type="text" class="form-field" name="insurance_company" placeholder="Insurance Company" value="{{ policy.insurance_company|default:policy_data.insurance_provider }}">
-                                    </div>
-                                  </div>
-                            
-                                  <div class="col-sm-6 col-md-4 col-lg-3">
-                                    <div class="form-group">
-                                      <label class="form-lbl">Service Provider</label>
-                                      <input type="text" class="form-field" name="location" placeholder="Service Provider" value="{{ policy.service_provider|default:'' }}">
-                                    </div>
-                                  </div>
-                            
-                                  <div class="col-sm-6 col-md-4 col-lg-3">
-                                    <div class="form-group">
-                                      <label class="form-lbl">Insurer Name</label>
-                                      <input type="text" class="form-field" name="owner_name" placeholder="Insurer Name" value="{{ policy.insurer_name|default:'' }}">
-                                    </div>
-                                  </div>
-                            
-                                  <div class="col-sm-6 col-md-4 col-lg-3">
-                                    <div class="form-group">
-                                      <label class="form-lbl">Bqp</label>
-                                      <input type="text" class="form-field" name="father_name" placeholder="Bqp" value="{{ policy.bqp|default:'' }}">
-                                    </div>
-                                  </div>
-                            
-                                  <div class="col-sm-6 col-md-4 col-lg-3">
-                                    <div class="form-group">
-                                      <label class="form-lbl">Pos Name</label>
-                                      <input type="text" class="form-field" name="vehicle_owner_number" placeholder="Pos Name" value="{{ policy.pos_name|default:'' }}">
+                                      <input type="text" class="form-field" name="insurance_company" placeholder="Insurance Company" value="{{ policy.insurance_company|default:policy_data.insurance_provider }}" readonly>
                                     </div>
                                   </div>
                             
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl">Branch Name</label>
-                                      <input type="text" class="form-field" name="registration_city" placeholder="Branch Name" value="{{ policy.branch_name|default:'' }}">
+                                      <select id="branch" name="registration_city" class="form-field">
+                                          <option value="">Select Branch</option>
+                                          {% for branch in branches %}
+                                          <option value="{{ branch.id }}" {% if branch.id|stringformat:"s" == policy.branch_name|stringformat:"s" %}selected{% endif %}>
+                                              {{ branch.branch_name }}
+                                          </option>
+                                          {% endfor %}
+                                      </select>
                                     </div>
                                   </div>
+                                  
+                                  
                             
-                                  <div class="col-sm-6 col-md-4 col-lg-3">
+                                  {% comment %} <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl">Supervisor Name</label>
-                                      <input type="text" class="form-field" name="supervisor_name" placeholder="Supervisor Name" value="{{ policy.supervisor_name|default:'' }}">
+                                      <input type="text" class="form-field" name="supervisor_name" placeholder="Supervisor Name" value="{{ policy.supervisor_name|default:request.user.full_name }}">
                                     </div>
-                                  </div>
+                                  </div> {% endcomment %}
                             
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
@@ -229,7 +216,29 @@
                                       <input type="text" class="form-field" name="policy_type" placeholder="Policy Type" value="{{ policy.policy_type|default:policy_data.policy_type }}">
                                     </div>
                                   </div>
-                            
+
+
+                                  <div class="col-sm-6 col-md-4 col-lg-3">
+                                    <div class="form-group">
+                                      <label class="form-lbl" for="fuel_type">Fuel Type</label>
+                                      {% with policy.fuel_type|default:extracted_data.vehicle_details.fuel_type|title as selected_fuel %}
+                                        <select class="form-field" name="fuel_type" id="fuel_type">
+                                          <option value="">Select</option>
+                                          <option value="Petrol" {% if selected_fuel == 'Petrol' %}selected{% endif %}>Petrol</option>
+                                          <option value="Diesel" {% if selected_fuel == 'Diesel' %}selected{% endif %}>Diesel</option>
+                                          <option value="Cng" {% if selected_fuel == 'Cng' %}selected{% endif %}>CNG</option>
+                                          <option value="Be-Fuel" {% if selected_fuel == 'Be-Fuel' %}selected{% endif %}>Be-Fuel</option>
+                                        </select>
+                                      {% endwith %}
+                                    </div>
+                                  </div>
+                                  <div class="col-sm-6 col-md-4 col-lg-3">
+                                    <div class="form-group">
+                                      <label class="form-lbl">Be-Fuel Amount</label>
+                                      <input type="text" class="form-field" name="be_fuel_amount" id="be_fuel_amount" placeholder="Be-Fuel Amount" value="{{ policy.be_fuel_amount|default:''|default:'0.00' }}">
+                                    </div>
+                                  </div>
+
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl">Policy Plan</label>
@@ -250,13 +259,24 @@
                                       <input type="text" class="form-field" name="od_premium" placeholder="OD Premium" value="{{ policy.od_premium|default:policy_data.od_premium }}">
                                     </div>
                                   </div>
-                            
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
-                                      <label class="form-lbl">TP Premium</label>
-                                      <input type="text" class="form-field" name="tp_premium" placeholder="TP Premium" value="{{ policy.tp_premium|default:policy_data.tp_premium }}">
+                                      <label class="form-lbl">
+                                        TP Premium
+                                        <span class="hint-icon" data-toggle="tooltip" data-placement="top" 
+                                          title="TP Additional Premium: {{ extracted_data.coverage_details.third_party.additional_premiums }} 
+                                          & TP premium: {{ extracted_data.coverage_details.third_party.premium }}">
+                                          <i class="fas fa-info-circle"></i> <!-- FontAwesome info icon -->
+                                        </span>
+                                      </label>
+                                      <input type="text" class="form-field" name="tp_premium" placeholder="TP Premium" 
+                                        value="{{ policy.tp_premium|default:policy_data.tp_premium }}">
                                     </div>
                                   </div>
+                                  
+                                
+                                
+                                
                             
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
@@ -285,6 +305,22 @@
                                       <input type="text" class="form-field" name="driver_amount" placeholder="Driver Amount" value="{{ policy.driver_amount|default:''|default:'0.00' }}">
                                     </div>
                                   </div>
+
+
+                                  <div class="col-sm-6 col-md-4 col-lg-3">
+                                    <div class="form-group">
+                                      <label class="form-lbl">Gross Premium</label>
+                                      <input type="text" class="form-field" name="gross_premium" placeholder="Gross Premium" value="{{ policy.gross_premium|default:extracted_data.gross_premium|default:'' }}">
+                                    </div>
+                                  </div>
+                                  
+                                  <div class="col-sm-6 col-md-4 col-lg-3">
+                                    <div class="form-group">
+                                      <label class="form-lbl">Net Premium</label>
+                                      <input type="text" class="form-field" name="net_premium" placeholder="Net Premium" value="{{ policy.net_premium|default:extracted_data.net_premium|default:'' }}">
+                                    </div>
+                                  </div>
+
                                 </div>
                               </div>
                             </div>
@@ -322,6 +358,24 @@
       document.getElementById("myPolicyForm").addEventListener("submit", function() {
           document.getElementById("loader").style.display = "flex";
       });
+
+      $(document).ready(function(){
+        var fuel_type = $('#fuel_type').val();
+        updaterFuelAmount(fuel_type);
+      });
+
+      $('#fuel_type').on('change',function(){
+        var fuel_type = $(this).val();
+        updaterFuelAmount(fuel_type);
+      });
+
+      function updaterFuelAmount(fuel_type){
+        if(fuel_type === "Be-Fuel"){
+          $('#be_fuel_amount').val(60);
+        }else{
+          $('#be_fuel_amount').val(0);
+        }
+      }
     </script>
 </body>
 {% endblock %}

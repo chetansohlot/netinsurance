@@ -2483,7 +2483,7 @@ a:hover .dr-pdficon {
 }
 .new-stepflow li > span {margin-bottom: 10px;}
 .stepflow-text {display: flex; flex-direction: row; justify-content: center; flex-wrap: wrap; margin: 15px 0 0px; }
-.stepflow-text li { flex-grow: 1; list-style: none; font-size: 13px; color:#8d8d8d; letter-spacing: 1px; flex-grow: 1; display: flex; justify-content: center; }
+.stepflow-text li {  list-style: none; font-size: 13px; color:#8d8d8d; letter-spacing: 1px; flex-grow: 1; display: flex; justify-content: center; }
 .stepflow-text li.active {color: #E63A27;}
 .stepflow-text li a {text-decoration: none; color: #8D8D8D;}
 @media (max-width: 767px) {
@@ -2655,7 +2655,18 @@ a:hover .dr-pdficon {
     background-color: #04015e; color: #fff; transition: all .25s ease-in; 
 
 }
+.doc-img {position: relative;}
+.doc-img:hover a > img {transform: scale(1.2);}
+.doc-hover-icon {position: absolute; left:0; right:0; top:0; bottom:0px; background:rgba(0,0,0,0.5); display: none; justify-content:center; align-items:center; color:#fff; transition: transform 0.2s ease-in-out;}
+.doc-img:hover .doc-hover-icon {display: flex; transform: scale(1.2);}
+.doc-hover-icon a {color:#fff; trannsition:0.3s ease-in-out;}
+.sidebar-menutext {display: flex; gap:5px;}
+.action-btns {display: flex; gap:5px; align-items:center;}
+.success-color {color:#47b875 !important;}
+.danger-color {color:#f5222d !important;}
+.warning-color {color:#c49300 !important;}
 
+.bulk-info {display: flex; align-items: center; gap: 10px;}
 @media (max-width:767px) {
     .banner-hding {font-size: 30px;}
     .banner-subhding {font-size:20px;}

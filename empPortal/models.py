@@ -137,8 +137,10 @@ class Leads(models.Model):
     pincode = models.CharField(max_length=10, null=True, blank=True)  # Pincode of the customer
     address = models.TextField(null=True, blank=True)  # Address of the customer
     lead_description = models.TextField(null=True, blank=True)
+    lead_source = models.CharField(max_length=25, null=True, blank=True)  
+    referral_by = models.CharField(max_length=25, null=True, blank=True)  
     created_at = models.DateTimeField(auto_now_add=True)  # Timestamp when the lead was created
-    created_by = models.CharField(max_length=20, null=True, blank=True)  # PAN card number (optional)
+    created_by = models.CharField(max_length=20, null=True, blank=True)  
     updated_at = models.DateTimeField(auto_now=True)  # Timestamp when the lead was last updated
     status = models.CharField(max_length=50, default='new')  # Status of the lead (new, contacted, converted, etc.)
     lead_type = models.CharField(
@@ -277,10 +279,14 @@ class PolicyInfo(models.Model):
     od_premium = models.CharField(max_length=20, null=True, blank=True)
     tp_premium = models.CharField(max_length=20, null=True, blank=True)
     pa_count = models.CharField(max_length=20, default='0', null=True, blank=True)
-    pa_amount = models.CharField(max_length=20, default='0.00', null=True, blank=True)
-    driver_count = models.CharField(max_length=20, default='0', null=True, blank=True)
-    driver_amount = models.CharField(max_length=20, default='0.00', null=True, blank=True)
-
+    pa_amount = models.CharField(max_length=20, null=True, blank=True)
+    driver_count = models.CharField(max_length=20, null=True, blank=True)
+    driver_amount = models.CharField(max_length=20, null=True, blank=True)
+    referral_by = models.CharField(max_length=50, null=True, blank=True)
+    fuel_type = models.CharField(max_length=50, null=True, blank=True)
+    be_fuel_amount = models.CharField(max_length=50, null=True, blank=True)
+    gross_premium = models.CharField(max_length=50, null=True, blank=True)
+    net_premium = models.CharField(max_length=50, null=True, blank=True)
     active = models.CharField(max_length=1, choices=[('0', 'Inactive'), ('1', 'Active')], default='1')
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -296,10 +302,12 @@ class AgentPaymentDetails(models.Model):
     policy_number = models.CharField(max_length=255)
     agent_name = models.CharField(max_length=255)
     agent_payment_mod = models.CharField(max_length=255)
+    transaction_id = models.CharField(max_length=255)
     agent_payment_date = models.CharField(max_length=255)
     agent_amount = models.CharField(max_length=255)
     agent_remarks = models.CharField(max_length=255)
     agent_od_comm = models.CharField(max_length=255)
+    agent_tp_comm = models.CharField(max_length=255)
     agent_net_comm = models.CharField(max_length=255)
     agent_incentive_amount = models.CharField(max_length=255)
     agent_tds = models.CharField(max_length=255)
@@ -384,6 +392,10 @@ class InsurerPaymentDetails(models.Model):
     insurer_total_comm_amount = models.CharField(max_length=50, blank=True, null=True)
     insurer_net_payable_amount = models.CharField(max_length=50, blank=True, null=True)
     insurer_tds_amount = models.CharField(max_length=50, blank=True, null=True)
+    
+    insurer_total_commission = models.CharField(max_length=50, blank=True, null=True)
+    insurer_receive_amount = models.CharField(max_length=50, blank=True, null=True)
+    insurer_balance_amount = models.CharField(max_length=50, blank=True, null=True)
 
     active = models.CharField(max_length=1, choices=[('0', 'Inactive'), ('1', 'Active')], default='1')
     created_at = models.DateTimeField(auto_now_add=True)
@@ -904,7 +916,7 @@ class UploadedZip(models.Model):
 
     def __str__(self):
         return self.file_name or f"Uploaded Zip #{self.pk}"
-    
+     
 class ExtractedFile(models.Model):
     zip_ref = models.ForeignKey(UploadedZip, on_delete=models.CASCADE)
     file_path = models.FileField(upload_to='pdf_files/')
@@ -932,3 +944,48 @@ class FileAnalysis(models.Model):
     
     class Meta:
         db_table = 'file_analysis'
+        
+class ChatGPTLog(models.Model):
+    prompt = models.TextField()
+    response = models.TextField(blank=True, null=True)
+    status_code = models.IntegerField(null=True, blank=True)
+    is_successful = models.BooleanField(default=False)
+    error_message = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"ChatGPT Log - {self.created_at}"
+    
+    class Meta:
+        db_table = 'chatgptlog'
+        managed = True
+        verbose_name = 'ChatGPTLog'
+        verbose_name_plural = 'ChatGPTLogs'
+        
+class UploadedExcel(models.Model):
+    file = models.FileField(upload_to='excels/')
+    file_name = models.CharField(max_length=255, blank=True)
+    file_url = models.URLField(blank=True)
+    total_rows = models.IntegerField(default=0)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    campaign_name = models.CharField(max_length=255)
+    is_processed = models.BooleanField(default=False)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+
+    class Meta:
+        db_table = 'uploaded_excels'
+
+    def save(self, *args, **kwargs):
+        if self.file:
+            self.file_name = self.file.name
+            self.file_url = self.file.url  # Make sure MEDIA_URL is properly set
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.file_name or f"Uploaded Excel #{self.pk}"
+   
