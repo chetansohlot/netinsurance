@@ -39,6 +39,79 @@ Policy Data
             </div>
           </div>
         </div>
+        <div class="row">
+          <div class="col-xs-6 col-sm-4 col-md-3">
+              <div class="card counter-img-card active">
+                  <div class="card-body">
+                      <p class="card-text">File Uploaded</p>
+                      <h5 class="card-title card-number">{{ total_files }}</h5>
+                  </div>
+              </div>
+          </div>
+        
+          <div class="col-xs-6 col-sm-4 col-md-3">
+            <div class="card counter-img-card">
+              <div class="card-body">
+                <p class="card-text text-info">File Reading</p>
+                <h5 class="card-title card-number text-info">{{ status_counts.1|default:"0" }}</h5>
+              </div>
+            </div>
+          </div>
+        
+          <div class="col-xs-6 col-sm-4 col-md-3">
+            <div class="card counter-img-card">
+              <div class="card-body">
+                <p class="card-text success-color">Reading Complete</p>
+                <h5 class="card-title card-number success-color">{{ status_counts.2|default:"0" }}</h5>
+              </div>
+            </div>
+          </div>
+        
+          <div class="col-xs-6 col-sm-4 col-md-3">
+            <div class="card counter-img-card">
+              <div class="card-body">
+                <p class="card-text warning-color">File Analysing</p>
+                <h5 class="card-title card-number warning-color">{{ status_counts.3|default:"0" }}</h5>
+              </div>
+            </div>
+          </div>
+        
+          <div class="col-xs-6 col-sm-4 col-md-3">
+            <div class="card counter-img-card">
+              <div class="card-body">
+                <p class="card-text text-primary">File Analysed</p>
+                <h5 class="card-title card-number text-primary">{{ status_counts.4|default:"0" }}</h5>
+              </div>
+            </div>
+          </div>
+        
+          <div class="col-xs-6 col-sm-4 col-md-3">
+            <div class="card counter-img-card">
+              <div class="card-body">
+                <p class="card-text text-dark">Policy Creating</p>
+                <h5 class="card-title card-number text-dark">{{ status_counts.5|default:"0" }}</h5>
+              </div>
+            </div>
+          </div>
+        
+          <div class="col-xs-6 col-sm-4 col-md-3">
+            <div class="card counter-img-card">
+              <div class="card-body">
+                <p class="card-text success-color">Complete</p>
+                <h5 class="card-title card-number success-color">{{ status_counts.6|default:"0" }}</h5>
+              </div>
+            </div>
+          </div>
+        
+          <div class="col-xs-6 col-sm-4 col-md-3">
+            <div class="card counter-img-card">
+              <div class="card-body">
+                <p class="card-text danger-color">Duplicate File</p>
+                <h5 class="card-title card-number danger-color">{{ status_counts.7|default:"0" }}</h5>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <!-- /.content-header -->
@@ -54,43 +127,60 @@ Policy Data
                     <div class="table-responsive table-ht">
                       
                        <!-- Logs Table -->
-                    <table class="table table-design table-width-design">
+                    <table class="table table-design">
                       <thead class="table-thead-bg-light table-header-fix">
                         <tr>
                           <th>Campaign Name</th>
-                          <th>File Name</th>
-                          <th>File URL</th>
-                          <th>Total Files</th>
-                          <th>PDF Files</th>
-                          <th>Non-PDF Files</th>
-                          <th>Errors</th>
-                          <th>Uploaded Files</th>
-                          <th>View Failed Files</th>
+                          <!-- <th>View Uploaded Files</th> -->
+                          
+                          <!-- <th>File Info</th> -->
+                          <th>Files Data</th>
+                          <!-- <th>PDF Files</th>
+                          <th>Non-PDF Files</th> -->
+                          <th>Result</th>
+                          <!-- <th>Uploaded Files</th> -->
                           <th>Date of Upload</th>
                           <th>Status</th>
+                          <th>Action</th>
                         </tr>
                       </thead>
                       <tbody>
                         {% for log in logs %}
                           <tr>
-                            <td>{{ log.camp_name }}</td>
-                            <td>{{ log.file_name }}</td>
+                            <td>{{ log.camp_name }} </td>
+                            
+                            <!-- <td>
+                              <div class="bulk-info">
+                                {{ log.file_name }}
+                                
+                              </div>   
+                            </td> -->
                             <td>
-                              <a href="{{ log.file_url }}" target="_blank" class="btn btn-primary btn-xs"><i class="fa-solid fa-download"></i> Download</a>
+                              Total : {{ log.count_total_files }} <br>
+                              PDF : {{ log.count_pdf_files }} <br>
+                              Non PDF : {{ log.count_not_pdf }}
                             </td>
-                            <td>{{ log.count_total_files }}</td>
-                            <td>{{ log.count_pdf_files }}</td>
-                            <td>{{ log.count_not_pdf }}</td>
-                            <td>{{ log.count_error_pdf_files }} / {{ log.count_error_process_pdf_files }}</td>
-                            <td>{{ log.count_uploaded_files }}</td>
-                            <td><a href="{% url 'policy-upload-view'  id=log.id %}"><i class="fa-solid fa-eye"></i></a></td>
+                            <td>
+                              Error : {{ log.count_error_pdf_files }} / {{ log.count_error_process_pdf_files }} <br>
+                              Success : {{ log.count_uploaded_files }}
+                            </td>
                             <td>{{ log.created_date }}</td>
                             <td>
                               {% if log.status == 1 %}
-                                <span class="badge badge-success">Completed</span>
+                                <span class="badge badge-info">Zip Uploaded</span>
+                              {% elif log.status == 2 %}
+                                <span class="badge badge-dark">In Progress</span>
+                              {% elif log.status == 3 %}
+                                <span class="badge badge-success">Complete</span>
                               {% else %}
                                 <span class="badge badge-warning">Pending</span>
                               {% endif %}
+                            </td>
+                            <td>
+                              <div class="action-btns">
+                                <a href="{% url 'bulk-policies'  id=log.id %}" class="btn btn-primary btn-xs"><i class="fas fa-eye"></i></a>
+                                <a href="{{ log.file_url }}" target="_blank" class="btn btn-success btn-xs"><i class="fa-solid fa-download"></i> </a>
+                              </div>  
                             </td>
                           </tr>
                         {% endfor %}

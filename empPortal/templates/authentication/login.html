@@ -63,7 +63,7 @@
                                               <label class="signup-form-lbl">Password <span class="asterisk">*</span></label>     
                                               <div class="position-relative">                   
                                                   <input type="password" name="password" class="signup-form-field" placeholder="*********" id="login_password_id" autocomplete="off" />
-                                                  <span class="inputicon-right showhide-password" onclick="seePassword()">
+                                                  <span class="inputicon-right showhide-password">
                                                       <i class="fa-solid fa-eye"></i>
                                                   </span>
                                               </div>  
@@ -166,61 +166,19 @@
         </div>
       </div>
     </section>
-
     <script type="text/javascript">
-        function seePassword() {
-            var passwordInput = document.getElementById('login_password_id')
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text'
-            } else {
-                passwordInput.type = 'password'
+     
+        $(document).ready(function () {
+          $("input[name='loginvia']").change(function () {
+            if ($("#login_via_email").is(":checked")) {
+                $("#email-login").show();
+                $("#mobile-login").hide();
+            } else if ($("#login_via_mobile").is(":checked")) {
+                $("#email-login").hide();
+                $("#mobile-login").show();
             }
-            }
-            $('.showhide-password').click(function () {
-            $('.showhide-password i').toggleClass('fa-eye fa-eye-slash')
-            })
-
-            $(document).ready(function () {
-            $("input[name='loginvia']").change(function () {
-                if ($("#login_via_email").is(":checked")) {
-                    $("#email-login").show();
-                    $("#mobile-login").hide();
-                } else if ($("#login_via_mobile").is(":checked")) {
-                    $("#email-login").hide();
-                    $("#mobile-login").show();
-                }
-            });
-            });
-        // function seePassword() {
-        //   var passwordInput = document.getElementById('login_password_id')
-        //   if (passwordInput.type === 'password') {
-        //     passwordInput.type = 'text'
-        //   } else {
-        //     passwordInput.type = 'password'
-        //   }
-        // }
-        // $('.showhide-password').click(function () {
-        //   $('.showhide-password i').toggleClass('fa-eye fa-eye-slash')
-        // })
-
-        // $("input[name='login_via']").on("click", function() {
-        //     var login_via = $(this).val();
-        
-        //     if (login_via == 1) {
-        //         $('#email_div').show();
-        //         $('#mobile_div').hide();
-        //         $('#password_div').show();
-        //     } else if (login_via == 2) {
-        //         $('#email_div').hide();
-        //         $('#mobile_div').show();
-        //         $('#password_div').show();
-        //     } else {
-        //         $('#email_div, #mobile_div, #password_div').hide();
-        //     }
-        // });
-
-        
-        
+          });
+        });
     </script>
 </body>    
 {% endblock %}

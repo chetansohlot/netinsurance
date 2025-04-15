@@ -13,7 +13,7 @@
 <header>
 <div class="container">
     <nav class="navbar navbar-expand-lg">
-        <a class="navbar-brand" href="./">
+        <a class="navbar-brand" href="{% url 'home-index' %}">
             <img src="{% static 'home/assets/image/logo.png' %}" alt="" class="logo">
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -54,17 +54,17 @@
             <li class="nav-item">
                 <a class="nav-link" aria-current="page" href="#">Support</a>
             </li>
-        
             {% if request.user.is_authenticated %}
                 <!-- User Profile Dropdown -->
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown"
-                        aria-haspopup="true" aria-expanded="false">
-                        {{ request.user.first_name }}
+                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="{% static 'dist/img/avatar5.png' %}" alt="User Image" class="rounded-circle me-2" style="width: 30px; height: 30px; margin-top:-4px;">
+                        <span style="position: relative; top:-2px;">{{ request.user.full_name|default:request.user.first_name }}</span>
                     </a>
-                    <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                         <li>
-                            <p class="dropdown-item text-muted">
+                            <p class="dropdown-item text-muted mb-0">
                                 {% if request.user.phone %} +91 {{ request.user.phone }} {% endif %}
                             </p>
                         </li>
@@ -79,6 +79,7 @@
                     </ul>
                 </li>
             {% else %}
+        
                 <!-- Show Register Button if Not Logged In -->
                 <li class="nav-item header-login">
                     <a class="nav-link" aria-current="page" href="{% url 'register' %}">Register</a>

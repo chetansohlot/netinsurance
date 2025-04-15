@@ -37,6 +37,7 @@ def index(request):
     per_page = request.GET.get('per_page', 10)
     search_field = request.GET.get('search_field', '')
     search_query = request.GET.get('search_query', '')
+    sort_by = request.GET.get('sort_by','') # Sort Criteria
 
     try:
         per_page = int(per_page)
@@ -59,6 +60,18 @@ def index(request):
         filter_args = {f"{search_field}__icontains": search_query}
         employees = employees.filter(**filter_args)
 
+    ## Sort Criteria ##
+    if sort_by == 'name-a_z':
+        employees = employees.order_by('first_name')
+    elif sort_by == 'name-z_a':
+        employees = employees.order_by('-first_name')
+    elif sort_by == 'recently_activated':
+        employees = employees.order_by('-created_at') # latest first
+    elif sort_by == 'recently_deactivated':
+        employees = employees.order_by('-updated_at') # Latest Updated first
+    else:
+        employees = employees.order_by('-created_at')  # Default Sorting          
+
     total_count = employees.count()
 
     # Pagination
@@ -73,7 +86,8 @@ def index(request):
         'search_query': search_query,
         'per_page': per_page,
         'branches': branches,
-        'all_users': all_users  # Pass all users for supervisor lookup
+        'all_users': all_users,  # Pass all users for supervisor lookup
+        'sort_by' : sort_by,  ## Sort Criteria
     })
 
 
@@ -262,7 +276,8 @@ def create_or_edit_allocation(request, employee_id=None):
 
     # Fetch necessary data for the form
     departments = Department.objects.all().order_by('name')
-    branches = Branch.objects.all().order_by('branch_name')
+    branches = Branch.objects.filter(status='Active').order_by('-created_at')
+
     roles = Roles.objects.exclude(id__in=[1, 4])
     senior_users = Users.objects.filter(role_id=2).values('id', 'first_name', 'last_name', 'senior_id')  # Managers
 

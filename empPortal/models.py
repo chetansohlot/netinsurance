@@ -4,6 +4,8 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from datetime import datetime
 from django.utils.timezone import now
 
+from django.conf import settings
+
 class Roles(models.Model):
     roleGenID = models.CharField(max_length=255)
     roleName = models.CharField(max_length=255)
@@ -32,74 +34,6 @@ class Commission(models.Model):
         return f"Commission {self.id} - Insurer {self.member_id}"
     
     from django.db import models
-
-class QuotationCustomer(models.Model):
-    customer_id = models.CharField(max_length=20, unique=True)  # For values like CUS2343545
-    mobile_number = models.CharField(max_length=15, null=True, blank=True)
-    email_address = models.CharField(max_length=255, null=True, blank=True)
-    quote_date = models.DateField(null=True, blank=True)
-    name_as_per_pan = models.CharField(max_length=255, null=True, blank=True)
-    pan_card_number = models.CharField(max_length=10, null=True, blank=True)
-    date_of_birth = models.DateField(null=True, blank=True)
-    state = models.CharField(max_length=100, null=True, blank=True)
-    city = models.CharField(max_length=100, null=True, blank=True)
-    pincode = models.CharField(max_length=10, null=True, blank=True)
-    address = models.TextField(null=True, blank=True)
-    active = models.BooleanField(default=True)  # 1 for active, 0 for inactive
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        db_table = "quotation_customers"
-
-    def __str__(self):
-        return f"QuotationCustomer {self.customer_id} - {self.name_as_per_pan}"
-    
-class Leads(models.Model):
-    lead_id = models.CharField(max_length=20, unique=True)  # Unique customer identifier (e.g., CUS2343545)
-    mobile_number = models.CharField(max_length=15)  # Customer's mobile number
-    email_address = models.CharField(max_length=255)  # Customer's email address
-    quote_date = models.DateField(null=True, blank=True)  # Quote date
-    name_as_per_pan = models.CharField(max_length=255)  # Customer's name as per PAN
-    pan_card_number = models.CharField(max_length=20, null=True, blank=True)  # PAN card number (optional)
-    date_of_birth = models.DateField(null=True, blank=True)  # Customer's date of birth (optional)
-    state = models.CharField(max_length=100, null=True, blank=True)  # State of the customer
-    city = models.CharField(max_length=100, null=True, blank=True)  # City of the customer
-    pincode = models.CharField(max_length=10, null=True, blank=True)  # Pincode of the customer
-    address = models.TextField(null=True, blank=True)  # Address of the customer
-    lead_description = models.TextField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)  # Timestamp when the lead was created
-    created_by = models.CharField(max_length=20, null=True, blank=True)  # PAN card number (optional)
-    updated_at = models.DateTimeField(auto_now=True)  # Timestamp when the lead was last updated
-    status = models.CharField(max_length=50, default='new')  # Status of the lead (new, contacted, converted, etc.)
-    lead_type = models.CharField(
-        max_length=10, 
-        choices=[('MOTOR', 'MOTOR'), ('HEALTH', 'HEALTH'), ('TERM', 'TERM')], 
-        default='MOTOR'
-    )  # Type of lead (MOTOR, HEALTH, TERM)
-
-    class Meta:
-        db_table = 'leads'  # This defines the database table name
-
-    def __str__(self):
-        return f"Lead - {self.name_as_per_pan}"
-
-
-class QuotationVehicleDetail(models.Model):
-    registration_number = models.CharField(max_length=20, null=True, blank=True)
-    vehicle_details = models.TextField(null=True, blank=True)
-    active = models.BooleanField(default=True)  # Default to active (1)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        db_table = "quotation_vehicle_details"
-
-    def __str__(self):
-        return f"Vehicle {self.registration_number or 'N/A'}"
-
-from django.db import models
-from django.utils.timezone import now
 
 class VehicleInfo(models.Model):
     customer_id = models.CharField(max_length=20, null=True, blank=True)  # Nullable as per SQL table
@@ -155,12 +89,84 @@ class VehicleInfo(models.Model):
 
 
 
+class QuotationCustomer(models.Model):
+    customer_id = models.CharField(max_length=20, unique=True)  # For values like CUS2343545
+    mobile_number = models.CharField(max_length=15, null=True, blank=True)
+    email_address = models.CharField(max_length=255, null=True, blank=True)
+    quote_date = models.DateField(null=True, blank=True)
+    name_as_per_pan = models.CharField(max_length=255, null=True, blank=True)
+    pan_card_number = models.CharField(max_length=10, null=True, blank=True)
+    date_of_birth = models.DateField(null=True, blank=True)
+    state = models.CharField(max_length=100, null=True, blank=True)
+    city = models.CharField(max_length=100, null=True, blank=True)
+    pincode = models.CharField(max_length=10, null=True, blank=True)
+    address = models.TextField(null=True, blank=True)
+    active = models.BooleanField(default=True)  # 1 for active, 0 for inactive
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    # vehicleinfo = models.ForeignKey(VehicleInfo, on_delete=models.CASCADE)
+    class Meta:
+        db_table = "quotation_customers"
+
+    def __str__(self):
+        return f"QuotationCustomer {self.customer_id} - {self.name_as_per_pan}"
+    
+class Leads(models.Model):
+    lead_id = models.CharField(max_length=20, unique=True)  # Unique customer identifier (e.g., CUS2343545)
+    mobile_number = models.CharField(max_length=15)  # Customer's mobile number
+    email_address = models.CharField(max_length=255)  # Customer's email address
+    quote_date = models.CharField(max_length=25,null=True, blank=True)  # Quote date
+    name_as_per_pan = models.CharField(max_length=255)  # Customer's name as per PAN
+    pan_card_number = models.CharField(max_length=20, null=True, blank=True)  # PAN card number (optional)
+    date_of_birth = models.CharField(max_length=25,null=True, blank=True)  # Customer's date of birth (optional)
+    state = models.CharField(max_length=100, null=True, blank=True)  # State of the customer
+    city = models.CharField(max_length=100, null=True, blank=True)  # City of the customer
+    pincode = models.CharField(max_length=10, null=True, blank=True)  # Pincode of the customer
+    address = models.TextField(null=True, blank=True)  # Address of the customer
+    lead_description = models.TextField(null=True, blank=True)
+    lead_source = models.CharField(max_length=25, null=True, blank=True)  
+    referral_by = models.CharField(max_length=25, null=True, blank=True)  
+    created_at = models.DateTimeField(auto_now_add=True)  # Timestamp when the lead was created
+    created_by = models.CharField(max_length=20, null=True, blank=True)  
+    updated_at = models.DateTimeField(auto_now=True)  # Timestamp when the lead was last updated
+    status = models.CharField(max_length=50, default='new')  # Status of the lead (new, contacted, converted, etc.)
+    lead_type = models.CharField(
+        max_length=10, 
+        choices=[('MOTOR', 'MOTOR'), ('HEALTH', 'HEALTH'), ('TERM', 'TERM')], 
+        default='MOTOR'
+    )  # Type of lead (MOTOR, HEALTH, TERM)
+
+    class Meta:
+        db_table = 'leads'  # This defines the database table name
+
+    def __str__(self):
+        return f"Lead - {self.name_as_per_pan}"
+
+
+class QuotationVehicleDetail(models.Model):
+    registration_number = models.CharField(max_length=20, null=True, blank=True)
+    vehicle_details = models.TextField(null=True, blank=True)
+    active = models.BooleanField(default=True)  # Default to active (1)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "quotation_vehicle_details"
+
+    def __str__(self):
+        return f"Vehicle {self.registration_number or 'N/A'}"
+
+from django.db import models
+from django.utils.timezone import now
+
+
+
 class PolicyDocument(models.Model):
     filename = models.CharField(max_length=255)
     insurance_provider = models.CharField(max_length=255)
     policy_number = models.CharField(max_length=255)
-    policy_issue_date = models.DateTimeField()
-    policy_expiry_date = models.DateTimeField()
+    policy_issue_date = models.CharField(max_length=255)
+    policy_expiry_date = models.CharField(max_length=255)
     vehicle_number = models.CharField(max_length=255)
     holder_name = models.CharField(max_length=255)
     policy_period = models.CharField(max_length=255)
@@ -174,7 +180,7 @@ class PolicyDocument(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.IntegerField()
     coverage_details = models.JSONField()
-    policy_start_date = models.DateTimeField()
+    policy_start_date = models.CharField(max_length=255)
     payment_status = models.CharField(max_length=255)
     policy_type = models.CharField(max_length=255)
     vehicle_type = models.CharField(max_length=255)
@@ -201,16 +207,26 @@ class PolicyDocument(models.Model):
          return Commission.objects.filter(member_id=self.rm_id ).first()
 
     @property
-
     def start_date(self):
-        return self.policy_start_date.strftime("%d-%m-%Y") if self.policy_start_date else None
-    
-    def issue_date(self):
-        return self.policy_issue_date.strftime("%d-%m-%Y") if self.policy_issue_date else None
-    
-    def expiry_date(self):
-        return self.policy_expiry_date.strftime("%d-%m-%Y") if self.policy_expiry_date else None
+        try:
+            return datetime.strptime(self.policy_start_date, "%Y-%m-%d %H:%M:%S").strftime("%d-%m-%Y")
+        except (ValueError, TypeError):
+            return None
 
+    @property
+    def issue_date(self):
+        try:
+            return datetime.strptime(self.policy_issue_date, "%Y-%m-%d %H:%M:%S").strftime("%d-%m-%Y")
+        except (ValueError, TypeError):
+            return None
+
+    @property
+    def expiry_date(self):
+        try:
+            return datetime.strptime(self.policy_expiry_date, "%Y-%m-%d %H:%M:%S").strftime("%d-%m-%Y")
+        except (ValueError, TypeError):
+            return None
+        
     class Meta:
         db_table = 'policydocument'
 
@@ -249,10 +265,14 @@ class PolicyInfo(models.Model):
     od_premium = models.CharField(max_length=20, null=True, blank=True)
     tp_premium = models.CharField(max_length=20, null=True, blank=True)
     pa_count = models.CharField(max_length=20, default='0', null=True, blank=True)
-    pa_amount = models.CharField(max_length=20, default='0.00', null=True, blank=True)
-    driver_count = models.CharField(max_length=20, default='0', null=True, blank=True)
-    driver_amount = models.CharField(max_length=20, default='0.00', null=True, blank=True)
-
+    pa_amount = models.CharField(max_length=20, null=True, blank=True)
+    driver_count = models.CharField(max_length=20, null=True, blank=True)
+    driver_amount = models.CharField(max_length=20, null=True, blank=True)
+    referral_by = models.CharField(max_length=50, null=True, blank=True)
+    fuel_type = models.CharField(max_length=50, null=True, blank=True)
+    be_fuel_amount = models.CharField(max_length=50, null=True, blank=True)
+    gross_premium = models.CharField(max_length=50, null=True, blank=True)
+    net_premium = models.CharField(max_length=50, null=True, blank=True)
     active = models.CharField(max_length=1, choices=[('0', 'Inactive'), ('1', 'Active')], default='1')
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -268,10 +288,12 @@ class AgentPaymentDetails(models.Model):
     policy_number = models.CharField(max_length=255)
     agent_name = models.CharField(max_length=255)
     agent_payment_mod = models.CharField(max_length=255)
+    transaction_id = models.CharField(max_length=255)
     agent_payment_date = models.CharField(max_length=255)
     agent_amount = models.CharField(max_length=255)
     agent_remarks = models.CharField(max_length=255)
     agent_od_comm = models.CharField(max_length=255)
+    agent_tp_comm = models.CharField(max_length=255)
     agent_net_comm = models.CharField(max_length=255)
     agent_incentive_amount = models.CharField(max_length=255)
     agent_tds = models.CharField(max_length=255)
@@ -356,6 +378,10 @@ class InsurerPaymentDetails(models.Model):
     insurer_total_comm_amount = models.CharField(max_length=50, blank=True, null=True)
     insurer_net_payable_amount = models.CharField(max_length=50, blank=True, null=True)
     insurer_tds_amount = models.CharField(max_length=50, blank=True, null=True)
+    
+    insurer_total_commission = models.CharField(max_length=50, blank=True, null=True)
+    insurer_receive_amount = models.CharField(max_length=50, blank=True, null=True)
+    insurer_balance_amount = models.CharField(max_length=50, blank=True, null=True)
 
     active = models.CharField(max_length=1, choices=[('0', 'Inactive'), ('1', 'Active')], default='1')
     created_at = models.DateTimeField(auto_now_add=True)
@@ -420,27 +446,7 @@ class CommissionHistory(models.Model):
     def __str__(self):
         return f"Commission {self.id} - {self.od_percentage}% / {self.net_percentage}%"
         
-class BulkPolicyLog(models.Model):
-    camp_name = models.CharField(max_length=255)
-    file_name = models.CharField(max_length=255)
-    file_url = models.URLField(max_length=255)
-    count_total_files = models.IntegerField(default=0)
-    count_not_pdf = models.IntegerField(default=0)
-    count_pdf_files = models.IntegerField(default=0)
-    count_error_pdf_files = models.IntegerField(default=0)
-    count_error_process_pdf_files = models.IntegerField(default=0)
-    count_uploaded_files = models.IntegerField(default=0)
-    count_duplicate_files = models.IntegerField(default=0)
-    status = models.SmallIntegerField(default=0)
-    created_at = models.DateTimeField(default=timezone.now)
-    created_by = models.IntegerField()
-    rm_id = models.IntegerField()
-    def created_date(self):
-        return self.created_at.strftime("%d-%m-%Y %H:%M:%S") if self.created_at else None
-    
-    class Meta:
-        db_table = 'bulk_policy_log'
-        
+ 
 class UsersManager(BaseUserManager):
     def create_user(self,email,phone=None,password=None,**extra_fields):
         # create and return a user with a email phone and password
@@ -829,5 +835,143 @@ class IrdaiAgentApiLogs(models.Model):
     
     class Meta:
         db_table = 'irdai_agent_api_logs'
+        
 
+# class UploadedZip(models.Model):
+#     file = models.FileField(upload_to='zips/')
+#     uploaded_at = models.DateTimeField(auto_now_add=True)
+#     campaign_name = models.CharField(max_length=255)
+#     rm_id = models.CharField(max_length=100, null=True, blank=True)
+#     rm_name = models.CharField(max_length=255, null=True, blank=True)
+#     is_processed = models.BooleanField(default=False)
+    
+#     class Meta:
+#         db_table = 'uploaded_zip'
+
+
+class BulkPolicyLog(models.Model):
+    camp_name = models.CharField(max_length=255)
+    file_name = models.CharField(max_length=255)
+    file_url = models.URLField(max_length=255)
+    count_total_files = models.IntegerField(default=0)
+    count_not_pdf = models.IntegerField(default=0)
+    count_pdf_files = models.IntegerField(default=0)
+    count_error_pdf_files = models.IntegerField(default=0)
+    count_error_process_pdf_files = models.IntegerField(default=0)
+    count_uploaded_files = models.IntegerField(default=0)
+    count_duplicate_files = models.IntegerField(default=0)
+    status = models.SmallIntegerField(default=0)
+    created_at = models.DateTimeField(default=timezone.now)
+    created_by = models.IntegerField()
+    rm_id = models.IntegerField()
+    def created_date(self):
+        return self.created_at.strftime("%d-%m-%Y %H:%M:%S") if self.created_at else None
+    
+    class Meta:
+        db_table = 'bulk_policy_log'
+       
+       
+class UploadedZip(models.Model):
+    file = models.FileField(upload_to='zips/')
+    file_name = models.CharField(max_length=255, blank=True)
+    file_url = models.URLField(blank=True)
+    total_files = models.IntegerField(default=0)
+    pdf_files_count = models.IntegerField(default=0)
+    non_pdf_files_count = models.IntegerField(default=0)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    campaign_name = models.CharField(max_length=255)
+    rm_id = models.CharField(max_length=100, null=True, blank=True)
+    rm_name = models.CharField(max_length=255, null=True, blank=True)
+    is_processed = models.BooleanField(default=False)
+    bulk_log = models.ForeignKey(BulkPolicyLog, on_delete=models.CASCADE)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+
+    class Meta:
+        db_table = 'uploaded_zip'
+
+    def save(self, *args, **kwargs):
+        if self.file:
+            self.file_name = self.file.name
+            self.file_url = self.file.url  # Make sure MEDIA_URL is properly set
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.file_name or f"Uploaded Zip #{self.pk}"
      
+class ExtractedFile(models.Model):
+    zip_ref = models.ForeignKey(UploadedZip, on_delete=models.CASCADE)
+    file_path = models.FileField(upload_to='pdf_files/')
+    filename = models.CharField(max_length=255)
+    content = models.TextField(blank=True, null=True)
+    is_extracted = models.BooleanField(default=False)
+    extracted_at = models.DateTimeField(auto_now_add=True)
+    policy = models.ForeignKey(PolicyDocument, on_delete=models.CASCADE)
+    file_url = models.URLField(blank=True, null=True)
+    
+    def __str__(self):
+        return self.filename
+    
+    class Meta:
+        db_table = 'extracted_file'
+        
+class FileAnalysis(models.Model):
+    zip = models.ForeignKey(UploadedZip, on_delete=models.CASCADE)
+    filename = models.CharField(max_length=255)
+    extracted_text = models.TextField()
+    extracted_file = models.ForeignKey(ExtractedFile, on_delete=models.CASCADE)
+    policy = models.ForeignKey(PolicyDocument, on_delete=models.CASCADE)
+    gpt_response = models.JSONField()
+    status = models.CharField(max_length=50, default="pending")
+    
+    class Meta:
+        db_table = 'file_analysis'
+        
+class ChatGPTLog(models.Model):
+    prompt = models.TextField()
+    response = models.TextField(blank=True, null=True)
+    status_code = models.IntegerField(null=True, blank=True)
+    is_successful = models.BooleanField(default=False)
+    error_message = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"ChatGPT Log - {self.created_at}"
+    
+    class Meta:
+        db_table = 'chatgptlog'
+        managed = True
+        verbose_name = 'ChatGPTLog'
+        verbose_name_plural = 'ChatGPTLogs'
+        
+class UploadedExcel(models.Model):
+    file = models.FileField(upload_to='excels/')
+    file_name = models.CharField(max_length=255, blank=True)
+    file_url = models.URLField(blank=True)
+    total_rows = models.IntegerField(default=0)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    campaign_name = models.CharField(max_length=255)
+    is_processed = models.BooleanField(default=False)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+
+    class Meta:
+        db_table = 'uploaded_excels'
+
+    def save(self, *args, **kwargs):
+        if self.file:
+            self.file_name = self.file.name
+            self.file_url = self.file.url  # Make sure MEDIA_URL is properly set
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.file_name or f"Uploaded Excel #{self.pk}"
+   

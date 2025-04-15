@@ -2,7 +2,7 @@ from django.urls import path, include
 from . import views,export
 from . import views
 from . import authenticationView
-from .controller import commissions, profile,policy, globalController, helpAndSupport, Employee, leads, sellMotor, sellHealth, sellTerm, Franchises, Department, Branches, members, customers, quoteManagement, healthQuoteManagement, homeManagement, exams
+from .controller import commissions, profile,policy, Referral, globalController, helpAndSupport, Employee, leads, sellMotor, sellHealth, sellTerm, Franchises, Department, Branches, members, customers, quoteManagement, healthQuoteManagement, homeManagement, exams
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import re_path
@@ -133,7 +133,11 @@ urlpatterns = [
     path('lead-mgt/term-lead', leads.termlead, name='term-lead'),
     path('lead-mgt/lead-view/<int:lead_id>/', leads.viewlead, name='lead-view'),
 
-    # LEADS 
+    # REFERRAL 
+    path('referral-management/', Referral.index, name='referral-management'),
+    path('referral-management/create-referral', Referral.create_or_edit, name='referral-management-create'),
+    path('referral-management/<str:referral_id>/', Referral.create_or_edit, name='referral-management-edit'),
+    path('referral/toggle-status/<int:referral_id>/', Referral.toggle_referral_status, name='referral-toggle-status'),
 
     # SELL-ONLINE 
         # MOTOR
@@ -221,7 +225,8 @@ urlpatterns = [
     path('policy-mgt/', views.policyMgt, name='policy-mgt'),
     path('bulk-policy-mgt/', views.bulkPolicyMgt, name='bulk-policy-mgt'),
     path('browser-policy/', views.browsePolicy, name='browser-policy'),
-    path('policy-upload-view/<str:id>', views.policyUploadView, name='policy-upload-view'),
+    path('failed-policy-upload-view/<str:id>', views.failedPolicyUploadView, name='failed-policy-upload-view'),
+    path('bulk-policies/<str:id>', views.bulkPolicyView, name='bulk-policies'),
     path('bulk-browser-policy/', views.bulkBrowsePolicy, name='bulk-browser-policy'),
     path('policy-data/', views.policyData, name='policy-data'),
     path('edit-policy-data/<str:id>', views.editPolicy, name='edit-policy'),
@@ -233,7 +238,11 @@ urlpatterns = [
     re_path(r'^edit-franchise-payment-info/(?P<policy_no>.+)/$', policy.edit_franchise_payment_info, name='edit-franchise-payment-info'),
 
     path('update-policy/', views.updatePolicy, name='update-policy'),
+    path('edit-bulk-policy/', policy.editBulkPolicy, name='edit-bulk-policy'),
+    path('update-bulk-policies/', policy.updateBulkPolicy, name='update-bulk-policies'),
+    
     path('reprocess-bulk-policies',views.reprocessBulkPolicies,name="reprocess-bulk-policies"),
+    path('continue-bulk-policies',views.continueBulkPolicies,name="continue-bulk-policies"),
     path('bulk-upload-logs/',views.bulkUploadLogs,name='bulk-upload-logs'),
     
     path('change-password/',views.changePassword,name='change-password'),

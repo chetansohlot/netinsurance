@@ -456,7 +456,7 @@ def memberView(request, user_id):
             product_id = commission.get('product_id')
             commission['product_name'] = product_dict.get(int(product_id), 'Unknown') if product_id is not None else 'Unknown'
 
-        branches = Branch.objects.all().order_by('-created_at')
+        branches = Branch.objects.filter(status='Active').order_by('-created_at')
 
         manager_list = []
         branch = None
@@ -549,6 +549,7 @@ def activationPdf(request,user_id):
         "support_email": "support@elevateinsurance.in",
         "company_website": "https://pos.elevateinsurance.in/",
         "sub_broker_test_url": "https://pos.elevateinsurance.in/",
+        "terms_conditions_url": "https://pos.elevateinsurance.in/empPortal/media/terms/Terms_And_Conditions.pdf",
         "training_material_url": training_pdf_path,
         "support_number": +918887779999,
         "logo_url": request.build_absolute_uri(static('dist/img/logo2.png'))
@@ -606,6 +607,7 @@ def activateUser(request, user_id):
                 'user': user,
                 "logo_url": request.build_absolute_uri(static('dist/img/logo2.png')),
                 "support_email": "support@elevateinsurance.in",
+                "terms_conditions_url": "https://pos.elevateinsurance.in/empPortal/media/terms/Terms_And_Conditions.pdf",
                 "company_website": "https://pos.elevateinsurance.in/",
                 "sub_broker_test_url": "https://pos.elevateinsurance.in/",
                 "training_material_url": training_material_url,
@@ -670,6 +672,7 @@ def deactivateUser(request, user_id):
             'user': user,
             "logo_url": request.build_absolute_uri(static('dist/img/logo2.png')),
             "support_email": "support@elevateinsurance.in",
+            "terms_conditions_url": "https://pos.elevateinsurance.in/empPortal/media/terms/Terms_And_Conditions.pdf",
             "company_website": "https://pos.elevateinsurance.in/",
             "sub_broker_test_url": "https://pos.elevateinsurance.in/",
             "training_material_url": training_material_url,
@@ -725,6 +728,7 @@ def loginActivateUser(request, user_id):
             'user': user,
             "logo_url": request.build_absolute_uri(static('dist/img/logo2.png')),
             "support_email": "support@elevateinsurance.in",
+            "terms_conditions_url": "https://pos.elevateinsurance.in/empPortal/media/terms/Terms_And_Conditions.pdf",
             "company_website": "https://pos.elevateinsurance.in/",
             "sub_broker_test_url": "https://pos.elevateinsurance.in/",
             "training_material_url": training_material_url,

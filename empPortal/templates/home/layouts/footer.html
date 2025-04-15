@@ -2,11 +2,11 @@
 <footer>
     <div class="container">
       <div class="row">
-        
+        {% load static %}
         <div class="col-md-12">
           <div class="row justify-content-between">
             <div class="col-sm-6 col-md-6 col-lg-3 order-sm-1">
-              <a href="./">
+              <a href="{% url 'home-index' %}">
                 <img src="{% static 'home/assets/image/logo.png' %}" alt="" class="footer-logo mb-0">
               </a>
               <p class="footer-content ">
@@ -44,7 +44,7 @@
                       <h5 class="footer-hding">Resources</h5>
                       <ul class="footer-list">
                         <li><a href="#">EMI Calculator</a></li>
-                        <li><a href="#">Eligibility Calculator</a></li> 
+                        <li><a href="#">Eligibility Calculator</a></li>
                         <li><a href="#">Blog</a></li>
                         <li><a href="#">FAQ</a></li>
                         <li><a href="{% static 'home/assets/image/IRDA-License.jpeg' %}" target="_blank">IRDA License</a></li>
@@ -55,7 +55,7 @@
                       <ul class="footer-list">
                         <li><a href="#">About Us</a></li> 
                         <li><a href="#">Contact Us</a></li>
-                        <li><a href="#" target="_blank">Terms &amp; Conditions</a></li>
+                        <li><a href="https://pos.elevateinsurance.in/empPortal/media/terms/Terms_And_Conditions.pdf" target="_blank">Terms &amp; Conditions</a></li>
                         <li><a href="#">Privacy Policy</a></li>
                         <li><a href="#">Become a Partner</a></li>
                       </ul>

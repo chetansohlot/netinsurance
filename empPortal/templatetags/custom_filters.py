@@ -9,6 +9,30 @@ def fallback(primary, secondary):
     return primary or secondary
 
 @register.filter
+def blank_if_none_or_text_none(value):
+    if value in [None, 'None']:
+        return ''
+    return value
+
+@register.filter
+def indian_currency(value):
+    try:
+        value = float(value)
+        int_part, dot, decimal_part = f"{value:.2f}".partition(".")
+        int_part = int(int_part)
+        if int_part < 1000:
+            return f"{int_part}.{decimal_part}"
+        else:
+            s = str(int_part)
+            last3 = s[-3:]
+            rest = s[:-3]
+            rest = ",".join([rest[max(i - 2, 0):i] for i in range(len(rest), 0, -2)][::-1])
+            return f"{rest},{last3}.{decimal_part}" if rest else f"{last3}.{decimal_part}"
+    except:
+        return value
+    
+    
+@register.filter
 def get_item(dictionary, key):
     """Returns the value from a dictionary given a key."""
     return dictionary.get(key, "-")

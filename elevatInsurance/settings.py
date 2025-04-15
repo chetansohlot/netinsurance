@@ -49,7 +49,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'empPortal'
+    'empPortal',
+    'django_q',
+    'django_cron',
 ]
 
 MIDDLEWARE = [
@@ -60,6 +62,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
 ]
+MIDDLEWARE += ['empPortal.middleware.AutoLogoutMiddleware.AutoLogoutMiddleware']
 
 ROOT_URLCONF = 'elevatInsurance.urls'
 
@@ -81,6 +84,22 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'elevatInsurance.wsgi.application'
+
+# Expires session when browser is closed
+# Session will expire when the browser is closed
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+
+CRON_CLASSES = [
+    'empPortal.crons.ReprocessPoliciesCronJob',
+]
+
+
+# Inactivity timeout — auto logout after 10 minutes of no activity
+SESSION_COOKIE_AGE = 600  # in seconds (600s = 10 minutes)
+
+# Refresh the session expiry time with every request
+SESSION_SAVE_EVERY_REQUEST = True
 
 
 # Database
@@ -140,7 +159,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 
@@ -196,3 +215,73 @@ EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True") == "True"
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
+Q_CLUSTER = {
+    'name': 'DjangoQ',
+    'workers': 4,
+    'recycle': 500,
+    'timeout': 60,
+    'retry': 90,
+    'queue_limit': 500,
+    'bulk': 10,
+    'orm': 'default',  # use Django ORM
+}
+
+Q2_CLUSTER_NAME = 'mycluster'
+
+Q2_CONFIG = {
+    'name': Q2_CLUSTER_NAME,
+    'workers': 4,
+    'recycle': 500,
+    'timeout': 120,
+    'compress': True,
+    'save_limit': 250,
+    'queue_limit': 500,
+    'cpu_affinity': 1,
+    'label': 'Django Q2 Cluster',
+    'orm': 'default',
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False, 
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname}: {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': 'django_app.log',
+            'formatter': 'verbose',
+        },
+        'policies': {
+            'class': 'logging.FileHandler',
+            'filename': 'policies.log',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        # For all app modules
+        '': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',  # Can be INFO, WARNING, ERROR in production
+        },
+        'empPortal.tasks': {
+            'handlers': ['policies'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}

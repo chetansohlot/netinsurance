@@ -30,7 +30,7 @@
 
 </style>
 <div id="loader">
-  <img src="/empPortal/static/dist/img/loader.gif" alt="Loading..." />
+  <img src="/empPortal/static/dist/img/loader.webp" alt="Loading..." />
 </div>
 {% block content %}
   
@@ -125,6 +125,12 @@
             },
             terms: {
                 required: true
+            },
+            pan_no:{
+                required: true,
+                maxlength:10,
+                minlength:10,
+                regex: "[A-Z]{5}[0-9]{4}[A-Z]{1}" 
             }
         },
         messages: {
@@ -155,6 +161,12 @@
             },
             terms: {
                 required: "You must agree to the Terms & Conditions"
+            },
+            pan_no: {
+                required: "Please enter your pan number",
+                maxlength : "Pan Number Must Be of 10 Characters",
+                minlength : "Pan Number Must Be of 10 Characters",
+                regex: "Please enter a valid PAN number (e.g., ABCDE1234F)."
             }
         },
         errorElement: "div",
@@ -432,15 +444,12 @@
                         vehicle_variant: { required: true },
                         fuel_type: { required: true },
                         gvw: {
-                            required: true,
                             number: true
                         },
                         cubic_capacity: {
-                            required: true,
                             number: true
                         },
                         seating_capacity: {
-                            required: true,
                             digits: true
                         },
                         vehicle_reg_no: { required: true },
@@ -511,27 +520,36 @@
                     // Agent Payment Form Validation
                     $("#myAgentPaymentForm").validate({
                         rules: {
-                            agent_name: { required: true },
+                            agent_name: { required: false },
+                            referral_by: { required: true },
+                            bqp: { required: false },
+                            pos_name: { required: false },
                             agent_payment_mod: { required: true },
+                            transaction_id: { required: true },
                             agent_payment_date: { required: true, date: true },
                             agent_amount: { required: true, number: true },
                             agent_remarks: { required: false },
                             agent_od_comm: { required: false, number: true },
-                            agent_net_comm: { required: false, number: true },
-                            agent_incentive_amount: { required: false, number: true },
-                            agent_tds: { required: false, number: true },
                             agent_od_amount: { required: false, number: true },
-                            agent_net_amount: { required: false, number: true },
+                            agent_tp_comm: { required: false, number: true },
                             agent_tp_amount: { required: false, number: true },
+                            agent_net_comm: { required: false, number: true },
+                            agent_net_amount: { required: false, number: true },
+                            agent_incentive_amount: { required: false, number: true },
                             agent_total_comm_amount: { required: false, number: true },
-                            agent_net_payable_amount: { required: false, number: true },
-                            agent_tds_amount: { required: false, number: true }
+                            agent_tds: { required: false, number: true },
+                            agent_tds_amount: { required: false, number: true },
+                            agent_net_payable_amount: { required: false, number: true }
                         },
                         messages: {
-                            agent_name: { required: "Please enter agent name" },
+                            agent_name: { required: "Please enter referral name" },
+                            referral_by: { required: "Please select referral name" },
+                            bqp: { required: "Please enter BQP" },
                             agent_payment_mod: { required: "Please select payment mode" },
+                            transaction_id: { required: "Please enter transaction id (If Not Available pass 0)" },
                             agent_payment_date: { required: "Enter payment date", date: "Enter a valid date" },
                             agent_amount: { required: "Enter agent amount", number: "Must be a valid number" },
+                            agent_tp_comm: { number: "Must be a valid number" },
                             agent_od_comm: { number: "Must be a valid number" },
                             agent_net_comm: { number: "Must be a valid number" },
                             agent_incentive_amount: { number: "Must be a valid number" },
@@ -541,7 +559,8 @@
                             agent_tp_amount: { number: "Must be a valid number" },
                             agent_total_comm_amount: { number: "Must be a valid number" },
                             agent_net_payable_amount: { number: "Must be a valid number" },
-                            agent_tds_amount: { number: "Must be a valid number" }
+                            agent_tds_amount: { number: "Must be a valid number" },
+                            pos_name: { required: "Enter Pos Name" }
                         },
                         errorElement: "div",
                         errorPlacement: function (error, element) {
@@ -631,24 +650,31 @@
                         rules: {
                        
                           insurer_payment_mode: { required: true },
-                          insurer_payment_date: { required: true, date: true },
-                          insurer_amount: { required: true, number: true },
+                          insurer_payment_date: {  date: true },
+                          insurer_amount: {  number: true },
                           insurer_remarks: { required: false },
                   
                           insurer_od_comm: { required: false, number: true },
-                          insurer_net_comm: { required: false, number: true },
                           insurer_tp_comm: { required: false, number: true },
+                          insurer_net_comm: { required: false, number: true },
+                         
+                          insurer_od_amount: {  number: true },
+                          insurer_tp_amount: {  number: true },
+                          insurer_net_amount: {  number: true },
                   
-                          insurer_incentive_amount: { required: false, number: true },
-                          insurer_tds: { required: false, number: true },
-                  
-                          insurer_od_amount: { required: false, number: true },
-                          insurer_net_amount: { required: false, number: true },
-                          insurer_tp_amount: { required: false, number: true },
+                          insurer_tds: {  number: true },
+                          insurer_tds_amount: { required: false, number: true },
+                          insurer_incentive_amount: {  number: true },
                   
                           insurer_total_comm_amount: { required: false, number: true },
                           insurer_net_payable_amount: { required: false, number: true },
-                          insurer_tds_amount: { required: false, number: true }
+
+                          insurer_receive_amount: { required: false, number: true },
+                          insurer_total_commission: { required: false, number: true },
+                          insurer_balance_amount: { required: false, number: true },
+
+
+
                         },
                         messages: {
                         
@@ -676,7 +702,11 @@
                   
                           insurer_total_comm_amount: { number: "Must be a valid number" },
                           insurer_net_payable_amount: { number: "Must be a valid number" },
-                          insurer_tds_amount: { number: "Must be a valid number" }
+                          insurer_tds_amount: { number: "Must be a valid number" },
+
+                          insurer_receive_amount: { number: "Must be a valid number" },
+                          insurer_total_commission: { number: "Must be a valid number" },
+                          insurer_balance_amount: { number: "Must be a valid number" }
                         },
                         errorElement: "div",
                         errorPlacement: function (error, element) {
@@ -1395,6 +1425,43 @@
                     digits: "Only numbers allowed",
                     minlength: "Must be exactly 6 digits",
                     maxlength: "Must be exactly 6 digits"
+                }
+            },
+            errorElement: "div",
+            errorPlacement: function (error, element) {
+                error.addClass("text-danger");
+                error.insertAfter(element);
+            },
+            submitHandler: function (form) {
+                form.submit();
+            }
+        });
+    });
+    
+</script>
+<script>
+    $(document).ready(function () {
+        $.validator.addMethod("excelFile", function (value, element) {
+            return this.optional(element) || /\.(xlsx)$/i.test(value);
+        }, "Please upload a valid Excel file (.xlsx)");
+
+        $("#update_bulk_policies").validate({
+            rules: {
+                file: {
+                    required: true,
+                    excelFile: true
+                },
+                camp_name: {
+                    required:true
+                }
+            },
+            messages: {
+                file: {
+                    required: "Please upload an Excel file.",
+                    excelFile: "Only .xlsx files are allowed."
+                },
+                camp_name : {
+                    required: "Please enter campaign name"
                 }
             },
             errorElement: "div",

@@ -36,6 +36,7 @@ def index(request):
     per_page = request.GET.get('per_page', 10)
     search_field = request.GET.get('search_field', '')  # Field to search
     search_query = request.GET.get('search_query', '')  # Search value
+    sort_by = request.GET.get('sort_by', '')
 
     try:
         per_page = int(per_page)
@@ -48,6 +49,19 @@ def index(request):
     if search_field and search_query:
         filter_args = {f"{search_field}__icontains": search_query}
         franchises = franchises.filter(**filter_args)
+
+    ## Sort Criteria ##
+    if sort_by == "name_asc":
+        franchises = franchises.order_by('name')
+    elif sort_by == "name_desc":
+        franchises = franchises.order_by('-name')
+    elif sort_by == "recently_activated":
+        franchises = franchises.order_by('-created_at')
+    elif sort_by == "recently_deactivated":
+        franchises = franchises.order_by('-updated_at')
+    else:
+        franchises = franchises.order_by('-created_at') # deafault sort values
+       
 
     total_count = franchises.count()
 
@@ -62,6 +76,7 @@ def index(request):
         'search_field': search_field,
         'search_query': search_query,
         'per_page': per_page,
+        'sort_by' : sort_by,
     })
 
 

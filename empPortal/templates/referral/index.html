@@ -1,7 +1,7 @@
 {% extends 'master.html' %}
 
 {% block title %}
-Department
+Referral Mgmt.
 {% endblock %}
   
 {% block content %}
@@ -20,16 +20,16 @@ Department
               <div class="row pt-2 pb-2">
                 <div class="col-sm-6">
                   <div class="d-flex align-items-center">
-                  <h1 class="admin-title m-0 pt-2">Department</h1>
+                  <h1 class="admin-title m-0 pt-2">Referral Mgmt.</h1>
                   </div>
                   <ul class="breadcrump">
                     <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
-                    <li>Department</li>
+                    <li>Referral Mgmt.</li>
                   </ul>
                 </div>
                 <div class="col-sm-6">
                   <div class="d-flex justify-content-end">
-                    <a href="{% url 'department-management-create' %}" class="breadcrump-addbtn"><i class="fas fa-plus"></i> Add department</a>
+                    <a href="{% url 'referral-management-create' %}" class="breadcrump-addbtn"><i class="fas fa-plus"></i> Add Referral</a>
                   </div>
                 </div>
               </div>
@@ -40,8 +40,9 @@ Department
                       <div class="card-body">
                         <div class="row">
                           <div class="col">
+                            
                             <p class="card-text">
-                              Total Department
+                              Total Referral
                             </p>
                             <h5 class="card-title card-number">{{ total_count }}</h5>
                           </div>
@@ -56,8 +57,9 @@ Department
                       <div class="card-body">
                         <div class="row">
                           <div class="col">
+                            
                             <p class="card-text">
-                              Active Department
+                              Active Referral
                             </p>
                             <h5 class="card-title card-number">{{ total_count }}</h5>
                           </div>
@@ -72,8 +74,9 @@ Department
                       <div class="card-body">
                         <div class="row">
                           <div class="col">
+                            
                             <p class="card-text">
-                              Inactive Department
+                              Inactive Referral
                             </p>
                             <h5 class="card-title card-number">0</h5>
                           </div>
@@ -101,21 +104,23 @@ Department
                         <div class="row">
                           <div class="col-md-6">
                             <div class="table-search-area">
-                              <form method="GET" class="d-flex">
-                                <select class="table-select-field" name="search_field">
-                                    <option value="" disabled selected>Filter By</option>
-                                    <option value="name" {% if search_field == "name" %}selected{% endif %}>Franchise Name</option>
-                                    <option value="mobile" {% if search_field == "mobile" %}selected{% endif %}>Mobile Number</option>
-                                    <option value="email" {% if search_field == "email" %}selected{% endif %}>Email ID</option>
-                                    <option value="contact_person" {% if search_field == "contact_person" %}selected{% endif %}>Contact Person</option>
-                                </select>
-                            
-                                <input type="text" name="search_query" class="table-search-field" placeholder="Search" value="{{ search_query }}">
-                            
-                                <button type="submit" class="table-search-btn">
-                                    <img src="{% static 'dist/img/svg/search-icon.svg' %}" alt="Search">
-                                </button>
-                            </form>
+                              
+                                <form method="GET" class="d-flex">
+                                    <select class="table-select-field" name="search_field">
+                                        <option value="" disabled selected>Filter By</option>
+                                        <option value="name" {% if search_field == "name" %}selected{% endif %}>Name</option>
+                                        <option value="mobile" {% if search_field == "mobile" %}selected{% endif %}>Mobile Number</option>
+                                        <option value="email" {% if search_field == "email" %}selected{% endif %}>Email ID</option>
+                                        <option value="referral_code" {% if search_field == "referral_code" %}selected{% endif %}>Referral Code</option>
+                                    </select>
+                                
+                                    <input type="text" name="search_query" class="table-search-field" placeholder="Search" value="{{ search_query }}">
+                                
+                                    <button type="submit" class="table-search-btn">
+                                        <img src="{% static 'dist/img/svg/search-icon.svg' %}" alt="Search">
+                                    </button>
+                                </form>
+                                
                             </div>
                           </div>
                            <!-- <div class="col-md-6">
@@ -203,74 +208,54 @@ Department
                                             <input type="checkbox" id="checkall" class="table-chk">
                                             <label for="checkall"></label>
                                         </th>
-                                        <th>Department Name</th>
-                                        <th>Mobile</th>
-                                        <th>Email</th>
+                                        <th>Referral Name</th>
+                                        <th>Contact Info</th>
+                                        <th>KYC Info</th>
+                                        <th>Referral Code</th>
                                         <th>Status</th>
                                         <th>Info</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for department in page_obj %}
+                                    {% for referral in page_obj %}
                                     <tr>
                                         <td>
-                                            <input type="checkbox" id="check{{ department.id }}" class="table-chk">
-                                            <label for="check{{ department.id }}"></label>
+                                            <input type="checkbox" id="check{{ referral.id }}" class="table-chk">
+                                            <label for="check{{ referral.id }}"></label>
                                         </td>
                                         <td>
-                                            <a href="{% url 'department-management-edit' department_id=department.id %}" class="trlink">
-                                                {{ department.name }}
-                                                <span class="text-gray d-block small">#{{ department.id }}</span>
+                                            <a href="{% url 'referral-management-edit' referral.id %}" class="trlink">
+                                                {{ referral.name }}
+                                                <span class="text-gray d-block small">#{{ referral.id }}</span>
                                             </a>
                                         </td>
-                                        <td>{{ department.contact_number }}</td>
-                                        <td>{{ department.email }}</td>
+                                        <td>{{ referral.mobile }}
+                                          <span class="text-gray d-block small">{{ referral.email }}</span>
+                                        </td>
+                                        <td>Pan No.{{ referral.pan_card_number }}
+                                          <span class="text-gray d-block small">Aadhar No.{{ referral.aadhar_no }}</span>
+                                        </td>
+                                        <td>{{ referral.referral_code }}</td>
                                         <td>
-                                            <span class="badge {% if department.status == 'Active' %}bg-success{% else %}bg-danger{% endif %}">
-                                                {{ department.status }}
+                                            <span class="badge {% if referral.active %}bg-success{% else %}bg-danger{% endif %}">
+                                                {% if referral.active %}Active{% else %}Inactive{% endif %}
                                             </span>
                                         </td>
                                         <td>
-                                            <i class="fas fa-clock text-primary"></i> {{ department.updated_at|date:"d M Y, H:i:s" }} <br>
-                                            <i class="fas fa-calendar-alt text-secondary"></i> {{ department.created_at|date:"d M Y, H:i:s" }}
+                                            <i class="fas fa-clock text-primary"></i> {{ referral.updated_at|date:"d M Y, H:i:s" }} <br>
+                                            <i class="fas fa-calendar-alt text-secondary"></i> {{ referral.created_at|date:"d M Y, H:i:s" }}
                                         </td>
                                         <td>
-                                          <div>
-                                            <div style="display: flex; gap: 5px; justify-content: center; align-items: center;">
-                                              <a href="{% url 'department-management-edit' department_id=department.id %}" class="btn btn-xs btn-warning">
-                                                      <i class="fas fa-edit"></i> 
-                                                  </a> 
-                                          
-                                                  <!-- Delete Button (Anjali)-->
-                                                       <!-- Activate Button (Check Circle) -->
-                                                      <a href="#" class="btn btn-xs btn-info toggle-status"
-                                                           data-url="{% url 'department-toggle-status' department.id %}"
-                                                              data-action="activate"
-                                                            {% if department.status == "Active" %}style="display: none;"{% endif %}
-                                                       id="activate-btn-{{ department.id }}">
-                                                 <i class="fas fa-check-circle"></i>
-                                                </a>
-
-                                                  <!-- Deactivate Button (Trash) -->
-                                                  <a href="#" class="btn btn-xs btn-danger toggle-status"
-                                                     data-url="{% url 'department-toggle-status' department.id %}"
-                                                  data-action="deactivate"
-                                                  {% if department.status == "Inactive" %}style="display: none;"{% endif %}
-                                        id="deactivate-btn-{{ department.id }}">
-                                        <i class="fas fa-trash"></i>
-                                          </a>
-
-                               
-                                              </div>
-                                            <a href="{% url 'department-management-edit' department_id=department.id %}" class="btn btn-xs btn-warning">
-                                                <i class="fas fa-edit"></i> 
+                                            <a href="{% url 'referral-management-edit' referral.id %}" class="btn btn-xs btn-warning">
+                                                <i class="fas fa-edit"></i>
                                             </a>
                                         </td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
+                            
                             
                         </div>
                       </div>
@@ -395,74 +380,4 @@ Department
     
     </body>
 
-<<<<<<< HEAD
-    <!--Anjali-->
-    <script>
-
-      $(document).ready(function () {
-        $(".toggle-status").click(function (e) {
-            e.preventDefault();
-    
-            var button = $(this);
-            var departmentId = button.data("url").split("/").slice(-2, -1)[0]; // Extract department ID
-            var url = button.data("url");
-    
-            Swal.fire({
-                title: "Are you sure?",
-                text: "You want to change the status!",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Yes, change it!"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: url,
-                        type: "POST",
-                        dataType: "json",
-                        headers: { "X-CSRFToken": getCSRFToken() },  // Include CSRF token
-                        success: function (response) {
-                            if (response.success) {
-                                Swal.fire({
-                                    title: "Updated!",
-                                    text: response.message,
-                                    icon: "success",
-                                    timer: 1500,
-                                    showConfirmButton: false
-                                });
-    
-                                // Update status badge dynamically
-                                var statusBadge = $("#status-badge-" + departmentId);
-                                if (response.status === "Active") {
-                                    statusBadge.text("Active").removeClass("badge-danger").addClass("badge-success");
-                                    $("#activate-btn-" + departmentId).hide();
-                                    $("#deactivate-btn-" + departmentId).show();
-                                } else {
-                                    statusBadge.text("Inactive").removeClass("badge-success").addClass("badge-danger");
-                                    $("#activate-btn-" + departmentId).show();
-                                    $("#deactivate-btn-" + departmentId).hide();
-                                }
-                            } else {
-                                Swal.fire("Error!", response.message, "error");
-                            }
-                        },
-                        error: function (xhr) {
-                            console.log("AJAX Error:", xhr.responseText);
-                            Swal.fire("Error!", "Something went wrong!", "error");
-                        }
-                    });
-                }
-            });
-        });
-    
-        function getCSRFToken() {
-            return document.querySelector("[name=csrfmiddlewaretoken]").value;
-        }
-    });
-    
-    </script>
-    
-=======
->>>>>>> c93300f78764f556af494fa086dc5cc89e1e4a0a
 {% endblock %}

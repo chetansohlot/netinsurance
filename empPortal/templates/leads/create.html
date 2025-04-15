@@ -41,105 +41,158 @@
             <div class="row">
               
               <div class="col-sm-12">  
-                <div class="card box-shadow-none p-md-5 p-3">
+                <div class="card box-shadow-none p-md-4 p-3">
                   <div class="card-body px-0 pb-0 pt-0">
+                    <!-- <ul class="stepflow-text">
+                      <li><a href="#">Product Info</a></li>
+                      <li><a href="#">Contact Info</a></li>
+                      <li><a href="#">Source</a></li>
+                    </ul>
+                    <ul class="new-stepflow">
+                      <li></li>
+                      <li></li>
+                      <li></li>
+                    </ul> -->
+                    
                     <form autocomplete="off" id="leadForm" name="leadForm"
-      action="{% if lead %}{% url 'leads-mgt-edit' lead.id %}{% else %}{% url 'leads-mgt-create' %}{% endif %}"
-      method="post">
-    {% csrf_token %}
+                        action="{% if lead %}{% url 'leads-mgt-edit' lead.id %}{% else %}{% url 'leads-mgt-create' %}{% endif %}"
+                        method="post">
+                      {% csrf_token %}
 
-    <div class="row">
-        <div class="form-group col-md-6">
-            <label for="mobile_number">Mobile Number</label>
-            <input type="tel" class="form-control" name="mobile_number" id="mobile_number" pattern="[0-9]{10}"
-                   placeholder="Enter Mobile Number" value="{{ lead.mobile_number|default_if_none:'' }}">
-        </div>
+                      <div class="row">
+                          <div class="form-group col-md-4">
+                              <label class="form-lbl" for="mobile_number">Mobile Number</label>
+                              <input type="tel" class="form-field" name="mobile_number" id="mobile_number" pattern="[0-9]{10}"
+                                    placeholder="Enter Mobile Number" value="{{ lead.mobile_number|default_if_none:'' }}">
+                          </div>
 
-        <div class="form-group col-md-6">
-            <label for="email_address">Email</label>
-            <input type="email" class="form-control" name="email_address" id="email_address"
-                   placeholder="Enter Email" value="{{ lead.email_address|default_if_none:'' }}">
-        </div>
+                          <div class="form-group col-md-4">
+                              <label class="form-lbl" for="email_address">Email</label>
+                              <input type="email" class="form-field" name="email_address" id="email_address"
+                                    placeholder="Enter Email" value="{{ lead.email_address|default_if_none:'' }}">
+                          </div>
 
-        <div class="form-group col-md-6">
-            <label for="quote_date">Quote Date</label>
-            <input type="date" class="form-control" name="quote_date" id="quote_date"
-                   value="{{ lead.quote_date|date:'Y-m-d' }}">
-        </div>
+                          <div class="form-group col-md-4">
+                              <label class="form-lbl" for="quote_date">Quote Date</label>
+                              <input type="date" class="form-field" name="quote_date" id="quote_date"
+                                    value="{{ lead.quote_date|date:'Y-m-d' }}">
+                          </div>
 
-        <div class="form-group col-md-6">
-            <label for="name_as_per_pan">Name as per PAN</label>
-            <input type="text" class="form-control" name="name_as_per_pan" id="name_as_per_pan"
-                   placeholder="Enter Name as per PAN" value="{{ lead.name_as_per_pan|default_if_none:'' }}">
-        </div>
+                          <div class="form-group col-md-4">
+                              <label class="form-lbl" for="name_as_per_pan">Name as per PAN</label>
+                              <input type="text" class="form-field" name="name_as_per_pan" id="name_as_per_pan"
+                                    placeholder="Enter Name as per PAN" value="{{ lead.name_as_per_pan|default_if_none:'' }}">
+                          </div>
 
-        <div class="form-group col-md-6">
-            <label for="pan_card_number">PAN Number</label>
-            <input type="text" class="form-control" name="pan_card_number" id="pan_card_number" maxlength="10"
-                   placeholder="Enter PAN Number" value="{{ lead.pan_card_number|default_if_none:'' }}">
-        </div>
+                          <div class="form-group col-md-4">
+                              <label class="form-lbl" for="pan_card_number">PAN Number</label>
+                              <input type="text" class="form-field" name="pan_card_number" id="pan_card_number" maxlength="10"
+                                    placeholder="Enter PAN Number" value="{{ lead.pan_card_number|default_if_none:'' }}">
+                          </div>
 
-        <div class="form-group col-md-6">
-            <label for="date_of_birth">Date of Birth</label>
-            <input type="date" class="form-control" name="date_of_birth" id="date_of_birth"
-                   value="{{ lead.date_of_birth|date:'Y-m-d' }}">
-        </div>
+                          <div class="form-group col-md-4">
+                              <label class="form-lbl" for="date_of_birth">Date of Birth</label>
+                              <input type="date" class="form-field" name="date_of_birth" id="date_of_birth"
+                                    value="{{ lead.date_of_birth|date:'Y-m-d' }}">
+                          </div>
 
-        <div class="form-group col-md-6">
-            <label for="state">State</label>
-            <input type="text" class="form-control" name="state" id="state"
-                   placeholder="Enter State" value="{{ lead.state|default_if_none:'' }}">
-        </div>
+                          <div class="form-group col-md-4">
+                              <label class="form-lbl" for="state">State</label>
+                              <input type="text" class="form-field" name="state" id="state"
+                                    placeholder="Enter State" value="{{ lead.state|default_if_none:'' }}">
+                          </div>
 
-        <div class="form-group col-md-6">
-            <label for="city">City</label>
-            <input type="text" class="form-control" name="city" id="city"
-                   placeholder="Enter City" value="{{ lead.city|default_if_none:'' }}">
-        </div>
+                          <div class="form-group col-md-4">
+                              <label class="form-lbl" for="city">City</label>
+                              <input type="text" class="form-field" name="city" id="city"
+                                    placeholder="Enter City" value="{{ lead.city|default_if_none:'' }}">
+                          </div>
 
-        <div class="form-group col-md-6">
-            <label for="pincode">Pincode</label>
-            <input type="text" class="form-control" name="pincode" id="pincode" pattern="[0-9]{6}"
-                   placeholder="Enter Pincode" value="{{ lead.pincode|default_if_none:'' }}">
-        </div>
+                          <div class="form-group col-md-4">
+                              <label class="form-lbl" for="pincode">Pincode</label>
+                              <input type="text" class="form-field" name="pincode" id="pincode" pattern="[0-9]{6}"
+                                    placeholder="Enter Pincode" value="{{ lead.pincode|default_if_none:'' }}">
+                          </div>
 
-        <div class="form-group col-md-12">
-          <label for="address">Address</label>
-          <textarea class="form-control" name="address" id="address"
-                    placeholder="Enter Address">{{ lead.address|default_if_none:'' }}</textarea>
-      </div>
-      <div class="form-group col-md-12">
-          <label for="lead_description">Lead Description</label>
-          <textarea class="form-control" name="lead_description" id="lead_description"
-          rows="4" maxlength="1000"
-          placeholder="Enter Lead Description">{{ lead.lead_description|default_if_none:'' }}</textarea>
-<small class="form-text text-muted">Max 1000 characters.</small>
+                          <div class="form-group col-md-12">
+                            <label class="form-lbl" for="address">Address</label>
+                            <textarea class="form-field" name="address" id="address"
+                                      placeholder="Enter Address">{{ lead.address|default_if_none:'' }}</textarea>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label class="form-lbl" for="lead_description">Lead Description</label>
+                            <textarea class="form-field" name="lead_description" id="lead_description"
+                            rows="4" maxlength="1000"
+                            placeholder="Enter Lead Description">{{ lead.lead_description|default_if_none:'' }}</textarea>
+                  <small class="form-text text-muted">Max 1000 characters.</small>
 
-      </div>
+                        </div>
 
-        <div class="form-group col-md-6">
-            <label for="lead_type">Lead Type</label>
-            <select class="form-control" name="lead_type" id="lead_type">
-                <option value="MOTOR" {% if lead.lead_type == "MOTOR" %}selected{% endif %}>MOTOR</option>
-                <option value="HEALTH" {% if lead.lead_type == "HEALTH" %}selected{% endif %}>HEALTH</option>
-                <option value="TERM" {% if lead.lead_type == "TERM" %}selected{% endif %}>TERM</option>
-            </select>
-        </div>
+                          <div class="form-group col-md-4">
+                              <label class="form-lbl" for="lead_type">Lead Type</label>
+                              <select class="form-field" name="lead_type" id="lead_type">
+                                  <option value="MOTOR" {% if lead.lead_type == "MOTOR" %}selected{% endif %}>MOTOR</option>
+                                  <option value="HEALTH" {% if lead.lead_type == "HEALTH" %}selected{% endif %}>HEALTH</option>
+                                  <option value="TERM" {% if lead.lead_type == "TERM" %}selected{% endif %}>TERM</option>
+                              </select>
+                          </div>
 
-        <div class="form-group col-md-6">
-            <label for="status">Status</label>
-            <select class="form-control" name="status" id="status">
-                <option value="new" {% if lead.status == "new" %}selected{% endif %}>New</option>
-                <option value="contacted" {% if lead.status == "contacted" %}selected{% endif %}>Contacted</option>
-                <option value="converted" {% if lead.status == "converted" %}selected{% endif %}>Converted</option>
-            </select>
-        </div>
-    </div>
-
-    <button type="submit" class="btn btn-primary mt-3">
-        {% if lead %}Update Lead{% else %}Add Lead{% endif %}
-    </button>
-</form>
+                          <!-- <div class="form-group col-md-4">
+                              <label class="form-lbl" for="status">Status</label>
+                              <select class="form-field" name="status" id="status">
+                                  <option value="new" {% if lead.status == "new" %}selected{% endif %}>New</option>
+                                  <option value="contacted" {% if lead.status == "contacted" %}selected{% endif %}>Contacted</option>
+                                  <option value="converted" {% if lead.status == "converted" %}selected{% endif %}>Converted</option>
+                              </select>
+                          </div> -->
+                          <div class="form-group col-md-4">
+                            <label class="form-lbl" for="lead_source">Lead Source</label>
+                            <select class="form-field" name="lead_source" id="lead_source" onchange="toggleReferralBy()">
+                                <option value="">Select Source</option>
+                                <option value="referral_partner" {% if lead.lead_source == "referral_partner" %}selected{% endif %}>Referral Partner</option>
+                                <option value="pos_partner" {% if lead.lead_source == "pos_partner" %}selected{% endif %}>Pos Partner</option>
+                                <option value="self" {% if lead.lead_source == "self" %}selected{% endif %}>Self</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group col-md-4" id="referral_by_div" style="{% if lead.lead_source != 'referral_partner' %}display: none;{% endif %}">
+                            <label class="form-lbl" for="referral_by">Referral By</label>
+                            <select class="form-field" name="referral_by" id="referral_by">
+                                <option value="">Select Referral</option>
+                                {% for referral in referrals %}
+                                <option value="{{ referral.id }}" {% if lead and lead.referral_by|stringformat:"s" == referral.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ referral.name }} - {{ referral.referral_code }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <script>
+                        function toggleReferralBy() {
+                            var leadSource = document.getElementById("lead_source").value;
+                            var referralDiv = document.getElementById("referral_by_div");
+                            if (leadSource === "referral_partner") {
+                                referralDiv.style.display = "block";
+                            } else {
+                                referralDiv.style.display = "none";
+                            }
+                        }
+                        
+                        // Run once on page load in case of pre-selected value
+                        document.addEventListener("DOMContentLoaded", function() {
+                            toggleReferralBy();
+                        });
+                        </script>
+                        
+                          
+                        
+                      </div>
+                      <div class="d-flex justify-content-end">
+                        <button type="submit" class="form-submit-btn mt-3">
+                            {% if lead %}Update Lead{% else %}Add Lead{% endif %}
+                        </button>
+                      </div>  
+                    </form>
 
 
 

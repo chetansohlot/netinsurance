@@ -68,8 +68,8 @@ def index(request):
         quotations = quotations.filter(name_as_per_pan__icontains=customer_name)
     if customer_mobile:
         quotations = quotations.filter(mobile_number__icontains=customer_mobile)
-    if policy_type:
-        quotations = quotations.filter(vehicleinfo__policy_type__icontains=policy_type)
+    # if policy_type:
+        # quotations = quotations.filter(vehicleinfo__policy_type__icontains=policy_type)
     if quote_date_range:
         try:
             start_date, end_date = map(str.strip, quote_date_range.split(" - "))
@@ -78,16 +78,16 @@ def index(request):
             quotations = quotations.filter(created_at__range=[start_date, end_date])
         except ValueError:
             pass  # Ignore invalid date format
-    if vehicle_type:
-        quotations = quotations.filter(vehicleinfo__vehicle_type__icontains=vehicle_type)
-    if ncb:
-        try:
-            ncb_value = float(ncb)
-            quotations = quotations.filter(vehicleinfo__ncb_percentage=ncb_value)
-        except ValueError:
-            pass  # Ignore invalid ncb format
-    if insurer_name:
-        quotations = quotations.filter(vehicleinfo__insurance_company__icontains=insurer_name)
+    # if vehicle_type:
+    #     quotations = quotations.filter(vehicleinfo__vehicle_type__icontains=vehicle_type)
+    # if ncb:
+    #     try:
+    #         ncb_value = float(ncb)
+    #         quotations = quotations.filter(vehicleinfo__ncb_percentage=ncb_value)
+    #     except ValueError:
+    #         pass  # Ignore invalid ncb format
+    # if insurer_name:
+    #     quotations = quotations.filter(vehicleinfo__insurance_company__icontains=insurer_name)
 
     # Fetch latest vehicle information
     latest_vehicle_info = VehicleInfo.objects.filter(

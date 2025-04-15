@@ -114,10 +114,10 @@ def commission_report(request):
     id  = request.user.id
     # Fetch policies
     role_id = Users.objects.filter(id=id).values_list('role_id', flat=True).first()
-    if role_id == 2:
-        policies = PolicyDocument.objects.filter(status=1,rm_id=id).exclude(rm_id__isnull=True).all().order_by('-id')
+    if role_id != 1:
+        policies = PolicyDocument.objects.filter(status=6,rm_id=id).exclude(rm_id__isnull=True).all().order_by('-id')
     else:
-        policies = PolicyDocument.objects.filter(status=1).exclude(rm_id__isnull=True).all().order_by('-id')
+        policies = PolicyDocument.objects.filter(status=6).exclude(rm_id__isnull=True).all().order_by('-id')
 
     # Apply filters only if values are provided
     if policy_no:
@@ -627,14 +627,21 @@ def download_policy_data(request):
     id  = request.user.id
     # Fetch policies
     role_id = Users.objects.filter(id=id).values_list('role_id', flat=True).first()
-    if role_id == 2:
-        policies = PolicyDocument.objects.filter(status=1,rm_id=id).all().order_by('-id')
+    if role_id != 1:
+        policies = PolicyDocument.objects.filter(status=6,rm_id=id).all().order_by('-id')
     else:
-        policies = PolicyDocument.objects.filter(status=1).all().order_by('-id')
+        policies = PolicyDocument.objects.filter(status=6).all().order_by('-id')
 
     for policy in policies:
-        issue_month = policy.policy_start_date.strftime("%b-%Y") if policy.policy_start_date else "-"
-        issue_date = policy.policy_start_date.strftime("%m-%d-%Y") if policy.policy_start_date else "-"
+        issue_month = "-"
+        issue_date = "-"
+        if policy.policy_start_date:
+            try:
+                start_date_obj = policy.policy_start_date if isinstance(policy.policy_start_date, datetime) else datetime.strptime(policy.policy_start_date, "%Y-%m-%d")
+                issue_month = start_date_obj.strftime("%b-%Y")
+                issue_date = start_date_obj.strftime("%m-%d-%Y")
+            except Exception as e:
+                print(f"Date conversion error: {e}")
         risk_start_date = policy.start_date or "-"
         
         od_premium = float(policy.od_premium.replace(',', '')) if policy.od_premium else 0.0  

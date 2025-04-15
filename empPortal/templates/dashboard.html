@@ -3,6 +3,7 @@
 {% block title %}
     Dashboard
 {% endblock %}
+{% load custom_filters %}
 
 <body class="hold-transition sidebar-mini">
 {% load static %}
@@ -39,7 +40,10 @@
                                     <p class="card-text text-dark">
                                       Total Policies Sold
                                     </p>
-                                    <h5 class="card-title card-number">0</h5>
+                                    <h5 class="card-title card-number">
+                                      <i class="fa-solid fa-indian-rupee-sign"></i>
+                                      {{ policy_count }}
+                                  </h5>
                                   </div>
                                 </div>
                               </div>
@@ -55,7 +59,10 @@
                                     <p class="card-text text-dark">
                                       Total Revenue
                                     </p>
-                                    <h5 class="card-title card-number"> <i class="fa-solid fa-indian-rupee-sign"></i>0</h5>
+                                    <h5 class="card-title card-number">
+                                      <i class="fa-solid fa-indian-rupee-sign"></i>
+                                      {{ total_revenue|indian_currency }}
+                                  </h5>
                                   </div>
                                 </div>
                               </div>

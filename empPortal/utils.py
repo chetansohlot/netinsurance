@@ -19,19 +19,19 @@ import base64
 ist_now = now().astimezone(IST)
 SECRET_KEY = getattr(settings, 'SECRET_KEY', 'django-insecure-#^%otoo7@)j9a8_6m)n8om&2_x6@d2i(*mw^97pme+b-dy0#ze')
 
-def encrypt_text(text):
-    raw = f"{text}-{SECRET_KEY}"
-    encoded_bytes = base64.urlsafe_b64encode(raw.encode('utf-8')) 
-    return encoded_bytes.decode('utf-8')
+# def encrypt_text(text):
+#     raw = f"{text}-{SECRET_KEY}"
+#     encoded_bytes = base64.urlsafe_b64encode(raw.encode('utf-8')) 
+#     return encoded_bytes.decode('utf-8')
 
-def decrypt_text(encrypted_text):
-    # try:
-        decoded_bytes = base64.urlsafe_b64decode(encrypted_text.encode('utf-8'))
-        decoded_str = decoded_bytes.decode('utf-8')
-        decoded_text, _ = decoded_str.split('-', 1)
-        return decoded_text
-    # except Exception:
-    #     return None
+# def decrypt_text(encrypted_text):
+#     # try:
+#         decoded_bytes = base64.urlsafe_b64decode(encrypted_text.encode('utf-8'))
+#         decoded_str = decoded_bytes.decode('utf-8')
+#         decoded_text, _ = decoded_str.split('-', 1)
+#         return decoded_text
+#     # except Exception:
+#     #     return None
 
 def dd(*args):
     """Dump and Debug - Prints values but does NOT stop execution."""
@@ -214,3 +214,17 @@ def store_log(log_type, log_for, message, user_id=None, ip_address=None):
             INSERT INTO logs (log_type, log_for, message, user_id, ip_address, created_at, updated_at)
             VALUES (%s, %s, %s, %s, %s, %s, %s)
         """, (log_type, log_for, message, user_id, ip_address, ist_now, ist_now))
+
+def getUserNameByUserId(user_id):
+    try:
+        return Users.objects.get(id=user_id).full_name
+    except Users.DoesNotExist:
+        return None
+
+def commisionRateByMemberId(member_id):
+    commission_data = Commission.objects.filter(member_id=member_id).first()
+    return commission_data
+
+def insurercommisionRateByMemberId(member_id):
+    commission_data = Commission.objects.filter(member_id=member_id).first()
+    return commission_data

@@ -34,6 +34,7 @@ from django.template.loader import render_to_string
 from pprint import pprint 
 from django.core.paginator import Paginator
 from django.db.models import Q
+from empPortal.model import Referral
 
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 
@@ -45,45 +46,61 @@ def dictfetchall(cursor):
     columns = [col[0] for col in cursor.description]
     return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
+
 def index(request):
     if not request.user.is_authenticated:
         return redirect('login')
 
     per_page = request.GET.get('per_page', 10)
-    search_field = request.GET.get('search_field', '')  # Which field to search
-    search_query = request.GET.get('search_query', '')  # Search value
+    search_field = request.GET.get('search_field', '')
+    search_query = request.GET.get('search_query', '')
     global_search = request.GET.get('global_search', '').strip()
+    shorting = request.GET.get('shorting', '')  # Get sorting preference
 
     try:
         per_page = int(per_page)
     except ValueError:
-        per_page = 10  # Default to 10 if invalid value is given
+        per_page = 10
 
+    # Base queryset
     if request.user.role_id != 1:
-        leads = Leads.objects.filter(created_by=request.user.id).order_by('-created_at')
+        leads = Leads.objects.filter(created_by=request.user.id)
     else:
-        leads = Leads.objects.all().order_by('-created_at')
+        leads = Leads.objects.all()
 
-
+    # Global search
     if global_search:
         leads = leads.filter(
-            Q(name_as_per_pan__icontains=global_search) |  # Search by name
-            Q(email_address__icontains=global_search) |  # Search by email
-            Q(mobile_number__icontains=global_search) |  # Search by mobile number
-            Q(pan_card_number__icontains=global_search) |  # Search by PAN card number
-            Q(state__icontains=global_search) |  # Search by state
-            Q(city__icontains=global_search) |  # Search by city
-            Q(lead_id__icontains=global_search)  # Search by city
+            Q(name_as_per_pan__icontains=global_search) |
+            Q(email_address__icontains=global_search) |
+            Q(mobile_number__icontains=global_search) |
+            Q(pan_card_number__icontains=global_search) |
+            Q(state__icontains=global_search) |
+            Q(city__icontains=global_search) |
+            Q(lead_id__icontains=global_search)
         )
 
-    # Apply filtering if search_field and search_query are provided
+    # Field-specific search
     if search_field and search_query:
         filter_args = {f"{search_field}__icontains": search_query}
         leads = leads.filter(**filter_args)
 
+    # Sorting
+    if shorting == 'name_asc':
+        leads = leads.order_by('name_as_per_pan')
+    elif shorting == 'name_desc':
+        leads = leads.order_by('-name_as_per_pan')
+    elif shorting == 'recently_added':
+        leads = leads.order_by('-created_at')
+    elif shorting == 'recently_updated':
+        leads = leads.order_by('-updated_at')
+    else:
+        leads = leads.order_by('-created_at')  # Default sort
+
+    # Count
     total_leads = leads.count()
 
-    # Paginate results
+    # Pagination
     paginator = Paginator(leads, per_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -94,7 +111,9 @@ def index(request):
         'per_page': per_page,
         'search_field': search_field,
         'search_query': search_query,
+        'shorting': shorting,  # Pass to template to retain selected option
     })
+
     
 def viewlead(request, lead_id):
     if request.user.is_authenticated:
@@ -116,32 +135,51 @@ def termlead(request):
         return redirect('login')
 
 
-
+from datetime import datetime
 
 def create_or_edit_lead(request, lead_id=None):
     if not request.user.is_authenticated:
         return redirect('login')
     
     customers = QuotationCustomer.objects.all()
-    
     lead = None
+    referrals = Referral.objects.all()
+
     if lead_id:
         lead = get_object_or_404(Leads, id=lead_id)
     
     if request.method == "GET":
-        return render(request, 'leads/create.html', {'lead': lead, 'customers': customers})
-    
+        return render(request, 'leads/create.html', {
+            'lead': lead,
+            'referrals': referrals,
+            'customers': customers
+        })
+
     elif request.method == "POST":
         mobile_number = request.POST.get("mobile_number", "").strip()
         email_address = request.POST.get("email_address", "").strip()
         quote_date = request.POST.get("quote_date", None)
         name_as_per_pan = request.POST.get("name_as_per_pan", "").strip()
         pan_card_number = request.POST.get("pan_card_number", "").strip() or None
-        date_of_birth = request.POST.get("date_of_birth", None)
+        
+        # ✅ Handle date_of_birth safely
+        date_of_birth_str = request.POST.get("date_of_birth", "").strip()
+        date_of_birth = None
+        if date_of_birth_str:
+            try:
+                date_of_birth = datetime.strptime(date_of_birth_str, "%Y-%m-%d").date()
+            except ValueError:
+                messages.error(request, "Invalid date format for Date of Birth. Please use YYYY-MM-DD.")
+                return redirect(request.path)
+
         state = request.POST.get("state", "").strip()
         city = request.POST.get("city", "").strip()
         pincode = request.POST.get("pincode", "").strip()
         address = request.POST.get("address", "").strip()
+        lead_source = request.POST.get("lead_source", "").strip()
+        referral_by = request.POST.get("referral_by", "").strip()
+        if lead_source != 'referral_partner':
+            referral_by = ''
         lead_description = request.POST.get("lead_description", "").strip()
         lead_type = request.POST.get("lead_type", "MOTOR").strip()
         status = request.POST.get("status", "new").strip()
@@ -159,12 +197,14 @@ def create_or_edit_lead(request, lead_id=None):
             lead.address = address
             lead.lead_description = lead_description
             lead.lead_type = lead_type
+            lead.lead_source = lead_source
+            lead.referral_by = referral_by
             lead.status = status
             lead.updated_at = now()
             lead.save()
             messages.success(request, f"Lead updated successfully! Lead ID: {lead.lead_id}")
         else:
-            new_lead = Leads.objects.create(
+            Leads.objects.create(
                 mobile_number=mobile_number,
                 email_address=email_address,
                 quote_date=quote_date,
@@ -176,12 +216,13 @@ def create_or_edit_lead(request, lead_id=None):
                 pincode=pincode,
                 address=address,
                 lead_description=lead_description,
-                lead_type=lead_type,
+                lead_source=lead_source,
+                referral_by=referral_by,
                 status=status,
                 created_by=request.user.id,
                 created_at=now(),
                 updated_at=now()
             )
-            messages.success(request, f"Lead created successfully! Lead ID: {new_lead.lead_id}")
-        
+            messages.success(request, f"Lead created successfully!")
+
         return redirect("leads-mgt")
