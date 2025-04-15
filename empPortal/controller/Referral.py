@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect, get_object_or_404
 from ..models import Franchises, Department
-from empPortal.model import Referral
+from empPortal.model import Referral,Ref_Bank_Details
 from django.db.models import OuterRef, Subquery
 from django.contrib import messages
 from datetime import datetime
@@ -110,6 +110,18 @@ def create_or_edit(request, referral_id=None):
         date_of_anniversary = request.POST.get("date_of_anniversary", "").strip()
         pan_card_number = request.POST.get("pan", "").strip()
         aadhar = request.POST.get("aadhar", "").strip()
+
+
+
+        user_role = request.POST.get("user_role", "").strip()
+        branch = request.POST.get("branch", "").strip()
+        sales = request.POST.get("sales", "").strip()
+        supervisor = request.POST.get("supervisor", "").strip()
+        franchise = request.POST.get("franchise", "").strip()
+        pincode = request.POST.get("pincode", "").strip()
+        city = request.POST.get("city", "").strip()
+        state = request.POST.get("state", "").strip()
+
         # print(aadhar)
         referral_code = (
             referral.referral_code if referral
@@ -126,6 +138,14 @@ def create_or_edit(request, referral_id=None):
             "date_of_anniversary": date_of_anniversary,
             "pan_card_number": pan_card_number,
             "aadhar_no": aadhar,
+            "user_role": user_role,
+            "branch": branch,
+            "sales": sales,
+            "supervisor": supervisor,
+            "franchise": franchise,
+            "pincode": pincode,
+            "city": city,
+            "state": state,
             "referral_code": referral_code,
         }
 
@@ -156,6 +176,15 @@ def create_or_edit(request, referral_id=None):
             referral.date_of_anniversary = date_of_anniversary or None
             referral.pan_card_number = pan_card_number
             referral.aadhar_no = aadhar
+
+            referral.user_role = user_role
+            referral.branch = branch
+            referral.sales = sales
+            referral.supervisor = supervisor
+            referral.franchise = franchise
+            referral.pincode = pincode
+            referral.city = city
+            referral.state = state
 
             referral.updated_at = now()
             referral.save()
@@ -190,6 +219,14 @@ def create_or_edit(request, referral_id=None):
                 date_of_anniversary=date_of_anniversary or None,
                 pan_card_number=pan_card_number,
                 aadhar_no=aadhar,
+                user_role=user_role,
+                branch=branch,
+                sales=sales,
+                supervisor=supervisor,
+                franchise=franchise,
+                pincode=pincode,
+                city=city,
+                state=state,
 
                 created_at=now(),
                 updated_at=now(),
@@ -197,6 +234,8 @@ def create_or_edit(request, referral_id=None):
 
             messages.success(request, f"Referral created successfully! ID: {new_referral.id}")
             return redirect(reverse("referral-management"))
+            # return redirect(reverse("ref_bank_details",kwargs={'referral_id': new_referral.id}))
+        
 
 
 def generate_referral_code():
@@ -223,3 +262,31 @@ def toggle_referral_status(request, referral_id):
         })
 
     return JsonResponse({"success": False, "message": "Invalid request method!"}, status=400)
+
+def ref_bank_details(request,referral_id):
+    referral =get_object_or_404(Referral,id=referral_id)
+    if request.method == 'POST':
+        bank_category = request.POST.get('bank_category')
+        bank_name = request.POST.get('bank_name')
+        account_type = request.POST.get('account_type')
+        ifsc_code = request.POST.get('ifsc_code')
+        branch_name = request.POST.get('branch_name')
+        account_holder_name = request.POST.get('account_holder')
+        account_number = request.POST.get('account_number') 
+
+        Ref_Bank_Details.objects.create(
+            referral=referral,
+            bank_category =bank_category,
+            bank_name =bank_name,
+            account_type =account_type,
+            ifsc_code=ifsc_code,
+            branch_name=branch_name,
+            account_holder =account_holder_name,
+            account_number=account_number
+
+        )
+
+        return redirect(reverse("referral-management"))
+    
+    return render(request, "referral/ref-bank_details.html", {"referral_id": referral_id})
+    

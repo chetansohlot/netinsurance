@@ -2,10 +2,11 @@ from django.urls import path, include
 from . import views,export
 from . import views
 from . import authenticationView
-from .controller import commissions, profile,policy, Referral, globalController, helpAndSupport, Employee, leads, sellMotor, sellHealth, sellTerm, Franchises, Department, Branches, members, customers, quoteManagement, healthQuoteManagement, homeManagement, exams
+from .controller import commissions, profile,policy, Referral, globalController, helpAndSupport, Employee, leads, sellMotor, sellHealth, sellTerm, Franchises, Department, Branches, members, customers, quoteManagement, healthQuoteManagement, homeManagement, exams,SourceMaster
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import re_path
+
 
 
 motor_patterns = [
@@ -135,6 +136,9 @@ urlpatterns = [
     path('referral-management/create-referral', Referral.create_or_edit, name='referral-management-create'),
     path('referral-management/<str:referral_id>/', Referral.create_or_edit, name='referral-management-edit'),
     path('referral/toggle-status/<int:referral_id>/', Referral.toggle_referral_status, name='referral-toggle-status'),
+    
+    path('referral/<int:referral_id>/bank-details/', Referral.ref_bank_details, name='ref_bank_details'),
+
 
     # SELL-ONLINE 
         # MOTOR
@@ -254,6 +258,11 @@ urlpatterns = [
     path('save-policy-data/', export.download_policy_data, name='save-policy-data'),
 
 
+    ####  source master ---- parth url  ####
+    path('source/',SourceMaster.source_list, name='source_list'),
+    path('source/create/', SourceMaster.source_create, name='source_create'),
+    path('source/edit/<int:source_id>/', SourceMaster.source_edit, name='source_edit'),
+    path('source/delete/<int:source_id>/', SourceMaster.source_delete, name='source_delete'),
 ] 
 
 

@@ -103,6 +103,20 @@
                    placeholder="Enter Pincode" value="{{ lead.pincode|default_if_none:'' }}">
         </div>
 
+        <div class="form-group col-md-6">
+          <label for="source_leads">Source Leads</label>
+          <select class="form-control" name="source_leads" id="source_leads">
+              <option value="">-- Select Source --</option>
+              {% for source in source_leads %}
+                  <option value="{{ source.id }}" {% if lead and lead.source_leads and lead.source_leads.id == source.id %}selected{% endif %}>
+                      {{ source.source_name }}
+                  </option>
+              {% endfor %}
+          </select>
+        </div>
+        
+      
+
         <div class="form-group col-md-12">
           <label for="address">Address</label>
           <textarea class="form-control" name="address" id="address"

@@ -1,3 +1,4 @@
+import re
 from django.shortcuts import render,redirect
 from ..models import Commission,Users, QuotationCustomer
 
@@ -91,7 +92,7 @@ def create_or_edit(request, customer_id=None):
         # Extract form data
         mobile_number = request.POST.get("mobile_number", "").strip()
         email_address = request.POST.get("email_address", "").strip()
-        quote_date = request.POST.get("quote_date", None)
+        # quote_date = request.POST.get("quote_date", None)
         name_as_per_pan = request.POST.get("name_as_per_pan", "").strip()
         pan_card_number = request.POST.get("pan_card_number", "").strip() or None
         date_of_birth = request.POST.get("date_of_birth", None)
@@ -102,26 +103,87 @@ def create_or_edit(request, customer_id=None):
 
         # Validate and format date fields
         try:
-            quote_date = datetime.strptime(quote_date, "%Y-%m-%d").date() if quote_date else None
+            # quote_date = datetime.strptime(quote_date, "%Y-%m-%d").date() if quote_date else None
             date_of_birth = datetime.strptime(date_of_birth, "%Y-%m-%d").date() if date_of_birth else None
         except ValueError:
             messages.error(request, "Invalid date format.")
             return redirect(reverse("quotation-customer-create") if not customer_id else reverse("quotation-customer-edit", args=[customer_id]))
 
         # Check for uniqueness of mobile number and email address
-        if QuotationCustomer.objects.exclude(id=customer_id).filter(mobile_number=mobile_number).exists():
+        # if QuotationCustomer.objects.exclude(id=customer_id).filter(mobile_number=mobile_number).exists():
+        #     messages.error(request, "Mobile number is already registered.")
+        #     return redirect(reverse("quotation-customer-create") if not customer_id else reverse("quotation-customer-edit", args=[customer_id]))
+        
+        # if QuotationCustomer.objects.exclude(id=customer_id).filter(email_address=email_address).exists():
+        #     messages.error(request, "Email address is already registered.")
+        #     return redirect(reverse("quotation-customer-create") if not customer_id else reverse("quotation-customer-edit", args=[customer_id]))
+        
+        ### validation ----parth ##
+        if not mobile_number:
+            messages.error(request,"Mobile number is required.")
+            return redirect(reverse("quotation-customer-create") if not customer_id else reverse("quotation-customer-edit", args=[customer_id]))
+
+        elif not re.match(r"^[6-9]\d{9}$",mobile_number):
+            messages.error(request,"Invalid mobile number.")
+            return redirect(reverse("quotation-customer-create") if not customer_id else reverse("quotation-customer-edit", args=[customer_id]))
+        
+        # Check for uniqueness of mobile number-----
+        elif QuotationCustomer.objects.exclude(id=customer_id).filter(mobile_number=mobile_number).exists():
             messages.error(request, "Mobile number is already registered.")
             return redirect(reverse("quotation-customer-create") if not customer_id else reverse("quotation-customer-edit", args=[customer_id]))
         
-        if QuotationCustomer.objects.exclude(id=customer_id).filter(email_address=email_address).exists():
+        if not email_address or "@" not in email_address:
+            messages.error(request,"Invalid email address.")
+            return redirect(reverse("quotation-customer-create") if not customer_id else reverse("quotation-customer-edit", args=[customer_id]))
+        
+        elif QuotationCustomer.objects.exclude(id=customer_id).filter(email_address=email_address).exists():
             messages.error(request, "Email address is already registered.")
             return redirect(reverse("quotation-customer-create") if not customer_id else reverse("quotation-customer-edit", args=[customer_id]))
+
+        if not name_as_per_pan or len(name_as_per_pan) < 3: 
+            messages.error(request,"Name as per PAN must be at least 3 characters.")   
+            return redirect(reverse("quotation-customer-create") if not customer_id else reverse("quotation-customer-edit", args=[customer_id]))
+        
+        if not pan_card_number:
+            messages.error(request,'PAN card number is required.')
+            
+        elif not re.match(r'^[A-Z]{5}[0-9]{4}[A-Z]$', pan_card_number):
+            messages.error(request, 'Enter a valid PAN card number (e.g., ABCDE1234F).')
+            return redirect(reverse("quotation-customer-create") if not customer_id else reverse("quotation-customer-edit", args=[customer_id]))
+
+
+        if not pincode or not pincode.isdigit() or len(pincode) != 6 or pincode.startswith('0'):
+            messages.error(request,"Invalid pincode. It must be 6 digit not start with 0")
+            return redirect(reverse("quotation-customer-create") if not customer_id else reverse("quotation-customer-edit", args=[customer_id]))
+
+        if not address or len(address) < 5:
+            messages.error(request,"Address must be at least 5 characters.")
+            return redirect(reverse("quotation-customer-create") if not customer_id else reverse("quotation-customer-edit", args=[customer_id]))
+        
+        if not state:
+            messages.error(request,"State is required.")
+            return redirect(reverse("quotation-customer-create") if not customer_id else reverse("quotation-customer-edit", args=[customer_id]))
+        elif not re.match(r"^[A-Za-z\s]+$",state):
+            messages.error(request,"State Name Must contains only alphabets.")
+            return redirect(reverse("quotation-customer-create") if not customer_id else reverse("quotation-customer-edit", args=[customer_id]))
+
+        if not city:
+            messages.error(request,"City is required.")
+            return redirect(reverse("quotation-customer-create") if not customer_id else reverse("quotation-customer-edit", args=[customer_id]))
+        elif not re.match(r"^[A-Za-z\s]+$",city):
+            messages.error(request,"City Name Must contains only alphabets.")
+            return redirect(reverse("quotation-customer-create") if not customer_id else reverse("quotation-customer-edit", args=[customer_id]))
+
+
+
+
+
 
         if quotation_customer:
             # Update existing record
             quotation_customer.mobile_number = mobile_number
             quotation_customer.email_address = email_address
-            quotation_customer.quote_date = quote_date
+            # quotation_customer.quote_date = quote_date
             quotation_customer.name_as_per_pan = name_as_per_pan
             quotation_customer.pan_card_number = pan_card_number
             quotation_customer.date_of_birth = date_of_birth
@@ -150,7 +212,7 @@ def create_or_edit(request, customer_id=None):
                 customer_id=new_customer_id,
                 mobile_number=mobile_number,
                 email_address=email_address,
-                quote_date=quote_date,
+                # quote_date=quote_date,
                 name_as_per_pan=name_as_per_pan,
                 pan_card_number=pan_card_number,
                 date_of_birth=date_of_birth,
