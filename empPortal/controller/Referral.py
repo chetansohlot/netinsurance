@@ -1,7 +1,7 @@
 import re
 from django.shortcuts import render,redirect, get_object_or_404
 from ..models import Franchises, Department
-from empPortal.model import Referral,Ref_Bank_Details
+from empPortal.model import Referral
 from django.db.models import OuterRef, Subquery
 from django.contrib import messages
 from datetime import date, datetime
