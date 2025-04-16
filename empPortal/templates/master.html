@@ -1477,4 +1477,173 @@
     
 </script>
 
+<script>
+    $(document).ready(function () {
+      // PAN format validation
+      $.validator.addMethod("pan", function (value, element) {
+        return this.optional(element) || /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(value);
+      }, "PAN format should be e.g., ABCDE1234F");
+  
+      // Pincode format validation
+      $.validator.addMethod("indianPincode", function (value, element) {
+        return this.optional(element) || /^[1-9][0-9]{5}$/.test(value);
+      }, "Invalid pincode format");
+  
+      $("#referralForm").validate({
+        rules: {
+          name: {
+            required: true,
+            minlength: 3,
+          },
+          user_role: {
+            required: true
+          },
+          branch: {
+            required: true,
+            maxlength: 50
+          },
+          sales: {
+            required: true,
+            maxlength: 50
+          },
+          supervisor: {
+            required: true,
+            maxlength: 50
+          },
+          franchise: {
+            required: true,
+            maxlength: 50
+          },
+          mobile: {
+            required: true,
+            digits: true,
+            minlength: 10,
+            maxlength: 10,
+          },
+          email: {
+            required: true,
+            email: true
+          },
+          dob: {
+            required: true,
+            date: true
+          },
+          date_of_anniversary: {
+            date: true
+          },
+          pan_card_number: {
+            required: true,
+            minlength: 10,
+            maxlength: 10,
+            pan: true
+          },
+          aadhar: {
+            required: true,
+            minlength: 12,
+            maxlength: 12,
+            digits: true
+          },
+          address: {
+            required: true
+          },
+          city: {
+            required: true
+          },
+          state: {
+            required: true
+          },
+          pincode: {
+            required: true,
+            digits: true,
+            minlength: 6,
+            maxlength: 6,
+            indianPincode: true
+          }
+        },
+        messages: {
+          name: {
+            required: "Please enter name",
+            minlength: "Name must be at least 3 characters",
+            maxlength: "Name can’t exceed 50 characters"
+          },
+          user_role: {
+            required: "Please select user role"
+          },
+          branch: {
+            required: "Please enter branch",
+            maxlength: "Branch can’t exceed 50 characters"
+          },
+          sales: {
+            required: "Please enter sales manager name",
+            maxlength: "Sales Manager name can’t exceed 50 characters"
+          },
+          supervisor: {
+            required: "Please enter supervisor name",
+            maxlength: "Supervisor name can’t exceed 50 characters"
+          },
+          franchise: {
+            required: "Please enter franchise",
+            maxlength: "Franchise can’t exceed 50 characters"
+          },
+          mobile: {
+            required: "Please enter mobile number",
+            digits: "Only digits are allowed",
+            minlength: "Mobile number must be 10 digits",
+            maxlength: "Mobile number must be 10 digits"
+          },
+          email: {
+            required: "Please enter email",
+            email: "Enter a valid email address"
+          },
+          dob: {
+            required: "Please enter date of birth",
+            date: "Enter a valid date"
+          },
+          date_of_anniversary: {
+            date: "Enter a valid date"
+          },
+          pan_card_number: {
+            required: "Please enter PAN number",
+            minlength: "PAN must be 10 characters",
+            maxlength: "PAN must be 10 characters",
+            pan: "PAN format should be e.g., ABCDE1234F"
+          },
+          aadhar: {
+            required: "Please enter Aadhar number",
+            digits: "Only digits are allowed",
+            minlength: "Aadhar must be 12 digits",
+            maxlength: "Aadhar must be 12 digits"
+          },
+          address: {
+            required: "Please enter address"
+          },
+          city: {
+            required: "Please enter city"
+          },
+          state: {
+            required: "Please enter state"
+          },
+          pincode: {
+            required: "Please enter pincode",
+            digits: "Only digits are allowed",
+            minlength: "Pincode must be 6 digits",
+            maxlength: "Pincode must be 6 digits",
+            indianPincode: "Invalid pincode format"
+          }
+        },
+        errorElement: "div",
+        errorPlacement: function (error, element) {
+          error.addClass("text-danger");
+          error.insertAfter(element);
+        },
+        submitHandler: function (form) {
+          $("#loader").show();  // Optional loader
+          form.submit();
+        }
+      });
+    });
+  </script>
+  
+  
+
 </html>

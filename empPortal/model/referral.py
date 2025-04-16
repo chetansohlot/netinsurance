@@ -16,6 +16,20 @@ class Referral(models.Model):
     pan_card_number = models.CharField(max_length=10, null=True, blank=True)
     aadhar_no = models.CharField(max_length=15,null=True, blank=True)
 
+    ####  new add fields -----parth ####
+
+    user_role = models.CharField(max_length=100, null=True, blank=True)
+    branch = models.CharField(max_length=100, null=True, blank=True)
+    sales = models.CharField(max_length=100, null=True, blank=True)
+    supervisor = models.CharField(max_length=100, null=True, blank=True)
+    franchise = models.CharField(max_length=100, null=True, blank=True)
+    pincode = models.CharField(max_length=10, null=True, blank=True)
+    city = models.CharField(max_length=100, null=True, blank=True)
+    state = models.CharField(max_length=100, null=True, blank=True)
+
+
+
+
     def __str__(self):
         return f"{self.name} - {self.referral_code}"
 
