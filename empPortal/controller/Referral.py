@@ -1,7 +1,7 @@
 import re
 from django.shortcuts import render,redirect, get_object_or_404
 from ..models import Franchises, Department
-from empPortal.model import Referral
+from empPortal.model import Referral,Ref_Bank_Details
 from django.db.models import OuterRef, Subquery
 from django.contrib import messages
 from datetime import date, datetime
@@ -111,6 +111,18 @@ def create_or_edit(request, referral_id=None):
         date_of_anniversary = request.POST.get("date_of_anniversary", "").strip()
         pan_card_number = request.POST.get("pan_card_number", "").strip()
         aadhar = request.POST.get("aadhar", "").strip()
+
+
+
+        user_role = request.POST.get("user_role", "").strip()
+        branch = request.POST.get("branch", "").strip()
+        sales = request.POST.get("sales", "").strip()
+        supervisor = request.POST.get("supervisor", "").strip()
+        franchise = request.POST.get("franchise", "").strip()
+        pincode = request.POST.get("pincode", "").strip()
+        city = request.POST.get("city", "").strip()
+        state = request.POST.get("state", "").strip()
+
         # print(aadhar)
 
 
@@ -140,6 +152,14 @@ def create_or_edit(request, referral_id=None):
             "date_of_anniversary": date_of_anniversary,
             "pan_card_number": pan_card_number,
             "aadhar_no": aadhar,
+            "user_role": user_role,
+            "branch": branch,
+            "sales": sales,
+            "supervisor": supervisor,
+            "franchise": franchise,
+            "pincode": pincode,
+            "city": city,
+            "state": state,
             "user_role": user_role,
             "branch": branch,
             "sales": sales,
@@ -421,6 +441,8 @@ def create_or_edit(request, referral_id=None):
 
             messages.success(request, f"Referral created successfully! ID: {new_referral.id}")
             return redirect(reverse("referral-management"))
+            # return redirect(reverse("ref_bank_details",kwargs={'referral_id': new_referral.id}))
+        
 
 
 def generate_referral_code():

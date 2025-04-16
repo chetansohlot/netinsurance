@@ -4,6 +4,7 @@
 
 {% block title %}
 Create Referral
+Create Referral
 {% endblock %}
 
 {% block content %}
@@ -176,6 +177,11 @@ Create Referral
                       {% if referral %}Update Referral{% else %}Add Referral{% endif %}
                     </button>
                   </form>
+
+                    <!-- {% if referral and referral.id %}
+                       <a href="{% url 'ref_bank_details' referral.id %}" class="btn btn-outline-primary mt-3">Add Bank Details</a>
+                    {% endif %} -->
+
 
 
 

@@ -4,7 +4,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib import messages
 from django.template import loader
-from ..models import Commission,Users, DocumentUpload, Branch, Leads, QuotationCustomer
+from ..models import Commission, SourceMaster,Users, DocumentUpload, Branch, Leads, QuotationCustomer
 from empPortal.model import BankDetails
 from ..forms import DocumentUploadForm
 from django.core.mail import send_mail
@@ -148,6 +148,9 @@ def create_or_edit_lead(request, lead_id=None):
         return redirect('login')
     
     customers = QuotationCustomer.objects.all()
+    source_leads = SourceMaster.objects.filter(status=True).order_by('source_name')
+    print("Loaded sources:", list(source_leads))
+
     lead = None
     referrals = Referral.objects.all()
 
@@ -161,12 +164,17 @@ def create_or_edit_lead(request, lead_id=None):
             'customers': customers
         })
 
+
     elif request.method == "POST":
         mobile_number = request.POST.get("mobile_number", "").strip()
         email_address = request.POST.get("email_address", "").strip()
         quote_date = request.POST.get("quote_date", None)
         name_as_per_pan = request.POST.get("name_as_per_pan", "").strip()
         pan_card_number = request.POST.get("pan_card_number", "").strip() or None
+
+
+        source_leads_id = request.POST.get("source_leads", "").strip() or None
+        source_leads = SourceMaster.objects.get(id=source_leads_id) if source_leads_id else None
         
         # ✅ Handle date_of_birth safely
         date_of_birth_str = request.POST.get("date_of_birth", "").strip()

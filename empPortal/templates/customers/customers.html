@@ -162,7 +162,7 @@ Customers
                                     <th>Email Address</th>
                                     <th>State</th>
                                     <th>City</th>
-                                    <th>Quote Date</th>
+                                    <!-- <th>Quote Date</th> -->
                                     <th width="100">Status</th>
                                     <th>Info</th>
                                      <th>Action</th>
@@ -181,7 +181,7 @@ Customers
                                     <td>{{ customer.email_address|default:"N/A" }}</td>
                                     <td>{{ customer.state|default:"N/A" }}</td>
                                     <td>{{ customer.city|default:"N/A" }}</td>
-                                    <td>{{ customer.quote_date|default:"N/A" }}</td>
+                                    <!-- <td>{{ customer.quote_date|default:"N/A" }}</td> -->
                                     <td>
                                       <span class="status-badge badge {% if customer.active %}badge-success{% else %}badge-danger{% endif %}">
                                         {% if customer.active %}Active{% else %}Inactive{% endif %}

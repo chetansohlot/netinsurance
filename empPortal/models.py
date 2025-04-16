@@ -13,6 +13,19 @@ class Roles(models.Model):
 
     class Meta:
         db_table = 'roles'
+
+from django.db import models
+## Source master -----> source ##
+class SourceMaster(models.Model):
+    source_name       = models.CharField(max_length=255)
+    sort_source_name  = models.CharField(max_length=255)
+    status            = models.BooleanField(default=True)  # True=1, False=0
+    created_at        = models.DateTimeField(auto_now_add=True)
+    updated_at        = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'source_master'        
+
         
 class Commission(models.Model):
     rm_name  =models.CharField(max_length=255, unique=True)
@@ -135,6 +148,7 @@ class Leads(models.Model):
         choices=[('MOTOR', 'MOTOR'), ('HEALTH', 'HEALTH'), ('TERM', 'TERM')], 
         default='MOTOR'
     )  # Type of lead (MOTOR, HEALTH, TERM)
+    source_leads = models.ForeignKey(SourceMaster,db_column='source_leads',on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'leads'  # This defines the database table name
