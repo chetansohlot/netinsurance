@@ -282,6 +282,6 @@ LOGGING = {
             'handlers': ['policies'],
             'level': 'DEBUG',
             'propagate': False,
-        },
+        }
     },
 }

@@ -132,6 +132,7 @@ urlpatterns = [
     path('lead-mgt/health-lead', leads.healthLead, name='health-lead'),
     path('lead-mgt/term-lead', leads.termlead, name='term-lead'),
     path('lead-mgt/lead-view/<int:lead_id>/', leads.viewlead, name='lead-view'),
+    path('bulk-upload/', leads.bulk_upload_leads, name='bulk-upload-leads'),
 
     # REFERRAL 
     path('referral-management/bulk-upload/', Referral.ref_bulk_upload, name='referral-bulk-upload'),
@@ -243,6 +244,7 @@ urlpatterns = [
     path('update-policy/', views.updatePolicy, name='update-policy'),
     path('edit-bulk-policy/', policy.editBulkPolicy, name='edit-bulk-policy'),
     path('update-bulk-policies/', policy.updateBulkPolicy, name='update-bulk-policies'),
+    path('bulk-update-logs/', policy.viewBulkUpdates, name='bulk-update-logs'),
     
     path('reprocess-bulk-policies',views.reprocessBulkPolicies,name="reprocess-bulk-policies"),
     path('continue-bulk-policies',views.continueBulkPolicies,name="continue-bulk-policies"),

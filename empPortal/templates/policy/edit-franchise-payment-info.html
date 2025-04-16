@@ -64,28 +64,28 @@
                               <div class="col-sm-6 col-md-4 col-lg-3">
                                 <div class="form-group">
                                   <label class="form-lbl" for="policy_number">Policy Number</label>
-                                  <input type="text" class="form-field" name="policy_number" id="policy_number" placeholder="Policy Number" value="{{ policy_data.policy_number }}">
+                                  <input type="text" class="form-field" name="policy_number" id="policy_number" placeholder="Policy Number" value="{{ policy_data.policy_number }}" readonly>
                                 </div>
                               </div>
                         
                               <div class="col-sm-6 col-md-4 col-lg-3">
                                 <div class="form-group">
                                   <label class="form-lbl" for="policy_issue_date">Policy Issue Date</label>
-                                  <input type="text" class="form-field" name="policy_issue_date" id="policy_issue_date" placeholder="Policy Issue Date" value="{{ policy_data.policy_issue_date }}">
+                                  <input type="text" class="form-field" name="policy_issue_date" id="policy_issue_date" placeholder="Policy Issue Date" value="{{ policy_data.policy_issue_date }}" readonly>
                                 </div>
                               </div>
                         
                               <div class="col-sm-6 col-md-4 col-lg-3">
                                 <div class="form-group">
                                   <label class="form-lbl" for="policy_start_date">Policy Start Date</label>
-                                  <input type="text" class="form-field" name="policy_start_date" id="policy_start_date" placeholder="Policy Start Date" value="{{ policy_data.policy_start_date }}">
+                                  <input type="text" class="form-field" name="policy_start_date" id="policy_start_date" placeholder="Policy Start Date" value="{{ policy_data.policy_start_date }}" readonly>
                                 </div>
                               </div>
                         
                               <div class="col-sm-6 col-md-4 col-lg-3">
                                 <div class="form-group">
                                   <label class="form-lbl" for="policy_expiry_date">Policy Expiry Date</label>
-                                  <input type="text" class="form-field" name="policy_expiry_date" id="policy_expiry_date" placeholder="Policy Expiry Date" value="{{ policy_data.policy_expiry_date }}">
+                                  <input type="text" class="form-field" name="policy_expiry_date" id="policy_expiry_date" placeholder="Policy Expiry Date" value="{{ policy_data.policy_expiry_date }}" readonly>
                                 </div>
                               </div>
                         
@@ -122,83 +122,82 @@
                               <div class="form-padding">
                                 <div class="row">
                             
-                                  <div class="col-sm-6 col-md-4">
+                                  <div class="col-sm-6">
                                     <div class="form-group">
                                       <label class="form-lbl">Franchise OD Comm</label>
                                       <input type="text" class="form-field" name="franchise_od_comm" value="{{ franchise_payment.franchise_od_comm|blank_if_none_or_text_none }}" placeholder="Franchise OD Comm">
                                     </div>
                                   </div>
                             
-                                  <div class="col-sm-6 col-md-4">
+                                  <div class="col-sm-6">
                                     <div class="form-group">
                                       <label class="form-lbl">Franchise Net Comm</label>
                                       <input type="text" class="form-field" name="franchise_net_comm" value="{{ franchise_payment.franchise_net_comm|blank_if_none_or_text_none }}" placeholder="Franchise Net Comm">
                                     </div>
                                   </div>
                             
-                                  <div class="col-sm-6 col-md-4">
+                                  <div class="col-sm-6">
                                     <div class="form-group">
                                       <label class="form-lbl">Franchise TP Comm</label>
                                       <input type="text" class="form-field" name="franchise_tp_comm" value="{{ franchise_payment.franchise_tp_comm|blank_if_none_or_text_none }}" placeholder="Franchise TP Comm">
                                     </div>
                                   </div>
                             
-                                  <div class="col-sm-6 col-md-4">
+                                  <div class="col-sm-6">
                                     <div class="form-group">
                                       <label class="form-lbl">Franchise Incentive Amount</label>
                                       <input type="text" class="form-field" name="franchise_incentive_amount" value="{{ franchise_payment.franchise_incentive_amount|blank_if_none_or_text_none }}" placeholder="Franchise Incentive Amount">
                                     </div>
                                   </div>
                             
-                                  <div class="col-sm-6 col-md-4">
+                                  <div class="col-sm-6">
                                     <div class="form-group">
                                       <label class="form-lbl">Franchise TDS</label>
                                       <input type="text" class="form-field" name="franchise_tds" value="{{ franchise_payment.franchise_tds|blank_if_none_or_text_none }}" placeholder="Franchise TDS">
                                     </div>
                                   </div>
                             
-                                  <div class="col-sm-6 col-md-4">
+                                  <div class="col-sm-6">
                                     <div class="form-group">
                                       <label class="form-lbl">Franchise OD Amount</label>
                                       <input type="text" class="form-field" name="franchise_od_amount" value="{{ franchise_payment.franchise_od_amount|blank_if_none_or_text_none }}" placeholder="Franchise OD Amount">
                                     </div>
                                   </div>
                             
-                                  <div class="col-sm-6 col-md-4">
+                                  <div class="col-sm-6">
                                     <div class="form-group">
                                       <label class="form-lbl">Franchise Net Amount</label>
                                       <input type="text" class="form-field" name="franchise_net_amount" value="{{ franchise_payment.franchise_net_amount|blank_if_none_or_text_none }}" placeholder="Franchise Net Amount">
                                     </div>
                                   </div>
                             
-                                  <div class="col-sm-6 col-md-4">
+                                  <div class="col-sm-6">
                                     <div class="form-group">
                                       <label class="form-lbl">Franchise TP Amount</label>
                                       <input type="text" class="form-field" name="franchise_tp_amount" value="{{ franchise_payment.franchise_tp_amount|blank_if_none_or_text_none }}" placeholder="Franchise TP Amount">
                                     </div>
                                   </div>
                             
-                                  <div class="col-sm-6 col-md-4">
+                                  <div class="col-sm-6">
                                     <div class="form-group">
                                       <label class="form-lbl">Total Comm Amount</label>
                                       <input type="text" class="form-field" name="franchise_total_comm_amount" value="{{ franchise_payment.franchise_total_comm_amount|blank_if_none_or_text_none }}" placeholder="Total Comm Amount">
                                     </div>
                                   </div>
                             
-                                  <div class="col-sm-6 col-md-4">
+                                  <div class="col-sm-6">
                                     <div class="form-group">
                                       <label class="form-lbl">Net Payable Amount</label>
                                       <input type="text" class="form-field" name="franchise_net_payable_amount" value="{{ franchise_payment.franchise_net_payable_amount|blank_if_none_or_text_none }}" placeholder="Net Payable Amount">
                                     </div>
                                   </div>
                             
-                                  <div class="col-sm-6 col-md-4">
+                                  <div class="col-sm-6">
                                     <div class="form-group">
                                       <label class="form-lbl">TDS Amount</label>
                                       <input type="text" class="form-field" name="franchise_tds_amount" value="{{ franchise_payment.franchise_tds_amount|blank_if_none_or_text_none }}" placeholder="TDS Amount">
                                     </div>
                                   </div>
-                            
                                 </div>
                               </div>
                             </div>

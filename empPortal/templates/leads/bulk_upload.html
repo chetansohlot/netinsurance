@@ -2,11 +2,10 @@
 {% load static %}
 
 {% block title %}
-Upload Partners
+Upload Leads
 {% endblock %}
 
 {% block content %}
-
 <body class="hold-transition sidebar-mini">
   <div class="wrapper">
 
@@ -20,17 +19,17 @@ Upload Partners
         <div class="container-fluid">
           <div class="row py-2">
             <div class="col-md-6">
-              <h2 class="admin-title m-0 pt-2 text-dark">Add Bulk Partners</h2>
+              <h2 class="admin-title m-0 pt-2 text-dark">Add Bulk Leads</h2>
               <ul class="breadcrump">
                 <li><a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
-                <li><a href="#">Partner Mgt</a> <i class="fas fa-chevron-right"></i></li>
+                <li><a href="#">Leads Mgt</a> <i class="fas fa-chevron-right"></i></li>
                 <li>Bulk Upload</li>
               </ul>
             </div>
             <div class="col-md-6 d-flex justify-content-end align-items-center">
               <div>
-                <a href="{% url 'members' %}" class="breadcrump-addbtn mx-1">View Partners</a>
-                <a href="/media/sample/partners_sample.xlsx" class="breadcrump-addbtn mx-1" download>Download Sample</a>
+                <a href="{% url 'leads-mgt' %}" class="breadcrump-addbtn mx-1">View Leads</a>
+                <a href="/media/sample/sample_leads_upload.xlsx" class="breadcrump-addbtn mx-1" download>Download Sample</a>
               </div>
             </div>
           </div>
@@ -45,7 +44,7 @@ Upload Partners
               <div class="card box-shadow-none p-md-5 p-3">
                 <div class="card-body px-0 pb-0 pt-0">
 
-                  <form autocomplete="off" id="uploadExcelForm" action="{% url 'upload-partners-excel' %}" method="post" enctype="multipart/form-data" onsubmit="return validateUploadForm()">
+                  <form autocomplete="off" id="uploadLeadExcelForm" action="{% url 'bulk-upload-leads' %}" method="post" enctype="multipart/form-data" onsubmit="return validateLeadUploadForm()">
                     {% csrf_token %}
 
                     <div class="row">
@@ -65,11 +64,17 @@ Upload Partners
                         <!-- Error & Info -->
                         <span class="error excel_file_err d-block mt-1 text-danger"></span>
                         {% if error %}
-                        <span class="text-danger d-block mt-1">{{ error }}</span>
+                          <span class="text-danger d-block mt-1">{{ error }}</span>
+                        {% endif %}
+
+                        {% if messages %}
+                          {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} mt-3">{{ message }}</div>
+                          {% endfor %}
                         {% endif %}
 
                         <p class="text-gray small pt-1 mb-0">
-                          Only .xlsx files allowed. Max size 5MB. Required columns: Full Name, Gender, Email, Mobile, Password, DOB, PAN
+                          Only .xlsx files allowed. Max size 5MB. Required columns: Mobile Number, Email, Quote Date, Name, PAN, DOB, State, City, Pincode, Source, Address, Description, Type
                         </p>
                       </div>
                     </div>
@@ -97,7 +102,7 @@ Upload Partners
 
     <!-- Validation Script -->
     <script>
-      function validateUploadForm() {
+      function validateLeadUploadForm() {
         const fileInput = document.getElementById('excel_file');
         const errorSpan = document.querySelector('.excel_file_err');
         const loader = document.getElementById('loader');
@@ -109,11 +114,9 @@ Upload Partners
           return false;
         }
 
-        // Show loader after validation passes
         loader.style.display = "flex";
         return true;
       }
     </script>
-
 </body>
 {% endblock %}

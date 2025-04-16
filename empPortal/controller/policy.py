@@ -33,11 +33,14 @@ from django.core.files.base import ContentFile
 from urllib.parse import unquote
 from django.views.decorators.csrf import csrf_exempt
 from pprint import pprint 
-import pdfkit
+import pdfkit, logging
 from django.templatetags.static import static  # ✅ Import static
 from django.template.loader import render_to_string
 from django_q.tasks import async_task
+import pandas as pd
+from collections import Counter
 
+logger = logging.getLogger(__name__)
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 
 app = FastAPI()
@@ -440,6 +443,10 @@ def editBulkPolicy(request):
     return render(request,'policy/edit-bulk-policy.html')
     
 def updateBulkPolicy(request):
+    if not request.user.is_authenticated or request.user.is_active != 1:
+        messages.error(request,'Please Login First')
+        return redirect('login')
+    
     if request.method == "POST" and request.FILES.get("file"):
         file = request.FILES["file"]
         camp_name = request.POST.get("camp_name")
@@ -450,8 +457,8 @@ def updateBulkPolicy(request):
             return redirect("edit-bulk-policy")
 
         # Validate size
-        if file.size > 20 * 1024 * 1024:
-            messages.error(request, "File too large. Maximum allowed size is 20 MB.")
+        if file.size > 5 * 1024 * 1024:
+            messages.error(request, "File too large. Maximum allowed size is 5 MB.")
             return redirect("edit-bulk-policy")
 
         if not camp_name:
@@ -461,7 +468,7 @@ def updateBulkPolicy(request):
         try:
             wb = openpyxl.load_workbook(file, data_only=True)
             sheet = wb.active
-            total_rows = sheet.max_row
+            total_rows = sheet.max_row - 1
         except Exception as e:
             messages.error(request, f"Error reading Excel file: {str(e)}")
             return redirect("edit-bulk-policy")
@@ -473,11 +480,46 @@ def updateBulkPolicy(request):
             created_by=request.user,
             total_rows=total_rows
         )
-
-        # Optionally: Trigger background task
+         # Optionally: Trigger background task
         async_task('empPortal.tasks.updateBulkPolicies', excelInstance.id)
 
         messages.success(request, "Excel uploaded successfully. Processing started in background.")
         return redirect("edit-bulk-policy")
 
     return redirect("edit-bulk-policy")
+
+def viewBulkUpdates(request):
+    if not request.user.is_authenticated or request.user.is_active != 1:
+        messages.error(request,'Please Login First')
+        return redirect('login')
+    
+    id  = request.user.id
+    
+    # Fetch policies
+    role_id = Users.objects.filter(id=id,status=1).values_list('role_id', flat=True).first()
+    if role_id != 1:
+        logs =  UploadedExcel.objects.filter(rm_id=id).exclude(rm_id__isnull=True).order_by('-id')
+    else:
+        logs = UploadedExcel.objects.all().order_by('-id')
+    
+    policy_files = PolicyDocument.objects.all()
+    statuses = Counter(file.status for file in policy_files)
+
+    # Ensure all statuses are included in the count, even if they're 0
+    status_counts = {
+        0: statuses.get(0, 0),
+        1: statuses.get(1, 0),
+        2: statuses.get(2, 0),
+        3: statuses.get(3, 0),
+        4: statuses.get(4, 0),
+        5: statuses.get(5, 0),
+        6: statuses.get(6, 0),
+        7: statuses.get(7, 0),
+    }
+
+    return render(request,'policy/bulk-edit-logs.html',{
+        'logs': logs,
+        'status_counts': status_counts,
+        'total_files': len(policy_files)
+    })
+        

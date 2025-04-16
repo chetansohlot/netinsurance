@@ -1062,7 +1062,10 @@ def bulkBrowsePolicy(request):
         return redirect('login')
 
 def bulkUploadLogs(request):
-
+    if not request.user.is_authenticated or request.user.is_active != 1:
+        messages.error(request,'Please Login First')
+        return redirect('login')
+    
     id  = request.user.id
         # Fetch policies
     role_id = Users.objects.filter(id=id,status=1).values_list('role_id', flat=True).first()

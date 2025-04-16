@@ -36,6 +36,12 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from empPortal.model import Referral
 
+import pandas as pd
+from django.core.files.storage import default_storage
+import openpyxl
+from django.db.models import Max
+import re
+
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 
 app = FastAPI()
@@ -226,3 +232,69 @@ def create_or_edit_lead(request, lead_id=None):
             messages.success(request, f"Lead created successfully!")
 
         return redirect("leads-mgt")
+
+def bulk_upload_leads(request):
+    if request.method == 'POST':
+        excel_file = request.FILES.get('excel_file')
+
+        if not excel_file:
+            messages.error(request, "Please select a file to upload.")
+            return redirect('bulk-upload-leads')
+
+        if not excel_file.name.endswith('.xlsx'):
+            messages.error(request, "Only .xlsx files are supported.")
+            return redirect('leads-mgt')
+
+        try:
+            wb = openpyxl.load_workbook(excel_file)
+            sheet = wb.active
+
+            # Get latest lead_id once before loop
+            latest_lead = Leads.objects.aggregate(Max('lead_id'))['lead_id__max']
+            start_num = 1
+
+            if latest_lead:
+                match = re.search(r'L(\d+)', latest_lead)
+                if match:
+                    start_num = int(match.group(1)) + 1
+
+            inserted = 0
+
+            for index, row in enumerate(sheet.iter_rows(min_row=2, values_only=True), start=2):
+                if len(row) < 13:
+                    messages.warning(request, f"Row {index} skipped due to missing data.")
+                    continue
+
+                try:
+                    lead_id = f"L{start_num:05d}"  # Generate like L00001
+                    start_num += 1  # Increment for next
+
+                    Leads.objects.create(
+                        lead_id=lead_id,
+                        mobile_number=row[0],
+                        email_address=row[1],
+                        quote_date=row[2],
+                        name_as_per_pan=row[3],
+                        pan_card_number=row[4],
+                        date_of_birth=row[5],
+                        state=row[6],
+                        city=row[7],
+                        pincode=row[8],
+                        lead_source=row[9],
+                        address=row[10],
+                        lead_description=row[11],
+                        lead_type=row[12],
+                    )
+                    inserted += 1
+
+                except Exception as row_error:
+                    messages.warning(request, f"Error in row {index}: {row_error}")
+
+            messages.success(request, f"{inserted} leads uploaded successfully.")
+            return redirect('leads-mgt')
+
+        except Exception as e:
+            messages.error(request, f"Error processing file: {e}")
+            return redirect('leads-mgt')
+
+    return render(request, 'leads/bulk_upload.html')
