@@ -47,11 +47,11 @@
 
                     <!-- Full Name -->
                     <div class="col-md-6">
-                      <label for="full_name" class="form-label name">Full Name <span class="text-danger">*</span></label>
+                      <label for="full_name" class="form-lbl name">Full Name <span class="text-danger">*</span></label>
                       <input type="text" 
                              name="full_name" 
                              id="full_name" 
-                             class="form-control shadow-sm rounded-2" 
+                             class="form-field shadow-sm rounded-2" 
                              placeholder="As per Aadhaar Card" 
                              pattern="[A-Za-z ]+" 
                              title="Only alphabets and spaces are allowed" 
@@ -64,15 +64,15 @@
 
                       <!-- Gender -->
                         <div class="col-md-6">
-                             <label class="form-label d-block">Gender <span class="text-danger">*</span></label>
-                              <div class="form-check form-check-inline">
-                             <input class="form-check-input" type="radio" name="gender" id="male" value="1" {% if gender == "1" or not gender %}checked{% endif %}>
-                              <label class="form-check-label" for="male">Male</label>
-                          </div>
-                        <div class="form-check form-check-inline">
-                      <input class="form-check-input" type="radio" name="gender" id="female" value="2" {% if gender == "2" %}checked{% endif %}>
-                  <label class="form-check-label" for="female">Female</label>
-                  </div>
+                              <label class="form-lbl d-block">Gender <span class="text-danger">*</span></label>
+                              <div class="d-inline-flex">
+                                <input class="radio-btn" type="radio" name="gender" id="male" value="1" {% if gender == "1" or not gender %}checked{% endif %}>
+                                <label for="male">Male</label>
+                              </div>
+                              <div class="d-inline-flex">
+                                <input class="radio-btn" type="radio" name="gender" id="female" value="2" {% if gender == "2" %}checked{% endif %}>
+                                <label for="female">Female</label>
+                              </div>
                   {% if errors.gender %}
                   <br><small class="text-danger">{{ errors.gender }}</small>
                  {% endif %}
@@ -80,8 +80,8 @@
 
                     <!-- Email -->
                     <div class="col-md-6">
-                      <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                      <input type="email" name="email" id="email" class="form-control shadow-sm rounded-2" placeholder="Email ID" value="{{ email|default:'' }}">
+                      <label for="email" class="form-lbl">Email <span class="text-danger">*</span></label>
+                      <input type="email" name="email" id="email" class="form-field shadow-sm rounded-2" placeholder="Email ID" value="{{ email|default:'' }}">
                         {% if errors.email %}
                       <small class="text-danger">{{ errors.email }}</small>
                   {% endif %}
@@ -89,8 +89,8 @@
 
                       <!-- Mobile -->
                       <div class="col-md-6">
-                        <label for="mobile" class="form-label">Mobile Number <span class="text-danger">*</span></label>
-                        <input type="text" name="mobile" id="mobile" class="form-control shadow-sm rounded-2" placeholder="10-digit Mobile Number" maxlength="10" value="{{ mobile|default:'' }}">
+                        <label for="mobile" class="form-lbl">Mobile Number <span class="text-danger">*</span></label>
+                        <input type="text" name="mobile" id="mobile" class="form-field shadow-sm rounded-2" placeholder="10-digit Mobile Number" maxlength="10" value="{{ mobile|default:'' }}">
                       {% if errors.mobile %}
                           <small class="text-danger">{{ errors.mobile }}</small>
                            {% endif %}
@@ -98,8 +98,8 @@
 
                     <!-- DOB -->
                       <div class="col-md-6">
-                        <label for="dob" class="form-label">Date of Birth <span class="text-danger">*</span></label>
-                          <input type="date" name="dob" id="dob" class="form-control shadow-sm rounded-2" value="{{ dob|default:'' }}">
+                        <label for="dob" class="form-lbl">Date of Birth <span class="text-danger">*</span></label>
+                          <input type="date" name="dob" id="dob" class="form-field shadow-sm rounded-2" value="{{ dob|default:'' }}">
                             {% if errors.dob %}
                            <small class="text-danger">{{ errors.dob }}</small>
                           {% endif %}
@@ -107,8 +107,8 @@
 
                     <!-- PAN -->
                     <div class="col-md-6">
-                      <label for="pan_no" class="form-label">PAN Number <span class="text-danger">*</span></label>
-                          <input type="text" name="pan_no" id="pan_no" class="form-control shadow-sm rounded-2" maxlength="10" placeholder="ABCDE1234F" value="{{ pan_no|default:'' }}">
+                      <label for="pan_no" class="form-lbl">PAN Number <span class="text-danger">*</span></label>
+                          <input type="text" name="pan_no" id="pan_no" class="form-field shadow-sm rounded-2" maxlength="10" placeholder="ABCDE1234F" value="{{ pan_no|default:'' }}">
                             {% if errors.pan_no %}
                                 <small class="text-danger">{{ errors.pan_no }}</small>
                              {% endif %}
@@ -116,8 +116,8 @@
 
                     <!-- Password -->
                         <div class="col-md-6">
-                          <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
-                            <input type="password" name="password" id="password" class="form-control shadow-sm rounded-2" placeholder="Enter Password">
+                          <label for="password" class="form-lbl">Password <span class="text-danger">*</span></label>
+                            <input type="password" name="password" id="password" class="form-field shadow-sm rounded-2" placeholder="Enter Password">
                               {% if errors.password %}
                                <small class="text-danger">{{ errors.password }}</small>
                               {% endif %}
