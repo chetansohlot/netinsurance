@@ -182,23 +182,23 @@ def create_or_edit(request, referral_id=None):
                     'is_editing': True,
                 })
             
-        if dob:
-            try:
-                dob_date = datetime.strptime(dob,'%Y-%m-%d').date()
-                today = date.today()
+            if dob:
+                try:
+                    dob_date = datetime.strptime(dob,'%Y-%m-%d').date()
+                    today = date.today()
 
-                if dob_date >= today:
-                    messages.error(request,"Date of Birth in Past")
+                    if dob_date >= today:
+                        messages.error(request,"Date of Birth in Past")
+                        return render(request,'referral/create.html',{
+                        'referral': form_data,
+                        'is_editing': True,
+                    })
+                except ValueError:
+                    messages.error(request,"Invalid Date of Birth Format.")
                     return render(request,'referral/create.html',{
-                    'referral': form_data,
-                    'is_editing': True,
-                })
-            except ValueError:
-                messages.error(request,"Invalid Date of Birth Format.")
-                return render(request,'referral/create.html',{
-                    'referral': form_data,
-                    'is_editing': True,
-                })
+                        'referral': form_data,
+                        'is_editing': True,
+                    })
 
 
             # Mobile Number -- Required,Format and Uniqueness## ----check
