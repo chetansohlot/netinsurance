@@ -31,7 +31,7 @@
     <section class="content">
       <div class="container-fluid">
         <div class="row justify-content-center">
-          <div class="col-md-10">
+          <div class="col-md-12">
             <div class="card p-4">
              
               {% if messages %}
@@ -47,7 +47,7 @@
                 <div class="row g-3">
 
                     <!-- Full Name -->
-                    <div class="col-md-6">
+                    <div class="col-md-6 col-lg-4">
                       <div class="form-group">
                         <label for="full_name" class="form-lbl name">Full Name <span class="text-danger">*</span></label>
                         <input type="text" 
@@ -65,8 +65,19 @@
                       </div>
                     </div>
 
+                    <!-- Email -->
+                    <div class="col-md-6 col-lg-4">
+                      <div class="form-group">
+                        <label for="email" class="form-lbl">Email <span class="text-danger">*</span></label>
+                        <input type="email" name="email" id="email" class="form-field shadow-sm rounded-2" placeholder="Email ID" value="{{ email|default:'' }}">
+                          {% if errors.email %}
+                        <small class="text-danger">{{ errors.email }}</small>
+                        {% endif %}
+                      </div>  
+                    </div>
+                    
                       <!-- Gender -->
-                    <div class="col-md-6">
+                    <div class="col-md-6 col-lg-4">
                       <div class="form-group">
                           <label class="form-lbl d-block">Gender <span class="text-danger">*</span></label>
                           <div class="d-inline-flex">
@@ -83,19 +94,10 @@
                       </div>
                     </div>
 
-                    <!-- Email -->
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <label for="email" class="form-lbl">Email <span class="text-danger">*</span></label>
-                        <input type="email" name="email" id="email" class="form-field shadow-sm rounded-2" placeholder="Email ID" value="{{ email|default:'' }}">
-                          {% if errors.email %}
-                        <small class="text-danger">{{ errors.email }}</small>
-                        {% endif %}
-                      </div>  
-                    </div>
+                    
 
                       <!-- Mobile -->
-                    <div class="col-md-6">
+                    <div class="col-md-6 col-lg-4">
                       <div class="form-group">
                         <label for="mobile" class="form-lbl">Mobile Number <span class="text-danger">*</span></label>
                         <input type="text" name="mobile" id="mobile" class="form-field shadow-sm rounded-2" placeholder="10-digit Mobile Number" maxlength="10" value="{{ mobile|default:'' }}">
@@ -106,7 +108,7 @@
                     </div>
 
                     <!-- DOB -->
-                    <div class="col-md-6">
+                    <div class="col-md-6 col-lg-4">
                       <div class="form-group">
                         <label for="dob" class="form-lbl">Date of Birth <span class="text-danger">*</span></label>
                           <input type="date" name="dob" id="dob" class="form-field shadow-sm rounded-2" value="{{ dob|default:'' }}">
@@ -117,7 +119,7 @@
                     </div>
 
                     <!-- PAN -->
-                    <div class="col-md-6">
+                    <div class="col-md-6 col-lg-4">
                       <div class="form-group">
                         <label for="pan_no" class="form-lbl">PAN Number <span class="text-danger">*</span></label>
                         <input type="text" name="pan_no" id="pan_no" class="form-field shadow-sm rounded-2" maxlength="10" placeholder="ABCDE1234F" value="{{ pan_no|default:'' }}">
@@ -128,7 +130,7 @@
                     </div>  
 
                     <!-- Password -->
-                        <div class="col-md-6">
+                        <div class="col-md-6 col-lg-4">
                           <div class="form-group">
                             <label for="password" class="form-lbl">Password <span class="text-danger">*</span></label>
                             <input type="password" name="password" id="password" class="form-field shadow-sm rounded-2" placeholder="Enter Password">
