@@ -1,4 +1,5 @@
 from .models import UploadedZip, FileAnalysis, ExtractedFile, BulkPolicyLog, Commission, PolicyDocument, UnprocessedPolicyFiles, ChatGPTLog, UploadedExcel
+from .models import PolicyInfo, PolicyVehicleInfo, AgentPaymentDetails, InsurerPaymentDetails, FranchisePayment
 import django, dramatiq, fitz, os, zipfile, requests, re, json, traceback, time, logging, shutil
 from django.conf import settings
 from django.utils import timezone
@@ -6,7 +7,7 @@ from django.utils.timezone import now
 from django_q.tasks import async_task
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 from django.db.models import F
-from .utils import getUserNameByUserId, commisionRateByMemberId, insurercommisionRateByMemberId
+from .utils import getUserNameByUserId, commisionRateByMemberId, insurercommisionRateByMemberId, to_int
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.encoding import filepath_to_uri
 import pandas as pd
@@ -551,36 +552,214 @@ def updateBulkPolicies(file_id):
 
         df = pd.read_excel(file_path)
         errors = []
-        success_count = 0
+        valid_count = 0
+        invalid_count = 0
         
         if 'policy_number' not in df.columns:
             excel_instance.is_processed = True
+            excel_instance.error = "'policy_number' column not found."
             excel_instance.save()
-            return ["'policy_number' column not found."]
-
-        for index, row in df.iterrows():
-            policy_number = str(row.get('policy_number', '')).strip()
-            if not policy_number:
-                errors.append(f"Row {index + 2}: Missing policy number.")
-                continue
-
-            try:
-                policy_doc = PolicyDocument.objects.get(policy_number=policy_number)
-                policy_doc.insured_name = row.get('insured_name')
-                policy_doc.insured_mobile = row.get('insured_mobile')
-                policy_doc.insured_email = row.get('insured_email')
-                policy_doc.save()
-                success_count += 1
-            except PolicyDocument.DoesNotExist:
-                errors.append(f"Row {index + 2}: Policy not found: {policy_number}")
-            except Exception as e:
-                errors.append(f"Row {index + 2}: Error - {str(e)}")
-
+            logger.error(f"'policy_number' column not found. {excel_instance.id}")
+        else:
+            for index, row in df.iterrows():
+                policy_number = str(row.get('policy_number', '')).strip()
+                if policy_number:
+                    try:
+                        policy = PolicyDocument.objects.get(policy_number=policy_number)
+                        excel_instance.valid_rows += 1  
+                        async_task('empPortal.tasks.create_or_update_policyInfo',index,row,file_id,policy_number)
+                    except PolicyDocument.DoesNotExist:
+                        excel_instance.invalid_rows += 1
+                        logger.error(f"Row {index + 2}: Policy not found in PolicyDocument: {policy_number}")
+                        continue
+                        
+                    except Exception as e: 
+                        logger.error(f"Row {index + 2}: Error - {str(e)}")
+                        continue
+                        
+                else:
+                    logger.error(f"Row {index + 2}: Missing policy number.")
+                    continue
+                
         # Update processing status
         excel_instance.is_processed = True
         excel_instance.save()
 
-        return [f"{success_count} policies updated.", *errors]
+    except Exception as e:
+        logger.error(f"Error: {str(e)}")
+    
+def update_field(instance, field, value):
+    if pd.notna(value) and (str(value).strip() != '' or str(value).strip() != None):
+        return setattr(instance, field, value)
+                
+def create_or_update_policyInfo(index,row,file_id,policy_number):
+    try:
+        excel_instance = UploadedExcel.objects.get(id=file_id)
+        policy_info, created = PolicyInfo.objects.get_or_create(policy_number=policy_number)
+        if created:
+            logger.info(f"Row {index + 2}: Created new PolicyInfo for policy_number: {policy_number}")
+        else:
+            logger.info(f"Row {index + 2}: Updated existing PolicyInfo for policy_number: {policy_number}")
+
+        # Basic Policy
+        update_field(policy_info, 'policy_issue_date', row.get('policy_issue_date'))
+        update_field(policy_info, 'policy_start_date', row.get('policy_start_date'))
+        update_field(policy_info, 'policy_expiry_date', row.get('policy_end_date'))
+        update_field(policy_info, 'insurer_name', row.get('insured_name'))
+        update_field(policy_info, 'insured_mobile', to_int(row.get('insured_mobile')))
+        update_field(policy_info, 'insured_email', row.get('insured_email'))
+        update_field(policy_info, 'insured_address', row.get('insured_address'))
+        update_field(policy_info, 'insured_pan', row.get('insured_pan'))
+        update_field(policy_info, 'insured_aadhaar', to_int(row.get('insured_aadhaar')))
+        update_field(policy_info, 'branch_name', row.get('branch_name'))
+        update_field(policy_info, 'policy_type', row.get('policy_type'))
+        update_field(policy_info, 'policy_plan', row.get('policy_plan'))
+        update_field(policy_info, 'sum_insured', to_int(row.get('sum_insured')))
+        update_field(policy_info, 'od_premium', to_int(row.get('od_premium')))
+        update_field(policy_info, 'tp_premium', to_int(row.get('tp_premium')))
+        update_field(policy_info, 'pa_count', to_int(row.get('pa_count')))
+        update_field(policy_info, 'pa_amount', to_int(row.get('pa_amount')))
+        update_field(policy_info, 'driver_count', to_int(row.get('driver_count')))
+        update_field(policy_info, 'driver_amount', to_int(row.get('driver_amount')))
+        update_field(policy_info, 'fuel_type', row.get('fuel_type'))
+        update_field(policy_info, 'be_fuel_amount', to_int(row.get('be_fuel_amount')))
+        update_field(policy_info, 'gross_premium', to_int(row.get('gross_premium')))
+        update_field(policy_info, 'net_premium', to_int(row.get('net_premium')))
+        update_field(policy_info, 'bqp', row.get('bqp'))
+        update_field(policy_info, 'pos_name', row.get('pos_name'))
+        update_field(policy_info, 'referral_by', row.get('referral_by'))
+        policy_info.save()
+        async_task('empPortal.tasks.create_or_update_policyVehicleInfo',index,row,file_id,policy_number)
+        
+    except Exception as e:
+        logger.info(f"Row {index + 2}: PolicyInfo for policy_number: {policy_number}, error : {str(e)}")
+        excel_instance.error_rows +=1
+        excel_instance.save()    
+    
+def create_or_update_policyVehicleInfo(index,row,file_id,policy_number):
+    try:
+        excel_instance = UploadedExcel.objects.get(id=file_id)
+        vehicle,created_vehicle = PolicyVehicleInfo.objects.get_or_create(policy_number=policy_number)
+        if created_vehicle:
+            logger.info(f"Row {index + 2}: Created new PolicyVehicleInfo for policy_number: {policy_number}")
+        else:
+            logger.info(f"Row {index + 2}: Updated existing PolicyVehicleInfo for policy_number: {policy_number}")
+
+        update_field(vehicle, 'vehicle_type', row.get('vehicle_type'))
+        update_field(vehicle, 'vehicle_make', row.get('vehicle_make'))
+        update_field(vehicle, 'vehicle_model', row.get('vehicle_model'))
+        update_field(vehicle, 'vehicle_variant', row.get('vehicle_variant'))
+        update_field(vehicle, 'fuel_type', row.get('fuel_type'))
+        update_field(vehicle, 'gvw', to_int(row.get('gvw')))
+        update_field(vehicle, 'cubic_capacity', to_int(row.get('cubic_capacity')))
+        update_field(vehicle, 'seating_capacity', to_int(row.get('seating_capacity')))
+        update_field(vehicle, 'registration_number', row.get('vehicle_reg_no'))
+        update_field(vehicle, 'engine_number', row.get('engine_number'))
+        update_field(vehicle, 'chassis_number', row.get('chassis_number'))
+        update_field(vehicle, 'manufacture_year', to_int(row.get('manufacture_year')))
+        vehicle.save()
+        
+        async_task('empPortal.tasks.create_or_update_agentPaymentDetails',index,row,file_id,policy_number)
+        
+    except Exception as e:
+        logger.info(f"Row {index + 2}: PolicyVehicleInfo for policy_number: {policy_number}, error : {str(e)}")
+        excel_instance.error_rows +=1
+        excel_instance.save()
+                
+def create_or_update_agentPaymentDetails(index,row,file_id,policy_number):
+    try:
+        excel_instance = UploadedExcel.objects.get(id=file_id)
+        agent_payment, agent_created = AgentPaymentDetails.objects.get_or_create(policy_number=policy_number)
+        if agent_created:
+            logger.info(f"Row {index + 2}: Created new AgentPaymentDetails for policy_number: {policy_number}")
+        else:
+            logger.info(f"Row {index + 2}: Updated existing AgentPaymentDetails for policy_number: {policy_number}")
+
+        update_field(agent_payment, 'agent_name', row.get('referral_by'))
+        update_field(agent_payment, 'agent_payment_mod', row.get('agent_payment_mode'))
+        update_field(agent_payment, 'transaction_id', row.get('transaction_id'))
+        update_field(agent_payment, 'agent_payment_date', row.get('agent_payment_date'))
+        update_field(agent_payment, 'agent_amount', to_int(row.get('agent_amount')))
+        update_field(agent_payment, 'agent_remarks', row.get('agent_remark'))
+        update_field(agent_payment, 'agent_od_comm', row.get('agent_od_comm_percentage'))
+        update_field(agent_payment, 'agent_od_amount', to_int(row.get('agent_od_comm_amount')))
+        update_field(agent_payment, 'agent_tp_comm', row.get('agent_comm_tp_percent'))
+        update_field(agent_payment, 'agent_tp_amount', to_int(row.get('agent_tp_comm_amount')))
+        update_field(agent_payment, 'agent_net_comm', row.get('agent_net_comm_percent'))
+        update_field(agent_payment, 'agent_net_amount', to_int(row.get('agent_net_comm_amt')))
+        update_field(agent_payment, 'agent_incentive_amount', to_int(row.get('agent_incentive_amt')))
+        update_field(agent_payment, 'agent_tds', row.get('agent_tds_percent'))
+        update_field(agent_payment, 'agent_tds_amount', to_int(row.get('agent_tds_amt')))
+        update_field(agent_payment, 'agent_total_comm_amount', to_int(row.get('agent_total_comm_amt')))
+        update_field(agent_payment, 'agent_net_payable_amount', to_int(row.get('agent_net_payable_amt')))
+        agent_payment.save()
+        
+        async_task('empPortal.tasks.create_or_update_insurerPaymentDetails',index,row,file_id,policy_number)
 
     except Exception as e:
-        return [f"Error: {str(e)}"]
+        logger.info(f"Row {index + 2}: AgentPayment for policy_number: {policy_number}, error : {str(e)}")
+        excel_instance.error_rows +=1
+        excel_instance.save()
+                
+def create_or_update_insurerPaymentDetails(index,row,file_id,policy_number):
+    try:
+        excel_instance = UploadedExcel.objects.get(id=file_id)
+        insurer_payment, insurer_payment_created= InsurerPaymentDetails.objects.get_or_create(policy_number=policy_number)
+        if insurer_payment_created:
+            logger.info(f"Row {index + 2}: Created new InsurerPaymentDetails for policy_number: {policy_number}")
+        else:
+            logger.info(f"Row {index + 2}: Updated existing InsurerPaymentDetails for policy_number: {policy_number}")
+
+        update_field(insurer_payment, 'insurer_payment_mode', row.get('insurer_payment_mode'))
+        update_field(insurer_payment, 'insurer_payment_date', row.get('insurer_payment_date'))
+        update_field(insurer_payment, 'insurer_amount', to_int(row.get('insurer_amount')))
+        update_field(insurer_payment, 'insurer_remarks', row.get('insurer_remark'))
+        update_field(insurer_payment, 'insurer_od_comm', row.get('insurer_od_comm_percent'))
+        update_field(insurer_payment, 'insurer_od_amount', to_int(row.get('insurer_agent_od_amt')))
+        update_field(insurer_payment, 'insurer_tp_comm', row.get('insurer_tp_percent'))
+        update_field(insurer_payment, 'insurer_tp_amount', to_int(row.get('insurer_tp_amt')))
+        update_field(insurer_payment, 'insurer_net_comm', row.get('insurer_net_percent'))
+        update_field(insurer_payment, 'insurer_net_amount', to_int(row.get('insurer_net_amt')))
+        update_field(insurer_payment, 'insurer_tds', row.get('insurer_tds_percent'))
+        update_field(insurer_payment, 'insurer_tds_amount', to_int(row.get('insurer_tds_amt')))
+        update_field(insurer_payment, 'insurer_incentive_amount', to_int(row.get('insurer_incentive_amt')))
+        update_field(insurer_payment, 'insurer_total_comm_amount', to_int(row.get('insurer_total_comm_amt')))
+        update_field(insurer_payment, 'insurer_net_payable_amount', to_int(row.get('insurer_net_payable_amt')))
+        update_field(insurer_payment, 'insurer_total_commission', to_int(row.get('insurer_total_commision')))
+        update_field(insurer_payment, 'insurer_receive_amount', to_int(row.get('insurer_received_amt')))
+        update_field(insurer_payment, 'insurer_balance_amount', to_int(row.get('insurer_balance_amount')))
+        insurer_payment.save()
+        async_task('empPortal.tasks.create_or_update_franchisePaymentDetails',index,row,file_id,policy_number)
+
+    except Exception as e:
+        logger.info(f"Row {index + 2}: InsurerPayment for policy_number: {policy_number}, error : {str(e)}")
+        excel_instance.error_rows +=1
+        excel_instance.save()
+
+def create_or_update_franchisePaymentDetails(index,row,file_id,policy_number):
+    try:
+        excel_instance = UploadedExcel.objects.get(id=file_id)
+        franchise_payment, franchise_payment_created  = FranchisePayment.objects.get_or_create(policy_number=policy_number)
+        if franchise_payment_created:
+            logger.info(f"Row {index + 2}: Created new FranchisePayment for policy_number: {policy_number}")
+        else:
+            logger.info(f"Row {index + 2}: Updated existing FranchisePayment for policy_number: {policy_number}")
+        
+        update_field(franchise_payment, 'franchise_od_comm', row.get('franchise_od_comm_percent'))
+        update_field(franchise_payment, 'franchise_od_amount', to_int(row.get('franchise_od_comm_amt')))
+        update_field(franchise_payment, 'franchise_net_comm', row.get('franchise_net_comm_percent'))
+        update_field(franchise_payment, 'franchise_net_amount', to_int(row.get('franchise_net_comm_amt')))
+        update_field(franchise_payment, 'franchise_tp_comm', row.get('franchise_tp_comm_percent'))
+        update_field(franchise_payment, 'franchise_tp_amount', to_int(row.get('franchise_tp_comm_amt')))
+        update_field(franchise_payment, 'franchise_incentive_amount', to_int(row.get('franchise_incentive_amt')))
+        update_field(franchise_payment, 'franchise_tds', row.get('franchise_tds_percent'))
+        update_field(franchise_payment, 'franchise_tds_amount', to_int(row.get('franchise_tds_amt')))
+        update_field(franchise_payment, 'franchise_total_comm_amount', to_int(row.get('franchise_total_comm_amt')))
+        update_field(franchise_payment, 'franchise_net_payable_amount', to_int(row.get('franchise_net_payable_amt')))
+        franchise_payment.save()
+        excel_instance.success_rows +=1
+        excel_instance.save()
+    except Exception as e:
+        logger.info(f"Row {index + 2}: FranchisePayment for policy_number: {policy_number}, error : {str(e)}")
+        excel_instance.error_rows +=1
+        excel_instance.save()

@@ -256,6 +256,8 @@ class PolicyInfo(models.Model):
     insurer_contact_name = models.CharField(max_length=255, null=True, blank=True)
     bqp = models.CharField(max_length=255, null=True, blank=True)
     pos_name = models.CharField(max_length=255, null=True, blank=True)
+    referral_by = models.CharField(max_length=50, null=True, blank=True)
+  
     branch_name = models.CharField(max_length=255, null=True, blank=True)
     supervisor_name = models.CharField(max_length=255, null=True, blank=True)
     policy_type = models.CharField(max_length=255, null=True, blank=True)
@@ -268,7 +270,6 @@ class PolicyInfo(models.Model):
     pa_amount = models.CharField(max_length=20, null=True, blank=True)
     driver_count = models.CharField(max_length=20, null=True, blank=True)
     driver_amount = models.CharField(max_length=20, null=True, blank=True)
-    referral_by = models.CharField(max_length=50, null=True, blank=True)
     fuel_type = models.CharField(max_length=50, null=True, blank=True)
     be_fuel_amount = models.CharField(max_length=50, null=True, blank=True)
     gross_premium = models.CharField(max_length=50, null=True, blank=True)
@@ -953,9 +954,14 @@ class UploadedExcel(models.Model):
     file_name = models.CharField(max_length=255, blank=True)
     file_url = models.URLField(blank=True)
     total_rows = models.IntegerField(default=0)
+    error_rows = models.IntegerField(default=0)
+    success_rows = models.IntegerField(default=0)
+    valid_rows = models.IntegerField(default=0)
+    invalid_rows = models.IntegerField(default=0)
     uploaded_at = models.DateTimeField(auto_now_add=True)
     campaign_name = models.CharField(max_length=255)
     is_processed = models.BooleanField(default=False)
+    error = models.TextField(blank=True)
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,

@@ -240,6 +240,7 @@ urlpatterns = [
     path('update-policy/', views.updatePolicy, name='update-policy'),
     path('edit-bulk-policy/', policy.editBulkPolicy, name='edit-bulk-policy'),
     path('update-bulk-policies/', policy.updateBulkPolicy, name='update-bulk-policies'),
+    path('bulk-update-logs/', policy.viewBulkUpdates, name='bulk-update-logs'),
     
     path('reprocess-bulk-policies',views.reprocessBulkPolicies,name="reprocess-bulk-policies"),
     path('continue-bulk-policies',views.continueBulkPolicies,name="continue-bulk-policies"),

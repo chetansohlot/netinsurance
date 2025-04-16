@@ -33,6 +33,12 @@ SECRET_KEY = getattr(settings, 'SECRET_KEY', 'django-insecure-#^%otoo7@)j9a8_6m)
 #     # except Exception:
 #     #     return None
 
+def to_int(value):
+    try:
+        return int(value) if value not in [None, '', 'null'] else None
+    except ValueError:
+        return None
+
 def dd(*args):
     """Dump and Debug - Prints values but does NOT stop execution."""
     for arg in args:
