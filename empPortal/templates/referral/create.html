@@ -112,7 +112,7 @@ Create Referral
                       <!-- Date of Birth -->
                       <div class="form-group col-md-6 col-lg-4">
                         <label class="form-lbl" for="dob">Date of Birth</label>
-                        <input type="date" class="form-field common_datepicker" name="dob" id="dob" 
+                        <input type="date" class="form-field dob_datepicker" name="dob" id="dob" 
                           value="{{ referral.dob|default_if_none:'' }}">
                         <span class="text-danger" id="dob-error"></span>  <!-- Error message will be dynamically placed here -->
                       </div>
@@ -120,7 +120,7 @@ Create Referral
                       <!-- Date of Anniversary -->
                       <div class="form-group col-md-6 col-lg-4">
                         <label class="form-lbl" for="anniversary">Date of Anniversary</label>
-                        <input type="date" class="form-field " name="date_of_anniversary" id="anniversary"
+                        <input type="date" class="form-field common_datepicker" name="date_of_anniversary" id="anniversary"
                           value="{{ referral.date_of_anniversary|default_if_none:''  }}">
                       </div>
 
