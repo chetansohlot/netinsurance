@@ -4,7 +4,7 @@
 
 {% block title %}
 Create Referral
-Create Referral
+
 {% endblock %}
 
 {% block content %}
@@ -112,8 +112,9 @@ Create Referral
                       <!-- Date of Birth -->
                       <div class="form-group col-md-6">
                         <label for="dob">Date of Birth</label>
-                        <input type="date" class="form-control" name="dob" id="dob"
-                          value="{{ referral.dob|default_if_none:''  }}">
+                        <input type="date" class="form-control" name="dob" id="dob" 
+                          value="{{ referral.dob|default_if_none:'' }}">
+                        <span class="text-danger" id="dob-error"></span>  <!-- Error message will be dynamically placed here -->
                       </div>
 
                       <!-- Date of Anniversary -->

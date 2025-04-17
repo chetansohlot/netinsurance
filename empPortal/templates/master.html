@@ -1583,153 +1583,7 @@
     });
 </script>
 
-<script>
-    $(document).ready(function () {
-      $("#referralForm").validate({
-        rules: {
-          name: {
-            required: true,
-            minlength: 3
-          },
-          user_role: {
-            required: true
-          },
-          branch: {
-            required: true
-          },
-          sales: {
-            required: true
-          },
-          supervisor: {
-            required: true
-          },
-          franchise: {
-            required: true
-          },
-          mobile: {
-            required: true,
-            digits: true,
-            minlength: 10,
-            maxlength: 10
-          },
-          email: {
-            required: true,
-            email: true
-          },
-          dob: {
-            required: true,
-            date: true
-          },
-          date_of_anniversary: {
-            date: true
-          },
-          pan: {
-            required: true,
-            minlength: 10,
-            maxlength: 10,
-            pattern: "[A-Z]{5}[0-9]{4}[A-Z]{1}"
-          },
-          aadhar: {
-            required: true,
-            minlength: 12,
-            maxlength: 12,
-            digits: true
-          },
-          address: {
-            required: true
-          },
-          city: {
-            required: true
-          },
-          state: {
-            required: true
-          },
-          pincode: {
-            required: true,
-            digits: true,
-            minlength: 6,
-            maxlength: 6,
-            pattern: /^[1-9][0-9]{5}$/
-          }
-        },
-        messages: {
-          name: {
-            required: "Please enter name",
-            minlength: "Name must be at least 3 characters"
-          },
-          user_role: {
-            required: "Please select user role"
-          },
-          branch: {
-            required: "Please enter branch"
-          },
-          sales: {
-            required: "Please enter sales manager name"
-          },
-          supervisor: {
-            required: "Please enter supervisor name"
-          },
-          franchise: {
-            required: "Please enter franchise"
-          },
-          mobile: {
-            required: "Please enter mobile number",
-            digits: "Only digits are allowed",
-            minlength: "Mobile number must be 10 digits",
-            maxlength: "Mobile number must be 10 digits"
-          },
-          email: {
-            required: "Please enter email",
-            email: "Enter a valid email address"
-          },
-          dob: {
-            required: "Please enter date of birth",
-            date: "Enter a valid date"
-          },
-          date_of_anniversary: {
-            date: "Enter a valid date"
-          },
-          pan: {
-            required: "Please enter PAN number",
-            minlength: "PAN must be 10 characters",
-            maxlength: "PAN must be 10 characters",
-            pattern: "PAN format should be e.g., ABCDE1234F"
-          },
-          aadhar: {
-            required: "Please enter Aadhar number",
-            digits: "Only digits are allowed",
-            minlength: "Aadhar must be 12 digits",
-            maxlength: "Aadhar must be 12 digits"
-          },
-          address: {
-            required: "Please enter address"
-          },
-          city: {
-            required: "Please enter city"
-          },
-          state: {
-            required: "Please enter state"
-          },
-          pincode: {
-            required: "Please enter pincode",
-            digits: "Only digits are allowed",
-            minlength: "Pincode must be 6 digits",
-            maxlength: "Pincode must be 6 digits",
-            pattern: "Invalid pincode format"
-          }
-        },
-        errorElement: "div",
-        errorPlacement: function (error, element) {
-          error.addClass("text-danger");
-          error.insertAfter(element);
-        },
-        submitHandler: function (form) {
-          $("#loader").show();  // optional loader logic
-          form.submit();
-        }
-      });
-    });
-  </script>
+
   
 
 
@@ -1835,155 +1689,6 @@
     });
 </script>
 
-<script>
-    $(document).ready(function () {
-      $("#referralForm").validate({
-        rules: {
-          name: {
-            required: true,
-            minlength: 3
-          },
-          user_role: {
-            required: true
-          },
-          branch: {
-            required: true
-          },
-          sales: {
-            required: true
-          },
-          supervisor: {
-            required: true
-          },
-          franchise: {
-            required: true
-          },
-          mobile: {
-            required: true,
-            digits: true,
-            minlength: 10,
-            maxlength: 10
-          },
-          email: {
-            required: true,
-            email: true
-          },
-          dob: {
-            required: true,
-            date: true
-          },
-          date_of_anniversary: {
-            date: true
-          },
-          pan: {
-            required: true,
-            minlength: 10,
-            maxlength: 10,
-            pattern: "[A-Z]{5}[0-9]{4}[A-Z]{1}"
-          },
-          aadhar: {
-            required: true,
-            minlength: 12,
-            maxlength: 12,
-            digits: true
-          },
-          address: {
-            required: true
-          },
-          city: {
-            required: true
-          },
-          state: {
-            required: true
-          },
-          pincode: {
-            required: true,
-            digits: true,
-            minlength: 6,
-            maxlength: 6,
-            pattern: /^[1-9][0-9]{5}$/
-          }
-        },
-        messages: {
-          name: {
-            required: "Please enter name",
-            minlength: "Name must be at least 3 characters"
-          },
-          user_role: {
-            required: "Please select user role"
-          },
-          branch: {
-            required: "Please enter branch"
-          },
-          sales: {
-            required: "Please enter sales manager name"
-          },
-          supervisor: {
-            required: "Please enter supervisor name"
-          },
-          franchise: {
-            required: "Please enter franchise"
-          },
-          mobile: {
-            required: "Please enter mobile number",
-            digits: "Only digits are allowed",
-            minlength: "Mobile number must be 10 digits",
-            maxlength: "Mobile number must be 10 digits"
-          },
-          email: {
-            required: "Please enter email",
-            email: "Enter a valid email address"
-          },
-          dob: {
-            required: "Please enter date of birth",
-            date: "Enter a valid date"
-          },
-          date_of_anniversary: {
-            date: "Enter a valid date"
-          },
-          pan: {
-            required: "Please enter PAN number",
-            minlength: "PAN must be 10 characters",
-            maxlength: "PAN must be 10 characters",
-            pattern: "PAN format should be e.g., ABCDE1234F"
-          },
-          aadhar: {
-            required: "Please enter Aadhar number",
-            digits: "Only digits are allowed",
-            minlength: "Aadhar must be 12 digits",
-            maxlength: "Aadhar must be 12 digits"
-          },
-          address: {
-            required: "Please enter address"
-          },
-          city: {
-            required: "Please enter city"
-          },
-          state: {
-            required: "Please enter state"
-          },
-          pincode: {
-            required: "Please enter pincode",
-            digits: "Only digits are allowed",
-            minlength: "Pincode must be 6 digits",
-            maxlength: "Pincode must be 6 digits",
-            pattern: "Invalid pincode format"
-          }
-        },
-        errorElement: "div",
-        errorPlacement: function (error, element) {
-          error.addClass("text-danger");
-          error.insertAfter(element);
-        },
-        submitHandler: function (form) {
-          $("#loader").show();  // optional loader logic
-          form.submit();
-        }
-      });
-    });
-  </script>
-  
-
 
 <script>
     $(document).ready(function () {
@@ -1996,6 +1701,18 @@
       $.validator.addMethod("indianPincode", function (value, element) {
         return this.optional(element) || /^[1-9][0-9]{5}$/.test(value);
       }, "Invalid pincode format");
+
+      $.validator.addMethod("pastDate", function(value, element) {
+      if (this.optional(element)) {
+        return true;
+      }
+      // parse YYYY-MM-DD
+      var parts = value.split("-");
+      var input = new Date(parts[0], parts[1] - 1, parts[2]);
+      var today = new Date();
+      today.setHours(0,0,0,0);
+      return input < today;
+    }, "Date of birth must be in the past");
   
       $("#referralForm").validate({
         rules: {
@@ -2034,7 +1751,8 @@
           },
           dob: {
             required: true,
-            date: true
+            date: true,
+            pastDate: true   // checks it’s before today
           },
           date_of_anniversary: {
             date: true
@@ -2105,7 +1823,8 @@
           },
           dob: {
             required: "Please enter date of birth",
-            date: "Enter a valid date"
+            date: "Enter a valid date",
+            pastDate: "Date of birth must be before today"
           },
           date_of_anniversary: {
             date: "Enter a valid date"
@@ -2142,7 +1861,11 @@
         errorElement: "div",
         errorPlacement: function (error, element) {
           error.addClass("text-danger");
+          if (element.attr("name") == "dob") {
+          error.appendTo("#dob-error"); // Target custom error div for DOB
+        } else {
           error.insertAfter(element);
+        }
         },
         submitHandler: function (form) {
           $("#loader").show();  // Optional loader
