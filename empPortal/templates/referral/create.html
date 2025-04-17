@@ -42,7 +42,7 @@ Create Referral
           <div class="row">
 
             <div class="col-sm-12">
-              <div class="card box-shadow-none p-md-5 p-3">
+              <div class="card box-shadow-none p-md-4 p-3">
                 <div class="card-body px-0 pb-0 pt-0">
 
 
@@ -54,118 +54,118 @@ Create Referral
 
                     <div class="row">
                       <!-- Name -->
-                      <div class="form-group col-md-6">
-                        <label for="name">Name</label>
-                        <input type="text" class="form-control name" name="name" id="name" placeholder="Enter Name"
+                      <div class="form-group col-md-6 col-lg-4">
+                        <label class="form-lbl" for="name">Name</label>
+                        <input type="text" class="form-field" name="name" id="name" placeholder="Enter Name"
                           maxlength="255" value="{{ referral.name|default_if_none:'' }}">
                       </div>
 
                       <!-- User Role -->
-                      <div class="form-group col-md-6">
-                        <label for="user_role">User Role</label>
-                        <input type="text" class="form-control" name="user_role" id="user_role"
+                      <div class="form-group col-md-6 col-lg-4">
+                        <label class="form-lbl" for="user_role">User Role</label>
+                        <input type="text" class="form-field" name="user_role" id="user_role"
                           placeholder="Enter User Role" value="{{ referral.user_role|default_if_none:'' }}">
                       </div>
 
                       <!-- Branch -->
-                      <div class="form-group col-md-6">
-                        <label for="branch">Branch</label>
-                        <input type="text" class="form-control" name="branch" id="branch" placeholder="Enter Branch"
+                      <div class="form-group col-md-6 col-lg-4">
+                        <label class="form-lbl" for="branch">Branch</label>
+                        <input type="text" class="form-field" name="branch" id="branch" placeholder="Enter Branch"
                           maxlength="50" value="{{ referral.branch|default_if_none:'' }}">
                       </div>
 
                       <!-- Sales -->
-                      <div class="form-group col-md-6">
-                        <label for="sales">Sales Manager</label>
-                        <input type="text" class="form-control" name="sales" id="sales" placeholder="Enter Sales Manager Name"
+                      <div class="form-group col-md-6 col-lg-4">
+                        <label class="form-lbl" for="sales">Sales Manager</label>
+                        <input type="text" class="form-field" name="sales" id="sales" placeholder="Enter Sales Manager Name"
                           maxlength="50" value="{{ referral.sales|default_if_none:'' }}">
                       </div>
 
                       <!-- Supervisor -->
-                      <div class="form-group col-md-6">
-                        <label for="supervisor">Supervisor</label>
-                        <input type="text" class="form-control" name="supervisor" id="supervisor" maxlength="50"
+                      <div class="form-group col-md-6 col-lg-4">
+                        <label class="form-lbl" for="supervisor">Supervisor</label>
+                        <input type="text" class="form-field" name="supervisor" id="supervisor" maxlength="50"
                           placeholder="Enter Supervisor" value="{{ referral.supervisor|default_if_none:'' }}">
                       </div>
 
                       <!-- Franchise -->
-                      <div class="form-group col-md-6">
-                        <label for="franchise">Franchise</label>
-                        <input type="text" class="form-control" name="franchise" id="franchise" maxlength="50"
+                      <div class="form-group col-md-6 col-lg-4">
+                        <label class="form-lbl" for="franchise">Franchise</label>
+                        <input type="text" class="form-field" name="franchise" id="franchise" maxlength="50"
                           placeholder="Enter Franchise" value="{{ referral.franchise|default_if_none:'' }}">
                       </div>
 
                       <!-- Mobile Number -->
-                      <div class="form-group col-md-6">
-                        <label for="mobile">Mobile</label>
-                        <input type="tel" class="form-control mobile" name="mobile" id="mobile"
+                      <div class="form-group col-md-6 col-lg-4">
+                        <label class="form-lbl" for="mobile">Mobile</label>
+                        <input type="tel" class="form-field mobile" name="mobile" id="mobile"
                           placeholder="Enter Mobile Number" value="{{ referral.mobile|default_if_none:'' }}">
                       </div>
 
                       <!-- Email -->
-                      <div class="form-group col-md-6">
-                        <label for="email">Email</label>
-                        <input type="email" class="form-control" name="email" id="email" placeholder="Enter Email"
+                      <div class="form-group col-md-6 col-lg-4">
+                        <label class="form-lbl" for="email">Email</label>
+                        <input type="email" class="form-field" name="email" id="email" placeholder="Enter Email"
                           maxlength="255" value="{{ referral.email|default_if_none:'' }}">
                       </div>
 
                       <!-- Date of Birth -->
-                      <div class="form-group col-md-6">
-                        <label for="dob">Date of Birth</label>
-                        <input type="date" class="form-control" name="dob" id="dob" 
-                          value="{{ referral.dob|default_if_none:'' }}" >
+                      <div class="form-group col-md-6 col-lg-4">
+                        <label class="form-lbl" for="dob">Date of Birth</label>
+                        <input type="date" class="form-field dob_datepicker" name="dob" id="dob" 
+                          value="{{ referral.dob|default_if_none:'' }}">
                         <span class="text-danger" id="dob-error"></span>  <!-- Error message will be dynamically placed here -->
                       </div>
 
                       <!-- Date of Anniversary -->
-                      <div class="form-group col-md-6">
-                        <label for="anniversary">Date of Anniversary</label>
-                        <input type="date" class="form-control " name="date_of_anniversary" id="anniversary"
+                      <div class="form-group col-md-6 col-lg-4">
+                        <label class="form-lbl" for="anniversary">Date of Anniversary</label>
+                        <input type="date" class="form-field common_datepicker" name="date_of_anniversary" id="anniversary"
                           value="{{ referral.date_of_anniversary|default_if_none:''  }}">
                       </div>
 
                       <!-- PAN Card Number -->
-                      <div class="form-group col-md-6">
-                        <label for="pan">PAN Card Number</label>
-                        <input type="text" class="form-control pan" name="pan_card_number" id="pan_card_number"
+                      <div class="form-group col-md-6 col-lg-4">
+                        <label class="form-lbl" for="pan">PAN Card Number</label>
+                        <input type="text" class="form-field pan" name="pan_card_number" id="pan_card_number"
                           placeholder="Enter PAN Card Number" value="{{ referral.pan_card_number|default_if_none:'' }}"
                           maxlength="10" minlength="10">
                       </div>
 
                       <!-- Aadhar Number -->
-                      <div class="form-group col-md-6">
-                        <label for="aadhar">Aadhar Number</label>
-                        <input type="text" class="form-control aadhar" name="aadhar" id="aadhar"
+                      <div class="form-group col-md-6 col-lg-4">
+                        <label class="form-lbl" for="aadhar">Aadhar Number</label>
+                        <input type="text" class="form-field aadhar" name="aadhar" id="aadhar"
                           placeholder="Enter Aadhar Number" pattern="[0-9]{12}" minlength="12" maxlength="12"
                           value="{{ referral.aadhar_no|default_if_none:'' }}">
                       </div>
 
                       <!-- Pincode -->
-                      <div class="form-group col-md-6">
-                        <label for="pincode">Pincode</label>
-                        <input type="text" class="form-control" name="pincode" id="pincode" placeholder="Enter Pincode"
+                      <div class="form-group col-md-6 col-lg-4">
+                        <label class="form-lbl" for="pincode">Pincode</label>
+                        <input type="text" class="form-field" name="pincode" id="pincode" placeholder="Enter Pincode"
                           value="{{ referral.pincode|default_if_none:'' }}" minlength="6" maxlength="6">
                       </div>
 
                       
                       <!-- State -->
-                      <div class="form-group col-md-6">
-                        <label for="state">State</label>
-                        <input type="text" class="form-control" name="state" id="state" placeholder="Enter State"
+                      <div class="form-group col-md-6 col-lg-4">
+                        <label class="form-lbl" for="state">State</label>
+                        <input type="text" class="form-field" name="state" id="state" placeholder="Enter State"
                           value="{{ referral.state|default_if_none:'' }}">
                       </div>
 
                       <!-- City -->
-                      <div class="form-group col-md-6">
-                        <label for="city">City</label>
-                        <input type="text" class="form-control" name="city" id="city" placeholder="Enter City"
+                      <div class="form-group col-md-6 col-lg-4">
+                        <label class="form-lbl" for="city">City</label>
+                        <input type="text" class="form-field" name="city" id="city" placeholder="Enter City"
                           value="{{ referral.city|default_if_none:'' }}">
                       </div>
 
                       <!-- Address -->
                       <div class="form-group col-md-12">
-                        <label for="address">Address</label>
-                        <textarea class="form-control" name="address" id="address"
+                        <label class="form-lbl" for="address">Address</label>
+                        <textarea class="form-field" name="address" id="address"
                           placeholder="Enter Address">{{ referral.address|default_if_none:'' }}</textarea>
                       </div>
 
@@ -174,9 +174,11 @@ Create Referral
                     </div>
 
                     <!-- Submit Button -->
-                    <button type="submit" class="btn btn-primary mt-3">
-                      {% if referral %}Update Referral{% else %}Add Referral{% endif %}
-                    </button>
+                     <div class="d-flex justify-content-end">
+                      <button type="submit" class="form-submit-btn mt-3">
+                        {% if referral %}Update Referral{% else %}Add Referral{% endif %}
+                      </button>
+                    </div>  
                   </form>
 
                     
