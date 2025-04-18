@@ -789,14 +789,14 @@ def export_commission_data(request):
             policy.policy_premium or "-",
             policy.od_premium or "-",
             policy.tp_premium or "-",
-            agent_payment_info.agent_od_comm if role_id == 2 and agent_payment_info else "-",
-            agent_payment_info.agent_od_amount if role_id == 2 and agent_payment_info else "-",
-            agent_payment_info.agent_tp_comm if role_id == 2 and agent_payment_info else "-",
-            agent_payment_info.agent_tp_amount if role_id == 2 and agent_payment_info else "-",
-            agent_payment_info.agent_net_comm if role_id == 2 and agent_payment_info else "-",
-            agent_payment_info.agent_net_amount if role_id == 2 and agent_payment_info else "-",
-            agent_payment_info.agent_incentive_amount if role_id == 2 and agent_payment_info else "-",
-            agent_payment_info.agent_total_comm_amount if role_id == 2 and agent_payment_info else "-",
+            agent_payment_info.agent_od_comm if agent_payment_info else "-",
+            agent_payment_info.agent_od_amount if agent_payment_info else "-",
+            agent_payment_info.agent_tp_comm if agent_payment_info else "-",
+            agent_payment_info.agent_tp_amount if agent_payment_info else "-",
+            agent_payment_info.agent_net_comm if agent_payment_info else "-",
+            agent_payment_info.agent_net_amount if agent_payment_info else "-",
+            agent_payment_info.agent_incentive_amount if agent_payment_info else "-",
+            agent_payment_info.agent_total_comm_amount if agent_payment_info else "-",
         ]
 
         # Add insurer-specific fields if user is admin (user_id == 1)
