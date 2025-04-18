@@ -116,6 +116,15 @@ def create_policy_document(file_id):
         net_percentage = 0.0
         tp_percentage = 0.0
         
+    if insurer_rate:
+        insurer_od_percentage = insurer_rate.od_percentage
+        insurer_net_percentage = insurer_rate.net_percentage
+        insurer_tp_percentage = insurer_rate.tp_percentage
+    else:
+        insurer_od_percentage = 0.0
+        insurer_net_percentage = 0.0
+        insurer_tp_percentage = 0.0
+        
     try:
         policy = PolicyDocument.objects.create(
             filename=file_obj.filename,
@@ -125,9 +134,9 @@ def create_policy_document(file_id):
             od_percent=od_percentage,
             tp_percent=tp_percentage,
             net_percent=net_percentage,
-            insurer_tp_commission   = insurer_rate.tp_percentage,
-            insurer_od_commission   = insurer_rate.od_percentage,
-            insurer_net_commission  = insurer_rate.net_percentage,
+            insurer_tp_commission   = insurer_tp_percentage,
+            insurer_od_commission   = insurer_od_percentage,
+            insurer_net_commission  = insurer_net_percentage,
             status=0,
             bulk_log_id=bulk_log_id
         )
