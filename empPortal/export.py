@@ -22,7 +22,7 @@ from django.http import HttpResponse
 from django.contrib import messages
 from .models import PolicyDocument
 from faker import Faker 
-from .models import PolicyDocument ,Commission
+from .models import PolicyDocument ,Commission, AgentPaymentDetails, InsurerPaymentDetails
 import openpyxl
 from openpyxl.styles import Font, PatternFill
 from django.http import HttpResponse
@@ -699,6 +699,122 @@ def download_policy_data(request):
                 insurer_od_percent, insurer_od_commission, insurer_tp_percent, insurer_tp_commission,
                 insurer_net_percent, insurer_net_commission, "-", insurer_total_commission,
                 profit_loss, "-", "-", profit_loss
+            ])
+        ws.append(row_data)
+
+    # Generate Excel response
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename="policy_data.xlsx"'
+    wb.save(response)
+    return response
+
+def export_commission_data(request):
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Policy Data"
+    user_id = request.user.id
+
+    # Define headers based on role
+    full_headers = [
+        "Policy Month", "Agent Name", "SM Name", "Franchise Name", "Insurer Name", "S.P. Name",
+        "Issue Date", "Risk Start Date", "Payment Status", "Insurance Company", "Policy Type",
+        "Policy No", "Insured Name", "Vehicle Type", "Vehicle Make/Model", "Gross Weight", 
+        "Reg. No.", "MFG Year", "Sum Insured", "Gross Prem.", "GST", "Net Prem.", "OD Prem.", 
+        "TP Prem.", "Agent Comm.% OD", "Agent OD Amount", "Agent TP Comm", "Agent TP Amount", 
+        "Agent Comm.% Net", "Agent Net Amt", "Agent Bonus", "Agent Total Comm.", 
+        "Franchise Comm.% OD", "Franchise OD Amount", "Franchise TP Comm", "Franchise Agent TP Amount", 
+        "Franchise Agent Comm.% Net", "Franchise Agent Net Amt", "Franchise Bonus", "Franchise Total Comm.", 
+        "Insurer Comm.% OD", "Insurer OD Amount", "Insurer TP Comm", "Insurer TP Amount", 
+        "Insurer Comm.% Net", "Insurer Net Amt", "Insurer Bonus", "Insurer Total Comm.", 
+        "Profit/Loss", "TDS %", "TDS Amount", "Net Profit"
+    ]
+    
+    limited_headers = full_headers[:32]
+    headers = full_headers if user_id == 1 else limited_headers
+
+    header_fill = PatternFill(start_color="0000FF", end_color="0000FF", fill_type="solid")
+    header_font = Font(bold=True, color="FFFFFF")
+
+    for col_num, header in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col_num, value=header)
+        cell.fill = header_fill
+        cell.font = header_font
+    id  = request.user.id
+    
+    # Fetch policies
+    role_id = Users.objects.filter(id=id).values_list('role_id', flat=True).first()
+    if role_id != 1:
+        policies = PolicyDocument.objects.filter(status=6,rm_id=id).all().order_by('-id')
+    else:
+        policies = PolicyDocument.objects.filter(status=6).all().order_by('-id')
+
+    for policy in policies:
+        issue_month = "-"
+        issue_date = "-"
+        if policy.policy_start_date:
+            try:
+                start_date_obj = policy.policy_start_date if isinstance(policy.policy_start_date, datetime) else datetime.strptime(policy.policy_start_date, "%Y-%m-%d")
+                issue_month = start_date_obj.strftime("%b-%Y")
+                issue_date = start_date_obj.strftime("%m-%d-%Y")
+            except Exception as e:
+                print(f"Date conversion error: {e}")
+        risk_start_date = policy.start_date or "-"
+        
+        agent_payment_info = AgentPaymentDetails.objects.filter(policy_number=policy.policy_number).first()
+        insurer_payment_info = InsurerPaymentDetails.objects.filter(policy_number=policy.policy_number).first()
+        
+        admin_id = policy.rm_id  
+        role_id = Users.objects.filter(id=admin_id).values_list('role_id', flat=True).first()
+        
+        row_data = [
+            issue_month,
+            policy.rm_name or "-",
+            "-", "-", "-",
+            settings.INSURER_NAME or "-",
+            issue_date,
+            risk_start_date,
+            'Confirmed',
+            policy.insurance_provider or "-",
+            policy.policy_type or "-",
+            policy.policy_number or "-",
+            policy.holder_name or "-",
+            policy.vehicle_type or "-",
+            f"{policy.vehicle_make}/{policy.vehicle_model}" if policy.vehicle_make and policy.vehicle_model else "-",
+            policy.vehicle_gross_weight or "-",
+            policy.vehicle_number or "-",
+            policy.vehicle_manuf_date or "-",
+            policy.sum_insured or "-",
+            policy.policy_total_premium or "-",
+            policy.gst or "-",
+            policy.policy_premium or "-",
+            policy.od_premium or "-",
+            policy.tp_premium or "-",
+            agent_payment_info.agent_od_comm if role_id == 2 and agent_payment_info else "-",
+            agent_payment_info.agent_od_amount if role_id == 2 and agent_payment_info else "-",
+            agent_payment_info.agent_tp_comm if role_id == 2 and agent_payment_info else "-",
+            agent_payment_info.agent_tp_amount if role_id == 2 and agent_payment_info else "-",
+            agent_payment_info.agent_net_comm if role_id == 2 and agent_payment_info else "-",
+            agent_payment_info.agent_net_amount if role_id == 2 and agent_payment_info else "-",
+            agent_payment_info.agent_incentive_amount if role_id == 2 and agent_payment_info else "-",
+            agent_payment_info.agent_total_comm_amount if role_id == 2 and agent_payment_info else "-",
+        ]
+
+        # Add insurer-specific fields if user is admin (user_id == 1)
+        if user_id == 1:
+            row_data.extend([
+                None, None, None, None, None, None, None, None,
+                insurer_payment_info.insurer_od_comm if insurer_payment_info and insurer_payment_info.insurer_od_comm else "-",
+                insurer_payment_info.insurer_od_amount if insurer_payment_info and insurer_payment_info.insurer_od_amount else "-",
+                insurer_payment_info.insurer_tp_comm if insurer_payment_info and insurer_payment_info.insurer_tp_comm else "-",
+                insurer_payment_info.insurer_tp_amount if insurer_payment_info and insurer_payment_info.insurer_tp_amount else "-",
+                insurer_payment_info.insurer_net_comm if insurer_payment_info and insurer_payment_info.insurer_net_comm else "-",
+                insurer_payment_info.insurer_net_amount if insurer_payment_info and insurer_payment_info.insurer_net_amount else "-",
+                insurer_payment_info.insurer_incentive_amount if insurer_payment_info and insurer_payment_info.insurer_incentive_amount else "-",
+                insurer_payment_info.insurer_total_comm_amount if insurer_payment_info and insurer_payment_info.insurer_total_comm_amount else "-",
+                insurer_payment_info.insurer_balance_amount if insurer_payment_info and insurer_payment_info.insurer_balance_amount else "-",
+                insurer_payment_info.insurer_tds if insurer_payment_info and insurer_payment_info.insurer_tds else "-",
+                insurer_payment_info.insurer_tds_amount if insurer_payment_info and insurer_payment_info.insurer_tds_amount else "-",
+                insurer_payment_info.insurer_balance_amount if insurer_payment_info and insurer_payment_info.insurer_balance_amount else "-"
             ])
         ws.append(row_data)
 
