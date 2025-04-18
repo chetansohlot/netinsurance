@@ -925,10 +925,12 @@ def add_partner(request):
             errors['email'] = 'This email is already registered.'
         if not mobile:
             errors['mobile'] = 'Mobile Number is required.'
-        elif not mobile.isdigit():
+        if not mobile.isdigit():
             errors['mobile'] = 'Mobile number must contain only digits.'
         elif len(mobile) != 10:
             errors['mobile'] = 'Mobile number must be 10 digits long.'
+        elif mobile[0] not in '6789':
+            errors['mobile'] = 'Mobile number must start with 6, 7, 8, or 9.'
         elif Users.objects.filter(phone=mobile).exists():
             errors['mobile'] = 'This mobile number is already registered.'
         if not password:
@@ -955,6 +957,8 @@ def add_partner(request):
             errors['pan_no'] = 'PAN Number is required.'
         elif not re.match(r'^[A-Z]{5}[0-9]{4}[A-Z]$', pan_no):
             errors['pan_no'] = 'Invalid PAN number format. Format should be ABCDE1234F.'
+        elif Users.objects.filter(pan_no=pan_no).exists():
+            errors['pan_no'] = 'This PAN number is already registered.'
 
         # If there are errors, re-render the form with field values and errors.
         if errors:
@@ -1003,66 +1007,85 @@ def add_partner(request):
 
     return render(request, 'members/add_partner.html')
 
+logger = logging.getLogger(__name__)
 
 def upload_excel_users(request):
     if request.method == "POST" and request.FILES.get("excel_file"):
         excel_file = request.FILES["excel_file"]
-
-        # ✅ Check file extension
         ext = os.path.splitext(excel_file.name)[1]
+
         if ext.lower() not in [".xlsx", ".xls"]:
             messages.error(request, "Only Excel files (.xlsx, .xls) are allowed!")
-            return redirect("members")
+            return redirect("upload-partners-excel")
 
         try:
             wb = openpyxl.load_workbook(excel_file)
             sheet = wb.active
-            valid_data_found = False
+
+            inserted = 0
             duplicate_data_found = False
 
             for row in sheet.iter_rows(min_row=2, values_only=True):
                 full_name, gender_str, email, mobile, password, dob, pan_no = [str(cell).strip() if cell else '' for cell in row]
 
-                if not all([full_name, gender_str, email, mobile, password, dob, pan_no]):
+                # ---------- VALIDATION ----------
+                if not full_name:
+                    logger.warning(f"Skipped: Missing full name - Row: {row}")
                     continue
 
-                gender_map = {'male': 1, 'female': 2}
-                gender = gender_map.get(gender_str.lower())
-                if not gender:
+                name_parts = full_name.split()
+                first_name = name_parts[0]
+                last_name = " ".join(name_parts[1:]) if len(name_parts) > 1 else ""
+
+                if gender_str.lower() not in ['male', 'female']:
+                    logger.warning(f"Skipped: Invalid gender - {gender_str}")
+                    continue
+                gender = 1 if gender_str.lower() == "male" else 2
+
+                if not email or not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email):
+                    logger.warning(f"Skipped: Invalid email - {email}")
                     continue
 
-                if not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email):
+                if not mobile or not mobile.isdigit() or len(mobile) != 10 or mobile[0] not in "6789":
+                    logger.warning(f"Skipped: Invalid mobile - {mobile}")
                     continue
 
-                if Users.objects.filter(email=email).exists() or Users.objects.filter(phone=mobile).exists():
-                    duplicate_data_found = True
-                    continue
-
-                if not mobile.isdigit() or len(mobile) != 10:
+                if not password or len(password) < 6:
+                    logger.warning(f"Skipped: Password too short - {full_name}")
                     continue
 
                 try:
                     dob_date = parser.parse(dob).date()
                     today = datetime.date.today()
-                    if dob_date >= today or ((today - dob_date).days // 365) < 18:
+                    age = (today - dob_date).days // 365
+                    if dob_date >= today or age < 18:
+                        logger.warning(f"Skipped: Invalid DOB or under 18 - {dob}")
                         continue
-                except:
+                except Exception as e:
+                    logger.warning(f"Skipped: DOB parsing error - {dob}, Error: {e}")
                     continue
 
-                if not re.match(r'^[A-Z]{5}[0-9]{4}[A-Z]$', pan_no.upper()):
+                if not pan_no or not re.match(r'^[A-Z]{5}[0-9]{4}[A-Z]$', pan_no.upper()):
+                    logger.warning(f"Skipped: Invalid PAN - {pan_no}")
                     continue
 
-                name_parts = full_name.split()
-                first_name = name_parts[0] if name_parts else ''
-                last_name = " ".join(name_parts[1:]) if len(name_parts) > 1 else ''
+                # ---------- DUPLICATE CHECK ----------
+                if Users.objects.filter(email=email).exists() or \
+                   Users.objects.filter(phone=mobile).exists() or \
+                   Users.objects.filter(pan_no=pan_no.upper()).exists():
+                    logger.info(f"Duplicate Found: {email}, {mobile}, {pan_no}")
+                    duplicate_data_found = True
+                    continue
 
+                # ---------- USER GEN ID ----------
                 last_user = Users.objects.order_by("-id").first()
-                if last_user and last_user.user_gen_id and last_user.user_gen_id.startswith("UR-"):
+                if last_user and last_user.user_gen_id.startswith("UR-"):
                     last_id = int(last_user.user_gen_id.split("-")[1])
                     user_gen_id = f"UR-{last_id + 1:04d}"
                 else:
                     user_gen_id = "UR-0001"
 
+                # ---------- SAVE TO DATABASE ----------
                 hashed_password = make_password(password)
 
                 Users.objects.create(
@@ -1082,16 +1105,18 @@ def upload_excel_users(request):
                     is_active=1
                 )
 
-                valid_data_found = True
+                inserted += 1
 
-            if valid_data_found:
-                messages.success(request, "Excel data uploaded successfully!")
+            # ---------- FINAL MESSAGE ----------
+            if inserted > 0:
+                messages.success(request, f"{inserted} leads uploaded successfully.")
             elif duplicate_data_found:
-                messages.warning(request, "This data already exists or this file was already uploaded!")
+                messages.warning(request, "No new leads were inserted. All records were duplicates.")
             else:
-                messages.warning(request, "No valid data found in Excel file!")
+                messages.info(request, "No valid data found in Excel file!")
 
         except Exception as e:
+            logger.error(f"Excel processing error: {e}")
             messages.error(request, f"Error processing file: {e}")
 
         return redirect("upload-partners-excel")

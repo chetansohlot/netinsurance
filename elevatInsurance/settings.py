@@ -271,6 +271,7 @@ LOGGING = {
             'filename': 'policies.log',
             'formatter': 'verbose',
         },
+
     },
     'loggers': {
         # For all app modules
@@ -283,5 +284,6 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': False,
         }
+        
     },
 }

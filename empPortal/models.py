@@ -148,7 +148,7 @@ class Leads(models.Model):
         choices=[('MOTOR', 'MOTOR'), ('HEALTH', 'HEALTH'), ('TERM', 'TERM')], 
         default='MOTOR'
     )  # Type of lead (MOTOR, HEALTH, TERM)
-    source_leads = models.ForeignKey(SourceMaster,db_column='source_leads',on_delete=models.CASCADE)
+    #source_leads = models.ForeignKey(SourceMaster,db_column='source_leads',on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'leads'  # This defines the database table name

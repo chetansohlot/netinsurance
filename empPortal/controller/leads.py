@@ -40,8 +40,9 @@ import pandas as pd
 from django.core.files.storage import default_storage
 import openpyxl
 from django.db.models import Max
-import re
-
+import re,logging
+from dateutil import parser
+logger = logging.getLogger(__name__)
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 
 app = FastAPI()
@@ -247,7 +248,7 @@ def bulk_upload_leads(request):
 
         if not excel_file:
             messages.error(request, "Please select a file to upload.")
-            return redirect('bulk-upload-leads')
+            return redirect('leads-mgt')
 
         if not excel_file.name.endswith('.xlsx'):
             messages.error(request, "Only .xlsx files are supported.")
@@ -260,48 +261,103 @@ def bulk_upload_leads(request):
             # Get latest lead_id once before loop
             latest_lead = Leads.objects.aggregate(Max('lead_id'))['lead_id__max']
             start_num = 1
-
             if latest_lead:
                 match = re.search(r'L(\d+)', latest_lead)
                 if match:
                     start_num = int(match.group(1)) + 1
 
             inserted = 0
+            duplicate_data_found = False
 
             for index, row in enumerate(sheet.iter_rows(min_row=2, values_only=True), start=2):
-                if len(row) < 13:
-                    messages.warning(request, f"Row {index} skipped due to missing data.")
+                if len(row) < 13 or any(cell is None for cell in row[:13]):
+                    logger.warning(f"Row {index} skipped: Incomplete data.")
+                    continue
+
+                # Extract values
+                mobile_number = str(row[0]).strip()
+                email_address = str(row[1]).strip()
+                quote_date = row[2]
+                name_as_per_pan = str(row[3]).strip()
+                pan_card_number = str(row[4]).strip().upper()
+                date_of_birth = row[5]
+                state = str(row[6]).strip()
+                city = str(row[7]).strip()
+                pincode = str(row[8]).strip()
+                lead_source = str(row[9]).strip()
+                address = str(row[10]).strip()
+                lead_description = str(row[11]).strip()
+                lead_type = str(row[12]).strip()
+
+                # VALIDATION
+                if not re.fullmatch(r'[6-9]\d{9}', mobile_number):
+                    logger.warning(f"Row {index} skipped: Invalid mobile number - {mobile_number}")
+                    continue
+
+                if not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email_address):
+                    logger.warning(f"Row {index} skipped: Invalid email - {email_address}")
+                    continue
+
+                if not re.match(r'^[A-Z]{5}[0-9]{4}[A-Z]$', pan_card_number):
+                    logger.warning(f"Row {index} skipped: Invalid PAN - {pan_card_number}")
                     continue
 
                 try:
-                    lead_id = f"L{start_num:05d}"  # Generate like L00001
-                    start_num += 1  # Increment for next
+                    dob = parser.parse(str(date_of_birth)).date()
+                except Exception as e:
+                    logger.warning(f"Row {index} skipped: Invalid DOB - {date_of_birth}")
+                    continue
 
+                # Duplicate Check
+                if Leads.objects.filter(
+                    Q(mobile_number=mobile_number) |
+                    Q(email_address=email_address) |
+                    Q(pan_card_number=pan_card_number)
+                ).exists():
+                    logger.info(f"Row {index} skipped: Duplicate entry - Mobile: {mobile_number}, Email: {email_address}, PAN: {pan_card_number}")
+                    duplicate_data_found = True
+                    continue
+
+                # Generate lead_id
+                lead_id = f"L{start_num:05d}"
+                start_num += 1
+
+                # Insert into DB
+                try:
                     Leads.objects.create(
                         lead_id=lead_id,
-                        mobile_number=row[0],
-                        email_address=row[1],
-                        quote_date=row[2],
-                        name_as_per_pan=row[3],
-                        pan_card_number=row[4],
-                        date_of_birth=row[5],
-                        state=row[6],
-                        city=row[7],
-                        pincode=row[8],
-                        lead_source=row[9],
-                        address=row[10],
-                        lead_description=row[11],
-                        lead_type=row[12],
+                        mobile_number=mobile_number,
+                        email_address=email_address,
+                        quote_date=quote_date,
+                        name_as_per_pan=name_as_per_pan,
+                        pan_card_number=pan_card_number,
+                        date_of_birth=dob,
+                        state=state,
+                        city=city,
+                        pincode=pincode,
+                        lead_source=lead_source,
+                        address=address,
+                        lead_description=lead_description,
+                        lead_type=lead_type,
                     )
                     inserted += 1
 
-                except Exception as row_error:
-                    messages.warning(request, f"Error in row {index}: {row_error}")
+                except Exception as e:
+                    logger.error(f"Row {index} error: {e}")
+                    continue
 
-            messages.success(request, f"{inserted} leads uploaded successfully.")
+            # Final message
+            if inserted > 0:
+                messages.success(request, f"{inserted} leads uploaded successfully.")
+            elif duplicate_data_found:
+                messages.warning(request, "No new leads were inserted. All records were duplicates.")
+            else:
+                messages.info(request, "No valid data found in Excel file!")
+
             return redirect('leads-mgt')
 
         except Exception as e:
+            logger.error(f"Error reading Excel: {e}")
             messages.error(request, f"Error processing file: {e}")
             return redirect('leads-mgt')
 

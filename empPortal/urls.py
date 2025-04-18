@@ -134,6 +134,7 @@ urlpatterns = [
     path('lead-mgt/term-lead', leads.termlead, name='term-lead'),
     path('lead-mgt/lead-view/<int:lead_id>/', leads.viewlead, name='lead-view'),
     path('bulk-upload/', leads.bulk_upload_leads, name='bulk-upload-leads'),
+    
 
     # REFERRAL 
     path('referral-management/bulk-upload/', Referral.ref_bulk_upload, name='referral-bulk-upload'),

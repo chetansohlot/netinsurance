@@ -33,13 +33,7 @@
           <div class="col-md-12">
             <div class="card p-4">
              
-              {% if messages %}
-                <div class="alert alert-info">
-                  {% for message in messages %}
-                    <p class="m-0">{{ message }}</p>
-                  {% endfor %}
-                </div>
-              {% endif %}
+             
 
               <form action="{% url 'add-partner' %}" method="post" autocomplete="off">
                 {% csrf_token %}
@@ -57,6 +51,7 @@
                               pattern="[A-Za-z ]+" 
                               title="Only alphabets and spaces are allowed" 
                               oninput="this.value = this.value.replace(/[^A-Za-z ]/g, '')"
+                              maxlength="100"
                               value="{{ full_name|default:'' }}">
                         {% if errors.full_name %}
                           <small class="text-danger">{{ errors.full_name }}</small>
@@ -98,8 +93,8 @@
                       <!-- Mobile -->
                     <div class="col-md-6 col-lg-4">
                       <div class="form-group">
-                        <label for="mobile" class="form-lbl">Mobile Number <span class="text-danger">*</span></label>
-                        <input type="text" name="mobile" id="mobile" class="form-field shadow-sm rounded-2" placeholder="10-digit Mobile Number" maxlength="10" value="{{ mobile|default:'' }}">
+                        <label for="mobile" class="form-lbl ">Mobile Number <span class="text-danger">*</span></label>
+                        <input type="text" name="mobile" id="mobile" class="form-field shadow-sm rounded-2 mobile" placeholder="10-digit Mobile Number" maxlength="10" value="{{ mobile|default:'' }}">
                         {% if errors.mobile %}
                           <small class="text-danger">{{ errors.mobile }}</small>
                         {% endif %}
@@ -120,8 +115,8 @@
                     <!-- PAN -->
                     <div class="col-md-6 col-lg-4">
                       <div class="form-group">
-                        <label for="pan_no" class="form-lbl">PAN Number <span class="text-danger">*</span></label>
-                        <input type="text" name="pan_no" id="pan_no" class="form-field shadow-sm rounded-2" maxlength="10" placeholder="ABCDE1234F" value="{{ pan_no|default:'' }}">
+                        <label for="pan_no" class="form-lbl ">PAN Number <span class="text-danger">*</span></label>
+                        <input type="text" name="pan_no" id="pan_no" class="form-field shadow-sm rounded-2 pan" maxlength="10" placeholder="ABCDE1234F" value="{{ pan_no|default:'' }}">
                           {% if errors.pan_no %}
                               <small class="text-danger">{{ errors.pan_no }}</small>
                           {% endif %}
