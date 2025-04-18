@@ -114,14 +114,7 @@ def create_or_edit(request, referral_id=None):
 
 
 
-        user_role = request.POST.get("user_role", "").strip()
-        branch = request.POST.get("branch", "").strip()
-        sales = request.POST.get("sales", "").strip()
-        supervisor = request.POST.get("supervisor", "").strip()
-        franchise = request.POST.get("franchise", "").strip()
-        pincode = request.POST.get("pincode", "").strip()
-        city = request.POST.get("city", "").strip()
-        state = request.POST.get("state", "").strip()
+       
 
         # print(aadhar)
 
@@ -160,14 +153,6 @@ def create_or_edit(request, referral_id=None):
             "pincode": pincode,
             "city": city,
             "state": state,
-            "user_role": user_role,
-            "branch": branch,
-            "sales": sales,
-            "supervisor": supervisor,
-            "franchise": franchise,
-            "pincode": pincode,
-            "city": city,
-            "state": state,
             "referral_code": referral_code,
         }
 
@@ -188,7 +173,7 @@ def create_or_edit(request, referral_id=None):
                     today = date.today()
 
                     if dob_date >= today:
-                        messages.error(request,"Date of Birth in Past")
+                        messages.error(request,"Date of birth must be in the past2")
                         return render(request,'referral/create.html',{
                         'referral': form_data,
                         'is_editing': True,
@@ -203,13 +188,11 @@ def create_or_edit(request, referral_id=None):
 
             # Mobile Number -- Required,Format and Uniqueness## ----check
             if not mobile:
-                messages.error(request,"Mobile Number is required.")
-            elif Referral.objects.exclude(id=referral.id).filter(mobile=mobile).exists():                
-                messages.error(request, "Mobile number already exists.")
-                return render(request, 'referral/create.html', {
-                    'referral': form_data,
-                    'is_editing': True,
-                })  
+              messages.error(request, "Mobile Number is required.")
+              return render(request, 'referral/create.html', {'referral': form_data, 'is_editing': True})
+            if Referral.objects.exclude(id=referral.id).filter(mobile=mobile).exists():
+               messages.error(request, "Mobile number already exists.")
+               return render(request, 'referral/create.html', {'referral': form_data, 'is_editing': True})
 
             # For update, exclude current record from uniqueness checks
             # if Referral.objects.exclude(id=referral.id).filter(email=email).exists():
@@ -267,16 +250,17 @@ def create_or_edit(request, referral_id=None):
             #         'is_editing': True,
             #     })
 
+
+            # Email validation
             if not email:
-                messages.error(request, "Email is required.")
-            elif not re.match(r'^[^@]+@[^@]+\.[^@]+$', email):
-                messages.error(request, "Invalid email address.")
-            elif Referral.objects.exclude(id=referral.id).filter(email=email).exists():
+               messages.error(request, "Email is required.")
+               return render(request, 'referral/create.html', {'referral': form_data, 'is_editing': True})
+            if not re.match(r'^[^@]+@[^@]+\.[^@]+$', email):
+               messages.error(request, "Invalid email address.")
+               return render(request, 'referral/create.html', {'referral': form_data, 'is_editing': True})
+            if Referral.objects.exclude(id=referral.id).filter(email=email).exists():
                messages.error(request, "Email already exists.")
-               return render(request, 'referral/create.html', {
-                    'referral': form_data,
-                    'is_editing': True,
-                })
+               return render(request, 'referral/create.html', {'referral': form_data, 'is_editing': True})
 
         
 
@@ -320,13 +304,12 @@ def create_or_edit(request, referral_id=None):
             
              # Mobile Number -- Required,Format and Uniqueness## ----check
             if not mobile:
-                messages.error(request,"Mobile Number is required.")
-            elif mobile and Referral.objects.filter(mobile=mobile).exists():
-                messages.error(request, "Mobile number already exists.")
-                return render(request, 'referral/create.html', {
-                    'referral': form_data,
-                    'is_editing': False,
-                })
+               messages.error(request, "Mobile Number is required.")
+               return render(request, 'referral/create.html', {'referral': form_data, 'is_editing': False})
+            if Referral.objects.filter(mobile=mobile).exists():
+               messages.error(request, "Mobile number already exists.")
+               return render(request, 'referral/create.html', {'referral': form_data, 'is_editing': False})
+
             
             # PAN Card - 1--> Required & 2--> Format
             if not pan_card_number:
@@ -344,7 +327,7 @@ def create_or_edit(request, referral_id=None):
                    today = date.today()
 
                    if dob_date >= today:
-                    messages.error(request,"Date of Birth in Past")
+                    messages.error(request,"Date of birth must be in the past2")
                     return render(request,'referral/create.html',{
                     'referral': form_data,
                     'is_editing': False,
@@ -378,15 +361,15 @@ def create_or_edit(request, referral_id=None):
             
 
             if not email:
-                messages.error(request, "Email is required.")
-            elif not re.match(r'^[^@]+@[^@]+\.[^@]+$', email):
-                messages.error(request, "Invalid email address.")
-            elif Referral.objects.filter(email=email).exists():
-                messages.error(request, "Email already exists.")
-                return render(request, 'referral/create.html', {
-                    'referral': form_data,
-                    'is_editing': False,
-                })  
+               messages.error(request, "Email is required.")
+               return render(request, 'referral/create.html', {'referral': form_data, 'is_editing': False})
+            if not re.match(r'^[^@]+@[^@]+\.[^@]+$', email):
+               messages.error(request, "Invalid email address.")
+               return render(request, 'referral/create.html', {'referral': form_data, 'is_editing': False})
+            if Referral.objects.filter(email=email).exists():
+               messages.error(request, "Email already exists.")
+               return render(request, 'referral/create.html', {'referral': form_data, 'is_editing': False})
+ 
             
             # if not email or "@" not in email:
             #       messages.error(request,"Invalid email address.")
@@ -475,13 +458,22 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.utils.timezone import now
 import re
+from django.db.models import Q
 
 def ref_bulk_upload(request):
     if request.method == "POST":
         excel_file = request.FILES.get('excel_file')
+        ## Excel Fles Validity Checks ##
         if not excel_file:
             messages.error(request, "No file uploaded.")
             return redirect('referral-bulk-upload')
+        elif not excel_file.name.lower().endswith(".xlsx"):
+             messages.error(request,"Invalid file format. Only .xlsx files are allowed.")
+             return redirect('referral-bulk-upload')
+        elif excel_file.size > 5 * 1024 * 1024:
+            messages.error(request,"File too large. Maximum allowed size is 5 MB.")
+            return redirect('referral-bulk-upload')
+
 
         try:
             df = pd.read_excel(excel_file)
@@ -504,12 +496,21 @@ def ref_bulk_upload(request):
                 pan_card_number = str(row.get('Pan Number', '')).strip()
                 aadhar_no = str(row.get('Aadhar Number', '')).strip()
 
-                if not name or not mobile or not email:
+
+                ## Validation In Excel Sheets ## 
+                if not name or not mobile or not email or not pan_card_number or not aadhar_no:
                     continue
-                if Referral.objects.filter(mobile=mobile).exists():
+                if Referral.objects.filter(
+                     Q(mobile=mobile) | Q(email=email) | Q(pan_card_number=pan_card_number) | Q(aadhar_no=aadhar_no)
+                    ).exists():
                     continue
-                if Referral.objects.filter(email=email).exists():
-                    continue
+                # if Referral.objects.filter(email=email).exists():
+                #     continue
+                # if Referral.objects.filter(pan_card_number=pan_card_number).exists():
+                #     continue
+                # if Referral.objects.filter(aadhar_no=aadhar_no).exists():
+                #     continue
+
 
                 Referral.objects.create(
                     name=name,

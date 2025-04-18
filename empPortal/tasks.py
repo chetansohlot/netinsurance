@@ -1,5 +1,6 @@
 from .models import UploadedZip, FileAnalysis, ExtractedFile, BulkPolicyLog, Commission, PolicyDocument, UnprocessedPolicyFiles, ChatGPTLog, UploadedExcel
 from .models import PolicyInfo, PolicyVehicleInfo, AgentPaymentDetails, InsurerPaymentDetails, FranchisePayment
+from .models import FranchisePaymentLog, PolicyInfoLog, PolicyVehicleInfoLog, AgentPaymentDetailsLog, InsurerPaymentDetailsLog
 import django, dramatiq, fitz, os, zipfile, requests, re, json, traceback, time, logging, shutil
 from django.conf import settings
 from django.utils import timezone
@@ -567,7 +568,7 @@ def updateBulkPolicies(file_id):
                     try:
                         policy = PolicyDocument.objects.get(policy_number=policy_number)
                         excel_instance.valid_rows += 1  
-                        async_task('empPortal.tasks.create_or_update_policyInfo',index,row,file_id,policy_number)
+                        async_task('empPortal.tasks.create_or_update_policyInfo',index,row,file_id,policy_number,policy)
                     except PolicyDocument.DoesNotExist:
                         excel_instance.invalid_rows += 1
                         logger.error(f"Row {index + 2}: Policy not found in PolicyDocument: {policy_number}")
@@ -592,13 +593,15 @@ def update_field(instance, field, value):
     if pd.notna(value) and (str(value).strip() != '' or str(value).strip() != None):
         return setattr(instance, field, value)
                 
-def create_or_update_policyInfo(index,row,file_id,policy_number):
+def create_or_update_policyInfo(index,row,file_id,policy_number,policy):
     try:
         excel_instance = UploadedExcel.objects.get(id=file_id)
         policy_info, created = PolicyInfo.objects.get_or_create(policy_number=policy_number)
         if created:
+            action = 'Insert'
             logger.info(f"Row {index + 2}: Created new PolicyInfo for policy_number: {policy_number}")
         else:
+            action = 'Update'
             logger.info(f"Row {index + 2}: Updated existing PolicyInfo for policy_number: {policy_number}")
 
         # Basic Policy
@@ -629,20 +632,61 @@ def create_or_update_policyInfo(index,row,file_id,policy_number):
         update_field(policy_info, 'pos_name', row.get('pos_name'))
         update_field(policy_info, 'referral_by', row.get('referral_by'))
         policy_info.save()
-        async_task('empPortal.tasks.create_or_update_policyVehicleInfo',index,row,file_id,policy_number)
+        
+        logs = PolicyInfoLog.objects.create(
+            policy_info_id= policy_info.id,
+            log_policy_number= policy_number,
+            log_policy_id = policy.id,
+            log_policy_issue_date=policy_info.policy_issue_date,
+            log_policy_start_date=policy_info.policy_start_date,
+            log_policy_expiry_date=policy_info.policy_expiry_date,
+            log_insurer_name=policy_info.insurer_name,
+            log_insured_mobile=policy_info.insured_mobile,
+            log_insured_email=policy_info.insured_email,
+            log_insured_address=policy_info.insured_address,
+            log_insured_pan=policy_info.insured_pan,
+            log_insured_aadhaar=policy_info.insured_aadhaar,
+            log_insurance_company=policy_info.insurance_company,
+            log_service_provider=policy_info.service_provider,
+            log_insurer_contact_name=policy_info.insurer_contact_name,
+            log_bqp=policy_info.bqp,
+            log_pos_name=policy_info.pos_name,
+            log_referral_by=policy_info.referral_by,
+            log_branch_name=policy_info.branch_name,
+            log_supervisor_name=policy_info.supervisor_name,
+            log_policy_type=policy_info.policy_type,
+            log_policy_plan=policy_info.policy_plan,
+            log_sum_insured=policy_info.sum_insured,
+            log_od_premium=policy_info.od_premium,
+            log_tp_premium=policy_info.tp_premium,
+            log_pa_count=policy_info.pa_count,
+            log_pa_amount=policy_info.pa_amount,
+            log_driver_count=policy_info.driver_count,
+            log_driver_amount=policy_info.driver_amount,
+            log_fuel_type=policy_info.fuel_type,
+            log_be_fuel_amount=policy_info.be_fuel_amount,
+            log_gross_premium=policy_info.gross_premium,
+            log_net_premium=policy_info.net_premium,
+            log_active= 1,
+            action= action
+        )
+        
+        async_task('empPortal.tasks.create_or_update_policyVehicleInfo',index,row,file_id,policy_number,policy)
         
     except Exception as e:
         logger.info(f"Row {index + 2}: PolicyInfo for policy_number: {policy_number}, error : {str(e)}")
         excel_instance.error_rows +=1
         excel_instance.save()    
     
-def create_or_update_policyVehicleInfo(index,row,file_id,policy_number):
+def create_or_update_policyVehicleInfo(index,row,file_id,policy_number,policy):
     try:
         excel_instance = UploadedExcel.objects.get(id=file_id)
         vehicle,created_vehicle = PolicyVehicleInfo.objects.get_or_create(policy_number=policy_number)
         if created_vehicle:
+            action = 'Insert'
             logger.info(f"Row {index + 2}: Created new PolicyVehicleInfo for policy_number: {policy_number}")
         else:
+            action = 'Update'
             logger.info(f"Row {index + 2}: Updated existing PolicyVehicleInfo for policy_number: {policy_number}")
 
         update_field(vehicle, 'vehicle_type', row.get('vehicle_type'))
@@ -659,20 +703,42 @@ def create_or_update_policyVehicleInfo(index,row,file_id,policy_number):
         update_field(vehicle, 'manufacture_year', to_int(row.get('manufacture_year')))
         vehicle.save()
         
-        async_task('empPortal.tasks.create_or_update_agentPaymentDetails',index,row,file_id,policy_number)
+        logs = PolicyVehicleInfoLog.objects.create(
+            policy_vehicle_info_id= vehicle.id,
+            log_policy_number= policy_number,
+            log_policy_document_id = policy.id,
+            log_vehicle_type= vehicle.vehicle_type,
+            log_vehicle_make= vehicle.vehicle_make,
+            log_vehicle_model= vehicle.vehicle_model,
+            log_vehicle_variant= vehicle.vehicle_variant,
+            log_fuel_type= vehicle.fuel_type,
+            log_gvw= vehicle.gvw,
+            log_cubic_capacity= vehicle.cubic_capacity,
+            log_seating_capacity= vehicle.seating_capacity,
+            log_registration_number= vehicle.registration_number,
+            log_engine_number= vehicle.engine_number,
+            log_chassis_number= vehicle.chassis_number,
+            log_manufacture_year= vehicle.manufacture_year,
+            log_active= 1,
+            action= action
+        )
+        
+        async_task('empPortal.tasks.create_or_update_agentPaymentDetails',index,row,file_id,policy_number,policy)
         
     except Exception as e:
         logger.info(f"Row {index + 2}: PolicyVehicleInfo for policy_number: {policy_number}, error : {str(e)}")
         excel_instance.error_rows +=1
         excel_instance.save()
                 
-def create_or_update_agentPaymentDetails(index,row,file_id,policy_number):
+def create_or_update_agentPaymentDetails(index,row,file_id,policy_number,policy):
     try:
         excel_instance = UploadedExcel.objects.get(id=file_id)
         agent_payment, agent_created = AgentPaymentDetails.objects.get_or_create(policy_number=policy_number)
         if agent_created:
+            action = 'Insert'
             logger.info(f"Row {index + 2}: Created new AgentPaymentDetails for policy_number: {policy_number}")
         else:
+            action = 'Update'
             logger.info(f"Row {index + 2}: Updated existing AgentPaymentDetails for policy_number: {policy_number}")
 
         update_field(agent_payment, 'agent_name', row.get('referral_by'))
@@ -694,20 +760,46 @@ def create_or_update_agentPaymentDetails(index,row,file_id,policy_number):
         update_field(agent_payment, 'agent_net_payable_amount', to_int(row.get('agent_net_payable_amt')))
         agent_payment.save()
         
-        async_task('empPortal.tasks.create_or_update_insurerPaymentDetails',index,row,file_id,policy_number)
+        logs = AgentPaymentDetailsLog.objects.create(
+            agent_payment_id= agent_payment.id,
+            log_policy_number= policy_number,
+            log_policy_document_id = policy.id,
+            log_agent_name=agent_payment.agent_name,
+            log_agent_payment_mod=agent_payment.agent_payment_mod,
+            log_transaction_id=agent_payment.transaction_id,
+            log_agent_payment_date=agent_payment.agent_payment_date,
+            log_agent_amount=agent_payment.agent_amount,
+            log_agent_remarks=agent_payment.agent_remarks,
+            log_agent_od_comm=agent_payment.agent_od_comm,
+            log_agent_tp_comm=agent_payment.agent_tp_comm,
+            log_agent_net_comm=agent_payment.agent_net_comm,
+            log_agent_incentive_amount=agent_payment.agent_incentive_amount,
+            log_agent_tds=agent_payment.agent_tds,
+            log_agent_od_amount=agent_payment.agent_od_amount,
+            log_agent_net_amount=agent_payment.agent_net_amount,
+            log_agent_tp_amount=agent_payment.agent_tp_amount,
+            log_agent_total_comm_amount=agent_payment.agent_total_comm_amount,
+            log_agent_net_payable_amount=agent_payment.agent_net_payable_amount,
+            log_agent_tds_amount=agent_payment.agent_tds_amount,
+            log_active= 1,
+            action= action
+        )
+        async_task('empPortal.tasks.create_or_update_insurerPaymentDetails',index,row,file_id,policy_number,policy)
 
     except Exception as e:
         logger.info(f"Row {index + 2}: AgentPayment for policy_number: {policy_number}, error : {str(e)}")
         excel_instance.error_rows +=1
         excel_instance.save()
                 
-def create_or_update_insurerPaymentDetails(index,row,file_id,policy_number):
+def create_or_update_insurerPaymentDetails(index,row,file_id,policy_number,policy):
     try:
         excel_instance = UploadedExcel.objects.get(id=file_id)
         insurer_payment, insurer_payment_created= InsurerPaymentDetails.objects.get_or_create(policy_number=policy_number)
         if insurer_payment_created:
+            action="Insert"
             logger.info(f"Row {index + 2}: Created new InsurerPaymentDetails for policy_number: {policy_number}")
         else:
+            action="Update"
             logger.info(f"Row {index + 2}: Updated existing InsurerPaymentDetails for policy_number: {policy_number}")
 
         update_field(insurer_payment, 'insurer_payment_mode', row.get('insurer_payment_mode'))
@@ -729,20 +821,48 @@ def create_or_update_insurerPaymentDetails(index,row,file_id,policy_number):
         update_field(insurer_payment, 'insurer_receive_amount', to_int(row.get('insurer_received_amt')))
         update_field(insurer_payment, 'insurer_balance_amount', to_int(row.get('insurer_balance_amount')))
         insurer_payment.save()
-        async_task('empPortal.tasks.create_or_update_franchisePaymentDetails',index,row,file_id,policy_number)
+        
+        logs = InsurerPaymentDetailsLog.objects.create(
+            insurer_payment_id= insurer_payment.id,
+            log_policy_number= policy_number,
+            log_policy_document_id = policy.id,
+            log_insurer_payment_mode=insurer_payment.insurer_payment_mode,
+            log_insurer_payment_date=insurer_payment.insurer_payment_date,
+            log_insurer_amount=insurer_payment.insurer_amount,
+            log_insurer_remarks=insurer_payment.insurer_remarks,
+            log_insurer_od_comm=insurer_payment.insurer_od_comm,
+            log_insurer_net_comm=insurer_payment.insurer_net_comm,
+            log_insurer_tp_comm=insurer_payment.insurer_tp_comm,
+            log_insurer_incentive_amount=insurer_payment.insurer_incentive_amount,
+            log_insurer_tds=insurer_payment.insurer_tds,
+            log_insurer_od_amount=insurer_payment.insurer_od_amount,
+            log_insurer_net_amount=insurer_payment.insurer_net_amount,
+            log_insurer_tp_amount=insurer_payment.insurer_tp_amount,
+            log_insurer_total_comm_amount=insurer_payment.insurer_total_comm_amount,
+            log_insurer_net_payable_amount=insurer_payment.insurer_net_payable_amount,
+            log_insurer_tds_amount=insurer_payment.insurer_tds_amount,
+            log_insurer_total_commission=insurer_payment.insurer_total_commission,
+            log_insurer_receive_amount=insurer_payment.insurer_receive_amount,
+            log_insurer_balance_amount=insurer_payment.insurer_balance_amount,
+            log_active= 1,
+            action= action
+        )
+        async_task('empPortal.tasks.create_or_update_franchisePaymentDetails',index,row,file_id,policy_number,policy)
 
     except Exception as e:
         logger.info(f"Row {index + 2}: InsurerPayment for policy_number: {policy_number}, error : {str(e)}")
         excel_instance.error_rows +=1
         excel_instance.save()
 
-def create_or_update_franchisePaymentDetails(index,row,file_id,policy_number):
+def create_or_update_franchisePaymentDetails(index,row,file_id,policy_number,policy):
     try:
         excel_instance = UploadedExcel.objects.get(id=file_id)
         franchise_payment, franchise_payment_created  = FranchisePayment.objects.get_or_create(policy_number=policy_number)
         if franchise_payment_created:
+            action = 'Insert'
             logger.info(f"Row {index + 2}: Created new FranchisePayment for policy_number: {policy_number}")
         else:
+            action = 'Update'
             logger.info(f"Row {index + 2}: Updated existing FranchisePayment for policy_number: {policy_number}")
         
         update_field(franchise_payment, 'franchise_od_comm', row.get('franchise_od_comm_percent'))
@@ -757,9 +877,30 @@ def create_or_update_franchisePaymentDetails(index,row,file_id,policy_number):
         update_field(franchise_payment, 'franchise_total_comm_amount', to_int(row.get('franchise_total_comm_amt')))
         update_field(franchise_payment, 'franchise_net_payable_amount', to_int(row.get('franchise_net_payable_amt')))
         franchise_payment.save()
+        
+        logs = FranchisePaymentLog.objects.create(
+            franchise_payment_id= franchise_payment.id,
+            log_policy_document_id= policy.id,
+            log_policy_number= policy_number,
+            log_franchise_od_comm= franchise_payment.franchise_od_comm,
+            log_franchise_net_comm= franchise_payment.franchise_net_comm,
+            log_franchise_tp_comm= franchise_payment.franchise_tp_comm,
+            log_franchise_incentive_amount= franchise_payment.franchise_incentive_amount,
+            log_franchise_tds= franchise_payment.franchise_tds,
+            log_franchise_od_amount= franchise_payment.franchise_od_amount,
+            log_franchise_net_amount= franchise_payment.franchise_net_amount,
+            log_franchise_tp_amount= franchise_payment.franchise_tp_amount,
+            log_franchise_total_comm_amount= franchise_payment.franchise_total_comm_amount,
+            log_franchise_net_payable_amount= franchise_payment.franchise_net_payable_amount,
+            log_franchise_tds_amount= franchise_payment.franchise_tds_amount,
+            log_active= 1,
+            action= action
+        )
+        
         excel_instance.success_rows +=1
         excel_instance.save()
     except Exception as e:
         logger.info(f"Row {index + 2}: FranchisePayment for policy_number: {policy_number}, error : {str(e)}")
         excel_instance.error_rows +=1
         excel_instance.save()
+        

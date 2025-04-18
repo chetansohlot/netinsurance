@@ -327,7 +327,7 @@ class AgentPaymentDetails(models.Model):
 
     def __str__(self):
         return f"{self.agent_name} - {self.policy_number}"
-
+    
 class FranchisePayment(models.Model):
     policy_number = models.CharField(max_length=50, unique=True)
     franchise_od_comm = models.CharField(max_length=50, blank=True, null=True)
@@ -352,8 +352,6 @@ class FranchisePayment(models.Model):
 
     def __str__(self):
         return f"Franchise Payment #{self.id}"
-
-
 
 class PolicyUploadDoc(models.Model):
     policy_number = models.CharField(max_length=100)
@@ -436,8 +434,6 @@ class PolicyVehicleInfo(models.Model):
 
     def __str__(self):
         return f"Vehicle Info - {self.policy_number}"
-
-
 
 class CommissionHistory(models.Model):
     id = models.BigAutoField(primary_key=True)
@@ -995,3 +991,170 @@ class UploadedExcel(models.Model):
     def __str__(self):
         return self.file_name or f"Uploaded Excel #{self.pk}"
    
+class PolicyInfoLog(models.Model):
+    policy_info = models.ForeignKey(PolicyInfo,on_delete=models.CASCADE,related_name='policy_info_log')
+    log_policy = models.ForeignKey(PolicyDocument,on_delete=models.CASCADE,related_name='policy_info_policyDocument_logs')
+    log_policy_number = models.CharField(max_length=100, null=True, blank=True)
+    log_policy_issue_date = models.CharField(max_length=35, null=True, blank=True)
+    log_policy_start_date = models.CharField(max_length=35, null=True, blank=True)
+    log_policy_expiry_date = models.CharField(max_length=35, null=True, blank=True)
+    log_insurer_name = models.CharField(max_length=255, null=True, blank=True)
+    log_insured_mobile = models.CharField(max_length=15, null=True, blank=True)
+    log_insured_email = models.CharField(max_length=255, null=True, blank=True)
+    log_insured_address = models.TextField(null=True, blank=True)
+    log_insured_pan = models.CharField(max_length=20, null=True, blank=True)
+    log_insured_aadhaar = models.CharField(max_length=20, null=True, blank=True)
+    log_insurance_company = models.CharField(max_length=255, null=True, blank=True)
+    log_service_provider = models.CharField(max_length=255, null=True, blank=True)
+    log_insurer_contact_name = models.CharField(max_length=255, null=True, blank=True)
+    log_bqp = models.CharField(max_length=255, null=True, blank=True)
+    log_pos_name = models.CharField(max_length=255, null=True, blank=True)
+    log_referral_by = models.CharField(max_length=50, null=True, blank=True)
+    log_branch_name = models.CharField(max_length=255, null=True, blank=True)
+    log_supervisor_name = models.CharField(max_length=255, null=True, blank=True)
+    log_policy_type = models.CharField(max_length=255, null=True, blank=True)
+    log_policy_plan = models.CharField(max_length=255, null=True, blank=True)
+    log_sum_insured = models.CharField(max_length=20, null=True, blank=True)
+    log_od_premium = models.CharField(max_length=20, null=True, blank=True)
+    log_tp_premium = models.CharField(max_length=20, null=True, blank=True)
+    log_pa_count = models.CharField(max_length=20, default='0', null=True, blank=True)
+    log_pa_amount = models.CharField(max_length=20, null=True, blank=True)
+    log_driver_count = models.CharField(max_length=20, null=True, blank=True)
+    log_driver_amount = models.CharField(max_length=20, null=True, blank=True)
+    log_fuel_type = models.CharField(max_length=50, null=True, blank=True)
+    log_be_fuel_amount = models.CharField(max_length=50, null=True, blank=True)
+    log_gross_premium = models.CharField(max_length=50, null=True, blank=True)
+    log_net_premium = models.CharField(max_length=50, null=True, blank=True)
+    log_active = models.BooleanField(default=True)
+    action = models.CharField(max_length=10, choices=[('insert', 'Insert'), ('update', 'Update')])
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'policy_info_log'
+        verbose_name = 'Policy Info Log'
+        verbose_name_plural = 'Policy Info Logs'
+
+    def __str__(self):
+        return f"Policy Info Log for Policy #{self.log_policy_number}"
+
+class PolicyVehicleInfoLog(models.Model):
+    policy_vehicle_info = models.ForeignKey(PolicyVehicleInfo,on_delete=models.CASCADE,related_name='policy_vehicle_info_log')
+    log_policy_document = models.ForeignKey(PolicyDocument,on_delete=models.CASCADE,related_name='policy_vehicle_info_policyDocument_logs')
+    log_policy_number = models.CharField(max_length=100)
+    log_vehicle_type = models.CharField(max_length=100, null=True, blank=True)
+    log_vehicle_make = models.CharField(max_length=100, null=True, blank=True)
+    log_vehicle_model = models.CharField(max_length=100, null=True, blank=True)
+    log_vehicle_variant = models.CharField(max_length=100, null=True, blank=True)
+    log_fuel_type = models.CharField(max_length=30, null=True, blank=True)  # Originally ENUM('Petrol', 'Diesel')
+    log_gvw = models.CharField(max_length=50, null=True, blank=True)
+    log_cubic_capacity = models.CharField(max_length=50, null=True, blank=True)
+    log_seating_capacity = models.CharField(max_length=10, null=True, blank=True)
+    log_registration_number = models.CharField(max_length=100, null=True, blank=True)
+    log_engine_number = models.CharField(max_length=100, null=True, blank=True)
+    log_chassis_number = models.CharField(max_length=100, null=True, blank=True)
+    log_manufacture_year = models.CharField(max_length=4, null=True, blank=True)
+    log_active = models.BooleanField(default=True)
+    action = models.CharField(max_length=10, choices=[('insert', 'Insert'), ('update', 'Update')])
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'policy_vehicle_info_log'
+        verbose_name = 'Policy Vehicle Info Log'
+        verbose_name_plural = 'Policy Vehicle Info Logs'
+
+    def __str__(self):
+        return f"Policy Vehicle Info Log for Policy #{self.log_policy_number}"
+
+class InsurerPaymentDetailsLog(models.Model):
+    insurer_payment = models.ForeignKey(InsurerPaymentDetails,on_delete=models.CASCADE,related_name='insurer_payment_log')
+    log_policy_document = models.ForeignKey(PolicyDocument,on_delete=models.CASCADE,related_name='insurer_policyDocument_logs')
+    log_policy_number = models.CharField(max_length=100)
+    log_insurer_payment_mode = models.CharField(max_length=100, blank=True, null=True)
+    log_insurer_payment_date = models.CharField(max_length=100, blank=True, null=True)
+    log_insurer_amount = models.CharField(max_length=50, blank=True, null=True)
+    log_insurer_remarks = models.TextField(blank=True, null=True)
+    log_insurer_od_comm = models.CharField(max_length=50, blank=True, null=True)
+    log_insurer_net_comm = models.CharField(max_length=50, blank=True, null=True)
+    log_insurer_tp_comm = models.CharField(max_length=50, blank=True, null=True)
+    log_insurer_incentive_amount = models.CharField(max_length=50, blank=True, null=True)
+    log_insurer_tds = models.CharField(max_length=50, blank=True, null=True)
+    log_insurer_od_amount = models.CharField(max_length=50, blank=True, null=True)
+    log_insurer_net_amount = models.CharField(max_length=50, blank=True, null=True)
+    log_insurer_tp_amount = models.CharField(max_length=50, blank=True, null=True)
+    log_insurer_total_comm_amount = models.CharField(max_length=50, blank=True, null=True)
+    log_insurer_net_payable_amount = models.CharField(max_length=50, blank=True, null=True)
+    log_insurer_tds_amount = models.CharField(max_length=50, blank=True, null=True)
+    log_insurer_total_commission = models.CharField(max_length=50, blank=True, null=True)
+    log_insurer_receive_amount = models.CharField(max_length=50, blank=True, null=True)
+    log_insurer_balance_amount = models.CharField(max_length=50, blank=True, null=True)
+    log_active = models.BooleanField(default=True)
+    action = models.CharField(max_length=10, choices=[('insert', 'Insert'), ('update', 'Update')])
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'insurer_payment_details_log'
+        verbose_name = 'Insurance Payment Details Log'
+        verbose_name_plural = 'Insurance Payment Details Logs'
+
+    def __str__(self):
+        return f"Insurance Payment Details Log for Policy #{self.log_policy_number}"
+
+class FranchisePaymentLog(models.Model):
+    franchise_payment = models.ForeignKey(FranchisePayment,on_delete=models.CASCADE,related_name='logs')
+    log_policy_document = models.ForeignKey(PolicyDocument,on_delete=models.CASCADE,related_name='payment_logs')
+    log_policy_number = models.CharField(max_length=50)
+    log_franchise_od_comm = models.CharField(max_length=50, blank=True, null=True)
+    log_franchise_net_comm = models.CharField(max_length=50, blank=True, null=True)
+    log_franchise_tp_comm = models.CharField(max_length=50, blank=True, null=True)
+    log_franchise_incentive_amount = models.CharField(max_length=50, blank=True, null=True)
+    log_franchise_tds = models.CharField(max_length=50, blank=True, null=True)
+    log_franchise_od_amount = models.CharField(max_length=50, blank=True, null=True)
+    log_franchise_net_amount = models.CharField(max_length=50, blank=True, null=True)
+    log_franchise_tp_amount = models.CharField(max_length=50, blank=True, null=True)
+    log_franchise_total_comm_amount = models.CharField(max_length=50, blank=True, null=True)
+    log_franchise_net_payable_amount = models.CharField(max_length=50, blank=True, null=True)
+    log_franchise_tds_amount = models.CharField(max_length=50, blank=True, null=True)
+    log_active = models.BooleanField(default=True)
+    action = models.CharField(max_length=10, choices=[('insert', 'Insert'), ('update', 'Update')])
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'franchise_payment_logs'
+        verbose_name = 'Franchise Payment Log'
+        verbose_name_plural = 'Franchise Payment Logs'
+
+    def __str__(self):
+        return f"Franchise Payment Log for Policy #{self.log_policy_number}"
+
+class AgentPaymentDetailsLog(models.Model):
+    agent_payment = models.ForeignKey(AgentPaymentDetails,on_delete=models.CASCADE,related_name='agent_payment_log')
+    log_policy_document = models.ForeignKey(PolicyDocument,on_delete=models.CASCADE,related_name='agent_policyDocument_logs')
+    log_policy_number = models.CharField(max_length=255)
+    log_agent_name = models.CharField(max_length=255)
+    log_agent_payment_mod = models.CharField(max_length=255)
+    log_transaction_id = models.CharField(max_length=255)
+    log_agent_payment_date = models.CharField(max_length=255)
+    log_agent_amount = models.CharField(max_length=255)
+    log_agent_remarks = models.CharField(max_length=255)
+    log_agent_od_comm = models.CharField(max_length=255)
+    log_agent_tp_comm = models.CharField(max_length=255)
+    log_agent_net_comm = models.CharField(max_length=255)
+    log_agent_incentive_amount = models.CharField(max_length=255)
+    log_agent_tds = models.CharField(max_length=255)
+    log_agent_od_amount = models.CharField(max_length=255)
+    log_agent_net_amount = models.CharField(max_length=255)
+    log_agent_tp_amount = models.CharField(max_length=255)
+    log_agent_total_comm_amount = models.CharField(max_length=255)
+    log_agent_net_payable_amount = models.CharField(max_length=255)
+    log_agent_tds_amount = models.CharField(max_length=255)
+    log_active = models.BooleanField(default=True)
+    action = models.CharField(max_length=10, choices=[('insert', 'Insert'), ('update', 'Update')])
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'agent_payment_details_log'
+        verbose_name = 'Agent Payment Details Log'
+        verbose_name_plural = 'Agent Payment Details Logs'
+
+    def __str__(self):
+        return f"Agent Payment Details Log for Policy #{self.log_policy_number}"
