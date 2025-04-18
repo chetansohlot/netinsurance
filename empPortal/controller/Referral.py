@@ -1,3 +1,4 @@
+import logging
 import re
 from django.shortcuts import render,redirect, get_object_or_404
 from ..models import Franchises, Department
@@ -24,6 +25,9 @@ import helpers
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+
+
+logger = logging.getLogger(__name__)
 
 def dictfetchall(cursor):
     "Returns all rows from a cursor as a dict"
@@ -493,7 +497,7 @@ def ref_bulk_upload(request):
                 pincode = str(row.get('Pincode', '')).strip()
                 city = str(row.get('City', '')).strip()
                 state = str(row.get('State', '')).strip()
-                pan_card_number = str(row.get('Pan Number', '')).strip()
+                pan_card_number = str(row.get('Pan Number', '')).upper().strip() 
                 aadhar_no = str(row.get('Aadhar Number', '')).strip()
 
 
@@ -503,7 +507,22 @@ def ref_bulk_upload(request):
                 if Referral.objects.filter(
                      Q(mobile=mobile) | Q(email=email) | Q(pan_card_number=pan_card_number) | Q(aadhar_no=aadhar_no)
                     ).exists():
+                     logger.error(f"Row{index} skipped: Duplicate mobile number, email, pan card, aadhar number")
+                     continue
+                
+                ## Validation On field Excel Sheets ##
+                if not re.match(r"^[6-9][0-9]{9}$",str(mobile)):
+                     logger.error(f"Row{index} skipped: Invalid mobile number format")
+                     continue
+                
+                if not re.match(r'^[A-Z]{5}[0-9]{4}[A-Z]$',str(pan_card_number)):
+                    logger.error(f"Row{index} skipped: Invalid Pan number format")
                     continue
+
+                if not re.match(r'^[2-9][0-9]{11}$', str(aadhar_no)):
+                    logger.error(f"Row{index} skipped:Invalid Aadhar number format. I will have 12 digit, Not start with 0 and 1")
+                    continue
+
                 # if Referral.objects.filter(email=email).exists():
                 #     continue
                 # if Referral.objects.filter(pan_card_number=pan_card_number).exists():
