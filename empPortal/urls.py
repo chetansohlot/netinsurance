@@ -134,6 +134,7 @@ urlpatterns = [
     path('lead-mgt/term-lead', leads.termlead, name='term-lead'),
     path('lead-mgt/lead-view/<int:lead_id>/', leads.viewlead, name='lead-view'),
     path('bulk-upload/', leads.bulk_upload_leads, name='bulk-upload-leads'),
+    
 
     # REFERRAL 
     path('referral-management/bulk-upload/', Referral.refBulkUpload, name='referral-bulk-upload'),
@@ -264,6 +265,7 @@ urlpatterns = [
     #  path('export-policy/', views.exportPolicies, name='update-policy'),
     path('export-policy/', export.exportPolicies, name='export-policy'),   
     path('save-policy-data/', export.download_policy_data, name='save-policy-data'),
+    path('export-commission-report/', export.export_commission_data, name='export-commission-report'),
 
 
     ####  source master ---- parth url  ####

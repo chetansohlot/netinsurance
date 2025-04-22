@@ -34,7 +34,7 @@ from urllib.parse import unquote
 from django.views.decorators.csrf import csrf_exempt
 from pprint import pprint 
 import pdfkit, logging
-from django.templatetags.static import static  # ✅ Import static
+from django.templatetags.static import static 
 from django.template.loader import render_to_string
 from django_q.tasks import async_task
 import pandas as pd

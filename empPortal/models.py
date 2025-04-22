@@ -148,7 +148,7 @@ class Leads(models.Model):
         choices=[('MOTOR', 'MOTOR'), ('HEALTH', 'HEALTH'), ('TERM', 'TERM')], 
         default='MOTOR'
     )  # Type of lead (MOTOR, HEALTH, TERM)
-    source_leads = models.ForeignKey(SourceMaster,db_column='source_leads',on_delete=models.CASCADE)
+    #source_leads = models.ForeignKey(SourceMaster,db_column='source_leads',on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'leads'  # This defines the database table name
@@ -1183,3 +1183,20 @@ class RefUploadedExcel(models.Model):
 
     class Meta:
         db_table = 'ref_upload_excels'    
+
+
+class PartnerUploadExcel(models.Model):
+    file = models.FileField(upload_to="partner_excels/")
+    file_name = models.CharField(max_length=255, default="")
+    file_url = models.CharField(max_length=200, default="")
+    total_rows = models.IntegerField(default=0)
+    error_rows = models.IntegerField(default=0)
+    success_rows = models.IntegerField(default=0)
+    valid_rows = models.IntegerField(default=0)
+    invalid_rows = models.IntegerField(default=0)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    is_processed = models.BooleanField(default=False)
+    error = models.TextField(default="")
+    created_by = models.ForeignKey(Users, on_delete=models.SET_NULL, null=True)
+    class Meta:
+        db_table = 'patner_upload_excels'
