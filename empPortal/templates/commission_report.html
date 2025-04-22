@@ -91,7 +91,7 @@
                                         <a href="{% url 'commission-report' %}" class="filter-search-btn bg-dark">Clear</a>
                                     </div>
                                     <div class="col-auto">
-                                        <a href="{% url 'save-policy-data' %}" class="breadcrump-addbtn bg-warning mx-1">Export</a>
+                                        <a href="{% url 'export-commission-report' %}" class="breadcrump-addbtn bg-warning mx-1">Export</a>
                                     </div>
                                 </div>
                             </div>
@@ -143,13 +143,6 @@
                               <th class="nowrap">Gross Weight</th>
                               <th class="nowrap">Sum Insured</th>
                               <th class="nowrap">Manufacture Year</th>
-                              <th class="nowrap">OD%</th>
-                              <th class="nowrap">OD Premium</th>
-                              <th class="nowrap">TP%</th>
-                              <th class="nowrap">TP Premium</th>
-                              <th class="nowrap">Net%</th>
-                              <th class="nowrap">Net Premium</th>
-                              <!-- <th class="nowrap">P/L</th> -->
                             </tr>
                         </thead>
                         <tbody>
@@ -176,57 +169,6 @@
                               <td>{{ data.policy.vehicle_gross_weight|default:"-" }}</td>
                               <td>{{ data.policy.sum_insured|default:"-" }}</td>
                               <td>{{ data.policy.vehicle_manuf_date|default:"-" }}</td>
-                      
-                              <!-- OD% Column -->
-                              <td>
-                                  {% if data.policy %}
-                                      {{ data.policy.od_percent }}%
-                                  {% else %}
-                                      0
-                                  {% endif %}
-                              </td>
-                      
-                              <!-- Commission Amount Column -->
-                              <td>
-                                  {% if data.od_commission_amount %}
-                                      {{ data.od_commission_amount|floatformat:2 }}
-                                  {% else %}
-                                      0
-                                  {% endif %}
-                              </td>
-                      
-                              <!-- TP% Column -->
-                              <td>
-                                  {% if data.policy %}
-                                      {{ data.policy.tp_percent }}%
-                                  {% else %}
-                                      0
-                                  {% endif %}
-                              </td>
-                              <td>
-                                {% if data.tp_commission_amount %}
-                                    {{ data.tp_commission_amount|floatformat:2 }}
-                                {% else %}
-                                    0
-                                {% endif %}
-                            </td>
-                      
-                              <!-- N% Column -->
-                              <td>
-                                  {% if data.policy %}
-                                      {{ data.policy.net_percent }}%
-                                  {% else %}
-                                      0
-                                  {% endif %}
-                              </td>
-                              <td>
-                                {% if data.net_commission_amount %}
-                                    {{ data.net_commission_amount|floatformat:2 }}
-                                {% else %}
-                                    0
-                                {% endif %}
-                            </td>
-                      
                           </tr>
                           {% endfor %}
                       </tbody>

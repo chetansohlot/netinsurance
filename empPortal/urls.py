@@ -265,6 +265,7 @@ urlpatterns = [
     #  path('export-policy/', views.exportPolicies, name='update-policy'),
     path('export-policy/', export.exportPolicies, name='export-policy'),   
     path('save-policy-data/', export.download_policy_data, name='save-policy-data'),
+    path('export-commission-report/', export.export_commission_data, name='export-commission-report'),
 
 
     ####  source master ---- parth url  ####
