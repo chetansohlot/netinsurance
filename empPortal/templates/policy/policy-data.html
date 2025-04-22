@@ -125,8 +125,8 @@ Policy Data
             <div class="card box-shadow-none">
               <div class="card-body px-0 pb-0 pt-0">
                 <div class="row">
-                  <div class="col-md-6">
-                    <div class="table-search-area">
+                  <div class="col-md-12">
+                    <div class="">
                       <!-- <form method="GET" class="d-flex gap-2 align-items-center mb-3">
                         <select class="table-select-field form-select" name="search_field" required>
                             <option value="" disabled {% if not search_field %}selected{% endif %}>Filter By</option>
@@ -146,104 +146,105 @@ Policy Data
                     <!-- Filter Start -->
                     <div class="card">
                       <div class="card-body pb-0">
-    <form method="get">
-      <div class="row align-items-center">
+                        <form method="get">
+                          <div class="row align-items-center">
+                            
+                            <!-- Policy Number -->
+                            <div class="col-6 col-md-2">
+                              <div class="form-group">
+                                <input class="form-field" name="policy_number" type="text" placeholder="Policy Number" value="{{filters.policy_number }}">
+                              </div>
+                            </div>
 
-        <!-- Policy Number -->
-        <div class="col-6 col-md-2 mb-2">
-          <div class="form-group">
-            <input class="form-field" name="policy_number" type="text" placeholder="Policy Number" value="{{filters.policy_number }}">
-          </div>
-        </div>
+                                    <!-- Vehicle Number -->
+                            <div class="col-6 col-md-2">
+                              <div class="form-group">
+                                <input class="form-field" name="vehicle_number" type="text" placeholder="Vehicle Number" value="{{ filters.vehicle_number }}">
+                              </div>
+                            </div> 
+                            
+                            <!-- Engine Number -->
+                            <div class="col-sm-6 col-md-2">
+                              <div class="form-group">
+                                <input class="form-field" name="engine_number" type="text" placeholder="Engine Number" value="{{ filters.engine_number }}">
+                              </div>
+                            </div>
 
-                 <!-- Vehicle Number -->
-        <div class="col-6 col-md-2 mb-2">
-          <div class="form-group">
-            <input class="form-field" name="vehicle_number" type="text" placeholder="Vehicle Number" value="{{ filters.vehicle_number }}">
-          </div>
-        </div> 
-        
-         <!-- Engine Number -->
-         <div class="col-sm-6 col-md-2">
-          <div class="form-group">
-            <input class="form-field" name="engine_number" type="text" placeholder="Engine Number" value="{{ filters.engine_number }}">
-          </div>
-        </div>
+                            <!-- Chassis Number -->
+                            <div class="col-sm-6 col-md-2">
+                              <div class="form-group">
+                                <input class="form-field" name="chassis_number" type="text" placeholder="Chassis Number" value="{{ filters.chassis_number }}">
+                              </div>
+                            </div>
 
-        <!-- Chassis Number -->
-        <div class="col-sm-6 col-md-2">
-          <div class="form-group">
-            <input class="form-field" name="chassis_number" type="text" placeholder="Chassis Number" value="{{ filters.chassis_number }}">
-          </div>
-        </div>
+                            <!-- Vehicle Type -->
+                            <div class="col-sm-6 col-md-2">
+                              <div class="form-group">
+                                <input class="form-field" name="vehicle_type" type="text" placeholder="Vehicle Type" value="{{ filters.vehicle_type }}">
+                              </div>
+                            </div>
 
-         <!-- Vehicle Type -->
-         <div class="col-sm-6 col-md-2">
-          <div class="form-group">
-            <input class="form-field" name="vehicle_type" type="text" placeholder="Vehicle Type" value="{{ filters.vehicle_type }}">
-          </div>
-        </div>
+                            <!-- Customer Name -->
+                            <div class="col-sm-6 col-md-2">
+                              <div class="form-group">
+                                <input class="form-field" name="customer_name" type="text" placeholder="Customer Name" value="">
+                              </div>
+                            </div>
 
-        <!-- Customer Name -->
-        <div class="col-sm-6 col-md-2">
-          <div class="form-group">
-            <input class="form-field" name="customer_name" type="text" placeholder="Customer Name" value="">
-          </div>
-        </div>
+                            <!-- Mobile Number -->
+                            <div class="col-sm-6 col-md-2">
+                              <div class="form-group">
+                                <input class="form-field" name="mobile_number" type="text" placeholder="Mobile Number" value="">
+                              </div>
+                            </div>
 
-        <!-- Mobile Number -->
-        <div class="col-sm-6 col-md-2">
-          <div class="form-group">
-            <input class="form-field" name="mobile_number" type="text" placeholder="Mobile Number" value="">
-          </div>
-        </div>
+                            <!-- Insurance Provider -->
+                            <div class="col-sm-6 col-md-2">
+                              <div class="form-group">
+                                <input class="form-field" name="insurance_provider" type="text" placeholder="Insurance Provider" value="{{ filters.insurance_provider }}">
+                              </div>
+                            </div>
 
-         <!-- Insurance Provider -->
-         <div class="col-sm-6 col-md-2">
-          <div class="form-group">
-            <input class="form-field" name="insurance_provider" type="text" placeholder="Insurance Provider" value="{{ filters.insurance_provider }}">
-          </div>
-        </div>
-
-        <!-- Buttons -->
-        <div class="col-sm-6 col-md-2">
-          <div class="form-group d-flex">
-            <button type="submit" class="wrap-btn w-100 mr-2">Apply</button>
-            <a href="{% url 'policy-data' %}" class="wrap-btn w-100 bg-danger text-white text-center">Reset</a>
-          </div>
-        </div>
-        <!--filter ends-->
-                    
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <div class=" d-flex justify-content-end">
-                      <div class="dropdown">
-                        <div class="shorting-select"  data-toggle="dropdown" aria-expanded="false">
-                          <img src="{% static 'dist/img/svg/shorting-icon.svg' %}" alt="">
-                          <span>Short</span>
-                          <img src="{% static 'dist/img/svg/down-arrow-icon.svg' %}" alt="" class="change-arrow">
-                        </div>
-                        <form action="">
-                          <ul class="dropdown-menu shorting-dropdown-menu">
-                            <p class="border-bottom pb-1 title2">Short</p>
-                            <li><input type="radio" name="shorting" id="name-a_z"> <label for="name-a_z">Name A &gt; Z</label></li>
-                            <li><input type="radio" name="shorting" id="name-z_a"> <label for="name-z_a">Name Z &lt; A</label></li>
-                            <li><input type="radio" name="shorting" id="recently_activated"> <label for="recently_activated">Recently Activated</label></li>
-                            <li><input type="radio" name="shorting" id="recently_deactivated"> <label for="recently_deactivated">Recently Deactivated</label></li>
-                            <div class="d-flex justify-content-center border-top pt-3 mt-2 pb-2">
-                              <button type="submit" class="dashboard-addbtn w-100">Apply</button>
-                            </div>   
-                          </ul>
+                            <!-- Buttons -->
+                            <div class="col-sm-6 col-md-2">
+                              <div class="form-group d-flex">
+                                <button type="submit" class="wrap-btn w-100 mr-2">Apply</button>
+                                <a href="{% url 'policy-data' %}" class="wrap-btn w-100 bg-danger text-white text-center">Reset</a>
+                              </div>
+                            </div>
+                            <div class="col-md-auto">
+                              <div class="form-group d-flex justify-content-end">
+                                <div class="dropdown">
+                                  <div class="shorting-select mx-0"  data-toggle="dropdown" aria-expanded="false">
+                                    <img src="{% static 'dist/img/svg/shorting-icon.svg' %}" alt="">
+                                    <span>Short</span>
+                                    <img src="{% static 'dist/img/svg/down-arrow-icon.svg' %}" alt="" class="change-arrow">
+                                  </div>
+                                  
+                                    <ul class="dropdown-menu shorting-dropdown-menu">
+                                      <p class="border-bottom pb-1 title2">Short</p>
+                                      <li><input type="radio" name="shorting" id="name-a_z"> <label for="name-a_z">Name A &gt; Z</label></li>
+                                      <li><input type="radio" name="shorting" id="name-z_a"> <label for="name-z_a">Name Z &lt; A</label></li>
+                                      <li><input type="radio" name="shorting" id="recently_activated"> <label for="recently_activated">Recently Activated</label></li>
+                                      <li><input type="radio" name="shorting" id="recently_deactivated"> <label for="recently_deactivated">Recently Deactivated</label></li>
+                                      <div class="d-flex justify-content-center border-top pt-3 mt-2 pb-2">
+                                        <button type="submit" class="dashboard-addbtn w-100">Apply</button>
+                                      </div>   
+                                    </ul>
+                                  
+                                </div>  
+                                <div class="shorting-select" data-toggle="modal" data-target="#modal-filter">
+                                  <img src="{% static 'dist/img/svg/filter-icon.svg' %}" alt="">
+                                  <span>Filter</span>
+                                  <img src="{% static 'dist/img/svg/down-arrow-icon.svg' %}" alt="" class="change-arrow">
+                                </div>
+                              </div>  
+                            </div>
+                            <!--filter ends-->
+                                        
+                          </div>
                         </form>
-                      </div>  
-                      <div class="shorting-select" data-toggle="modal" data-target="#modal-filter">
-                        <img src="{% static 'dist/img/svg/filter-icon.svg' %}" alt="">
-                        <span>Filter</span>
-                        <img src="{% static 'dist/img/svg/down-arrow-icon.svg' %}" alt="" class="change-arrow">
-                      </div>
-                    </div>  
-                  </div>
+                  
                 </div>  
                 <ul class="nav nav-pills profile-tab">
                   <li class="nav-item text-bold">
