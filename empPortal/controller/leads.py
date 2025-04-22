@@ -91,6 +91,16 @@ def index(request):
         filter_args = {f"{search_field}__icontains": search_query}
         leads = leads.filter(**filter_args)
 
+     # Apply filters based on form input
+    if 'lead_id' in request.GET and request.GET['lead_id']:
+        leads = leads.filter(lead_id__icontains=request.GET['lead_id'])
+    if 'name_as_per_pan' in request.GET and request.GET['name_as_per_pan']:
+        leads = leads.filter(name_as_per_pan__icontains=request.GET['name_as_per_pan'])
+    if 'email_address' in request.GET and request.GET['email_address']:
+        leads = leads.filter(email_address__icontains=request.GET['email_address'])
+    if 'mobile_number' in request.GET and request.GET['mobile_number']:
+        leads = leads.filter(mobile_number__icontains=request.GET['mobile_number'])    
+
     # Sorting
     if shorting == 'name_asc':
         leads = leads.order_by('name_as_per_pan')

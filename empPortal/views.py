@@ -41,7 +41,7 @@ def dashboard(request):
         user = request.user
 
         if request.user.role_id != 1:
-            policy_qs = PolicyDocument.objects.filter(status=6, rm_id=request.user.id)
+            policy_   = PolicyDocument.objects.filter(status=6, rm_id=request.user.id)
         else:
             policy_qs = PolicyDocument.objects.filter(status=6)
 
@@ -801,31 +801,93 @@ def policyData(request):
 
     # Base queryset
     if role_id != 1:
-        queryset = PolicyDocument.objects.filter(status=6, rm_id=user_id)
+        base_qs = PolicyDocument.objects.filter(status=6, rm_id=user_id)
     else:
-        queryset = PolicyDocument.objects.filter(status=6)
+        base_qs = PolicyDocument.objects.filter(status=6)
 
     # Handle search filters
-    search_field = request.GET.get('search_field')
-    search_query = request.GET.get('search_query')
+    # search_field = request.GET.get('search_field')
+    # search_query = request.GET.get('search_query')
 
-    if search_field and search_query:
-        if search_field == 'policy_number':
-            queryset = queryset.filter(policy_number__icontains=search_query)
-        elif search_field == 'vehicle_number':
-            queryset = queryset.filter(vehicle_number__icontains=search_query)
-        elif search_field == 'holder_name':
-            queryset = queryset.filter(holder_name__icontains=search_query)
-        elif search_field == 'insurance_provider':
-            queryset = queryset.filter(insurance_provider__icontains=search_query)
+    # if search_field and search_query:
+    #     if search_field == 'policy_number':
+    #         queryset = queryset.filter(policy_number__icontains=search_query)
+    #     elif search_field == 'vehicle_number':
+    #         queryset = queryset.filter(vehicle_number__icontains=search_query)
+    #     elif search_field == 'holder_name':
+    #         queryset = queryset.filter(holder_name__icontains=search_query)
+    #     elif search_field == 'insurance_provider':
+    #         queryset = queryset.filter(insurance_provider__icontains=search_query)
 
-    # Convert extracted_text JSON string to dict
-    for data in queryset:
-        if isinstance(data.extracted_text, str):
+    # # Apply filters based on form input
+    # if 'policy_number' in request.GET and request.GET['policy_number']:
+    #     queryset = queryset.filter(policy_number__icontains=request.GET['policy_number'])
+    # if 'vehicle_reg_no' in request.GET and request.GET['vehicle_reg_no']:
+    #     queryset = queryset.filter(vehicle_reg_no__icontains=request.GET['vehicle_reg_no']) 
+    # if 'vehicle_type'  in request.GET and request.GET['vehicle_type']:
+    #     queryset = queryset.filter(vehicle_type__icontains=request.GET['vehicle_type'])
+    # if 'policy_holder_name' in request.GET and request.GET['policy_holder_name']:
+    #     queryset = queryset.filter(policy_holder_name__icontains =request.GET['policy_holder_name'])
+    # if 'insurer_name' in request.GET and request.GET['insurer_name']:
+    #     queryset = queryset.filter(insurer__icontains=request.GET['insurer_name']) 
+    # 
+    filters = {
+        'policy_number':      request.GET.get('policy_number', '').strip().lower(),
+        'vehicle_number':     request.GET.get('vehicle_number', '').strip().lower(),
+        'engine_number':      request.GET.get('engine_number', '').strip().lower(),
+        'chassis_number':     request.GET.get('chassis_number', '').strip().lower(),
+        'vehicle_type':       request.GET.get('vehicle_type', '').strip().lower(),
+        'policy_holder_name':      request.GET.get('policy_holder_name', '').strip().lower(),      # maps to "Customer Name"
+        'mobile_number':      request.GET.get('mobile_number', '').strip().lower(),      # maps to "Mobile Number"
+        'insurance_provider': request.GET.get('insurance_provider', '').strip().lower(), # maps to "Insurance Provider"
+        # add more if you need: 'total_count', 'insurer_wise', etc.
+    }
+
+     # 3) Manually parse & filter
+    filtered = []
+    for obj in base_qs:
+        raw = obj.extracted_text
+
+        # parse only if string; if dict, use directly
+        if isinstance(raw, str):
             try:
-                data.extracted_text = json.loads(data.extracted_text)
+                data = json.loads(raw)
             except json.JSONDecodeError:
-                data.extracted_text = {}
+                continue
+        elif isinstance(raw, dict):
+            data = raw
+        else:
+            continue
+
+         # apply each non‑empty filter
+        if filters['policy_number'] and filters['policy_number'] not in data.get('policy_number', '').lower():
+            continue
+        if filters['vehicle_number'] and filters['vehicle_number'] not in data.get('vehicle_number', '').lower():
+            continue
+        if filters['engine_number'] and filters['engine_number'] not in data.get('engine_number', '').lower():
+            continue
+        if filters['chassis_number'] and filters['chassis_number'] not in data.get('chassis_number', '').lower():
+            continue
+        if filters['vehicle_type'] and filters['vehicle_type'] not in data.get('vehicle_type', '').lower():
+            continue
+        if filters['policy_holder_name'] and filters['policy_holder_name'] not in data.get('insured_name', '').lower():
+            continue
+        if filters['mobile_number'] and filters['mobile_number'] not in data.get('contact_information', {}).get('phone_number', '').lower():
+            continue
+        if filters['insurance_provider'] and filters['insurance_provider'] not in data.get('insurance_company', '').lower():
+            continue   
+
+        # passed all checks → keep it
+        obj.json_data = data    # attach parsed dict for the template
+        filtered.append(obj)
+
+    # # Convert extracted_text JSON string to dict
+    # for data in queryset:
+    #     if isinstance(data.extracted_text, str):
+    #         try:
+    #             data.extracted_text = json.loads(data.extracted_text)
+    #         except json.JSONDecodeError:
+    #             data.extracted_text = {}
 
     # Base queryset
     if role_id != 1:
@@ -840,16 +902,17 @@ def policyData(request):
     except ValueError:
         per_page = 10
 
-    paginator = Paginator(queryset, per_page)
+    paginator = Paginator(filtered, per_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
     return render(request, 'policy/policy-data.html', {
         "page_obj": page_obj,
         "policy_count": policy_count,
-        "search_field": search_field,
-        "search_query": search_query,
+        # "search_field": search_field,
+        # "search_query": search_query,
         "per_page": per_page,
+        'filters': {k: request.GET.get(k,'') for k in filters}
     })
 
 

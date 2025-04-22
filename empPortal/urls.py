@@ -136,7 +136,7 @@ urlpatterns = [
     path('bulk-upload/', leads.bulk_upload_leads, name='bulk-upload-leads'),
 
     # REFERRAL 
-    path('referral-management/bulk-upload/', Referral.ref_bulk_upload, name='referral-bulk-upload'),
+    path('referral-management/bulk-upload/', Referral.refBulkUpload, name='referral-bulk-upload'),
     path('referral-management/', Referral.index, name='referral-management'),
     path('referral-management/create-referral', Referral.create_or_edit, name='referral-management-create'),
     path('referral-management/<str:referral_id>/', Referral.create_or_edit, name='referral-management-edit'),
