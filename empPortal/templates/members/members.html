@@ -143,79 +143,80 @@
                             
                           </div> -->
                          <!-- Partner Filter Start -->
-<div class="card">
-  <div class="card-body pb-0">
-      <form method="GET">
-          <div class="row">
-              <div class="col-sm-6 col-md-2">
-                  <div class="form-group">
-                      <input class="form-field" name="user_gen_id" type="text" placeholder="User ID" value="{{ request.GET.user_gen_id }}">
-                  </div>
-              </div>
-              <div class="col-sm-6 col-md-2">
-                  <div class="form-group">
-                      <input class="form-field" name="user_name" type="text" placeholder="User Name" value="{{ request.GET.user_name }}">
-                  </div>
-              </div>
-              <div class="col-sm-6 col-md-2">
-                  <div class="form-group">
-                      <input class="form-field" name="email" type="email" placeholder="Email" value="{{ request.GET.email }}">
-                  </div>
-              </div>
-              <div class="col-sm-6 col-md-2">
-                  <div class="form-group">
-                      <input class="form-field" name="phone" type="text" placeholder="Phone Number" value="{{ request.GET.phone }}">
-                  </div>
-              </div>
-              <div class="col-sm-6 col-md-2">
-                  <div class="form-group">
-                      <input class="form-field" name="pan_number" type="text" placeholder="PAN Number" value="{{ request.GET.pan_number }}">
-                  </div>
-              </div>
-              <div class="col-sm-6 col-md-2">
-                  <div class="form-group d-flex">
-                      <button type="submit" class="wrap-btn w-100">Apply</button>
-                      <a href="{% url 'members' %}" class="wrap-btn w-100 bg-danger ml-2 text-center">Reset</a>
-                  </div>
-              </div>
-          </div>
-      </form>
-  </div>
-</div>
-<!-- Partner Filter End -->
-                          <div class="col-md-6">
-                            <div class=" d-flex justify-content-end">
+                          <div class="card w-100">
+                            <div class="card-body pb-0">
+                                <form method="GET">
+                                    <div class="row">
+                                        <div class="col-sm-6 col-md-2">
+                                            <div class="form-group">
+                                                <input class="form-field" name="user_gen_id" type="text" placeholder="User ID" value="{{ request.GET.user_gen_id }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6 col-md-2">
+                                            <div class="form-group">
+                                                <input class="form-field" name="user_name" type="text" placeholder="User Name" value="{{ request.GET.user_name }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6 col-md-2">
+                                            <div class="form-group">
+                                                <input class="form-field" name="email" type="email" placeholder="Email" value="{{ request.GET.email }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6 col-md-2">
+                                            <div class="form-group">
+                                                <input class="form-field" name="phone" type="text" placeholder="Phone Number" value="{{ request.GET.phone }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6 col-md-2">
+                                            <div class="form-group">
+                                                <input class="form-field" name="pan_number" type="text" placeholder="PAN Number" value="{{ request.GET.pan_number }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6 col-md-2">
+                                            <div class="form-group d-flex">
+                                                <button type="submit" class="wrap-btn w-100">Apply</button>
+                                                <a href="{% url 'members' %}" class="wrap-btn w-100 bg-danger ml-2 text-center">Reset</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                          </div>
+                          <!-- Partner Filter End -->
+                          <div class="col-md-12">
+                            <div class=" d-flex justify-content-between">
                               <div class="dropdown">
                                 <div class="shorting-select"  data-toggle="dropdown" aria-expanded="false">
                                   <img src="{% static 'dist/img/svg/shorting-icon.svg' %}" alt="">
-                                <span>Short</span>
+                                   <span>Short</span>
                                   <img src="{% static 'dist/img/svg/down-arrow-icon.svg' %}" alt="" class="change-arrow">
                                 </div>
-                             <form method="GET" class="d-flex">
-                                  <select class="table-select-field form-select" name="search_field">
+                              </div>  
+                              <form method="GET" class="d-flex">
+                                  <!-- <select class="table-select-field form-select" name="search_field">
                                       <option value="" disabled selected>Filter By</option>
                                       <option value="user_gen_id" {% if search_field == "user_gen_id" %}selected{% endif %}>User ID</option>
                                       <option value="user_name" {% if search_field == "user_name" %}selected{% endif %}>User Name</option>
                                       <option value="email" {% if search_field == "email" %}selected{% endif %}>Email</option>
                                       <option value="phone" {% if search_field == "phone" %}selected{% endif %}>Phone Number</option>
-                                  </select>
+                                  </select> -->
                               
                                   <input type="text" name="search_query" class="table-search-field form-control" 
-                                         placeholder="Search" value="{{ search_query }}">
+                                        placeholder="Search" value="{{ search_query }}">
                               
                                   <button type="submit" class="table-search-btn btn btn-primary">
                                       <img src="{% static 'dist/img/svg/search-icon.svg' %}" alt="Search">
                                   </button>
                               </form>
-                              </div> 
+                            </div> 
                               <!-- <div class="shorting-select" data-toggle="modal" data-target="#modal-filter">
                                 <img src="{% static 'dist/img/svg/filter-icon.svg' %}" alt="">
                                 <span>Filter</span>
                                 <img src="{% static 'dist/img/svg/down-arrow-icon.svg' %}" alt="" class="change-arrow">
                               </div>-->
-                            </div>  
-                          </div>
+                          </div>  
                         </div>
+                      </div>
 
                         {% include "components/members/member-list-tab.html" with requested="true" %}
 
