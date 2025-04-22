@@ -1298,22 +1298,6 @@ input[type="file"] {padding:0px !important; height: 31.6px;}
     border-radius: 0px;
 }
 
-.wrap-btn {
-    padding: 6px 15px;
-    margin-top: 0px;
-    font-size: 12px;
-    line-height: 1.5;
-    border-radius: 4px;
-    border: none;
-    background: #f15e33;
-    color: #fff;
-    text-align: center;
-}
-
-.wrap-btn:hover {
-    color: #fff;
-    background: #e6572e;
-}
 
 /* Link bank account */
 .ac-hding {
@@ -2548,10 +2532,10 @@ a:hover .dr-pdficon {
 .banner-btn-outline:hover {background: #bb215b; color:#fff; transition: all 0.3s ease-in-out; }
 
 
-.wrap-btn {border-radius: 8px; font-size:13px; padding:7px 20px; background: #bb215b; border:1px solid #bb215b; color:#fff; display: inline-block;  text-decoration: none; transition: all 0.3s ease-in-out;}
+.wrap-btn {border-radius: 4px; font-size:13px; padding:7px 20px; background: #bb215b; border:1px solid #bb215b; color:#fff; display: inline-block;  text-decoration: none; transition: all 0.3s ease-in-out;}
 .wrap-btn:hover {background: #810f3a; border-color: #810f3a; transition: all 0.3s ease-in-out;}
 
-.wrap-btn-outline {border-radius: 8px; font-size:13px; padding:7px 20px; background: #fff; border:1px solid #bb215b;  color:#bb215b; display: inline-block; text-decoration: none; transition: all 0.3s ease-in-out;}
+.wrap-btn-outline {border-radius: 4px; font-size:13px; padding:7px 20px; background: #fff; border:1px solid #bb215b;  color:#bb215b; display: inline-block; text-decoration: none; transition: all 0.3s ease-in-out;}
 .wrap-btn-outline:hover {background: #bb215b; color:#fff; transition: all 0.3s ease-in-out; }
 
 .wrap-hding {font-size:36px; font-weight: 700;}
@@ -2669,6 +2653,8 @@ a:hover .dr-pdficon {
 
 .bulk-info {display: flex; align-items: center; gap: 10px;}
 .required-icon { color: #ff3300;}
+
+.d-flex.gap-2.align-items-center.mb-3 {margin-bottom: 0px !important;}
 
 @media (max-width:767px) {
     .banner-hding {font-size: 30px;}
