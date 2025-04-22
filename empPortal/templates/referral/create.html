@@ -113,7 +113,7 @@ Create Referral
                       <div class="form-group col-md-6 col-lg-4">
                         <label class="form-lbl" for="dob">Date of Birth</label>
                         <input type="date" class="form-field dob_datepicker" name="dob" id="dob" 
-                          value="{{ referral.dob|default_if_none:'' }}">
+                          value="{{ referral.dob|default_if_none:'' }}" >
                         <span class="text-danger" id="dob-error"></span>  <!-- Error message will be dynamically placed here -->
                       </div>
 
