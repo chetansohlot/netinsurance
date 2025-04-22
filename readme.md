@@ -27,4 +27,4 @@ watchdog = watchmedo auto-restart --patterns="*.py;*.html;*.css" --recursive -- 
 wkhtmltopdf = /usr/local/bin/wkhtmltopdf
 
 to run bulk uppload use 
-python manage.py qcluster
+    run cluster =  python manage.py qcluster
