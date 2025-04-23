@@ -798,19 +798,20 @@ def policyData(request):
     role_id = Users.objects.filter(id=user_id).values_list('role_id', flat=True).first()
 
     # Base queryset
+        
     if role_id != 1:
         base_qs = PolicyDocument.objects.filter(
             status=6,
             rm_id=user_id
         ).filter(
             Q(policy_number__isnull=False) & ~Q(policy_number='')
-        )
+        ).order_by('-id')
     else:
         base_qs = PolicyDocument.objects.filter(
             status=6
         ).filter(
             Q(policy_number__isnull=False) & ~Q(policy_number='')
-        )
+        ).order_by('-id')
     # Handle search filters
     # search_field = request.GET.get('search_field')
     # search_query = request.GET.get('search_query')
