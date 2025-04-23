@@ -145,11 +145,17 @@ def healthLead(request):
     else:
         return redirect('login')
     
+    # Count
+    total_leads = leads.count()
+    
 def termlead(request):
     if request.user.is_authenticated:
         return render(request, 'leads/term-lead.html')
     else:
         return redirect('login')
+    
+    # Count
+    total_leads = leads.count()
 
 
 from datetime import datetime
@@ -373,6 +379,7 @@ def create_or_edit_lead(request, lead_id=None):
 
     return render(request, 'leads/bulk_upload.html')"""
 
+
 def bulk_upload_leads(request):
     if request.method == 'POST':
         excel_file = request.FILES.get('excel_file')
@@ -400,79 +407,87 @@ def bulk_upload_leads(request):
             duplicate_data_found = False
 
             for index, row in enumerate(sheet.iter_rows(min_row=2, values_only=True), start=2):
-                if len(row) < 32 or any(cell is None for cell in row[:32]):
+                if len(row) < 29 or any(cell is None for cell in row[:13]):
                     logger.warning(f"Row {index} skipped: Incomplete data.")
                     continue
 
-                # Extract values
-                mobile_number = str(row[0]).strip()
-                email_address = str(row[1]).strip()
-                quote_date = row[2]
-                name_as_per_pan = str(row[3]).strip()
-                pan_card_number = str(row[4]).strip().upper()
-                date_of_birth = row[5]
-                state = str(row[6]).strip()
-                city = str(row[7]).strip()
-                pincode = str(row[8]).strip()
-                lead_source = str(row[9]).strip()
-                address = str(row[10]).strip()
-                lead_description = str(row[11]).strip()
-                lead_type = str(row[12]).strip()
-
-                # New fields
-                referral_by = str(row[13]).strip()
-                policy_date = row[14]
-                sales_manager = str(row[15]).strip()
-                agent_name = str(row[16]).strip()
-                insurance_company = str(row[17]).strip()
-                policy_type = str(row[18]).strip()
-                policy_number = str(row[19]).strip()
-                vehicle_type = str(row[20]).strip()
-                make_and_model = str(row[21]).strip()
-                fuel_type = str(row[22]).strip()
-                registration_number = str(row[23]).strip()
-                manufacturing_year = str(row[24]).strip()
-                sum_insured = row[25]
-                ncb = row[26]
-                od_premium = row[27]
-                tp_premium = row[28]
-                net_premium = row[29]
-                gross_premium = row[30]
-                risk_start_date = row[31]
-
-                if not re.fullmatch(r'[6-9]\d{9}', mobile_number):
-                    logger.warning(f"Row {index} skipped: Invalid mobile number - {mobile_number}")
-                    continue
-
-                if not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email_address):
-                    logger.warning(f"Row {index} skipped: Invalid email - {email_address}")
-                    continue
-
-                if not re.match(r'^[A-Z]{5}[0-9]{4}[A-Z]$', pan_card_number):
-                    logger.warning(f"Row {index} skipped: Invalid PAN - {pan_card_number}")
-                    continue
-
                 try:
-                    dob = parser.parse(str(date_of_birth)).date()
-                    policy_date = parser.parse(str(policy_date)).date()
-                    risk_start = parser.parse(str(risk_start_date)).date()
-                except Exception as e:
-                    logger.warning(f"Row {index} skipped: Invalid date format.")
-                    continue
+                    mobile_number = str(row[0]).strip()
+                    email_address = str(row[1]).strip()
+                    quote_date = row[2]
+                    name_as_per_pan = str(row[3]).strip()
+                    pan_card_number = str(row[4]).strip().upper()
+                    date_of_birth = row[5]
+                    state = str(row[6]).strip()
+                    city = str(row[7]).strip()
+                    pincode = str(row[8]).strip()
+                    lead_source = str(row[9]).strip()
+                    address = str(row[10]).strip()
+                    lead_description = str(row[11]).strip()
+                    lead_type = str(row[12]).strip()
 
-                if Leads.objects.filter(
-                    Q(mobile_number=mobile_number) |
-                    Q(email_address=email_address) |
-                    Q(pan_card_number=pan_card_number)
-                ).exists():
-                    logger.info(f"Row {index} skipped: Duplicate entry - Mobile: {mobile_number}, Email: {email_address}, PAN: {pan_card_number}")
-                    duplicate_data_found = True
-                    continue
+                    # New fields
+                    policy_date = row[13]
+                    sales_manager = str(row[14]).strip()
+                    agent_name = str(row[15]).strip()
+                    insurance_company = str(row[16]).strip()
+                    policy_type = str(row[17]).strip()
+                    policy_number = str(row[18]).strip()
+                    vehicle_type = str(row[19]).strip()
+                    make_and_model = str(row[20]).strip()
+                    fuel_type = str(row[21]).strip()
+                    registration_number = str(row[22]).strip()
+                    manufacturing_year = row[23]
+                    sum_insured = row[24]
+                    ncb = row[25]
+                    od_premium = row[26]
+                    tp_premium = row[27]
+                    risk_start_date = row[28]
 
-                lead_id = f"L{start_num:05d}"
-                start_num += 1
+                    # VALIDATIONS
+                    if not re.fullmatch(r'[6-9]\d{9}', mobile_number):
+                        logger.warning(f"Row {index} skipped: Invalid mobile number - {mobile_number}")
+                        continue
 
-                try:
+                    if not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email_address):
+                        logger.warning(f"Row {index} skipped: Invalid email - {email_address}")
+                        continue
+
+                    if not re.match(r'^[A-Z]{5}[0-9]{4}[A-Z]$', pan_card_number):
+                        logger.warning(f"Row {index} skipped: Invalid PAN - {pan_card_number}")
+                        continue
+
+                    try:
+                        dob = parser.parse(str(date_of_birth)).date()
+                    except Exception as e:
+                        logger.warning(f"Row {index} skipped: Invalid DOB - {date_of_birth}")
+                        continue
+
+                    try:
+                        policy_date = parser.parse(str(policy_date)).date() if policy_date else None
+                    except:
+                        policy_date = None
+
+                    try:
+                        risk_start_date = parser.parse(str(risk_start_date)).date() if risk_start_date else None
+                    except:
+                        risk_start_date = None
+
+                    # Duplicate check
+                    if Leads.objects.filter(
+                        Q(mobile_number=mobile_number) |
+                        Q(email_address=email_address) |
+                        Q(pan_card_number=pan_card_number)
+                    ).exists():
+                        logger.info(f"Row {index} skipped: Duplicate entry.")
+                        duplicate_data_found = True
+                        continue
+
+                    # Create new lead_id
+                    lead_id = f"L{start_num:05d}"
+                    start_num += 1
+
+                    # Insert into DB
                     Leads.objects.create(
                         lead_id=lead_id,
                         mobile_number=mobile_number,
@@ -488,7 +503,6 @@ def bulk_upload_leads(request):
                         address=address,
                         lead_description=lead_description,
                         lead_type=lead_type,
-                        referral_by=referral_by,
                         policy_date=policy_date,
                         sales_manager=sales_manager,
                         agent_name=agent_name,
@@ -504,9 +518,9 @@ def bulk_upload_leads(request):
                         ncb=ncb,
                         od_premium=od_premium,
                         tp_premium=tp_premium,
-                        net_premium=net_premium,
-                        gross_premium=gross_premium,
-                        risk_start_date=risk_start
+                        net_premium=(od_premium or 0) + (tp_premium or 0),
+                        gross_premium=(od_premium or 0) + (tp_premium or 0),
+                        risk_start_date=risk_start_date
                     )
                     inserted += 1
 
@@ -514,6 +528,7 @@ def bulk_upload_leads(request):
                     logger.error(f"Row {index} error: {e}")
                     continue
 
+            # Final messages
             if inserted > 0:
                 messages.success(request, f"{inserted} leads uploaded successfully.")
             elif duplicate_data_found:
