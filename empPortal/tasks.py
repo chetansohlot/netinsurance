@@ -97,7 +97,7 @@ def create_policy_documents_bulk(file_ids):
     for file_id in file_ids:
         try:
             create_policy_document(file_id)  # call your create_policy_document function
-            time.sleep(1)  # Delay between jobs
+            # time.sleep(6)  # Delay between jobs
         except Exception as e:
             # Handle errors per file if needed
             logger.error(f"Error creating policy row {file_id}: {str(e)}")
@@ -147,9 +147,30 @@ def create_policy_document(file_id):
         
     file_obj.policy = policy
     file_obj.save()
+    time.sleep(6)  
     # async_task('empPortal.tasks.extract_pdf_text_task', file_obj.id)
     async_task('empPortal.tasks.upload_pdf_store_source_id', file_obj.id)
     
+
+
+def reprocessFilesData(file_id):
+    try:
+        file_data = PolicyDocument.objects.get(id=file_id)
+        file_status = file_data.status
+        if file_status != 6:
+            file_obj = ExtractedFile.objects.filter(policy_id=file_id).last()
+            time.sleep(6)
+            async_task('empPortal.tasks.upload_pdf_store_source_id', file_obj.id)
+               
+    except PolicyDocument.DoesNotExist:
+        print(f"File with ID {file_id} not found in Policy Details")
+    
+    except FileAnalysis.DoesNotExist:
+        print(f"File with ID {file_id} not found in analysing")
+        
+    except ExtractedFile.DoesNotExist:
+        print(f"File with ID {file_id} not found in extraction")
+ 
 def upload_pdf_store_source_id(file_id):
     try:
         file_obj = ExtractedFile.objects.get(id=file_id)
@@ -160,7 +181,7 @@ def upload_pdf_store_source_id(file_id):
             return
 
         headers = {
-            'x-api-key': 'sec_VJhKqjtztDJGyM3GBNsI7UQGb6Bjg4mo'
+            'x-api-key': 'sec_m1M7LeA6FHM4Spy0vhzcBC65fSPOvims'
         }
 
         with open(pdf_path, 'rb') as f:
@@ -182,6 +203,7 @@ def upload_pdf_store_source_id(file_id):
     except Exception as e:
         logger.error(f"Error in upload_pdf_store_source_id for file_id {file_id}: {str(e)}")
 
+    # time.sleep(6)
     async_task('empPortal.tasks.process_chatpdf_text_task', file_obj.id)
 
 def process_chatpdf_text_task(file_id):
@@ -198,7 +220,7 @@ def process_text_with_chatpdf_api(file_id):
             return json.dumps({"error": "No source_id found."}, indent=4)
 
         headers = {
-            'x-api-key': 'sec_VJhKqjtztDJGyM3GBNsI7UQGb6Bjg4mo',
+            'x-api-key': 'sec_m1M7LeA6FHM4Spy0vhzcBC65fSPOvims',
             "Content-Type": "application/json",
         }
 
@@ -219,6 +241,7 @@ def process_text_with_chatpdf_api(file_id):
             headers=headers,
             json=data
         )
+        logger.info(f"Result exists. Started second data... {response.status_code}")
 
         if response.status_code == 200:
             result = response.json().get('content')
@@ -237,7 +260,7 @@ def process_text_with_chatpdf_api(file_id):
                 if result:
                     logger.info("Result exists. Processing data...")
 
-                    if extracted_data.get('policy_number') and extracted_data.get('insurance_company') and extracted_data.get('additional_details', {}).get('policy_type') :
+                    if extracted_data.get('policy_number') and extracted_data.get('insurance_company'):
                         policy_number = extracted_data.get('policy_number', '')
                         # Assign extracted values to PolicyDocument fields
                         if PolicyDocument.objects.filter(policy_number=policy_number).exists():

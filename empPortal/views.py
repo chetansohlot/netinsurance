@@ -1286,22 +1286,7 @@ def continueBulkPolicies(request):
         reprocessFilesList = reprocessFiles.split(",") if reprocessFiles else []
         
         for file_id in reprocessFilesList:
-            try:
-                file_data = PolicyDocument.objects.get(id=file_id)
-                file_status = file_data.status
-                if file_status != 6:
-                    file_obj = ExtractedFile.objects.filter(policy_id=file_id).last()
-                    print(file_obj.id)
-                    async_task('empPortal.tasks.upload_pdf_store_source_id', file_obj.id)
-               
-            except PolicyDocument.DoesNotExist:
-                print(f"File with ID {file_id} not found in Policy Details")
-            
-            except FileAnalysis.DoesNotExist:
-                print(f"File with ID {file_id} not found in analysing")
-                
-            except ExtractedFile.DoesNotExist:
-                print(f"File with ID {file_id} not found in extraction")
+            async_task('empPortal.tasks.reprocessFilesData', file_id)
 
         return redirect('bulk-policies',log_id)
     else:
