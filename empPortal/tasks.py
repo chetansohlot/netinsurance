@@ -142,14 +142,15 @@ def create_policy_document(file_id):
             status=0,
             bulk_log_id=bulk_log_id
         )
+            
+        file_obj.policy = policy
+        file_obj.save()
+        async_task('empPortal.tasks.upload_pdf_store_source_id', file_obj.id)
     except Exception as e:
         logger.error(f"Error creating policy {file_id}: {str(e)}")
         
-    file_obj.policy = policy
-    file_obj.save()
-    time.sleep(6)  
+    # time.sleep(6)  
     # async_task('empPortal.tasks.extract_pdf_text_task', file_obj.id)
-    async_task('empPortal.tasks.upload_pdf_store_source_id', file_obj.id)
     
 
 
@@ -312,6 +313,9 @@ def process_text_with_chatpdf_api(file_id):
                                 bulk_log_obj.status = 3
                                 bulk_log_obj.save()
                     else:
+                        
+                        policy_obj.status = 6  # processing complete
+                        policy_obj.save()
                         logger.warning("Policy Number or insurance_company is not found.")
                 else:
                     logger.warning("No result to process.")

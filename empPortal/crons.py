@@ -13,8 +13,8 @@ class ReprocessPoliciesCronJob(CronJobBase):
 
     def do(self):
         # Fetch all policies with status == 4
-        policies_to_reprocess = PolicyDocument.objects.exclude(status=6)
-        
+        policies_to_reprocess = PolicyDocument.objects.exclude(status__in=[6, 7])
+
         for policy in policies_to_reprocess:
             try:
                 # You can use a more complex logic to get the file_obj or task as needed
