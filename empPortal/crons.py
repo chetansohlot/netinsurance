@@ -17,16 +17,10 @@ class ReprocessPoliciesCronJob(CronJobBase):
             try:
                 # You can use a more complex logic to get the file_obj or task as needed
                 file_status = policy.status
-                if file_status == 5 or file_status == 3 or file_status == 4:
-                    # Perform processing if the status matches the criteria
-                    file_obj = FileAnalysis.objects.filter(policy_id=policy.id).last()
-                    if file_obj:
-                        async_task('empPortal.tasks.process_text_from_chatgpt', file_obj.id)
-
-                if file_status == 1:
+                if file_status != 6:
                     file_obj = ExtractedFile.objects.filter(policy_id=policy.id).last()
-                    if file_obj:
-                        async_task('empPortal.tasks.extract_pdf_text_task', file_obj.id)
+                    print(file_obj.id)
+                    async_task('empPortal.tasks.upload_pdf_store_source_id', file_obj.id)
 
             except PolicyDocument.DoesNotExist:
                 print(f"File with ID {policy.id} not found in PolicyDocument")
