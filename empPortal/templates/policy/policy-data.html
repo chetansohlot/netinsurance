@@ -187,16 +187,16 @@ Policy Data
                             <!-- Customer Name -->
                             <div class="col-sm-6 col-md-2">
                               <div class="form-group">
-                                <input class="form-field" name="customer_name" type="text" placeholder="Customer Name" value="">
+                                <input class="form-field" name="policy_holder_name" type="text" placeholder="Customer Name" value="{{filters.policy_holder_name }}">
                               </div>
                             </div>
 
                             <!-- Mobile Number -->
-                            <div class="col-sm-6 col-md-2">
+                            <!-- <div class="col-sm-6 col-md-2">
                               <div class="form-group">
                                 <input class="form-field" name="mobile_number" type="text" placeholder="Mobile Number" value="">
                               </div>
-                            </div>
+                            </div> -->
 
                             <!-- Insurance Provider -->
                             <div class="col-sm-6 col-md-2">
@@ -212,16 +212,16 @@ Policy Data
                                 <a href="{% url 'policy-data' %}" class="wrap-btn w-100 bg-danger text-white text-center">Reset</a>
                               </div>
                             </div>
-                            <div class="col-md-auto">
+                            <!-- <div class="col-md-auto">
                               <div class="form-group d-flex justify-content-end">
                                 <div class="dropdown">
-                                  <div class="shorting-select mx-0"  data-toggle="dropdown" aria-expanded="false">
+                                   <div class="shorting-select mx-0"  data-toggle="dropdown" aria-expanded="false">
                                     <img src="{% static 'dist/img/svg/shorting-icon.svg' %}" alt="">
                                     <span>Short</span>
                                     <img src="{% static 'dist/img/svg/down-arrow-icon.svg' %}" alt="" class="change-arrow">
-                                  </div>
+                                  </div> --> 
                                   
-                                    <ul class="dropdown-menu shorting-dropdown-menu">
+                                    <!-- <ul class="dropdown-menu shorting-dropdown-menu">
                                       <p class="border-bottom pb-1 title2">Short</p>
                                       <li><input type="radio" name="shorting" id="name-a_z"> <label for="name-a_z">Name A &gt; Z</label></li>
                                       <li><input type="radio" name="shorting" id="name-z_a"> <label for="name-z_a">Name Z &lt; A</label></li>
@@ -230,14 +230,14 @@ Policy Data
                                       <div class="d-flex justify-content-center border-top pt-3 mt-2 pb-2">
                                         <button type="submit" class="dashboard-addbtn w-100">Apply</button>
                                       </div>   
-                                    </ul>
+                                    </ul> -->
                                   
-                                </div>  
-                                <div class="shorting-select" data-toggle="modal" data-target="#modal-filter">
+                                <!-- </div>   -->
+                                <!-- <div class="shorting-select" data-toggle="modal" data-target="#modal-filter">
                                   <img src="{% static 'dist/img/svg/filter-icon.svg' %}" alt="">
                                   <span>Filter</span>
                                   <img src="{% static 'dist/img/svg/down-arrow-icon.svg' %}" alt="" class="change-arrow">
-                                </div>
+                                </div> -->
                               </div>  
                             </div>
                             <!--filter ends-->

@@ -72,11 +72,11 @@
                                     placeholder="Enter Email" value="{{ lead.email_address|default_if_none:'' }}">
                           </div>
 
-                          <div class="form-group col-md-4">
+                          <!-- <div class="form-group col-md-4">
                               <label class="form-lbl" for="quote_date">Quote Date</label>
                               <input type="date" class="form-field" name="quote_date" id="quote_date"
                                     value="{{ lead.quote_date|date:'Y-m-d' }}">
-                          </div>
+                          </div> -->
 
                           <div class="form-group col-md-4">
                               <label class="form-lbl" for="name_as_per_pan">Name as per PAN</label>
@@ -128,14 +128,28 @@
 
                         </div>
 
-                          <div class="form-group col-md-4">
+                          <!-- <div class="form-group col-md-4">
                               <label class="form-lbl" for="lead_type">Lead Type</label>
                               <select class="form-field" name="lead_type" id="lead_type">
                                   <option value="MOTOR" {% if lead.lead_type == "MOTOR" %}selected{% endif %}>MOTOR</option>
                                   <option value="HEALTH" {% if lead.lead_type == "HEALTH" %}selected{% endif %}>HEALTH</option>
                                   <option value="TERM" {% if lead.lead_type == "TERM" %}selected{% endif %}>TERM</option>
                               </select>
-                          </div>
+                          </div> -->
+
+                          <div class="form-group col-md-4">
+                            <label class="form-lbl" for="lead_type">Lead Type</label>
+                            <select class="form-field" name="lead_type" id="lead_type" onchange="handleLeadTypeChange()">
+                                <option value="MOTOR" {% if lead.lead_type == "MOTOR" %}selected{% endif %}>MOTOR</option>
+                                <option value="HEALTH" {% if lead.lead_type == "HEALTH" %}selected{% endif %}>HEALTH</option>
+                                <option value="TERM" {% if lead.lead_type == "TERM" %}selected{% endif %}>TERM</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group col-md-4" id="vehicle_no_field" style="display: none;">
+                            <label class="form-lbl" for="vehicle_no">Vehicle No</label>
+                            <input type="text" class="form-field" name="vehicle_no" id="vehicle_no" value="{{ lead.vehicle_no }}" placeholder="Enter Vehicle Number">
+                        </div>
 
                           <!-- <div class="form-group col-md-4">
                               <label class="form-lbl" for="status">Status</label>
@@ -215,6 +229,21 @@
     
     {% include "footer.html" %}
     {% include "footer-script.html" %}
+    <script>
+      function handleLeadTypeChange() {
+          const leadType = document.getElementById("lead_type").value;
+          const vehicleField = document.getElementById("vehicle_no_field");
+  
+          if (leadType === "MOTOR") {
+              vehicleField.style.display = "block";
+          } else {
+              vehicleField.style.display = "none";
+          }
+      }
+  
+      // Call it on page load to ensure correct initial state
+      window.onload = handleLeadTypeChange;
+  </script>
     <script>
       document.getElementById("myForm").addEventListener("submit", function() {
           document.getElementById("loader").style.display = "flex";

@@ -168,6 +168,26 @@ class Leads(models.Model):
     )  # Type of lead (MOTOR, HEALTH, TERM)
     #source_leads = models.ForeignKey(SourceMaster,db_column='source_leads',on_delete=models.CASCADE)
 
+    # New fields added
+    policy_date = models.DateField(null=True, blank=True)
+    sales_manager = models.CharField(max_length=100, null=True, blank=True)
+    agent_name = models.CharField(max_length=100, null=True, blank=True)
+    insurance_company = models.CharField(max_length=200, null=True, blank=True)
+    policy_type = models.CharField(max_length=100, null=True, blank=True)
+    policy_number = models.CharField(max_length=100, null=True, blank=True)
+    vehicle_type = models.CharField(max_length=100, null=True, blank=True)
+    make_and_model = models.CharField(max_length=200, null=True, blank=True)
+    fuel_type = models.CharField(max_length=100, null=True, blank=True)
+    registration_number = models.CharField(max_length=100, null=True, blank=True)
+    manufacturing_year = models.IntegerField(null=True, blank=True)
+    sum_insured = models.BigIntegerField(null=True, blank=True)
+    ncb = models.IntegerField(null=True, blank=True)
+    od_premium = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    tp_premium = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    net_premium = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    gross_premium = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    risk_start_date = models.DateField(null=True, blank=True)
+
     class Meta:
         db_table = 'leads'  # This defines the database table name
 
@@ -1220,4 +1240,4 @@ class PartnerUploadExcel(models.Model):
     error = models.TextField(default="")
     created_by = models.ForeignKey(Users, on_delete=models.SET_NULL, null=True)
     class Meta:
-        db_table = 'patner_upload_excels'
+        db_table = 'partner_upload_excels'
