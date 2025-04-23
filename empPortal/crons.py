@@ -2,6 +2,8 @@ from django_cron import CronJobBase, Schedule
 from empPortal.models import PolicyDocument, FileAnalysis, ExtractedFile
 from django_q.tasks import async_task
 from django.utils import timezone
+import logging
+logger = logging.getLogger(__name__)
 
 class ReprocessPoliciesCronJob(CronJobBase):
     RUN_EVERY_MINS = 2  # every 3 minutes
@@ -18,7 +20,9 @@ class ReprocessPoliciesCronJob(CronJobBase):
                 # You can use a more complex logic to get the file_obj or task as needed
                 file_obj = ExtractedFile.objects.filter(policy_id=policy.id).last()
                 print(file_obj.id)
-                async_task('empPortal.tasks.reprocessFilesData', file_obj.id)
+                logger.info(f"Something Missing {file_obj.id}")
+
+                async_task('empPortal.tasks.reprocessFiles', file_obj.id)
 
             except PolicyDocument.DoesNotExist:
                 print(f"File with ID {policy.id} not found in PolicyDocument")

@@ -1286,7 +1286,7 @@ def continueBulkPolicies(request):
         reprocessFilesList = reprocessFiles.split(",") if reprocessFiles else []
         
         for file_id in reprocessFilesList:
-            async_task('empPortal.tasks.reprocessFilesData', file_id)
+            async_task('empPortal.tasks.reprocessFiles', file_id)
 
         return redirect('bulk-policies',log_id)
     else:

@@ -153,7 +153,8 @@ def create_policy_document(file_id):
     
 
 
-def reprocessFilesData(file_id):
+def reprocessFiles(file_id):
+
     try:
         file_data = PolicyDocument.objects.get(id=file_id)
         file_status = file_data.status
@@ -175,28 +176,30 @@ def upload_pdf_store_source_id(file_id):
     try:
         file_obj = ExtractedFile.objects.get(id=file_id)
         pdf_path = file_obj.file_path.path
-
-        if not os.path.exists(pdf_path):
-            logger.error(f"PDF file not found for file_id: {file_id}")
-            return
-
-        headers = {
-            'x-api-key': 'sec_m1M7LeA6FHM4Spy0vhzcBC65fSPOvims'
-        }
-
-        with open(pdf_path, 'rb') as f:
-            files = [('file', (file_obj.filename, f, 'application/pdf'))]
-            response = requests.post('https://api.chatpdf.com/v1/sources/add-file', headers=headers, files=files)
-
-        if response.status_code == 200:
-            source_id = response.json().get('sourceId')
-            file_obj.source_id = source_id
-            file_obj.is_uploaded = True
-            file_obj.save()
-
-            logger.info(f"Uploaded {file_obj.filename} to ChatPDF. Source ID: {source_id}")
+        if file_obj.source_id: 
+            async_task('empPortal.tasks.process_chatpdf_text_task', file_obj.id)
         else:
-            logger.error(f"Failed to upload {file_obj.filename}. Status: {response.status_code}, Error: {response.text}")
+            if not os.path.exists(pdf_path):
+                logger.error(f"PDF file not found for file_id: {file_id}")
+                return
+
+            headers = {
+                'x-api-key': 'sec_m1M7LeA6FHM4Spy0vhzcBC65fSPOvims'
+            }
+
+            with open(pdf_path, 'rb') as f:
+                files = [('file', (file_obj.filename, f, 'application/pdf'))]
+                response = requests.post('https://api.chatpdf.com/v1/sources/add-file', headers=headers, files=files)
+
+            if response.status_code == 200:
+                source_id = response.json().get('sourceId')
+                file_obj.source_id = source_id
+                file_obj.is_uploaded = True
+                file_obj.save()
+
+                logger.info(f"Uploaded {file_obj.filename} to ChatPDF. Source ID: {source_id}")
+            else:
+                logger.error(f"Failed to upload {file_obj.filename}. Status: {response.status_code}, Error: {response.text}")
 
     except ExtractedFile.DoesNotExist:
         logger.error(f"ExtractedFile with ID {file_id} not found.")
