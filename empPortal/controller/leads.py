@@ -47,7 +47,6 @@ OPENAI_API_KEY = settings.OPENAI_API_KEY
 
 app = FastAPI()
 
-
 def dictfetchall(cursor):
     "Returns all rows from a cursor as a dict"
     columns = [col[0] for col in cursor.description]

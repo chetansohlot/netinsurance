@@ -143,6 +143,24 @@ class Leads(models.Model):
     created_by = models.CharField(max_length=20, null=True, blank=True)  
     updated_at = models.DateTimeField(auto_now=True)  # Timestamp when the lead was last updated
     status = models.CharField(max_length=50, default='new')  # Status of the lead (new, contacted, converted, etc.)
+    policy_date = models.DateField(null=True, blank=True)
+    sales_manager = models.CharField(max_length=100, null=True, blank=True)
+    agent_name = models.CharField(max_length=100, null=True, blank=True)
+    insurance_company = models.CharField(max_length=200, null=True, blank=True)
+    policy_type = models.CharField(max_length=100, null=True, blank=True)
+    policy_number = models.CharField(max_length=100, null=True, blank=True)
+    vehicle_type = models.CharField(max_length=100, null=True, blank=True)
+    make_and_model = models.CharField(max_length=200, null=True, blank=True)
+    fuel_type = models.CharField(max_length=100, null=True, blank=True)
+    registration_number = models.CharField(max_length=100, null=True, blank=True)
+    manufacturing_year = models.IntegerField(null=True, blank=True)
+    sum_insured = models.BigIntegerField(null=True, blank=True)
+    ncb = models.IntegerField(null=True, blank=True)
+    od_premium = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    tp_premium = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    net_premium = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    gross_premium = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    risk_start_date = models.DateField(null=True, blank=True)
     lead_type = models.CharField(
         max_length=10, 
         choices=[('MOTOR', 'MOTOR'), ('HEALTH', 'HEALTH'), ('TERM', 'TERM')], 

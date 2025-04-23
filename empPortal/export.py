@@ -40,6 +40,9 @@ dt_naive = dt_aware.replace(tzinfo=None)
 processed_text = {"policy_number": "3005/O/379425038/00/000", "vehicle_number": "HR98P4781", "insured_name": "SHELLEY MUNJAL", "issue_date": "2025-02-01", "expiry_date": "2026-02-01", "premium_amount": "1,163.00", "sum_insured": "64,073.00", "policy_period": "1 year", "total_premium": "1,372.00", "insurance_company": "ICICI Lombard General Insurance Company Limited", "coverage_details": [{"benefit": "Basic OD Premium", "amount": "612.00"}, {"benefit": "Zero Depreciation (Silver)", "amount": "449.00"}, {"benefit": "Return to Invoice", "amount": "224.00"}]}
     
 def exportPolicies(request):
+    if not request.user.is_authenticated and request.user.is_active != 1:
+        messages.error(request, "Please Login First")
+        return redirect('login')
     # Query the PolicyDocument model for all policy records
     policies = PolicyDocument.objects.all().order_by('-id')
 
@@ -92,6 +95,9 @@ def exportPolicies(request):
     return response
 
 def commission_report(request):
+    if not request.user.is_authenticated and request.user.is_active != 1:
+        messages.error(request, "Please Login First")
+        return redirect('login')
     # Get filter values from GET parameters
     policy_no = request.GET.get("policy_no", None)
     insurer_name = request.GET.get("insurer_name", None)
@@ -709,6 +715,10 @@ def download_policy_data(request):
     return response
 
 def export_commission_data(request):
+    if not request.user.is_authenticated and request.user.is_active != 1:
+        messages.error(request, "Please Login First")
+        return redirect('login')
+    
     wb = openpyxl.Workbook()
     ws = wb.active
     ws.title = "Policy Data"
@@ -766,6 +776,10 @@ def export_commission_data(request):
         admin_id = policy.rm_id  
         role_id = Users.objects.filter(id=admin_id).values_list('role_id', flat=True).first()
         
+        insurer_total_comm_amt = float(getattr(insurer_payment_info, 'insurer_total_comm_amount', 0) or 0)
+        agent_total_comm_amt = float(getattr(agent_payment_info, 'agent_total_comm_amount', 0) or 0)
+        profit_loss = insurer_total_comm_amt - agent_total_comm_amt
+                
         row_data = [
             issue_month,
             policy.rm_name or "-",
@@ -811,7 +825,7 @@ def export_commission_data(request):
                 insurer_payment_info.insurer_net_amount if insurer_payment_info and insurer_payment_info.insurer_net_amount else "-",
                 insurer_payment_info.insurer_incentive_amount if insurer_payment_info and insurer_payment_info.insurer_incentive_amount else "-",
                 insurer_payment_info.insurer_total_comm_amount if insurer_payment_info and insurer_payment_info.insurer_total_comm_amount else "-",
-                insurer_payment_info.insurer_balance_amount if insurer_payment_info and insurer_payment_info.insurer_balance_amount else "-",
+                profit_loss if profit_loss else "-",
                 insurer_payment_info.insurer_tds if insurer_payment_info and insurer_payment_info.insurer_tds else "-",
                 insurer_payment_info.insurer_tds_amount if insurer_payment_info and insurer_payment_info.insurer_tds_amount else "-",
                 insurer_payment_info.insurer_balance_amount if insurer_payment_info and insurer_payment_info.insurer_balance_amount else "-"
