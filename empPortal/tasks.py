@@ -63,23 +63,22 @@ def process_zip_file(zip_id):
     for filename in os.listdir(extract_dir):
         if not filename.lower().endswith('.pdf'):
             continue  # Skip non-PDFs
- 
+
         file_path = os.path.join(extract_dir, filename)
         relative_path = os.path.relpath(file_path, settings.MEDIA_ROOT)
         file_url = filepath_to_uri(os.path.join(settings.MEDIA_URL, relative_path))
-        
+
         try:
             extracted = ExtractedFile.objects.create(
                 zip_ref=zip_instance,
-                file_path=file_path, 
+                file_path=file_path,
                 filename=filename,
                 file_url=file_url
             )
+            # only append if created successfully
+            pdf_file_ids.append(extracted.id)
         except Exception as e:
             logger.error(f"Error processing file_path {file_path}: {str(e)}")
-            
-        # add extracted_file_id in pdf_files
-        pdf_file_ids.append(extracted.id)
         
     zip_instance.is_processed = True
     zip_instance.save()
@@ -145,10 +144,269 @@ def create_policy_document(file_id):
         
     file_obj.policy = policy
     file_obj.save()
-    async_task('empPortal.tasks.extract_pdf_text_task', file_obj.id)
+    # async_task('empPortal.tasks.extract_pdf_text_task', file_obj.id)
+    async_task('empPortal.tasks.upload_pdf_store_source_id', file_obj.id)
     
+def upload_pdf_store_source_id(file_id):
+    try:
+        file_obj = ExtractedFile.objects.get(id=file_id)
+        pdf_path = file_obj.file_path.path
 
-    
+        if not os.path.exists(pdf_path):
+            logger.error(f"PDF file not found for file_id: {file_id}")
+            return
+
+        headers = {
+            'x-api-key': 'sec_VJhKqjtztDJGyM3GBNsI7UQGb6Bjg4mo'
+        }
+
+        with open(pdf_path, 'rb') as f:
+            files = [('file', (file_obj.filename, f, 'application/pdf'))]
+            response = requests.post('https://api.chatpdf.com/v1/sources/add-file', headers=headers, files=files)
+
+        if response.status_code == 200:
+            source_id = response.json().get('sourceId')
+            file_obj.source_id = source_id
+            file_obj.is_uploaded = True
+            file_obj.save()
+
+            logger.info(f"Uploaded {file_obj.filename} to ChatPDF. Source ID: {source_id}")
+        else:
+            logger.error(f"Failed to upload {file_obj.filename}. Status: {response.status_code}, Error: {response.text}")
+
+    except ExtractedFile.DoesNotExist:
+        logger.error(f"ExtractedFile with ID {file_id} not found.")
+    except Exception as e:
+        logger.error(f"Error in upload_pdf_store_source_id for file_id {file_id}: {str(e)}")
+
+    async_task('empPortal.tasks.process_chatpdf_text_task', file_obj.id)
+
+
+def process_chatpdf_text_task(file_id):
+    result = process_text_with_chatpdf_api(file_id)
+    logger.info(f"ChatPDF processing result for file_id {file_id}: {result}")
+
+
+def process_text_with_chatpdf_api(file_id):
+    try:
+        file_obj = ExtractedFile.objects.get(id=file_id)
+        policy_obj = file_obj.policy
+
+        if not file_obj.source_id:
+            logger.error(f"No source_id found for file_id {file_id}")
+            return json.dumps({"error": "No source_id found."}, indent=4)
+
+        headers = {
+            'x-api-key': 'sec_VJhKqjtztDJGyM3GBNsI7UQGb6Bjg4mo',
+            "Content-Type": "application/json",
+        }
+
+        message = f"""
+            Convert the following insurance document text into a structured JSON format without any extra comments.
+
+            Rules:
+            - Extract all fields based on the JSON structure provided.
+            - All numerical values (like premiums, sum insured, cubic capacity, percentages) should be numbers only, without any currency symbols, commas, or extra text.
+            - Dates should be in "YYYY-MM-DD H:i:s" format.
+            - If the insurance company is "GoDigit", swap the 'own_damage' and 'third_party' premium amounts with each other.
+            - If Policy number not found leave blank
+            - if Zurich Kotak General Insurance Company (India) Limited check for name & policy number sum insured clearly
+            - If two policy number found get main policy and details of first policy 
+            - Find insurer provider and valid policy number don't set mobile number or something in policy number
+            - If a detail is not found, leave it as an empty string or null as per the field.
+            - Policy number format for GoDigit should be 'XXXXXX / XXXXX' (space before and after the slash).
+
+            Input Text:
+
+            Expected JSON format:
+            {{
+                "policy_number": "XXXXXX/XXXXX",
+                "vehicle_number": "XXXXXXXXXX",
+                "insured_name": "XXXXXX",
+                "issue_date": "YYYY-MM-DD H:i:s",
+                "start_date": "YYYY-MM-DD H:i:s",
+                "expiry_date": "YYYY-MM-DD H:i:s",
+                "gross_premium": XXXX,
+                "net_premium": XXXX,
+                "gst_premium": XXXX,
+                "sum_insured": XXXX,
+                "policy_period": "XX Year(s)",
+                "insurance_company": "XXXXX",
+                "coverage_details": {{
+                    "own_damage": {{
+                        "premium": XXXX,
+                        "additional_premiums": XXXX,
+                        "addons": {{
+                            "addons": [
+                                {{"name": "XXXX", "amount": XXXX}},
+                                {{"name": "XXXX", "amount": XXXX}}
+                            ],
+                            "discounts": [
+                                {{"name": "XXXX", "amount": XXXX}},
+                                {{"name": "XXXX", "amount": XXXX}}
+                            ]
+                        }}
+                    }},
+                    "third_party": {{
+                        "premium": XXXX,
+                        "additional_premiums": XXXX,
+                        "addons": {{
+                            "addons": [
+                                {{"name": "XXXX", "amount": XXXX}},
+                                {{"name": "XXXX", "amount": XXXX}}
+                            ],
+                            "discounts": [
+                                {{"name": "XXXX", "amount": XXXX}},
+                                {{"name": "XXXX", "amount": XXXX}}
+                            ]
+                        }}
+                    }}
+                }},
+                "vehicle_details": {{
+                    "make": "XXXX",
+                    "model": "XXXX",
+                    "variant": "XXXX",
+                    "registration_year": YYYY,
+                    "manufacture_year": YYYY,
+                    "engine_number": "XXXXXXXXXXXX",
+                    "chassis_number": "XXXXXXXXXXXX",
+                    "fuel_type": "XXXX",
+                    "cubic_capacity": XXXX,
+                    "seating_capacity": XXXX,
+                    "vehicle_gross_weight": XXXX,
+                    "vehicle_type": "XXXX XXXX",
+                    "commercial_vehicle_detail": "XXXX XXXX"
+                }},
+                "additional_details": {{
+                    "policy_type": "XXXX",
+                    "ncb": XX,
+                    "addons": ["XXXX", "XXXX"],
+                    "previous_insurer": "XXXX",
+                    "previous_policy_number": "XXXX"
+                }},
+                "contact_information": {{
+                    "address": "XXXXXX",
+                    "phone_number": "XXXXXXXXXX",
+                    "email": "XXXXXX",
+                    "pan_no": "XXXXX1111X",
+                    "aadhar_no": "XXXXXXXXXXXX"
+                }}
+            }}
+            """
+
+
+        data = {
+            'sourceId': file_obj.source_id,
+            'messages': [
+                {
+                    'role': "user",
+                    'content': message
+                }
+            ]
+        }
+
+        response = requests.post(
+            'https://api.chatpdf.com/v1/chats/message',
+            headers=headers,
+            json=data
+        )
+
+        if response.status_code == 200:
+            result = response.json().get('content')
+            if isinstance(result, str):
+                cleaned_result = re.sub(r'```(?:json)?\s*|\s*```', '', result).strip()
+                extracted_data = json.loads(cleaned_result)
+            else:
+                extracted_data = result
+            # Save result to both ExtractedFile and PolicyDocument
+            file_obj.chat_response = extracted_data
+            file_obj.save()
+            try:
+                logger.info("Starting result processing...")
+
+                if result:
+                    logger.info("Result exists. Processing data...")
+
+                    if extracted_data.get('policy_number') and extracted_data.get('insurance_company'):
+                        # Assign extracted values to PolicyDocument fields
+                        policy_obj.policy_number = extracted_data.get('policy_number', '')
+                        policy_obj.vehicle_number = extracted_data.get('vehicle_number', '')
+                        policy_obj.holder_name = extracted_data.get('insured_name', '')
+                        policy_obj.policy_issue_date = extracted_data.get('issue_date', '')
+                        policy_obj.policy_expiry_date = extracted_data.get('expiry_date', '')
+                        policy_obj.policy_start_date = extracted_data.get('start_date', '')
+                        policy_obj.policy_period = extracted_data.get('policy_period', '')
+                        policy_obj.policy_premium = extracted_data.get('gross_premium', '')
+                        policy_obj.policy_total_premium = extracted_data.get('net_premium', '')
+                        policy_obj.sum_insured = extracted_data.get('sum_insured', '')
+                        policy_obj.insurance_provider = extracted_data.get('insurance_company', '')
+                        policy_obj.coverage_details = extracted_data.get('coverage_details', {})
+                        policy_obj.vehicle_make = extracted_data.get('vehicle_details', {}).get('make', '')
+                        policy_obj.vehicle_model = extracted_data.get('vehicle_details', {}).get('model', '')
+                        policy_obj.vehicle_type = extracted_data.get('vehicle_details', {}).get('vehicle_type', '')
+                        policy_obj.vehicle_gross_weight = extracted_data.get('vehicle_details', {}).get('vehicle_gross_weight', '')
+                        policy_obj.vehicle_manuf_date = extracted_data.get('vehicle_details', {}).get('manufacture_year', '')
+                        policy_obj.policy_type = extracted_data.get('additional_details', {}).get('policy_type', '')
+                        policy_obj.payment_status = extracted_data.get('additional_details', {}).get('ncb', '')
+                        policy_obj.gst = extracted_data.get('gst_premium', '')
+                        policy_obj.od_premium = extracted_data.get('coverage_details', {}).get('own_damage', {}).get('premium', '')
+                        policy_obj.tp_premium = extracted_data.get('coverage_details', {}).get('third_party', {}).get('premium', '')
+
+                        # Log the extracted values to ensure correct mapping
+                        logger.info(f"Updated PolicyDocument fields: {json.dumps({
+                            'policy_number': policy_obj.policy_number,
+                            'vehicle_number': policy_obj.vehicle_number,
+                            'holder_name': policy_obj.holder_name,
+                            'policy_issue_date': policy_obj.policy_issue_date,
+                            'policy_expiry_date': policy_obj.policy_expiry_date,
+                            'policy_start_date': policy_obj.policy_start_date,
+                            'policy_period': policy_obj.policy_period,
+                            'policy_premium': policy_obj.policy_premium,
+                            'policy_total_premium': policy_obj.policy_total_premium,
+                            'sum_insured': policy_obj.sum_insured,
+                            'insurance_provider': policy_obj.insurance_provider,
+                            'coverage_details': policy_obj.coverage_details,
+                            'vehicle_make': policy_obj.vehicle_make,
+                            'vehicle_model': policy_obj.vehicle_model,
+                            'vehicle_type': policy_obj.vehicle_type,
+                            'vehicle_gross_weight': policy_obj.vehicle_gross_weight,
+                            'vehicle_manuf_date': policy_obj.vehicle_manuf_date,
+                            'policy_type': policy_obj.policy_type,
+                            'payment_status': policy_obj.payment_status,
+                            'gst': policy_obj.gst,
+                            'od_premium': policy_obj.od_premium,
+                            'tp_premium': policy_obj.tp_premium,
+                        }, indent=4)}")
+
+                        policy_obj.extracted_text = extracted_data
+                        policy_obj.status = 6  # processing complete
+                        policy_obj.save()
+                else:
+                    logger.warning("No result to process.")
+            except Exception as e:
+                logger.error(f"Exception occurred: {e}")
+                
+
+            logger.info(f"Processed ChatPDF response for file_id {file_id}, policy_id {policy_obj.id}")
+
+            return result
+
+        else:
+            logger.error(f"ChatPDF API failed for file_id {file_id}. Status: {response.status_code}, Error: {response.text}")
+            return json.dumps({"error": f"API Error: {response.status_code}", "details": response.text}, indent=4)
+
+    except ExtractedFile.DoesNotExist:
+        logger.error(f"ExtractedFile with ID {file_id} not found.")
+        return json.dumps({"error": "ExtractedFile not found."}, indent=4)
+    except PolicyDocument.DoesNotExist:
+        logger.error(f"PolicyDocument not found for file_id {file_id}")
+        return json.dumps({"error": "PolicyDocument not found."}, indent=4)
+    except Exception as e:
+        logger.error(f"Error in process_text_with_chatpdf_api for file_id {file_id}: {str(e)}")
+        return json.dumps({"error": "Unexpected error", "details": str(e)}, indent=4)
+
+
+
 def extract_pdf_text_task(file_id):
     try:
         file_obj = ExtractedFile.objects.get(id=file_id)
