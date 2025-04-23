@@ -234,3 +234,114 @@ def commisionRateByMemberId(member_id):
 def insurercommisionRateByMemberId(member_id):
     commission_data = Commission.objects.filter(member_id=member_id).first()
     return commission_data
+
+
+def chatPdfMessage():
+    message = f"""
+            Convert the following insurance document text into a structured JSON format without any extra comments.
+
+            Rules:
+            - Extract all fields based on the JSON structure provided.
+            - All numerical values (like premiums, sum insured, cubic capacity, percentages) should be numbers only, without any currency symbols, commas, or extra text.
+            - Dates should be in "YYYY-MM-DD H:i:s" format.
+            - If the insurance company is "GoDigit", swap the 'own_damage' and 'third_party' premium amounts with each other.
+            - If Policy number not found leave blank
+            - if Zurich Kotak General Insurance Company (India) Limited check for name & policy number sum insured clearly
+            - If two policy number found get main policy and details of first policy 
+            - Find insurer provider and valid policy number don't set mobile number or something in policy number
+            - If a detail is not found, leave it as an empty string or null as per the field.
+            - Policy number format for GoDigit should be 'XXXXXX / XXXXX' (space before and after the slash).
+
+            Input Text:
+
+            Expected JSON format:
+            {{
+                "policy_number": "XXXXXX/XXXXX",
+                "vehicle_number": "XXXXXXXXXX",
+                "insured_name": "XXXXXX",
+                "issue_date": "YYYY-MM-DD H:i:s",
+                "start_date": "YYYY-MM-DD H:i:s",
+                "expiry_date": "YYYY-MM-DD H:i:s",
+                "gross_premium": XXXX,
+                "net_premium": XXXX,
+                "gst_premium": XXXX,
+                "sum_insured": XXXX,
+                "policy_period": "XX Year(s)",
+                "insurance_company": "XXXXX",
+                "coverage_details": {{
+                    "own_damage": {{
+                        "premium": XXXX,
+                        "additional_premiums": XXXX,
+                        "addons": {{
+                            "addons": [
+                                {{"name": "XXXX", "amount": XXXX}},
+                                {{"name": "XXXX", "amount": XXXX}}
+                            ],
+                            "discounts": [
+                                {{"name": "XXXX", "amount": XXXX}},
+                                {{"name": "XXXX", "amount": XXXX}}
+                            ]
+                        }}
+                    }},
+                    "third_party": {{
+                        "premium": XXXX,
+                        "additional_premiums": XXXX,
+                        "addons": {{
+                            "addons": [
+                                {{"name": "XXXX", "amount": XXXX}},
+                                {{"name": "XXXX", "amount": XXXX}}
+                            ],
+                            "discounts": [
+                                {{"name": "XXXX", "amount": XXXX}},
+                                {{"name": "XXXX", "amount": XXXX}}
+                            ]
+                        }}
+                    }}
+                }},
+                "vehicle_details": {{
+                    "make": "XXXX",
+                    "model": "XXXX",
+                    "variant": "XXXX",
+                    "registration_year": YYYY,
+                    "manufacture_year": YYYY,
+                    "engine_number": "XXXXXXXXXXXX",
+                    "chassis_number": "XXXXXXXXXXXX",
+                    "fuel_type": "XXXX",
+                    "cubic_capacity": XXXX,
+                    "seating_capacity": XXXX,
+                    "vehicle_gross_weight": XXXX,
+                    "vehicle_type": "XXXX XXXX",
+                    "commercial_vehicle_detail": "XXXX XXXX"
+                }},
+                "additional_details": {{
+                    "policy_type": "XXXX",
+                    "ncb": XX,
+                    "addons": ["XXXX", "XXXX"],
+                    "previous_insurer": "XXXX",
+                    "previous_policy_number": "XXXX"
+                }},
+                "contact_information": {{
+                    "address": "XXXXXX",
+                    "phone_number": "XXXXXXXXXX",
+                    "email": "XXXXXX",
+                    "pan_no": "XXXXX1111X",
+                    "aadhar_no": "XXXXXXXXXXXX"
+                }}
+            }}
+            """
+            
+    return message
+
+def policy_product():
+    policy_product = {
+        1: "Motor",
+        2: "Health",
+        3: "Term"
+    }
+    return policy_product
+
+def getUserNameByUserId(user_id):
+    try:
+        return Users.objects.get(id=user_id).full_name
+    except Users.DoesNotExist:
+        return None

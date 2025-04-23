@@ -29,6 +29,10 @@ from django.db.models import Sum
 from django.utils import timezone
 from django.utils.timezone import now
 from empPortal.model import Referral
+from urllib.parse import urljoin
+from collections import Counter
+from django.core.paginator import Paginator
+
 
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 logger = logging.getLogger(__name__)
@@ -55,8 +59,6 @@ def dashboard(request):
         })
     else:
         return redirect('login')
-
-
 
 def billings(request):
     if request.user.is_authenticated:
@@ -118,8 +120,6 @@ def userAndRoles(request):
     else:
         return redirect('login')
 
-
-
 def newRole(request):
     if request.user.is_authenticated:
         return render(request, 'new-role.html')
@@ -179,7 +179,6 @@ def createUser(request):
         return render(request,'create-user.html',{'role_data':roles, 'branches':branches, 'departments':departments})
     else:
         return redirect('login')
-
 
 def get_users_by_role(request):
     if request.method == "GET" and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -503,12 +502,6 @@ def policyMgt(request):
         return redirect('login')
     return render(request,'policy/policy-mgt.html')
 
-def bulkPolicyMgt(request):
-    if not request.user.is_authenticated and request.user.is_active != 1:
-        return redirect('login')
-    rms = Users.objects.all()
-    return render(request,'policy/bulk-policy-mgt.html',{'users':rms})
-
 def browsePolicy(request):
     if not request.user.is_authenticated and request.user.is_active != 1:
         messages.error(request, "Please Login First")
@@ -798,10 +791,6 @@ def process_text_with_chatgpt(text):
         
         return json.dumps({"error": "Request failed", "details": str(e)}, indent=4)
 
-
-
-from django.core.paginator import Paginator
-
 def policyData(request):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -924,13 +913,6 @@ def policyData(request):
         'filters': {k: request.GET.get(k,'') for k in filters}
     })
 
-
-import os
-from django.conf import settings
-from urllib.parse import urljoin
-
-
-
 def editPolicy(request, id):
     if request.user.is_authenticated:
         policy_data = PolicyDocument.objects.filter(id=id).first()
@@ -960,8 +942,7 @@ def editPolicy(request, id):
         })
     else:
         return redirect('login')
-  
-  
+   
 def get_pdf_path(request, filepath):
     """
     Returns the absolute URI to the PDF file if it exists, otherwise an empty string.
@@ -1068,71 +1049,6 @@ def updatePolicy(request):
     messages.error(request, 'No Data Found')
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
-def bulkBrowsePolicy(request):
-    if request.user.is_authenticated:
-        if request.method == "POST" and request.FILES.get("zip_file"):
-            zip_file = request.FILES["zip_file"]
-            camp_name = request.POST.get("camp_name") 
-            rm_id = request.POST.get("rm_id")
-            
-            # Validate ZIP file format
-            if not zip_file or not zip_file.name.lower().endswith(".zip"):
-                messages.error(request, "Invalid file format. Only ZIP files are allowed.")
-                return redirect("bulk-policy-mgt")
-            
-            if zip_file.size > 50 * 1024 * 1024:
-                messages.error(request, "File too large. Maximum allowed size is 50 MB.")
-                return redirect("bulk-policy-mgt")  
-            
-            try:
-                zip_bytes = BytesIO(zip_file.read())
-                with zipfile.ZipFile(zip_bytes) as zf:
-                    file_list = zf.infolist()
-                    total_files = len(file_list)
-                    pdf_files = [f for f in file_list if f.filename.lower().endswith(".pdf")]
-                    non_pdf_files = [f for f in file_list if not f.filename.lower().endswith(".pdf")]
-                    
-                    pdf_count = len(pdf_files)
-                    non_pdf_count = len(non_pdf_files)
-                    
-                    if total_files > 50:
-                        messages.error(request, "ZIP contains more than 50 files.")
-                        return redirect("bulk-policy-mgt")
-                    
-                    if non_pdf_files:
-                        messages.error(request, "ZIP must contain only PDF files.")
-                        return redirect("bulk-policy-mgt")
-            except zipfile.BadZipFile:
-                messages.error(request, "The uploaded ZIP file is corrupted or invalid.")
-                return redirect("bulk-policy-mgt")
-            
-            if not camp_name:
-                messages.error(request, "Campaign Name is mandatory.")
-                return redirect("bulk-policy-mgt")
-            
-            rm_name = getUserNameByUserId(rm_id) if rm_id else None
-            
-            zip_instance = UploadedZip.objects.create(
-                file=ContentFile(zip_bytes.getvalue(), name=zip_file.name),
-                campaign_name=camp_name,
-                rm_id=rm_id,
-                rm_name=rm_name,
-                created_by=request.user,
-                total_files=total_files,        
-                pdf_files_count=pdf_count,      
-                non_pdf_files_count=non_pdf_count  
-            )
-                        
-            # Start background processing
-            async_task('empPortal.tasks.create_bulk_log', zip_instance.id)
-            
-            messages.success(request, "ZIP uploaded successfully. Processing started in background.")
-            return redirect("bulk-upload-logs")
-        else:
-            return redirect("bulk-policy-mgt")
-    else:
-        return redirect('login')
-
 def bulkUploadLogs(request):
     if not request.user.is_authenticated or request.user.is_active != 1:
         messages.error(request,'Please Login First')
@@ -1216,10 +1132,6 @@ def failedPolicyUploadView(request, id):
 
     return render(request, 'policy/unprocessable-files.html', {'files': unprocessable_files})
   
-
-from collections import Counter
-
-
 def bulkPolicyView(request, id):
     if not request.user.is_authenticated or request.user.is_active != 1:
         return redirect('login')
