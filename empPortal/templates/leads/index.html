@@ -7,7 +7,6 @@
 {% block content %}
 {% load static %}
 
-
 <body class="hold-transition sidebar-mini">
     <div class="wrapper">
         {% include 'navbar.html' %}
@@ -253,6 +252,11 @@
                                 </div>
                                 <div class="col-sm-6 col-md">
                                   <div class="form-group">
+                                      <input class="form-field" name="pan_card_number" type="text" placeholder="PAN Card Number" value="">
+                                  </div>
+                              </div>
+                                <div class="col-sm-6 col-md">
+                                  <div class="form-group">
                                       <input class="form-field" name="email_address" type="text" placeholder="Email Address" value="">
                                   </div>
                               </div>
@@ -268,6 +272,7 @@
                                     <a href="{% url 'leads-mgt' %}" class="wrap-btn w-100 bg-danger ml-2 text-center">Reset</a>
                                 </div>  
                             </div>
+
                             <div class="col-md-auto">
                               <div class="form-group d-flex justify-content-end">
                                 <div class="dropdown">

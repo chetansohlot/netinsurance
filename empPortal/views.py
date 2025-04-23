@@ -840,6 +840,17 @@ def policyData(request):
     # if 'insurer_name' in request.GET and request.GET['insurer_name']:
     #     queryset = queryset.filter(insurer__icontains=request.GET['insurer_name']) 
     # 
+
+    def get_nested(data, path, default=''):
+      for key in path:
+          if isinstance(data, dict):
+            data = data.get(key, default)
+          else:
+            return default
+      return str(data).lower()  # always return as lowercase string
+
+
+
     filters = {
         'policy_number':      request.GET.get('policy_number', '').strip().lower(),
         'vehicle_number':     request.GET.get('vehicle_number', '').strip().lower(),
@@ -873,11 +884,11 @@ def policyData(request):
             continue
         if filters['vehicle_number'] and filters['vehicle_number'] not in data.get('vehicle_number', '').lower():
             continue
-        if filters['engine_number'] and filters['engine_number'] not in data.get('engine_number', '').lower():
+        if filters['engine_number'] and filters['engine_number'] not in get_nested(data, ['vehicle_details', 'engine_number']).lower():
             continue
-        if filters['chassis_number'] and filters['chassis_number'] not in data.get('chassis_number', '').lower():
+        if filters['chassis_number'] and filters['chassis_number'] not in get_nested(data, ['vehicle_details', 'chassis_number']).lower():
             continue
-        if filters['vehicle_type'] and filters['vehicle_type'] not in data.get('vehicle_type', '').lower():
+        if filters['vehicle_type'] and filters['vehicle_type'] not in get_nested(data, ['vehicle_details', 'vehicle_type']).lower():
             continue
         if filters['policy_holder_name'] and filters['policy_holder_name'] not in data.get('insured_name', '').lower():
             continue
@@ -1366,13 +1377,10 @@ def continueBulkPolicies(request):
             try:
                 file_data = PolicyDocument.objects.get(id=file_id)
                 file_status = file_data.status
-                if file_status == 5 or file_status == 3 or file_status == 4:
-                    file_obj = FileAnalysis.objects.filter(policy_id=file_id).last()
-                    async_task('empPortal.tasks.process_text_from_chatgpt', file_obj.id)
-               
-                if file_status == 1:
+                if file_status != 6:
                     file_obj = ExtractedFile.objects.filter(policy_id=file_id).last()
-                    async_task('empPortal.tasks.extract_pdf_text_task', file_obj.id)
+                    print(file_obj.id)
+                    async_task('empPortal.tasks.upload_pdf_store_source_id', file_obj.id)
                
             except PolicyDocument.DoesNotExist:
                 print(f"File with ID {file_id} not found in Policy Details")
