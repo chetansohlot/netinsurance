@@ -43,11 +43,15 @@ import re
 import pandas as pd
 from django.contrib.auth.hashers import make_password
 import openpyxl
-from dateutil import parser  # Add this
-
-
+from dateutil import parser  
+from ..models import PartnerUploadExcel
+from django.core.files.storage import default_storage
 OPENAI_API_KEY = settings.OPENAI_API_KEY
-
+from django.shortcuts import redirect
+from django.contrib import messages
+import openpyxl
+from django.contrib.auth.decorators import login_required
+from django_q.tasks import async_task
 app = FastAPI()
 
 
@@ -90,10 +94,38 @@ def members(request):
                 Q(phone__icontains=global_search)  
             )
 
-        # Apply filtering
+        """# Apply filtering
         if search_field and search_query:
             filter_args = {f"{search_field}__icontains": search_query}
-            users = users.filter(**filter_args)
+            users = users.filter(**filter_args)"""
+
+        users = Users.objects.all()
+
+    # Get filter values from GET request
+        user_gen_id = request.GET.get('user_gen_id', '').strip()
+        user_name = request.GET.get('user_name', '').strip()
+        email = request.GET.get('email', '').strip()
+        phone = request.GET.get('phone', '').strip()
+        pan_no = request.GET.get('pan_number', '').strip()  
+
+    # Apply filters
+        if user_gen_id:
+            users = users.filter(user_gen_id__icontains=user_gen_id)
+        if user_name:
+            users = users.filter(user_name__icontains=user_name)
+        if email:
+            users = users.filter(email__icontains=email)
+        if phone:
+            users = users.filter(phone__icontains=phone)
+        if pan_no:
+            users = users.filter(pan_no__icontains=pan_no)
+
+        context = {
+            'users': users
+         }
+    #return render(request, 'members/members.html', context)
+
+
 
         # Apply sorting
         if sorting == "name_a_z":
@@ -1009,7 +1041,7 @@ def add_partner(request):
 
 logger = logging.getLogger(__name__)
 
-def upload_excel_users(request):
+"""def upload_excel_users(request):
     if request.method == "POST" and request.FILES.get("excel_file"):
         excel_file = request.FILES["excel_file"]
         ext = os.path.splitext(excel_file.name)[1]
@@ -1118,7 +1150,29 @@ def upload_excel_users(request):
         except Exception as e:
             logger.error(f"Excel processing error: {e}")
             messages.error(request, f"Error processing file: {e}")
+        return redirect("upload-partners-excel")
 
+    return render(request, "members/upload_excel.html")"""
+@login_required
+def upload_excel_users(request):
+    if request.method == "POST" and request.FILES.get("excel_file"):
+        excel_file = request.FILES["excel_file"]
+
+        if not excel_file.name.lower().endswith((".xlsx", ".xls")):
+            messages.error(request, "Only Excel files (.xlsx, .xls) are allowed!")
+            return redirect("upload-partners-excel")
+
+        instance = PartnerUploadExcel.objects.create(
+            file=excel_file,
+            file_name=excel_file.name,
+            file_url=excel_file.name,
+            created_by=request.user,
+        )
+
+        # Trigger background task
+        async_task("empPortal.taskz.process_partner_excel.process_partner_excel", instance.id)
+
+        messages.success(request, "Excel uploaded. It will be processed shortly in background.")
         return redirect("upload-partners-excel")
 
     return render(request, "members/upload_excel.html")

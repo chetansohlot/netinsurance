@@ -46,9 +46,28 @@ def index(request):
     franchises = Franchises.objects.all().order_by('-created_at')
 
     # Apply filtering
-    if search_field and search_query:
+    """if search_field and search_query:
         filter_args = {f"{search_field}__icontains": search_query}
-        franchises = franchises.filter(**filter_args)
+        franchises = franchises.filter(**filter_args)"""
+    franchises = Franchises.objects.all()
+
+    name = request.GET.get('name')
+    mobile = request.GET.get('mobile')
+    email = request.GET.get('email')
+    pan_number = request.GET.get('pan_number')
+
+    if name:
+        franchises = franchises.filter(name__icontains=name)
+    if mobile:
+        franchises = franchises.filter(mobile__icontains=mobile)
+    if email:
+        franchises = franchises.filter(email__icontains=email)
+    if pan_number:
+        franchises = franchises.filter(pan_number__icontains=pan_number)
+
+    context = {
+        'franchises': franchises
+    }
 
     ## Sort Criteria ##
     if sort_by == "name_asc":

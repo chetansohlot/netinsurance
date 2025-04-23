@@ -97,9 +97,8 @@ Referral Mgmt.
           <!-- Main content -->
           <div class="content">
             <div class="container-fluid">
-              <div class="row">
                 
-                <div class="col-sm-12 col-md-12">  
+                <!-- <div class="col-sm-12 col-md-12">  
                     <div class="card box-shadow-none">
                       <div class="card-body px-0 pb-0">
                         <div class="row">
@@ -123,7 +122,7 @@ Referral Mgmt.
                                 </form>
                                 
                             </div>
-                          </div>
+                          </div> -->
                            <!-- <div class="col-md-6">
                             <div class=" d-flex justify-content-end">
                               <div class="dropdown">
@@ -146,6 +145,18 @@ Referral Mgmt.
                                   </ul>
                                 </form>
                               </div>   -->
+<!-- 
+                              <div class="row">
+                                <div class="col-md-6">
+                                  <form action="#" method="get" class="d-flex align-items-center">
+                                    <input type="text" class="form-field" name="name" placeholder="Referral Name" style="margin-right: 10px;">
+                                    <input type="text" class="form-field" name="referral_code" placeholder="Referrral Code" style="margin-right: 20px;">
+                                    <input type="text" class="form-field" name="email" placeholder="Email Address" style="margin-right: 10px;">
+                                    <input type="text" class="form-field" name="mobile" placeholder="Mobile Number" style="margin-right: 10px;">
+                                    <button type="submit" class="btn btn-primary">Search</button>
+                                    <a href="{% url 'referral-management' %}" class="btn btn-secondary">Reset</a>
+                                  </form>
+                                </div>
 
                               <div class="col-md-6">
                               <div class=" d-flex justify-content-end">
@@ -189,9 +200,75 @@ Referral Mgmt.
                                     </div>
                                   </ul>
                                 </form>
-                              </div>
-                          
+                              </div> -->
+
+                              <div class="card mb-3">
+                                <div class="card-body pb-0">
+                                  <form method="get">
+                                    <div class="row align-items-center">
                               
+                                      <!-- Referral Name -->
+                                      <div class="col-sm-6 col-md-2">
+                                        <input type="text" class="form-field" name="name" placeholder="Referral Name" value="">
+                                      </div>
+                              
+                                      <!-- Referral Code -->
+                                      <div class="col-sm-6 col-md-2">
+                                        <input type="text" class="form-field" name="referral_code" placeholder="Referral Code" value="">
+                                      </div>
+                              
+                                      <!-- Email -->
+                                      <div class="col-sm-6 col-md-2">
+                                        <input type="text" class="form-field" name="email" placeholder="Email Address" value="">
+                                      </div>
+                              
+                                      <!-- Mobile Number -->
+                                      <div class="col-sm-6 col-md-2">
+                                        <input type="text" class="form-field" name="mobile" placeholder="Mobile Number" value="">
+                                      </div>
+                              
+                                      <!-- Search & Reset Buttons -->
+                                      <div class="col-sm-6 col-md-2">
+                                        <div class="form-group d-flex">
+                                            <button type="submit" class="wrap-btn w-100">Apply</button>
+                                            <a href="{% url 'referral-management' %}" class="wrap-btn w-100 bg-danger ml-2 text-center">Reset</a>
+                                        </div>  
+                                    </div>
+                              
+                                      <!-- Sort Dropdown -->
+                                      <div class="col-sm-6 col-md-2 d-flex justify-content-end">
+                                        <div class="dropdown">
+                                          <div class="shorting-select" data-toggle="dropdown" aria-expanded="false">
+                                            <img src="{% static 'dist/img/svg/shorting-icon.svg' %}" alt="">
+                                            <span>Sort</span>
+                                            <img src="{% static 'dist/img/svg/down-arrow-icon.svg' %}" alt="" class="change-arrow">
+                                          </div>
+                                          <ul class="dropdown-menu shorting-dropdown-menu p-3">
+                                            <form method="get">
+                                              <p class="border-bottom pb-1 title2">Sort</p>
+                                              <li>
+                                                <input type="radio" name="sort_by" id="name-a_z" value="name-a_z" {% if sort_by == 'name-a_z' %}checked{% endif %}>
+                                                <label for="name-a_z">Name A &gt; Z</label>
+                                              </li>
+                                              <li>
+                                                <input type="radio" name="sort_by" id="name-z_a" value="name-z_a" {% if sort_by == 'name-z_a' %}checked{% endif %}>
+                                                <label for="name-z_a">Name Z &lt; A</label>
+                                              </li>
+                                              <li>
+                                                <input type="radio" name="sort_by" id="recently_activated" value="recently_activated" {% if sort_by == 'recently_activated' %}checked{% endif %}>
+                                                <label for="recently_activated">Recently Activated</label>
+                                              </li>
+                                              <li>
+                                                <input type="radio" name="sort_by" id="recently_deactivated" value="recently_deactivated" {% if sort_by == 'recently_deactivated' %}checked{% endif %}>
+                                                <label for="recently_deactivated">Recently Deactivated</label>
+                                              </li>
+                                              <div class="d-flex justify-content-center border-top pt-3 mt-2 pb-2">
+                                                <button type="submit" class="dashboard-addbtn w-100">Apply</button>
+                                              </div>
+                                            </form>
+                                          </ul>
+                                        </div>
+                                      
                               <div class="shorting-select" data-toggle="modal" data-target="#modal-filter">
                                 <img src="{% static 'dist/img/svg/filter-icon.svg' %}" alt="">
                                 <span>Filter</span>
@@ -200,6 +277,7 @@ Referral Mgmt.
                             </div>  
                           </div>
                         </div>
+                              </div>
                         <div class="table-responsive table-ht">
                             
                             <table class="table table-design table-trlink">
@@ -337,7 +415,7 @@ Referral Mgmt.
               <h5 class="modal-title">Filter</h5>
               <p class="modal-title text-gray mb-0">Clear All</p>
             </div>  
-            <!-- <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">&times;</button> -->
+            <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">&times;</button>
           </div>
           <div class="modal-body">
             <h4 class="filter-hding">Status</h4>

@@ -102,7 +102,7 @@ Franchise
                     <div class="card box-shadow-none">
                       <div class="card-body px-0 pb-0">
                         <div class="row">
-                          <div class="col-md-6">
+                         <!-- <div class="col-md-6">
                             <div class="table-search-area">
                               <form method="GET" class="d-flex">
                                 <select class="table-select-field" name="search_field">
@@ -120,9 +120,49 @@ Franchise
                                 </button>
                             </form>
                             </div>
-                          </div>
-                          <div class="col-md-6">
-                            <div class=" d-flex justify-content-end">
+                          </div>-->
+                            <!-- Franchise Filter Start -->
+                              <div class="card w-100">
+                                <div class="card-body pb-0">
+                                  <form method="GET">
+                                    <div class="row">
+                                      <div class="col-sm-6 col-md">
+                                        <div class="form-group">
+                                        <input class="form-field" name="name" type="text" placeholder="Franchise Name" value="{{ request.GET.name }}">
+                                        </div>
+                                      </div>
+
+                                      <div class="col-sm-6 col-md">
+                                        <div class="form-group">
+                                          <input class="form-field" name="mobile" type="text" placeholder="Mobile Number" value="{{ request.GET.mobile }}">
+                                        </div>
+                                      </div>
+
+                                      <div class="col-sm-6 col-md">
+                                        <div class="form-group">
+                                          <input class="form-field" name="email" type="email" placeholder="Email ID" value="{{ request.GET.email }}">
+                                          </div>
+                                      </div>
+
+                                      <div class="col-sm-6 col-md">
+                                        <div class="form-group">
+                                          <input class="form-field" name="pan_number" type="text" placeholder="PAN Number" value="{{ request.GET.pan_number }}">
+                                        </div>
+                                      </div>
+
+                                      <div class="col-sm-12 col-md-2">
+                                        <div class="form-group d-flex justify-content-end">
+                                          <button type="submit" class="wrap-btn w-100">Apply</button>
+                                          <a href="{% url 'franchise-management' %}" class="wrap-btn w-100 bg-danger ml-2 text-center">Reset</a>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </form>
+                                </div>
+                              </div>
+                          <!-- Franchise Filter End -->
+                          <div class="col-md-12">
+                            <div class=" d-flex justify-content-between mb-2">
                               <div class="dropdown">
                                 <div class="shorting-select"  data-toggle="dropdown" aria-expanded="false">
                                   <img src="{% static 'dist/img/svg/shorting-icon.svg' %}" alt="">
@@ -130,7 +170,7 @@ Franchise
                                   <img src="{% static 'dist/img/svg/down-arrow-icon.svg' %}" alt="" class="change-arrow">
                                 </div>
 
-                                <!-- <form action="">
+                                <form action="">
                                   <ul class="dropdown-menu shorting-dropdown-menu">
                                     <p class="border-bottom pb-1 title2">Short</p>
                                     <li><input type="radio" name="shorting" id="name-a_z"> <label for="name-a_z">Name A &gt; Z</label></li>
@@ -141,7 +181,7 @@ Franchise
                                       <button type="submit" class="dashboard-addbtn w-100">Apply</button>
                                     </div>   
                                   </ul>
-                                </form> -->
+                                </form> 
 
                                 <form method="GET" action="">
                                   <ul class="dropdown-menu shorting-dropdown-menu">
@@ -181,13 +221,12 @@ Franchise
                                   <input type="hidden" name="search_query" value="{{ request.GET.search_query }}">
                                   <input type="hidden" name="per_page" value="{{ request.GET.per_page }}">
                                 </form>
-                                
                               </div>  
-                              <div class="shorting-select" data-toggle="modal" data-target="#modal-filter">
+                              <!-- <div class="shorting-select" data-toggle="modal" data-target="#modal-filter">
                                 <img src="{% static 'dist/img/svg/filter-icon.svg' %}" alt="">
                                 <span>Filter</span>
                                 <img src="{% static 'dist/img/svg/down-arrow-icon.svg' %}" alt="" class="change-arrow">
-                              </div>
+                              </div> -->
                             </div>  
                           </div>
                         </div>

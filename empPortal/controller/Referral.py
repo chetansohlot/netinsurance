@@ -1,7 +1,9 @@
+import logging
 import re
 from django.shortcuts import render,redirect, get_object_or_404
-from ..models import Franchises, Department
+import openpyxl
 from empPortal.model import Referral
+from ..models import Franchises, Department,RefUploadedExcel
 from django.db.models import OuterRef, Subquery
 from django.contrib import messages
 from datetime import date, datetime
@@ -24,6 +26,12 @@ import helpers
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django_q.tasks import async_task
+# from empPortal.tasks.referral_task import ref_BulkUpload
+
+
+
+logger = logging.getLogger(__name__)
 
 def dictfetchall(cursor):
     "Returns all rows from a cursor as a dict"
@@ -47,9 +55,20 @@ def index(request):
     referrals = Referral.objects.all()
 
     # Filtering
-    if search_field and search_query:
-        filter_args = {f"{search_field}__icontains": search_query}
-        referrals = referrals.filter(**filter_args)
+    # if search_field and search_query:
+    #     filter_args = {f"{search_field}__icontains": search_query}
+    #     referrals = referrals.filter(**filter_args)
+
+    # Apply Filter on fields  ##
+    if 'name' in request.GET and request.GET['name']:
+        referrals =referrals.filter(name__icontains=request.GET['name'])
+    if 'referral_code' in request.GET and request.GET['referral_code']:
+        referrals =referrals.filter(referral_code__icontains=request.GET['referral_code'])
+    if 'email' in request.GET and request.GET['email']:
+        referrals = referrals.filter(email__icontains=request.GET['email']) 
+    if 'mobile' in request.GET and request.GET['mobile']:
+        referrals = referrals.filter(mobile__icontains=request.GET['mobile'])         
+
 
     # Sorting
     if sort_by == 'name-a_z':
@@ -453,92 +472,172 @@ def toggle_referral_status(request, referral_id):
 
     return JsonResponse({"success": False, "message": "Invalid request method!"}, status=400)
 
-import pandas as pd
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.utils.timezone import now
-import re
-from django.db.models import Q
 
-def ref_bulk_upload(request):
-    if request.method == "POST":
-        excel_file = request.FILES.get('excel_file')
-        ## Excel Fles Validity Checks ##
-        if not excel_file:
-            messages.error(request, "No file uploaded.")
+# def ref_bulk_upload(request):
+#     if request.method == "POST":
+#         excel_file = request.FILES.get('excel_file')
+#         ## Excel Fles Validity Checks ##
+#         if not excel_file:
+#             messages.error(request, "No file uploaded.")
+#             return redirect('referral-bulk-upload')
+#         elif not excel_file.name.lower().endswith(".xlsx"):
+#              messages.error(request,"Invalid file format. Only .xlsx and .xls files are allowed.")
+#              return redirect('referral-bulk-upload')
+#         elif excel_file.size > 5 * 1024 * 1024:
+#             messages.error(request,"File too large. Maximum allowed size is 5 MB.")
+#             return redirect('referral-bulk-upload')
+
+
+#         try:
+#             df = pd.read_excel(excel_file)
+
+#             for index, row in df.iterrows():
+#                 name = str(row.get('Name', '')).strip()
+#                 user_role = str(row.get('User Role', '')).strip()
+#                 branch = str(row.get('Branch', '')).strip()
+#                 sales = str(row.get('Sales Manger', '')).strip()
+#                 supervisor = str(row.get('Supervisor', '')).strip()
+#                 franchise = str(row.get('Franchise', '')).strip()
+#                 mobile = str(row.get('Mobile Number', '')).strip()
+#                 email = str(row.get('Email', '')).strip()
+#                 dob = row.get('Date of Birth')
+#                 date_of_anniversary = row.get('Anniversary Date')
+#                 address = str(row.get('Address', '')).strip()
+#                 pincode = str(row.get('Pincode', '')).strip()
+#                 city = str(row.get('City', '')).strip()
+#                 state = str(row.get('State', '')).strip()
+#                 pan_card_number = str(row.get('Pan Number', '')).upper().strip() 
+#                 aadhar_no = str(row.get('Aadhar Number', '')).strip()
+
+
+#                 ## Validation In Excel Sheets ## 
+#                 if not name or not mobile or not email or not pan_card_number or not aadhar_no:
+#                     continue
+#                 if Referral.objects.filter(
+#                      Q(mobile=mobile) | Q(email=email) | Q(pan_card_number=pan_card_number) | Q(aadhar_no=aadhar_no)
+#                     ).exists():
+#                      logger.error(f"Row{index + 2} skipped: Duplicate mobile number, email, Pan card, Aadhar number")
+#                      continue
+                
+#                 ## Validation On field Excel Sheets ##
+#                 if not re.match(r"^[6-9][0-9]{9}$",str(mobile)):
+#                      logger.error(f"Row{index + 2} skipped: Invalid mobile number format")
+#                      continue
+                
+#                 if not re.match(r'^[A-Z]{5}[0-9]{4}[A-Z]$',str(pan_card_number)):
+#                     logger.error(f"Row{index + 2} skipped: Invalid Pan number format")
+#                     continue
+
+#                 if not re.match(r'^[2-9][0-9]{11}$', str(aadhar_no)):
+#                     logger.error(f"Row{index + 2} skipped:Invalid Aadhar number format. I will have 12 digit, Not start with 0 and 1")
+#                     continue
+
+#                 # if Referral.objects.filter(email=email).exists():
+#                 #     continue
+#                 # if Referral.objects.filter(pan_card_number=pan_card_number).exists():
+#                 #     continue
+#                 # if Referral.objects.filter(aadhar_no=aadhar_no).exists():
+#                 #     continue
+
+
+#                 Referral.objects.create(
+#                     name=name,
+#                     user_role=user_role,
+#                     branch=branch,
+#                     sales=sales,
+#                     supervisor=supervisor,
+#                     franchise=franchise,
+#                     mobile=mobile,
+#                     email=email,
+#                     dob=dob if pd.notnull(dob) else None,
+#                     date_of_anniversary=date_of_anniversary if pd.notnull(date_of_anniversary) else None,
+#                     address=address,
+#                     pincode=pincode,
+#                     city=city,
+#                     state=state,
+#                     pan_card_number=pan_card_number,
+#                     aadhar_no=aadhar_no,
+#                     referral_code=generate_referral_code(),
+#                     created_at=now(),
+#                     updated_at=now(),
+#                 )
+
+#             messages.success(request, "Bulk upload successful.")
+#         except Exception as e:
+#             messages.error(request, f"Error during upload: {str(e)}")
+
+#         return redirect('referral-management')
+#         # print("Rendering bulk upload page")  
+#     return render(request, 'referral/ref-upload_excel.html')
+
+
+def refBulkUpload(request): 
+
+    if not request.user.is_authenticated or request.user.is_active != 1:
+        messages.error(request, "Please Login First")
+        return redirect('login')
+    
+    # if request.method == "POST":
+    #     print("POST request received")  # Debug log
+
+    #     file = request.FILES.get("file")
+
+    if request.method == "POST" and request.FILES.get("file"):
+        file = request.FILES["file"]
+
+        if not file:
+            messages.error(request,"No file is uploaded")
             return redirect('referral-bulk-upload')
-        elif not excel_file.name.lower().endswith(".xlsx"):
-             messages.error(request,"Invalid file format. Only .xlsx files are allowed.")
+        elif not file.name.endswith((".xlsx",".xls")):
+            messages.error(request, "Invalid file type. Please upload an Excel file or .xlxs and .xls extension file allowed")
+            return redirect('referral-bulk-upload')
+        elif  file.size > 5 * 1024 * 1024:
+             messages.error(request,"File is to large. Only 5MB size allowed")
              return redirect('referral-bulk-upload')
-        elif excel_file.size > 5 * 1024 * 1024:
-            messages.error(request,"File too large. Maximum allowed size is 5 MB.")
-            return redirect('referral-bulk-upload')
-
 
         try:
-            df = pd.read_excel(excel_file)
-
-            for index, row in df.iterrows():
-                name = str(row.get('Name', '')).strip()
-                user_role = str(row.get('User Role', '')).strip()
-                branch = str(row.get('Branch', '')).strip()
-                sales = str(row.get('Sales Manger', '')).strip()
-                supervisor = str(row.get('Supervisor', '')).strip()
-                franchise = str(row.get('Franchise', '')).strip()
-                mobile = str(row.get('Mobile Number', '')).strip()
-                email = str(row.get('Email', '')).strip()
-                dob = row.get('Date of Birth')
-                date_of_anniversary = row.get('Anniversary Date')
-                address = str(row.get('Address', '')).strip()
-                pincode = str(row.get('Pincode', '')).strip()
-                city = str(row.get('City', '')).strip()
-                state = str(row.get('State', '')).strip()
-                pan_card_number = str(row.get('Pan Number', '')).strip()
-                aadhar_no = str(row.get('Aadhar Number', '')).strip()
-
-
-                ## Validation In Excel Sheets ## 
-                if not name or not mobile or not email or not pan_card_number or not aadhar_no:
-                    continue
-                if Referral.objects.filter(
-                     Q(mobile=mobile) | Q(email=email) | Q(pan_card_number=pan_card_number) | Q(aadhar_no=aadhar_no)
-                    ).exists():
-                    continue
-                # if Referral.objects.filter(email=email).exists():
-                #     continue
-                # if Referral.objects.filter(pan_card_number=pan_card_number).exists():
-                #     continue
-                # if Referral.objects.filter(aadhar_no=aadhar_no).exists():
-                #     continue
-
-
-                Referral.objects.create(
-                    name=name,
-                    user_role=user_role,
-                    branch=branch,
-                    sales=sales,
-                    supervisor=supervisor,
-                    franchise=franchise,
-                    mobile=mobile,
-                    email=email,
-                    dob=dob if pd.notnull(dob) else None,
-                    date_of_anniversary=date_of_anniversary if pd.notnull(date_of_anniversary) else None,
-                    address=address,
-                    pincode=pincode,
-                    city=city,
-                    state=state,
-                    pan_card_number=pan_card_number,
-                    aadhar_no=aadhar_no,
-                    referral_code=generate_referral_code(),
-                    created_at=now(),
-                    updated_at=now(),
-                )
-
-            messages.success(request, "Bulk upload successful.")
+            # Read file to get row count
+            wb = openpyxl.load_workbook(file, data_only=True)
+            sheet = wb.active
+            total_rows = sheet.max_row - 1  # Assuming first row is header
+            
+            print(f"Total Rows Found: {total_rows}")
         except Exception as e:
+            print(f"Excel read error: {e}")
+            messages.error(request, f"Error reading Excel file: {str(e)}")
+            return redirect('referral-management')
+
+        try:
+            # file.seek(0)  # Reset pointer
+            
+
+            excel_instance = RefUploadedExcel.objects.create(
+                file=file,
+                created_by=request.user,
+
+                total_rows=total_rows
+            )
+
+            # Save file name and URL now that file is stored
+            excel_instance.file_name = file.name
+            excel_instance.file_url = excel_instance.file.url
+            excel_instance.save()
+
+            # Uncomment only if async is properly configured
+            # Trigger async task
+            print(f"Triggering task for file ID {excel_instance.id}")
+            async_task('empPortal.taskz.referral_task.refBulkUpload', excel_instance.id)
+            # print("Excel instance saved and task triggered.")
+
+            messages.success(request, "Excel uploaded successfully. Processing started in Background")
+
+        except Exception as e:
+            print(f"Upload error: {e}")
             messages.error(request, f"Error during upload: {str(e)}")
 
-        return redirect('referral-management')
-        # print("Rendering bulk upload page")  
+        return redirect('referral-bulk-upload')
+
     return render(request, 'referral/ref-upload_excel.html')
 
+
+        

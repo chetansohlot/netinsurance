@@ -47,6 +47,20 @@ def customers(request):
             filter_args = {f"{search_field}__icontains": search_query}
             customers = customers.filter(**filter_args)
 
+
+        
+        # Apply filters based on form input
+        if 'customer_id' in request.GET and request.GET['customer_id']:
+            customers = customers.filter(customer_id__icontains=request.GET['customer_id'])
+        if 'name_as_per_pan' in request.GET and request.GET['name_as_per_pan']:
+           customers = customers.filter(name_as_per_pan__icontains=request.GET['name_as_per_pan'])
+        if 'email_address' in request.GET and request.GET['email_address']:
+           customers = customers.filter(email_address__icontains=request.GET['email_address'])
+        if 'mobile_number' in request.GET and request.GET['mobile_number']:
+           customers = customers.filter(mobile_number__icontains=request.GET['mobile_number']) 
+
+
+
         # Apply sorting
         if sorting == "name_a_z":
             customers = customers.order_by("name")

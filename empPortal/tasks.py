@@ -912,4 +912,3 @@ def create_or_update_franchisePaymentDetails(index,row,file_id,policy_number,pol
         logger.info(f"Row {index + 2}: FranchisePayment for policy_number: {policy_number}, error : {str(e)}")
         excel_instance.error_rows +=1
         excel_instance.save()
-        
