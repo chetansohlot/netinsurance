@@ -119,87 +119,93 @@ Customers
                             </form>
                             </div>
                           </div> -->
-
-                          <form method="get">
-                            <div class="row align-items-end">
-                          
-                              <!-- Customer ID -->
-                              <div class="col-sm-6 col-md-2">
-                                <div class="form-group">
-                                  <input class="form-field form-control" name="customer_id" type="text" placeholder="Customer ID" value="">
-                                </div>
-                              </div>
-                          
-                              <!-- Name -->
-                              <div class="col-sm-6 col-md-2">
-                                <div class="form-group">
-                                  <input class="form-field form-control" name="name_as_per_pan" type="text" placeholder="Name" value="">
-                                </div>
-                              </div>
-                          
-                              <!-- Mobile Number -->
-                              <div class="col-sm-6 col-md-2">
-                                <div class="form-group">
-                                  <input class="form-field form-control" name="mobile_number" type="text" placeholder="Mobile Number" value="">
-                                </div>
-                              </div>
-                          
-                              <!-- Email Address -->
-                              <div class="col-sm-6 col-md-2">
-                                <div class="form-group">
-                                  <input class="form-field form-control" name="email_address" type="text" placeholder="Email Address" value="">
-                                </div>
-                              </div>
-                          
-                              <!-- Buttons -->
-        <div class="col-sm-6 col-md-2">
-          <div class="form-group d-flex">
-            <button type="submit" class="wrap-btn w-100 mr-2">Apply</button>
-            <a href="{% url 'customers' %}" class="wrap-btn w-100 bg-danger text-white text-center">Reset</a>
-          </div>
-        </div>
-                          
-                              <!-- Sort Dropdown -->
-                              <div class="col-sm-6 col-md-2 d-flex justify-content-end">
-                                <div class="dropdown">
-                                  <div class="shorting-select" data-toggle="dropdown" aria-expanded="false">
-                                    <img src="{% static 'dist/img/svg/shorting-icon.svg' %}" alt="">
-                                    <span>Sort</span>
-                                    <img src="{% static 'dist/img/svg/down-arrow-icon.svg' %}" alt="" class="change-arrow">
+                          <div class="card w-100">
+                            <div class="card-body pb-0">
+                              <form method="get">
+                                <div class="row align-items-end">
+                              
+                                  <!-- Customer ID -->
+                                  <div class="col-sm-6 col-md">
+                                    <div class="form-group">
+                                      <input class="form-field form-control" name="customer_id" type="text" placeholder="Customer ID" value="">
+                                    </div>
                                   </div>
-                                  <ul class="dropdown-menu shorting-dropdown-menu p-3">
-                                    <form method="get">
-                                      <p class="border-bottom pb-1 title2">Sort</p>
-                                      <li>
-                                        <input type="radio" name="sort_by" id="name-a_z" value="name-a_z" {% if sort_by == 'name_a_z' %}checked{% endif %}>
-                                        <label for="name-a_z">Name A &gt; Z</label>
-                                      </li>
-                                      <li>
-                                        <input type="radio" name="sort_by" id="name-z_a" value="name-z_a" {% if sort_by == 'name_z_a' %}checked{% endif %}>
-                                        <label for="name-z_a">Name Z &lt; A</label>
-                                      </li>
-                                      <li>
-                                        <input type="radio" name="sort_by" id="recently_activated" value="recently_activated" {% if sort_by == 'recently_updated' %}checked{% endif %}>
-                                        <label for="recently_activated">Recently Activated</label>
-                                      </li>
-                                      <li>
-                                        <input type="radio" name="sort_by" id="recently_deactivated" value="recently_deactivated" {% if sort_by == 'recently_updated' %}checked{% endif %}>
-                                        <label for="recently_deactivated">Recently Deactivated</label>
-                                      </li>
-                                      <div class="d-flex justify-content-center border-top pt-3 mt-2 pb-2">
-                                        <button type="submit" class="dashboard-addbtn w-100">Apply</button>
+                              
+                                  <!-- Name -->
+                                  <div class="col-sm-6 col-md">
+                                    <div class="form-group">
+                                      <input class="form-field form-control" name="name_as_per_pan" type="text" placeholder="Name" value="">
+                                    </div>
+                                  </div>
+                              
+                                  <!-- Mobile Number -->
+                                  <div class="col-sm-6 col-md">
+                                    <div class="form-group">
+                                      <input class="form-field form-control" name="mobile_number" type="text" placeholder="Mobile Number" value="">
+                                    </div>
+                                  </div>
+                              
+                                  <!-- Email Address -->
+                                  <div class="col-sm-6 col-md">
+                                    <div class="form-group">
+                                      <input class="form-field form-control" name="email_address" type="text" placeholder="Email Address" value="">
+                                    </div>
+                                  </div>
+                              
+                                  <!-- Buttons -->
+                                  <div class="col-sm-6 col-md-2">
+                                    <div class="form-group d-flex">
+                                      <button type="submit" class="wrap-btn w-100 mr-2">Apply</button>
+                                      <a href="{% url 'customers' %}" class="wrap-btn w-100 bg-danger text-white text-center">Reset</a>
+                                    </div>
+                                  </div>
+                              
+                                  <!-- Sort Dropdown -->
+                                  <div class="col-sm-6 col-md-auto">
+                                    <div class="form-group d-flex justify-content-end">
+                                      <div class="dropdown">
+                                        <div class="shorting-select mx-0" data-toggle="dropdown" aria-expanded="false">
+                                          <img src="{% static 'dist/img/svg/shorting-icon.svg' %}" alt="">
+                                          <span>Sort</span>
+                                          <img src="{% static 'dist/img/svg/down-arrow-icon.svg' %}" alt="" class="change-arrow">
+                                        </div>
+                                        <ul class="dropdown-menu shorting-dropdown-menu p-3">
+                                          <form method="get">
+                                            <p class="border-bottom pb-1 title2">Sort</p>
+                                            <li>
+                                              <input type="radio" name="sort_by" id="name-a_z" value="name-a_z" {% if sort_by == 'name_a_z' %}checked{% endif %}>
+                                              <label for="name-a_z">Name A &gt; Z</label>
+                                            </li>
+                                            <li>
+                                              <input type="radio" name="sort_by" id="name-z_a" value="name-z_a" {% if sort_by == 'name_z_a' %}checked{% endif %}>
+                                              <label for="name-z_a">Name Z &lt; A</label>
+                                            </li>
+                                            <li>
+                                              <input type="radio" name="sort_by" id="recently_activated" value="recently_activated" {% if sort_by == 'recently_updated' %}checked{% endif %}>
+                                              <label for="recently_activated">Recently Activated</label>
+                                            </li>
+                                            <li>
+                                              <input type="radio" name="sort_by" id="recently_deactivated" value="recently_deactivated" {% if sort_by == 'recently_updated' %}checked{% endif %}>
+                                              <label for="recently_deactivated">Recently Deactivated</label>
+                                            </li>
+                                            <div class="d-flex justify-content-center border-top pt-3 mt-2 pb-2">
+                                              <button type="submit" class="dashboard-addbtn w-100">Apply</button>
+                                            </div>
+                                          </form>
+                                        </ul>
+                                      </div>  
+                                      <div class="shorting-select" data-toggle="modal" data-target="#modal-filter">
+                                        <img src="{% static 'dist/img/svg/filter-icon.svg' %}" alt="">
+                                        <span>Filter</span>
+                                        <img src="{% static 'dist/img/svg/down-arrow-icon.svg' %}" alt="" class="change-arrow">
                                       </div>
-                                    </form>
-                                  </ul>
-                                </div>  
-                              <div class="shorting-select" data-toggle="modal" data-target="#modal-filter">
-                                <img src="{% static 'dist/img/svg/filter-icon.svg' %}" alt="">
-                                <span>Filter</span>
-                                <img src="{% static 'dist/img/svg/down-arrow-icon.svg' %}" alt="" class="change-arrow">
-                              </div>
+                                    </div>  
+                                  </div>  
+                                </div>
+                              </form>  
                             </div>  
-                          </div>
-                        </div>-->
+                          </div>  
+                        </div>
                         <div class="table-responsive table-ht">
                           <table class="table table-design table-trlink">
                             <thead class="table-thead-bg-light table-header-fix">
