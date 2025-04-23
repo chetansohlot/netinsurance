@@ -11,14 +11,14 @@ class ReprocessPoliciesCronJob(CronJobBase):
 
     def do(self):
         # Fetch all policies with status == 4
-        policies_to_reprocess = PolicyDocument.objects.exclude(status=6)[:10]
+        policies_to_reprocess = PolicyDocument.objects.exclude(status=6)
         
         for policy in policies_to_reprocess:
             try:
                 # You can use a more complex logic to get the file_obj or task as needed
                 file_obj = ExtractedFile.objects.filter(policy_id=policy.id).last()
                 print(file_obj.id)
-                async_task('empPortal.tasks.upload_pdf_store_source_id', file_obj.id)
+                async_task('empPortal.tasks.reprocessFilesData', file_obj.id)
 
             except PolicyDocument.DoesNotExist:
                 print(f"File with ID {policy.id} not found in PolicyDocument")
