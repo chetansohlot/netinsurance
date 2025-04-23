@@ -1377,13 +1377,10 @@ def continueBulkPolicies(request):
             try:
                 file_data = PolicyDocument.objects.get(id=file_id)
                 file_status = file_data.status
-                if file_status == 5 or file_status == 3 or file_status == 4:
-                    file_obj = FileAnalysis.objects.filter(policy_id=file_id).last()
-                    async_task('empPortal.tasks.process_text_from_chatgpt', file_obj.id)
-               
-                if file_status == 1:
+                if file_status != 6:
                     file_obj = ExtractedFile.objects.filter(policy_id=file_id).last()
-                    async_task('empPortal.tasks.extract_pdf_text_task', file_obj.id)
+                    print(file_obj.id)
+                    async_task('empPortal.tasks.upload_pdf_store_source_id', file_obj.id)
                
             except PolicyDocument.DoesNotExist:
                 print(f"File with ID {file_id} not found in Policy Details")
