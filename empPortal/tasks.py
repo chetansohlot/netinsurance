@@ -266,8 +266,10 @@ def process_text_with_chatpdf_api(file_id):
 
                     if extracted_data.get('policy_number') and extracted_data.get('insurance_company'):
                         policy_number = extracted_data.get('policy_number', '')
+                        vehicle_number = extracted_data.get('vehicle_number', '')
                         # Assign extracted values to PolicyDocument fields
-                        if PolicyDocument.objects.filter(policy_number=policy_number).exists():
+                        if PolicyDocument.objects.filter(policy_number=policy_number, vehicle_number=vehicle_number).exists():
+
                             bulk_log_obj.count_duplicate_files += 1
                             bulk_log_obj.save()
                             
@@ -280,7 +282,7 @@ def process_text_with_chatpdf_api(file_id):
                                 bulk_log_obj.save()
                         else:
                             policy_obj.policy_number = policy_number
-                            policy_obj.vehicle_number = extracted_data.get('vehicle_number', '')
+                            policy_obj.vehicle_number = vehicle_number
                             policy_obj.holder_name = extracted_data.get('insured_name', '')
                             policy_obj.policy_issue_date = extracted_data.get('issue_date', '')
                             policy_obj.policy_expiry_date = extracted_data.get('expiry_date', '')
