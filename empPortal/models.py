@@ -899,6 +899,16 @@ class IrdaiAgentApiLogs(models.Model):
 
 
 class BulkPolicyLog(models.Model):
+    file = models.FileField(upload_to='zips/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    rm_name = models.CharField(max_length=255, null=True, blank=True)
+    is_processed = models.BooleanField(default=False)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
     camp_name = models.CharField(max_length=255)
     file_name = models.CharField(max_length=255)
     file_url = models.URLField(max_length=255)
@@ -913,12 +923,21 @@ class BulkPolicyLog(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     created_by = models.IntegerField()
     rm_id = models.IntegerField()
+    
     def created_date(self):
         return self.created_at.strftime("%d-%m-%Y %H:%M:%S") if self.created_at else None
     
     class Meta:
         db_table = 'bulk_policy_log'
-       
+    
+    def save(self, *args, **kwargs):
+        if self.file:
+            self.file_name = self.file.name
+            self.file_url = self.file.url  # Make sure MEDIA_URL is properly set
+        super().save(*args, **kwargs)   
+        
+    def __str__(self):
+        return self.file_name or f"Uploaded Zip #{self.pk}"
        
 class UploadedZip(models.Model):
     file = models.FileField(upload_to='zips/')

@@ -35,6 +35,7 @@ from django.core.paginator import Paginator
 
 
 OPENAI_API_KEY = settings.OPENAI_API_KEY
+logging.getLogger('faker').setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 
 app = FastAPI()

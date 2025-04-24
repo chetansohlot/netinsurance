@@ -41,7 +41,7 @@ import pandas as pd
 from collections import Counter
 from io import BytesIO
 from ..utils import getUserNameByUserId
-
+logging.getLogger('faker').setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 
@@ -143,7 +143,7 @@ def edit_vehicle_details(request, policy_no):
     if request.method == 'POST':
         if not vehicle:
             vehicle = PolicyVehicleInfo(policy_number=policy.policy_number)
-
+            
         vehicle.vehicle_type = request.POST.get('vehicle_type')
         vehicle.vehicle_make = request.POST.get('vehicle_make')
         vehicle.vehicle_model = request.POST.get('vehicle_model')
