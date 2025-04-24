@@ -5,6 +5,7 @@ from django_q.tasks import async_task
 from django.utils import timezone
 from django.utils.encoding import filepath_to_uri
 from empPortal.utils import chatPdfMessage, commisionRateByMemberId, insurercommisionRateByMemberId
+from datetime import datetime
 
 from django.conf import settings
 import logging, os, shutil, zipfile, requests, re, json, ast
@@ -51,7 +52,9 @@ class ExtractFilesFromZip(CronJobBase):
         try:
             # Fetch First 10 zips with is_processed = 0
             uploaded_zips_ids = []
-            zips = BulkPolicyLog.objects.filter(is_processed = 0)[:10]
+                        
+            cutoff_time = datetime.strptime('2025-04-24 01:01', '%Y-%m-%d %H:%M')
+            zips = BulkPolicyLog.objects.filter(is_processed=0, created_at__gte=cutoff_time)[:10]
             for zip_entry in zips:
                 try:
                     pdf_file_ids = []
@@ -129,7 +132,11 @@ class GettingSourceId(CronJobBase):
     
     def do(self):
         try:
-            files = ExtractedFile.objects.filter(source_id__isnull=True, is_uploaded=False)[:10]
+
+            
+            cutoff_time = datetime.strptime('2025-04-24 01:01', '%Y-%m-%d %H:%M')
+
+            files = ExtractedFile.objects.filter(source_id__isnull=True, is_uploaded=False, extracted_at__gte=cutoff_time)[:10]
             for file in files:
                 pdf_path = file.file_path.path
                 file.status = 1
@@ -169,7 +176,10 @@ class GettingPdfExtractedData(CronJobBase):
     
     def do(self):
         try:
-            files = ExtractedFile.objects.filter(source_id__isnull=False,is_uploaded=True,policy_id__isnull=True)[:10]
+            
+            cutoff_time = datetime.strptime('2025-04-24 01:01', '%Y-%m-%d %H:%M')
+
+            files = ExtractedFile.objects.filter(source_id__isnull=False,is_uploaded=True, extracted_at__gte=cutoff_time,policy_id__isnull=True)[:10]
             for file in files:
                 if not file.source_id:
                     logger.error(f"No source_id found for file_id {file.id}")
@@ -229,7 +239,10 @@ class CreateNewPolicy(CronJobBase):
     def do(self):
         try:
             file_ids = []
-            files = ExtractedFile.objects.filter(policy_id__isnull = True,is_extracted=True)[:10]
+            
+            cutoff_time = datetime.strptime('2025-04-24 01:01', '%Y-%m-%d %H:%M')
+
+            files = ExtractedFile.objects.filter(policy_id__isnull = True, extracted_at__gte=cutoff_time,is_extracted=True)[:10]
             for file in files:
                 file.status = 5
                 file.save()
