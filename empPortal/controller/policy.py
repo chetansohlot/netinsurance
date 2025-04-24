@@ -4,7 +4,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib import messages
 from django.template import loader
-from ..models import Commission,Users, PolicyUploadDoc,Branch,PolicyInfo,PolicyDocument, DocumentUpload, FranchisePayment, InsurerPaymentDetails, PolicyVehicleInfo, AgentPaymentDetails, UploadedExcel
+from ..models import Commission,Users, PolicyUploadDoc,Branch,PolicyInfo,PolicyDocument, DocumentUpload, FranchisePayment, InsurerPaymentDetails, PolicyVehicleInfo, AgentPaymentDetails, UploadedExcel, UploadedZip
 from empPortal.model import Referral
 
 from empPortal.model import BankDetails
@@ -39,6 +39,8 @@ from django.template.loader import render_to_string
 from django_q.tasks import async_task
 import pandas as pd
 from collections import Counter
+from io import BytesIO
+from ..utils import getUserNameByUserId
 
 logger = logging.getLogger(__name__)
 OPENAI_API_KEY = settings.OPENAI_API_KEY
@@ -523,3 +525,74 @@ def viewBulkUpdates(request):
         'total_files': len(policy_files)
     })
         
+def bulkPolicyMgt(request):
+    if not request.user.is_authenticated and request.user.is_active != 1:
+        return redirect('login')
+    rms = Users.objects.all()
+    # product_types = 
+    return render(request,'policy/bulk-policy-mgt.html',{'users':rms})
+
+def bulkBrowsePolicy(request):
+    if request.user.is_authenticated:
+        if request.method == "POST" and request.FILES.get("zip_file"):
+            zip_file = request.FILES["zip_file"]
+            camp_name = request.POST.get("camp_name") 
+            rm_id = request.POST.get("rm_id")
+            
+            # Validate ZIP file format
+            if not zip_file or not zip_file.name.lower().endswith(".zip"):
+                messages.error(request, "Invalid file format. Only ZIP files are allowed.")
+                return redirect("bulk-policy-mgt")
+            
+            if zip_file.size > 50 * 1024 * 1024:
+                messages.error(request, "File too large. Maximum allowed size is 50 MB.")
+                return redirect("bulk-policy-mgt")  
+            
+            try:
+                zip_bytes = BytesIO(zip_file.read())
+                with zipfile.ZipFile(zip_bytes) as zf:
+                    file_list = zf.infolist()
+                    total_files = len(file_list)
+                    pdf_files = [f for f in file_list if f.filename.lower().endswith(".pdf")]
+                    non_pdf_files = [f for f in file_list if not f.filename.lower().endswith(".pdf")]
+                    
+                    pdf_count = len(pdf_files)
+                    non_pdf_count = len(non_pdf_files)
+                    
+                    if total_files > 50:
+                        messages.error(request, "ZIP contains more than 50 files.")
+                        return redirect("bulk-policy-mgt")
+                    
+                    if non_pdf_files:
+                        messages.error(request, "ZIP must contain only PDF files.")
+                        return redirect("bulk-policy-mgt")
+            except zipfile.BadZipFile:
+                messages.error(request, "The uploaded ZIP file is corrupted or invalid.")
+                return redirect("bulk-policy-mgt")
+            
+            if not camp_name:
+                messages.error(request, "Campaign Name is mandatory.")
+                return redirect("bulk-policy-mgt")
+            
+            rm_name = getUserNameByUserId(rm_id) if rm_id else None
+            
+            zip_instance = UploadedZip.objects.create(
+                file=ContentFile(zip_bytes.getvalue(), name=zip_file.name),
+                campaign_name=camp_name,
+                rm_id=rm_id,
+                rm_name=rm_name,
+                created_by=request.user,
+                total_files=total_files,        
+                pdf_files_count=pdf_count,      
+                non_pdf_files_count=non_pdf_count  
+            )
+                        
+            # Start background processing
+            async_task('empPortal.tasks.create_bulk_log', zip_instance.id)
+            
+            messages.success(request, "ZIP uploaded successfully. Processing started in background.")
+            return redirect("bulk-upload-logs")
+        else:
+            return redirect("bulk-policy-mgt")
+    else:
+        return redirect('login')
