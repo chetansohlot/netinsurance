@@ -8,184 +8,219 @@ from django.utils.timezone import now
 from django_q.tasks import async_task
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 from django.db.models import F
-from .utils import getUserNameByUserId, commisionRateByMemberId, insurercommisionRateByMemberId, to_int
+from .utils import getUserNameByUserId, commisionRateByMemberId, insurercommisionRateByMemberId, to_int, chatPdfMessage
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.encoding import filepath_to_uri
 import pandas as pd
 
+logging.getLogger('faker').setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 
 def create_bulk_log(file_id):
     zip_instance = UploadedZip.objects.get(id=file_id)
     
-    # Initialize Counters
-    error_pdf_files = 0
-    error_process_pdf_files = 0
-    uploaded_files = 0
-    duplicate_files = 0
-    bulk_log = BulkPolicyLog.objects.create(
-        camp_name=zip_instance.campaign_name,
-        file_name=zip_instance.file.name,
-        count_total_files=zip_instance.total_files,
-        count_not_pdf=zip_instance.non_pdf_files_count,
-        count_pdf_files=zip_instance.pdf_files_count,
-        file_url=zip_instance.file.url,
-        count_error_pdf_files=0,
-        count_error_process_pdf_files=0,
-        count_uploaded_files=0,
-        count_duplicate_files=0,
-        rm_id=zip_instance.rm_id,  
-        created_by=zip_instance.created_by.id,
-        status=1,
-    )
-    zip_instance.bulk_log = bulk_log
-    zip_instance.save()
-    
-    async_task('empPortal.tasks.process_zip_file', file_id)
+    try:
+        bulk_log = BulkPolicyLog.objects.create(
+            camp_name=zip_instance.campaign_name,
+            file_name=zip_instance.file.name,
+            count_total_files=zip_instance.total_files,
+            count_not_pdf=zip_instance.non_pdf_files_count,
+            count_pdf_files=zip_instance.pdf_files_count,
+            file_url=zip_instance.file.url,
+            count_error_pdf_files=0,
+            count_error_process_pdf_files=0,
+            count_uploaded_files=0,
+            count_duplicate_files=0,
+            rm_id=zip_instance.rm_id,
+            created_by=zip_instance.created_by.id,
+            status=1,
+        )
+        
+        zip_instance.bulk_log = bulk_log
+        zip_instance.save()
+        
+        async_task('empPortal.tasks.process_zip_file', file_id)
+    except Exception as e:
+        logger.error(f"Failed to insert entry in BulkPolicyLog for UploadedZipId :{file_id} -> error :{str(e)}" )
     
 def process_zip_file(zip_id):
-    zip_instance = UploadedZip.objects.get(id=zip_id)
+    try:
+        zip_instance = UploadedZip.objects.filter(is_processed=0,id=zip_id).first()
+        if zip_instance.exists():
+            pdf_file_ids = []
+            zip_path = zip_instance.file.path
+            
+            extract_dir = os.path.join(settings.MEDIA_ROOT, 'extracted', str(zip_id))
+            if os.path.exists(extract_dir):
+                shutil.rmtree(extract_dir)
 
-    zip_path = zip_instance.file.path
+            # Now create a fresh folder
+            os.makedirs(extract_dir, exist_ok=True)
+
+            with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+                zip_ref.extractall(extract_dir)
+
+            for filename in os.listdir(extract_dir):
+                if not filename.lower().endswith('.pdf'):
+                    continue  # Skip non-PDFs
+
+                file_path = os.path.join(extract_dir, filename)
+                relative_path = os.path.relpath(file_path, settings.MEDIA_ROOT)
+                file_url = filepath_to_uri(os.path.join(settings.MEDIA_URL, relative_path))
+
+                try:
+                    extracted = ExtractedFile.objects.create(
+                        zip_ref=zip_instance,
+                        file_path=file_path,
+                        filename=filename,
+                        file_url=file_url
+                    )
+                    
+                    # only append if created successfully
+                    pdf_file_ids.append(extracted.id)
+                except Exception as e:
+                    logger.error(f"Error processing file_path {file_path}: {str(e)}")
+                    continue
+                
+            zip_instance.is_processed = True
+            zip_instance.save()
+            
+            bulk_log = zip_instance.bulk_log
+            bulk_log.status = 2
+            bulk_log.save()
+            
+            # upload extracted files to policy document 
+            async_task('empPortal.tasks.create_policy_documents_bulk', pdf_file_ids)
+        else:
+            logger.error(f"Zip File is not found for zip_id: {zip_id} ")
+    except Exception as e:
+        logger.error(f"Unknown Error in process_zip_file")
     
-    pdf_file_ids = []
-    
-    extract_dir = os.path.join(settings.MEDIA_ROOT, 'extracted', str(zip_id))
-    if os.path.exists(extract_dir):
-        shutil.rmtree(extract_dir)
-
-    # Now create a fresh folder
-    os.makedirs(extract_dir, exist_ok=True)
-
-    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-        zip_ref.extractall(extract_dir)
-
-    for filename in os.listdir(extract_dir):
-        if not filename.lower().endswith('.pdf'):
-            continue  # Skip non-PDFs
-
-        file_path = os.path.join(extract_dir, filename)
-        relative_path = os.path.relpath(file_path, settings.MEDIA_ROOT)
-        file_url = filepath_to_uri(os.path.join(settings.MEDIA_URL, relative_path))
-
-        try:
-            extracted = ExtractedFile.objects.create(
-                zip_ref=zip_instance,
-                file_path=file_path,
-                filename=filename,
-                file_url=file_url
-            )
-            # only append if created successfully
-            pdf_file_ids.append(extracted.id)
-        except Exception as e:
-            logger.error(f"Error processing file_path {file_path}: {str(e)}")
-        
-    zip_instance.is_processed = True
-    zip_instance.save()
-    
-    bulk_log = zip_instance.bulk_log
-    bulk_log.status = 2
-    bulk_log.save()
-    
-    # upload extracted files to policy document 
-    async_task('empPortal.tasks.create_policy_documents_bulk', pdf_file_ids)
 
 def create_policy_documents_bulk(file_ids):
     for file_id in file_ids:
         try:
             create_policy_document(file_id)  # call your create_policy_document function
-            time.sleep(1)  # Delay between jobs
+            # time.sleep(6)  # Delay between jobs
         except Exception as e:
             # Handle errors per file if needed
-            logger.error(f"Error creating policy row {file_id}: {str(e)}")
+            logger.error(f"Error in create_policy_documents_bulk for ExtractedFileId {file_id}: {str(e)}")
+    
+    logger.info(f"create_policy_documents_bulk is successfully completed for ExtractedFileIds {file_ids}")
     
 def create_policy_document(file_id):
-    file_obj = ExtractedFile.objects.get(id=file_id)
-    rm_id = file_obj.zip_ref.bulk_log.rm_id
-    bulk_log_id = file_obj.zip_ref.bulk_log.id
-    rm_name = getUserNameByUserId(rm_id) if rm_id else None
-    commision_rate = commisionRateByMemberId(rm_id)
-    insurer_rate = insurercommisionRateByMemberId(1)
-    if commision_rate:
-        od_percentage = commision_rate.od_percentage
-        net_percentage = commision_rate.net_percentage
-        tp_percentage = commision_rate.tp_percentage
-    else:
-        od_percentage = 0.0
-        net_percentage = 0.0
-        tp_percentage = 0.0
-        
-    if insurer_rate:
-        insurer_od_percentage = insurer_rate.od_percentage
-        insurer_net_percentage = insurer_rate.net_percentage
-        insurer_tp_percentage = insurer_rate.tp_percentage
-    else:
-        insurer_od_percentage = 0.0
-        insurer_net_percentage = 0.0
-        insurer_tp_percentage = 0.0
-        
     try:
-        policy = PolicyDocument.objects.create(
-            filename=file_obj.filename,
-            filepath=file_obj.file_url,
-            rm_id=rm_id,
-            rm_name=rm_name,
-            od_percent=od_percentage,
-            tp_percent=tp_percentage,
-            net_percent=net_percentage,
-            insurer_tp_commission   = insurer_tp_percentage,
-            insurer_od_commission   = insurer_od_percentage,
-            insurer_net_commission  = insurer_net_percentage,
-            status=0,
-            bulk_log_id=bulk_log_id
-        )
+        file_obj = ExtractedFile.objects.filter(id=file_id,is_extracted=0).first()
+        rm_id = file_obj.zip_ref.bulk_log.rm_id
+        bulk_log_id = file_obj.zip_ref.bulk_log.id
+        rm_name = getUserNameByUserId(rm_id) if rm_id else None
+        commision_rate = commisionRateByMemberId(rm_id)
+        insurer_rate = insurercommisionRateByMemberId(1)
+        if commision_rate:
+            od_percentage = commision_rate.od_percentage
+            net_percentage = commision_rate.net_percentage
+            tp_percentage = commision_rate.tp_percentage
+        else:
+            od_percentage = 0.0
+            net_percentage = 0.0
+            tp_percentage = 0.0
+            
+        if insurer_rate:
+            insurer_od_percentage = insurer_rate.od_percentage
+            insurer_net_percentage = insurer_rate.net_percentage
+            insurer_tp_percentage = insurer_rate.tp_percentage
+        else:
+            insurer_od_percentage = 0.0
+            insurer_net_percentage = 0.0
+            insurer_tp_percentage = 0.0
+            
+        try:
+            policy = PolicyDocument.objects.create(
+                filename=file_obj.filename,
+                filepath=file_obj.file_url,
+                rm_id=rm_id,
+                rm_name=rm_name,
+                od_percent=od_percentage,
+                tp_percent=tp_percentage,
+                net_percent=net_percentage,
+                insurer_tp_commission   = insurer_tp_percentage,
+                insurer_od_commission   = insurer_od_percentage,
+                insurer_net_commission  = insurer_net_percentage,
+                status=0,
+                bulk_log_id=bulk_log_id
+            )
+            
+            file_obj.policy = policy
+            file_obj.is_extracted = 1
+            file_obj.save()
+            async_task('empPortal.tasks.upload_pdf_store_source_id', file_obj.id)
+        except Exception as e:
+            logger.error(f"Error in create_policy_document for ExtractedFile {file_id}: {str(e)}")
+            
+        # time.sleep(6)  
+        # async_task('empPortal.tasks.extract_pdf_text_task', file_obj.id)
     except Exception as e:
-        logger.error(f"Error creating policy {file_id}: {str(e)}")
+        logger.error(f"Unknown Error in create_policy_document for ExtractedFileId {file_id}: {str(e)}")
         
-    file_obj.policy = policy
-    file_obj.save()
-    # async_task('empPortal.tasks.extract_pdf_text_task', file_obj.id)
-    async_task('empPortal.tasks.upload_pdf_store_source_id', file_obj.id)
+def reprocessFiles(file_id):
+
+    try:
+        file_data = PolicyDocument.objects.get(id=file_id)
+        file_status = file_data.status
+        if file_status != 6:
+            file_obj = ExtractedFile.objects.filter(policy_id=file_id).last()
+            time.sleep(6)
+            async_task('empPortal.tasks.upload_pdf_store_source_id', file_obj.id)
+               
+    except PolicyDocument.DoesNotExist:
+        print(f"File with ID {file_id} not found in Policy Details")
     
+    except FileAnalysis.DoesNotExist:
+        print(f"File with ID {file_id} not found in analysing")
+        
+    except ExtractedFile.DoesNotExist:
+        print(f"File with ID {file_id} not found in extraction")
+ 
 def upload_pdf_store_source_id(file_id):
     try:
         file_obj = ExtractedFile.objects.get(id=file_id)
-        pdf_path = file_obj.file_path.path
+        if file_obj:
+            pdf_path = file_obj.file_path.path
+            if file_obj.source_id: 
+                async_task('empPortal.tasks.process_chatpdf_text_task', file_obj.id)
+            else:
+                if os.path.exists(pdf_path):
+                    
+                    headers = {
+                        'x-api-key': 'sec_m1M7LeA6FHM4Spy0vhzcBC65fSPOvims'
+                    }
 
-        if not os.path.exists(pdf_path):
-            logger.error(f"PDF file not found for file_id: {file_id}")
-            return
+                    with open(pdf_path, 'rb') as f:
+                        files = [('file', (file_obj.filename, f, 'application/pdf'))]
+                        response = requests.post('https://api.chatpdf.com/v1/sources/add-file', headers=headers, files=files)
 
-        headers = {
-            'x-api-key': 'sec_VJhKqjtztDJGyM3GBNsI7UQGb6Bjg4mo'
-        }
-
-        with open(pdf_path, 'rb') as f:
-            files = [('file', (file_obj.filename, f, 'application/pdf'))]
-            response = requests.post('https://api.chatpdf.com/v1/sources/add-file', headers=headers, files=files)
-
-        if response.status_code == 200:
-            source_id = response.json().get('sourceId')
-            file_obj.source_id = source_id
-            file_obj.is_uploaded = True
-            file_obj.save()
-
-            logger.info(f"Uploaded {file_obj.filename} to ChatPDF. Source ID: {source_id}")
+                    if response.status_code == 200:
+                        source_id = response.json().get('sourceId')
+                        file_obj.source_id = source_id
+                        file_obj.is_uploaded = True
+                        file_obj.save()
+                        
+                        async_task('empPortal.tasks.process_chatpdf_text_task', file_obj.id)
+                        logger.info(f"Uploaded {file_obj.filename} to ChatPDF. Source ID: {source_id}")
+                    else:
+                        logger.error(f"Failed to upload {file_obj.filename}. Status: {response.status_code}, Error: {response.text}")
+                else:
+                    logger.error(f"PDF file not found for file_id: {file_id}")
         else:
-            logger.error(f"Failed to upload {file_obj.filename}. Status: {response.status_code}, Error: {response.text}")
-
+            logger.error(f"upload_pdf_store_source_id file_obj with ID {file_id} not found.")
     except ExtractedFile.DoesNotExist:
         logger.error(f"ExtractedFile with ID {file_id} not found.")
     except Exception as e:
         logger.error(f"Error in upload_pdf_store_source_id for file_id {file_id}: {str(e)}")
 
-    async_task('empPortal.tasks.process_chatpdf_text_task', file_obj.id)
-
-
 def process_chatpdf_text_task(file_id):
     result = process_text_with_chatpdf_api(file_id)
-    logger.info(f"ChatPDF processing result for file_id {file_id}: {result}")
-
+    logger.info(f"process_chatpdf_text_task ChatPDF processing result for file_id {file_id}")
 
 def process_text_with_chatpdf_api(file_id):
     try:
@@ -197,104 +232,12 @@ def process_text_with_chatpdf_api(file_id):
             return json.dumps({"error": "No source_id found."}, indent=4)
 
         headers = {
-            'x-api-key': 'sec_VJhKqjtztDJGyM3GBNsI7UQGb6Bjg4mo',
+            'x-api-key': 'sec_m1M7LeA6FHM4Spy0vhzcBC65fSPOvims',
             "Content-Type": "application/json",
         }
 
-        message = f"""
-            Convert the following insurance document text into a structured JSON format without any extra comments.
-
-            Rules:
-            - Extract all fields based on the JSON structure provided.
-            - All numerical values (like premiums, sum insured, cubic capacity, percentages) should be numbers only, without any currency symbols, commas, or extra text.
-            - Dates should be in "YYYY-MM-DD H:i:s" format.
-            - If the insurance company is "GoDigit", swap the 'own_damage' and 'third_party' premium amounts with each other.
-            - If Policy number not found leave blank
-            - if Zurich Kotak General Insurance Company (India) Limited check for name & policy number sum insured clearly
-            - If two policy number found get main policy and details of first policy 
-            - Find insurer provider and valid policy number don't set mobile number or something in policy number
-            - If a detail is not found, leave it as an empty string or null as per the field.
-            - Policy number format for GoDigit should be 'XXXXXX / XXXXX' (space before and after the slash).
-
-            Input Text:
-
-            Expected JSON format:
-            {{
-                "policy_number": "XXXXXX/XXXXX",
-                "vehicle_number": "XXXXXXXXXX",
-                "insured_name": "XXXXXX",
-                "issue_date": "YYYY-MM-DD H:i:s",
-                "start_date": "YYYY-MM-DD H:i:s",
-                "expiry_date": "YYYY-MM-DD H:i:s",
-                "gross_premium": XXXX,
-                "net_premium": XXXX,
-                "gst_premium": XXXX,
-                "sum_insured": XXXX,
-                "policy_period": "XX Year(s)",
-                "insurance_company": "XXXXX",
-                "coverage_details": {{
-                    "own_damage": {{
-                        "premium": XXXX,
-                        "additional_premiums": XXXX,
-                        "addons": {{
-                            "addons": [
-                                {{"name": "XXXX", "amount": XXXX}},
-                                {{"name": "XXXX", "amount": XXXX}}
-                            ],
-                            "discounts": [
-                                {{"name": "XXXX", "amount": XXXX}},
-                                {{"name": "XXXX", "amount": XXXX}}
-                            ]
-                        }}
-                    }},
-                    "third_party": {{
-                        "premium": XXXX,
-                        "additional_premiums": XXXX,
-                        "addons": {{
-                            "addons": [
-                                {{"name": "XXXX", "amount": XXXX}},
-                                {{"name": "XXXX", "amount": XXXX}}
-                            ],
-                            "discounts": [
-                                {{"name": "XXXX", "amount": XXXX}},
-                                {{"name": "XXXX", "amount": XXXX}}
-                            ]
-                        }}
-                    }}
-                }},
-                "vehicle_details": {{
-                    "make": "XXXX",
-                    "model": "XXXX",
-                    "variant": "XXXX",
-                    "registration_year": YYYY,
-                    "manufacture_year": YYYY,
-                    "engine_number": "XXXXXXXXXXXX",
-                    "chassis_number": "XXXXXXXXXXXX",
-                    "fuel_type": "XXXX",
-                    "cubic_capacity": XXXX,
-                    "seating_capacity": XXXX,
-                    "vehicle_gross_weight": XXXX,
-                    "vehicle_type": "XXXX XXXX",
-                    "commercial_vehicle_detail": "XXXX XXXX"
-                }},
-                "additional_details": {{
-                    "policy_type": "XXXX",
-                    "ncb": XX,
-                    "addons": ["XXXX", "XXXX"],
-                    "previous_insurer": "XXXX",
-                    "previous_policy_number": "XXXX"
-                }},
-                "contact_information": {{
-                    "address": "XXXXXX",
-                    "phone_number": "XXXXXXXXXX",
-                    "email": "XXXXXX",
-                    "pan_no": "XXXXX1111X",
-                    "aadhar_no": "XXXXXXXXXXXX"
-                }}
-            }}
-            """
-
-
+        message = chatPdfMessage()
+        
         data = {
             'sourceId': file_obj.source_id,
             'messages': [
@@ -310,6 +253,7 @@ def process_text_with_chatpdf_api(file_id):
             headers=headers,
             json=data
         )
+        logger.info(f"Result exists. Started second data... {response.status_code}")
 
         if response.status_code == 200:
             result = response.json().get('content')
@@ -321,6 +265,7 @@ def process_text_with_chatpdf_api(file_id):
             # Save result to both ExtractedFile and PolicyDocument
             file_obj.chat_response = extracted_data
             file_obj.save()
+            bulk_log_obj =BulkPolicyLog.objects.get(id=policy_obj.bulk_log_id)
             try:
                 logger.info("Starting result processing...")
 
@@ -328,39 +273,63 @@ def process_text_with_chatpdf_api(file_id):
                     logger.info("Result exists. Processing data...")
 
                     if extracted_data.get('policy_number') and extracted_data.get('insurance_company'):
+                        policy_number = extracted_data.get('policy_number', '')
+                        vehicle_number = extracted_data.get('vehicle_number', '')
                         # Assign extracted values to PolicyDocument fields
-                        policy_obj.policy_number = extracted_data.get('policy_number', '')
-                        policy_obj.vehicle_number = extracted_data.get('vehicle_number', '')
-                        policy_obj.holder_name = extracted_data.get('insured_name', '')
-                        policy_obj.policy_issue_date = extracted_data.get('issue_date', '')
-                        policy_obj.policy_expiry_date = extracted_data.get('expiry_date', '')
-                        policy_obj.policy_start_date = extracted_data.get('start_date', '')
-                        policy_obj.policy_period = extracted_data.get('policy_period', '')
-                        policy_obj.policy_premium = extracted_data.get('gross_premium', '')
-                        policy_obj.policy_total_premium = extracted_data.get('net_premium', '')
-                        policy_obj.sum_insured = extracted_data.get('sum_insured', '')
-                        policy_obj.insurance_provider = extracted_data.get('insurance_company', '')
-                        policy_obj.coverage_details = extracted_data.get('coverage_details', {})
-                        policy_obj.vehicle_make = extracted_data.get('vehicle_details', {}).get('make', '')
-                        policy_obj.vehicle_model = extracted_data.get('vehicle_details', {}).get('model', '')
-                        policy_obj.vehicle_type = extracted_data.get('vehicle_details', {}).get('vehicle_type', '')
-                        policy_obj.vehicle_gross_weight = extracted_data.get('vehicle_details', {}).get('vehicle_gross_weight', '')
-                        policy_obj.vehicle_manuf_date = extracted_data.get('vehicle_details', {}).get('manufacture_year', '')
-                        policy_obj.policy_type = extracted_data.get('additional_details', {}).get('policy_type', '')
-                        policy_obj.payment_status = extracted_data.get('additional_details', {}).get('ncb', '')
-                        policy_obj.gst = extracted_data.get('gst_premium', '')
-                        policy_obj.od_premium = extracted_data.get('coverage_details', {}).get('own_damage', {}).get('premium', '')
-                        policy_obj.tp_premium = extracted_data.get('coverage_details', {}).get('third_party', {}).get('premium', '')
+                        if PolicyDocument.objects.filter(policy_number=policy_number, vehicle_number=vehicle_number).exists():
+                            policy_obj.status = 7
+                            policy_obj.save()
+                            
+                            bulk_log_obj.count_duplicate_files += 1
+                            bulk_log_obj.count_uploaded_files += 1
+                            bulk_log_obj.save()
+                            
+                            if bulk_log_obj.count_uploaded_files == bulk_log_obj.count_pdf_files:
+                                bulk_log_obj.status = 3
+                                bulk_log_obj.save()
+                        else:
+                            policy_obj.policy_number = policy_number
+                            policy_obj.vehicle_number = vehicle_number
+                            policy_obj.holder_name = extracted_data.get('insured_name', '')
+                            policy_obj.policy_issue_date = extracted_data.get('issue_date', '')
+                            policy_obj.policy_expiry_date = extracted_data.get('expiry_date', '')
+                            policy_obj.policy_start_date = extracted_data.get('start_date', '')
+                            policy_obj.policy_period = extracted_data.get('policy_period', '')
+                            policy_obj.policy_premium = extracted_data.get('gross_premium', '')
+                            policy_obj.policy_total_premium = extracted_data.get('net_premium', '')
+                            policy_obj.sum_insured = extracted_data.get('sum_insured', '')
+                            policy_obj.insurance_provider = extracted_data.get('insurance_company', '')
+                            policy_obj.coverage_details = extracted_data.get('coverage_details', {})
+                            policy_obj.vehicle_make = extracted_data.get('vehicle_details', {}).get('make', '')
+                            policy_obj.vehicle_model = extracted_data.get('vehicle_details', {}).get('model', '')
+                            policy_obj.vehicle_type = extracted_data.get('vehicle_details', {}).get('vehicle_type', '')
+                            policy_obj.vehicle_gross_weight = extracted_data.get('vehicle_details', {}).get('vehicle_gross_weight', '')
+                            policy_obj.vehicle_manuf_date = extracted_data.get('vehicle_details', {}).get('manufacture_year', '')
+                            policy_obj.policy_type = extracted_data.get('additional_details', {}).get('policy_type', '')
+                            policy_obj.payment_status = extracted_data.get('additional_details', {}).get('ncb', '')
+                            policy_obj.gst = extracted_data.get('gst_premium', '')
+                            policy_obj.od_premium = extracted_data.get('coverage_details', {}).get('own_damage', {}).get('premium', '')
+                            policy_obj.tp_premium = extracted_data.get('coverage_details', {}).get('third_party', {}).get('premium', '')
 
-
-                        policy_obj.extracted_text = extracted_data
+                            policy_obj.extracted_text = extracted_data
+                            policy_obj.status = 6  # processing complete
+                            policy_obj.save()
+                            
+                            
+                            bulk_log_obj.count_uploaded_files += 1
+                            bulk_log_obj.save()
+                            if bulk_log_obj.count_uploaded_files == bulk_log_obj.count_pdf_files:
+                                bulk_log_obj.status = 3
+                                bulk_log_obj.save()
+                    else:
+                        
                         policy_obj.status = 6  # processing complete
                         policy_obj.save()
+                        logger.warning("Policy Number or insurance_company is not found.")
                 else:
                     logger.warning("No result to process.")
             except Exception as e:
                 logger.error(f"Exception occurred: {e}")
-                
 
             logger.info(f"Processed ChatPDF response for file_id {file_id}, policy_id {policy_obj.id}")
 
@@ -372,15 +341,10 @@ def process_text_with_chatpdf_api(file_id):
 
     except ExtractedFile.DoesNotExist:
         logger.error(f"ExtractedFile with ID {file_id} not found.")
-        return json.dumps({"error": "ExtractedFile not found."}, indent=4)
     except PolicyDocument.DoesNotExist:
         logger.error(f"PolicyDocument not found for file_id {file_id}")
-        return json.dumps({"error": "PolicyDocument not found."}, indent=4)
     except Exception as e:
         logger.error(f"Error in process_text_with_chatpdf_api for file_id {file_id}: {str(e)}")
-        return json.dumps({"error": "Unexpected error", "details": str(e)}, indent=4)
-
-
 
 def extract_pdf_text_task(file_id):
     try:
@@ -456,7 +420,6 @@ def extract_pdf_text_task(file_id):
         file_analysis.status = 2  #failed in extarction
         file_analysis.save()
    
-
 def extract_text_from_pdf(pdf_path):
     try:
         doc = fitz.open(pdf_path)
@@ -465,7 +428,6 @@ def extract_text_from_pdf(pdf_path):
     except Exception as e:
         logger.debug(f"Error extracting text: {e}")
         return f"Error extracting text: {e}"
-
 
 def handle_ai_processing_failure(file_obj, policy_obj):
     try:
@@ -488,7 +450,6 @@ def handle_ai_processing_failure(file_obj, policy_obj):
     except Exception as e:
         logger.error(f"Secondary error while logging AI failure: {e}")
         traceback.print_exc()
-
 
 def process_text_from_chatgpt(file_id):
     try:
@@ -675,7 +636,6 @@ def process_text_with_chatgpt(text):
         log_entry.save()
         
         return json.dumps({"error": "Request failed", "details": str(e)}, indent=4)
-
 
 def update_policy_data(file_id):
     try:

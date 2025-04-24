@@ -215,7 +215,14 @@ def create_or_edit_lead(request, lead_id=None):
         if lead_source != 'referral_partner':
             referral_by = ''
         lead_description = request.POST.get("lead_description", "").strip()
+        # lead_type = request.POST.get("lead_type", "MOTOR").strip()
         lead_type = request.POST.get("lead_type", "MOTOR").strip()
+
+        if lead_type == "MOTOR":
+            registration_number = request.POST.get("registration_number", "").strip()
+        else:
+           registration_number = ""
+        
         status = request.POST.get("status", "new").strip()
         
         if lead:
@@ -231,6 +238,7 @@ def create_or_edit_lead(request, lead_id=None):
             lead.address = address
             lead.lead_description = lead_description
             lead.lead_type = lead_type
+            lead.registration_number = registration_number  ## vehicle no.
             lead.lead_source = lead_source
             lead.referral_by = referral_by
             lead.status = status
@@ -250,6 +258,8 @@ def create_or_edit_lead(request, lead_id=None):
                 pincode=pincode,
                 address=address,
                 lead_description=lead_description,
+                lead_type=lead_type,
+                registration_number=registration_number,
                 lead_source=lead_source,
                 referral_by=referral_by,
                 status=status,
