@@ -106,7 +106,7 @@ def members(request):
         user_name = request.GET.get('user_name', '').strip()
         email = request.GET.get('email', '').strip()
         phone = request.GET.get('phone', '').strip()
-        pan_no = request.GET.get('pan_number', '').strip()  
+        pan_no = request.GET.get('pan_no', '').strip()  
 
     # Apply filters
         if user_gen_id:
@@ -123,9 +123,7 @@ def members(request):
         context = {
             'users': users
          }
-    #return render(request, 'members/members.html', context)
-
-
+        
 
         # Apply sorting
         if sorting == "name_a_z":

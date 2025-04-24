@@ -13,16 +13,12 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils.encoding import filepath_to_uri
 import pandas as pd
 
+logging.getLogger('faker').setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 
 def create_bulk_log(file_id):
     zip_instance = UploadedZip.objects.get(id=file_id)
     
-    # Initialize Counters
-    error_pdf_files = 0
-    error_process_pdf_files = 0
-    uploaded_files = 0
-    duplicate_files = 0
     try:
         bulk_log = BulkPolicyLog.objects.create(
             camp_name=zip_instance.campaign_name,
@@ -35,63 +31,71 @@ def create_bulk_log(file_id):
             count_error_process_pdf_files=0,
             count_uploaded_files=0,
             count_duplicate_files=0,
-            rm_id=zip_instance.rm_id,  
+            rm_id=zip_instance.rm_id,
             created_by=zip_instance.created_by.id,
             status=1,
         )
+        
+        zip_instance.bulk_log = bulk_log
+        zip_instance.save()
+        
+        async_task('empPortal.tasks.process_zip_file', file_id)
     except Exception as e:
-        logger.error(f"Error for creating Bulk Logs of Policy for file id :{file_id} -> error :{str(e)}" )
-    zip_instance.bulk_log = bulk_log
-    zip_instance.save()
-    
-    async_task('empPortal.tasks.process_zip_file', file_id)
+        logger.error(f"Failed to insert entry in BulkPolicyLog for UploadedZipId :{file_id} -> error :{str(e)}" )
     
 def process_zip_file(zip_id):
-    zip_instance = UploadedZip.objects.get(id=zip_id)
+    try:
+        zip_instance = UploadedZip.objects.filter(is_processed=0,id=zip_id).first()
+        if zip_instance.exists():
+            pdf_file_ids = []
+            zip_path = zip_instance.file.path
+            
+            extract_dir = os.path.join(settings.MEDIA_ROOT, 'extracted', str(zip_id))
+            if os.path.exists(extract_dir):
+                shutil.rmtree(extract_dir)
 
-    zip_path = zip_instance.file.path
+            # Now create a fresh folder
+            os.makedirs(extract_dir, exist_ok=True)
+
+            with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+                zip_ref.extractall(extract_dir)
+
+            for filename in os.listdir(extract_dir):
+                if not filename.lower().endswith('.pdf'):
+                    continue  # Skip non-PDFs
+
+                file_path = os.path.join(extract_dir, filename)
+                relative_path = os.path.relpath(file_path, settings.MEDIA_ROOT)
+                file_url = filepath_to_uri(os.path.join(settings.MEDIA_URL, relative_path))
+
+                try:
+                    extracted = ExtractedFile.objects.create(
+                        zip_ref=zip_instance,
+                        file_path=file_path,
+                        filename=filename,
+                        file_url=file_url
+                    )
+                    
+                    # only append if created successfully
+                    pdf_file_ids.append(extracted.id)
+                except Exception as e:
+                    logger.error(f"Error processing file_path {file_path}: {str(e)}")
+                    continue
+                
+            zip_instance.is_processed = True
+            zip_instance.save()
+            
+            bulk_log = zip_instance.bulk_log
+            bulk_log.status = 2
+            bulk_log.save()
+            
+            # upload extracted files to policy document 
+            async_task('empPortal.tasks.create_policy_documents_bulk', pdf_file_ids)
+        else:
+            logger.error(f"Zip File is not found for zip_id: {zip_id} ")
+    except Exception as e:
+        logger.error(f"Unknown Error in process_zip_file")
     
-    pdf_file_ids = []
-    
-    extract_dir = os.path.join(settings.MEDIA_ROOT, 'extracted', str(zip_id))
-    if os.path.exists(extract_dir):
-        shutil.rmtree(extract_dir)
-
-    # Now create a fresh folder
-    os.makedirs(extract_dir, exist_ok=True)
-
-    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-        zip_ref.extractall(extract_dir)
-
-    for filename in os.listdir(extract_dir):
-        if not filename.lower().endswith('.pdf'):
-            continue  # Skip non-PDFs
-
-        file_path = os.path.join(extract_dir, filename)
-        relative_path = os.path.relpath(file_path, settings.MEDIA_ROOT)
-        file_url = filepath_to_uri(os.path.join(settings.MEDIA_URL, relative_path))
-
-        try:
-            extracted = ExtractedFile.objects.create(
-                zip_ref=zip_instance,
-                file_path=file_path,
-                filename=filename,
-                file_url=file_url
-            )
-            # only append if created successfully
-            pdf_file_ids.append(extracted.id)
-        except Exception as e:
-            logger.error(f"Error processing file_path {file_path}: {str(e)}")
-        
-    zip_instance.is_processed = True
-    zip_instance.save()
-    
-    bulk_log = zip_instance.bulk_log
-    bulk_log.status = 2
-    bulk_log.save()
-    
-    # upload extracted files to policy document 
-    async_task('empPortal.tasks.create_policy_documents_bulk', pdf_file_ids)
 
 def create_policy_documents_bulk(file_ids):
     for file_id in file_ids:
@@ -100,60 +104,64 @@ def create_policy_documents_bulk(file_ids):
             # time.sleep(6)  # Delay between jobs
         except Exception as e:
             # Handle errors per file if needed
-            logger.error(f"Error creating policy row {file_id}: {str(e)}")
+            logger.error(f"Error in create_policy_documents_bulk for ExtractedFileId {file_id}: {str(e)}")
+    
+    logger.info(f"create_policy_documents_bulk is successfully completed for ExtractedFileIds {file_ids}")
     
 def create_policy_document(file_id):
-    file_obj = ExtractedFile.objects.get(id=file_id)
-    rm_id = file_obj.zip_ref.bulk_log.rm_id
-    bulk_log_id = file_obj.zip_ref.bulk_log.id
-    rm_name = getUserNameByUserId(rm_id) if rm_id else None
-    commision_rate = commisionRateByMemberId(rm_id)
-    insurer_rate = insurercommisionRateByMemberId(1)
-    if commision_rate:
-        od_percentage = commision_rate.od_percentage
-        net_percentage = commision_rate.net_percentage
-        tp_percentage = commision_rate.tp_percentage
-    else:
-        od_percentage = 0.0
-        net_percentage = 0.0
-        tp_percentage = 0.0
-        
-    if insurer_rate:
-        insurer_od_percentage = insurer_rate.od_percentage
-        insurer_net_percentage = insurer_rate.net_percentage
-        insurer_tp_percentage = insurer_rate.tp_percentage
-    else:
-        insurer_od_percentage = 0.0
-        insurer_net_percentage = 0.0
-        insurer_tp_percentage = 0.0
-        
     try:
-        policy = PolicyDocument.objects.create(
-            filename=file_obj.filename,
-            filepath=file_obj.file_url,
-            rm_id=rm_id,
-            rm_name=rm_name,
-            od_percent=od_percentage,
-            tp_percent=tp_percentage,
-            net_percent=net_percentage,
-            insurer_tp_commission   = insurer_tp_percentage,
-            insurer_od_commission   = insurer_od_percentage,
-            insurer_net_commission  = insurer_net_percentage,
-            status=0,
-            bulk_log_id=bulk_log_id
-        )
+        file_obj = ExtractedFile.objects.filter(id=file_id,is_extracted=0).first()
+        rm_id = file_obj.zip_ref.bulk_log.rm_id
+        bulk_log_id = file_obj.zip_ref.bulk_log.id
+        rm_name = getUserNameByUserId(rm_id) if rm_id else None
+        commision_rate = commisionRateByMemberId(rm_id)
+        insurer_rate = insurercommisionRateByMemberId(1)
+        if commision_rate:
+            od_percentage = commision_rate.od_percentage
+            net_percentage = commision_rate.net_percentage
+            tp_percentage = commision_rate.tp_percentage
+        else:
+            od_percentage = 0.0
+            net_percentage = 0.0
+            tp_percentage = 0.0
             
-        file_obj.policy = policy
-        file_obj.save()
-        async_task('empPortal.tasks.upload_pdf_store_source_id', file_obj.id)
+        if insurer_rate:
+            insurer_od_percentage = insurer_rate.od_percentage
+            insurer_net_percentage = insurer_rate.net_percentage
+            insurer_tp_percentage = insurer_rate.tp_percentage
+        else:
+            insurer_od_percentage = 0.0
+            insurer_net_percentage = 0.0
+            insurer_tp_percentage = 0.0
+            
+        try:
+            policy = PolicyDocument.objects.create(
+                filename=file_obj.filename,
+                filepath=file_obj.file_url,
+                rm_id=rm_id,
+                rm_name=rm_name,
+                od_percent=od_percentage,
+                tp_percent=tp_percentage,
+                net_percent=net_percentage,
+                insurer_tp_commission   = insurer_tp_percentage,
+                insurer_od_commission   = insurer_od_percentage,
+                insurer_net_commission  = insurer_net_percentage,
+                status=0,
+                bulk_log_id=bulk_log_id
+            )
+            
+            file_obj.policy = policy
+            file_obj.is_extracted = 1
+            file_obj.save()
+            async_task('empPortal.tasks.upload_pdf_store_source_id', file_obj.id)
+        except Exception as e:
+            logger.error(f"Error in create_policy_document for ExtractedFile {file_id}: {str(e)}")
+            
+        # time.sleep(6)  
+        # async_task('empPortal.tasks.extract_pdf_text_task', file_obj.id)
     except Exception as e:
-        logger.error(f"Error creating policy {file_id}: {str(e)}")
+        logger.error(f"Unknown Error in create_policy_document for ExtractedFileId {file_id}: {str(e)}")
         
-    # time.sleep(6)  
-    # async_task('empPortal.tasks.extract_pdf_text_task', file_obj.id)
-    
-
-
 def reprocessFiles(file_id):
 
     try:
@@ -176,43 +184,43 @@ def reprocessFiles(file_id):
 def upload_pdf_store_source_id(file_id):
     try:
         file_obj = ExtractedFile.objects.get(id=file_id)
-        pdf_path = file_obj.file_path.path
-        if file_obj.source_id: 
-            async_task('empPortal.tasks.process_chatpdf_text_task', file_obj.id)
-        else:
-            if not os.path.exists(pdf_path):
-                logger.error(f"PDF file not found for file_id: {file_id}")
-                return
-
-            headers = {
-                'x-api-key': 'sec_m1M7LeA6FHM4Spy0vhzcBC65fSPOvims'
-            }
-
-            with open(pdf_path, 'rb') as f:
-                files = [('file', (file_obj.filename, f, 'application/pdf'))]
-                response = requests.post('https://api.chatpdf.com/v1/sources/add-file', headers=headers, files=files)
-
-            if response.status_code == 200:
-                source_id = response.json().get('sourceId')
-                file_obj.source_id = source_id
-                file_obj.is_uploaded = True
-                file_obj.save()
-
-                logger.info(f"Uploaded {file_obj.filename} to ChatPDF. Source ID: {source_id}")
+        if file_obj:
+            pdf_path = file_obj.file_path.path
+            if file_obj.source_id: 
+                async_task('empPortal.tasks.process_chatpdf_text_task', file_obj.id)
             else:
-                logger.error(f"Failed to upload {file_obj.filename}. Status: {response.status_code}, Error: {response.text}")
+                if os.path.exists(pdf_path):
+                    
+                    headers = {
+                        'x-api-key': 'sec_m1M7LeA6FHM4Spy0vhzcBC65fSPOvims'
+                    }
 
+                    with open(pdf_path, 'rb') as f:
+                        files = [('file', (file_obj.filename, f, 'application/pdf'))]
+                        response = requests.post('https://api.chatpdf.com/v1/sources/add-file', headers=headers, files=files)
+
+                    if response.status_code == 200:
+                        source_id = response.json().get('sourceId')
+                        file_obj.source_id = source_id
+                        file_obj.is_uploaded = True
+                        file_obj.save()
+                        
+                        async_task('empPortal.tasks.process_chatpdf_text_task', file_obj.id)
+                        logger.info(f"Uploaded {file_obj.filename} to ChatPDF. Source ID: {source_id}")
+                    else:
+                        logger.error(f"Failed to upload {file_obj.filename}. Status: {response.status_code}, Error: {response.text}")
+                else:
+                    logger.error(f"PDF file not found for file_id: {file_id}")
+        else:
+            logger.error(f"upload_pdf_store_source_id file_obj with ID {file_id} not found.")
     except ExtractedFile.DoesNotExist:
         logger.error(f"ExtractedFile with ID {file_id} not found.")
     except Exception as e:
         logger.error(f"Error in upload_pdf_store_source_id for file_id {file_id}: {str(e)}")
 
-    # time.sleep(6)
-    async_task('empPortal.tasks.process_chatpdf_text_task', file_obj.id)
-
 def process_chatpdf_text_task(file_id):
     result = process_text_with_chatpdf_api(file_id)
-    logger.info(f"ChatPDF processing result for file_id {file_id}")
+    logger.info(f"process_chatpdf_text_task ChatPDF processing result for file_id {file_id}")
 
 def process_text_with_chatpdf_api(file_id):
     try:
@@ -269,14 +277,13 @@ def process_text_with_chatpdf_api(file_id):
                         vehicle_number = extracted_data.get('vehicle_number', '')
                         # Assign extracted values to PolicyDocument fields
                         if PolicyDocument.objects.filter(policy_number=policy_number, vehicle_number=vehicle_number).exists():
-
-                            bulk_log_obj.count_duplicate_files += 1
-                            bulk_log_obj.save()
-                            
                             policy_obj.status = 7
                             policy_obj.save()
+                            
+                            bulk_log_obj.count_duplicate_files += 1
                             bulk_log_obj.count_uploaded_files += 1
                             bulk_log_obj.save()
+                            
                             if bulk_log_obj.count_uploaded_files == bulk_log_obj.count_pdf_files:
                                 bulk_log_obj.status = 3
                                 bulk_log_obj.save()
@@ -334,13 +341,10 @@ def process_text_with_chatpdf_api(file_id):
 
     except ExtractedFile.DoesNotExist:
         logger.error(f"ExtractedFile with ID {file_id} not found.")
-        return json.dumps({"error": "ExtractedFile not found."}, indent=4)
     except PolicyDocument.DoesNotExist:
         logger.error(f"PolicyDocument not found for file_id {file_id}")
-        return json.dumps({"error": "PolicyDocument not found."}, indent=4)
     except Exception as e:
         logger.error(f"Error in process_text_with_chatpdf_api for file_id {file_id}: {str(e)}")
-        return json.dumps({"error": "Unexpected error", "details": str(e)}, indent=4)
 
 def extract_pdf_text_task(file_id):
     try:

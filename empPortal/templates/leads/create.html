@@ -146,9 +146,9 @@
                             </select>
                         </div>
                         
-                        <div class="form-group col-md-4" id="vehicle_no_field" style="display: none;">
-                            <label class="form-lbl" for="vehicle_no">Vehicle No</label>
-                            <input type="text" class="form-field" name="vehicle_no" id="vehicle_no" value="{{ lead.vehicle_no }}" placeholder="Enter Vehicle Number">
+                        <div class="form-group col-md-4" id="registration_number" style="display: none;">
+                            <label class="form-lbl" for="registration_number">Vehicle No</label>
+                            <input type="text" class="form-field" name="registration_number" id="registration_number" value="{{ lead.registration_number }}" placeholder="Enter Vehicle Number">
                         </div>
 
                           <!-- <div class="form-group col-md-4">
@@ -232,7 +232,7 @@
     <script>
       function handleLeadTypeChange() {
           const leadType = document.getElementById("lead_type").value;
-          const vehicleField = document.getElementById("vehicle_no_field");
+          const vehicleField = document.getElementById("registration_number");
   
           if (leadType === "MOTOR") {
               vehicleField.style.display = "block";
