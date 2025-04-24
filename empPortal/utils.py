@@ -332,6 +332,12 @@ def chatPdfMessage():
             
     return message
 
+def chatPdfMessage1():
+    message = "Convert the following insurance document text into a structured JSON format without any extra comments. Ensure that numerical values (like premiums and sum insured,net premium and gross premium) are extracted and stored in the appropriate fields. are **only numbers** without extra text in this defined formate {'policy_number':'XXXXXX/XXXXX','vehicle_number':'XXXXXXXXXX','insured_name':'XXXXXX','issue_date':'YYYY-MM-DD H:i:s','start_date':'YYYY-MM-DD H:i:s','expiry_date':'YYYY-MM-DD H:i:s','gross_premium':XXXX,'net_premium':XXXX,'gst_premium':XXXX,'sum_insured':XXXX,'policy_period':'XX Year(s)','No Claim Bonus':'XX','insurance_company':'XXXXX','coverage_details':{'own_damage':{'premium':XXXX,'additional_premiums':XXXX,'addons':{'addons':[{'name':'XXXX','amount':XXXX},{'name':'XXXX','amount':XXXX}],'discounts':[{'name':'XXXX','amount':XXXX},{'name':'XXXX','amount':XXXX}]'}'},'third_party':{'premium':XXXX,'additional_premiums':XXXX,'addons':{'addons':[{'name':'XXXX','amount':XXXX},{'name':'XXXX','amount':XXXX}],'discounts':[{'name':'XXXX','amount':XXXX}',{'name':'XXXX','amount':XXXX}]}'}'},'vehicle_details':{'make':'XXXX','model':'XXXX','variant':'XXXX','registration_year':YYYY,'manufacture_year':YYYY,'engine_number':'XXXXXXXXXXXX','chassis_number':'XXXXXXXXXXXX','fuel_type':'XXXX','cubic_capacity':XXXX,'seating_capacity':XXXX,'vehicle_gross_weight':XXXX,'vehicle_type':'XXXX XXXX','commercial_vehicle_detail':'XXXX XXXX'},'additional_details':{'policy_type':'XXXX','ncb':XX,'addons':['XXXX','XXXX'],'previous_insurer':'XXXX','previous_policy_number':'XXXX'},'contact_information':{'address':'XXXXXX','phone_number':'XXXXXXXXXX','email':'XXXXXX','pan_no':'XXXXX1111X','aadhar_no':'XXXXXXXXXXXX'}'}"
+            
+    return message
+
+
 def policy_product():
     policy_product = {
         1: "Motor",

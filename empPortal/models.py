@@ -3,6 +3,7 @@ from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from datetime import datetime
 from django.utils.timezone import now
+from django.utils.timezone import localtime
 
 from django.conf import settings
 
@@ -905,12 +906,6 @@ class BulkPolicyLog(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True)
     rm_name = models.CharField(max_length=255, null=True, blank=True)
     is_processed = models.BooleanField(default=False)
-    created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True
-    )
     camp_name = models.CharField(max_length=255)
     file_name = models.CharField(max_length=255)
     file_url = models.URLField(max_length=255)
@@ -923,11 +918,18 @@ class BulkPolicyLog(models.Model):
     count_duplicate_files = models.IntegerField(default=0)
     status = models.SmallIntegerField(default=0)
     created_at = models.DateTimeField(default=timezone.now)
-    created_by = models.IntegerField()
     rm_id = models.IntegerField()
-    
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
     def created_date(self):
-        return self.created_at.strftime("%d-%m-%Y %H:%M:%S") if self.created_at else None
+        return localtime(self.created_at).strftime("%d-%m-%Y %H:%M:%S") if self.created_at else None
+    
+    def uploaded_date(self):
+        return localtime(self.uploaded_at).strftime("%d-%m-%Y %H:%M:%S") if self.uploaded_at else None
     
     class Meta:
         db_table = 'bulk_policy_log'
@@ -940,6 +942,7 @@ class BulkPolicyLog(models.Model):
         
     def __str__(self):
         return self.file_name or f"Uploaded Zip #{self.pk}"
+       
        
 class UploadedZip(models.Model):
     file = models.FileField(upload_to='zips/')
@@ -974,7 +977,8 @@ class UploadedZip(models.Model):
         return self.file_name or f"Uploaded Zip #{self.pk}"
      
 class ExtractedFile(models.Model):
-    zip_ref = models.ForeignKey(UploadedZip, on_delete=models.CASCADE)
+    bulk_log_ref = models.ForeignKey(BulkPolicyLog, on_delete=models.CASCADE)
+    # zip_ref = models.ForeignKey(UploadedZip, on_delete=models.CASCADE)
     file_path = models.FileField(upload_to='pdf_files/')
     filename = models.CharField(max_length=255)
     content = models.TextField(blank=True, null=True)
@@ -985,7 +989,7 @@ class ExtractedFile(models.Model):
     extracted_at = models.DateTimeField(auto_now_add=True)
     policy = models.ForeignKey(PolicyDocument, on_delete=models.CASCADE)
     file_url = models.URLField(blank=True, null=True)
-    
+    status = models.IntegerField(default=0)
     def __str__(self):
         return self.filename
     
@@ -1262,7 +1266,7 @@ class PartnerUploadExcel(models.Model):
     created_by = models.ForeignKey(Users, on_delete=models.SET_NULL, null=True)
     class Meta:
         db_table = 'partner_upload_excels'
-
+        
 class LeadUploadExcel(models.Model):
     file = models.FileField(upload_to="lead_excels/")
     file_name = models.CharField(max_length=255, default='')

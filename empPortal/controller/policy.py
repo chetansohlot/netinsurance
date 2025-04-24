@@ -5,6 +5,7 @@ from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib import messages
 from django.template import loader
 from ..models import Commission,Users, PolicyUploadDoc,Branch,PolicyInfo,PolicyDocument, DocumentUpload, FranchisePayment, InsurerPaymentDetails, PolicyVehicleInfo, AgentPaymentDetails, UploadedExcel, UploadedZip
+from ..models import BulkPolicyLog,ExtractedFile
 from empPortal.model import Referral
 
 from empPortal.model import BankDetails
@@ -143,7 +144,7 @@ def edit_vehicle_details(request, policy_no):
     if request.method == 'POST':
         if not vehicle:
             vehicle = PolicyVehicleInfo(policy_number=policy.policy_number)
-            
+
         vehicle.vehicle_type = request.POST.get('vehicle_type')
         vehicle.vehicle_make = request.POST.get('vehicle_make')
         vehicle.vehicle_model = request.POST.get('vehicle_model')
@@ -576,23 +577,88 @@ def bulkBrowsePolicy(request):
             
             rm_name = getUserNameByUserId(rm_id) if rm_id else None
             
-            zip_instance = UploadedZip.objects.create(
+            bulk_log_instance = BulkPolicyLog.objects.create(
                 file=ContentFile(zip_bytes.getvalue(), name=zip_file.name),
-                campaign_name=camp_name,
+                camp_name=camp_name,
                 rm_id=rm_id,
                 rm_name=rm_name,
                 created_by=request.user,
-                total_files=total_files,        
-                pdf_files_count=pdf_count,      
-                non_pdf_files_count=non_pdf_count  
+                count_total_files=total_files,        
+                count_pdf_files=0,      
+                count_not_pdf=0,
+                count_error_pdf_files=0,
+                count_error_process_pdf_files=0,
+                count_uploaded_files=0,
+                count_duplicate_files=0,
+                status=1
             )
                         
-            # Start background processing
-            async_task('empPortal.tasks.create_bulk_log', zip_instance.id)
-            
             messages.success(request, "ZIP uploaded successfully. Processing started in background.")
             return redirect("bulk-upload-logs")
         else:
             return redirect("bulk-policy-mgt")
     else:
         return redirect('login')
+
+
+def bulkPolicyView(request, id):
+    if not request.user.is_authenticated or request.user.is_active != 1:
+        return redirect('login')
+
+    # Fetch policy documents based on bulk_log_id
+    policy_files = ExtractedFile.objects.filter(bulk_log_ref_id=id)
+    statuses = Counter(file.status for file in policy_files)
+
+    # Ensure all statuses are included in the count, even if they're 0
+    status_counts = {
+        0: statuses.get(0, 0),
+        1: statuses.get(1, 0),
+        2: statuses.get(2, 0),
+        3: statuses.get(3, 0),
+        4: statuses.get(4, 0),
+        5: statuses.get(5, 0),
+        6: statuses.get(6, 0),
+        7: statuses.get(7, 0),
+    }
+
+    return render(request, 'policy/policy-files.html', {
+        'files': policy_files,
+        'total_files': len(policy_files),
+        'log_id': id,
+        'status_counts': status_counts
+    })
+
+
+def bulkUploadLogs(request):
+    if not request.user.is_authenticated or request.user.is_active != 1:
+        messages.error(request,'Please Login First')
+        return redirect('login')
+    
+    id  = request.user.id
+        # Fetch policies
+    role_id = Users.objects.filter(id=id,status=1).values_list('role_id', flat=True).first()
+    if role_id != 1:
+     logs =  BulkPolicyLog.objects.filter(rm_id=id).exclude(rm_id__isnull=True).order_by('-id')
+    else:
+      logs = BulkPolicyLog.objects.all().order_by('-id')
+    
+    policy_files = ExtractedFile.objects.all()
+    statuses = Counter(file.status for file in policy_files)
+
+    # Ensure all statuses are included in the count, even if they're 0
+    status_counts = {
+        0: statuses.get(0, 0),
+        1: statuses.get(1, 0),
+        2: statuses.get(2, 0),
+        3: statuses.get(3, 0),
+        4: statuses.get(4, 0),
+        5: statuses.get(5, 0),
+        6: statuses.get(6, 0),
+        7: statuses.get(7, 0),
+    }
+
+    return render(request,'policy/bulk-upload-logs.html',{
+        'logs': logs,
+        'status_counts': status_counts,
+        'total_files': len(policy_files)
+    })

@@ -1155,40 +1155,6 @@ def updatePolicy(request):
     messages.error(request, 'No Data Found')
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
-def bulkUploadLogs(request):
-    if not request.user.is_authenticated or request.user.is_active != 1:
-        messages.error(request,'Please Login First')
-        return redirect('login')
-    
-    id  = request.user.id
-        # Fetch policies
-    role_id = Users.objects.filter(id=id,status=1).values_list('role_id', flat=True).first()
-    if role_id != 1:
-     logs =  BulkPolicyLog.objects.filter(rm_id=id).exclude(rm_id__isnull=True).order_by('-id')
-    else:
-      logs = BulkPolicyLog.objects.all().order_by('-id')
-    
-    policy_files = PolicyDocument.objects.all()
-    statuses = Counter(file.status for file in policy_files)
-
-    # Ensure all statuses are included in the count, even if they're 0
-    status_counts = {
-        0: statuses.get(0, 0),
-        1: statuses.get(1, 0),
-        2: statuses.get(2, 0),
-        3: statuses.get(3, 0),
-        4: statuses.get(4, 0),
-        5: statuses.get(5, 0),
-        6: statuses.get(6, 0),
-        7: statuses.get(7, 0),
-    }
-
-    return render(request,'policy/bulk-upload-logs.html',{
-        'logs': logs,
-        'status_counts': status_counts,
-        'total_files': len(policy_files)
-    })
-
 def changePassword(request):
     return render(request, 'change-password.html')
 
@@ -1238,32 +1204,6 @@ def failedPolicyUploadView(request, id):
 
     return render(request, 'policy/unprocessable-files.html', {'files': unprocessable_files})
   
-def bulkPolicyView(request, id):
-    if not request.user.is_authenticated or request.user.is_active != 1:
-        return redirect('login')
-
-    # Fetch policy documents based on bulk_log_id
-    policy_files = PolicyDocument.objects.filter(bulk_log_id=id)
-    statuses = Counter(file.status for file in policy_files)
-
-    # Ensure all statuses are included in the count, even if they're 0
-    status_counts = {
-        0: statuses.get(0, 0),
-        1: statuses.get(1, 0),
-        2: statuses.get(2, 0),
-        3: statuses.get(3, 0),
-        4: statuses.get(4, 0),
-        5: statuses.get(5, 0),
-        6: statuses.get(6, 0),
-        7: statuses.get(7, 0),
-    }
-
-    return render(request, 'policy/policy-files.html', {
-        'files': policy_files,
-        'total_files': len(policy_files),
-        'log_id': id,
-        'status_counts': status_counts
-    })
 
 def reprocessBulkPolicies(request):
     if not request.user.is_authenticated and request.user.is_active == 1:
