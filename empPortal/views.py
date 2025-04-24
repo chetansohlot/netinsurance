@@ -46,7 +46,7 @@ def dashboard(request):
         user = request.user
 
         if request.user.role_id != 1:
-            policy_   = PolicyDocument.objects.filter(status=6, rm_id=request.user.id)
+            policy_qs   = PolicyDocument.objects.filter(status=6, rm_id=request.user.id)
         else:
             policy_qs = PolicyDocument.objects.filter(status=6)
 
