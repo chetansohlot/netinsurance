@@ -352,31 +352,6 @@ def process_text_with_chatpdf_api(file_id):
                         policy_obj.od_premium = extracted_data.get('coverage_details', {}).get('own_damage', {}).get('premium', '')
                         policy_obj.tp_premium = extracted_data.get('coverage_details', {}).get('third_party', {}).get('premium', '')
 
-                        # Log the extracted values to ensure correct mapping
-                        logger.info(f"Updated PolicyDocument fields: {json.dumps({
-                            'policy_number': policy_obj.policy_number,
-                            'vehicle_number': policy_obj.vehicle_number,
-                            'holder_name': policy_obj.holder_name,
-                            'policy_issue_date': policy_obj.policy_issue_date,
-                            'policy_expiry_date': policy_obj.policy_expiry_date,
-                            'policy_start_date': policy_obj.policy_start_date,
-                            'policy_period': policy_obj.policy_period,
-                            'policy_premium': policy_obj.policy_premium,
-                            'policy_total_premium': policy_obj.policy_total_premium,
-                            'sum_insured': policy_obj.sum_insured,
-                            'insurance_provider': policy_obj.insurance_provider,
-                            'coverage_details': policy_obj.coverage_details,
-                            'vehicle_make': policy_obj.vehicle_make,
-                            'vehicle_model': policy_obj.vehicle_model,
-                            'vehicle_type': policy_obj.vehicle_type,
-                            'vehicle_gross_weight': policy_obj.vehicle_gross_weight,
-                            'vehicle_manuf_date': policy_obj.vehicle_manuf_date,
-                            'policy_type': policy_obj.policy_type,
-                            'payment_status': policy_obj.payment_status,
-                            'gst': policy_obj.gst,
-                            'od_premium': policy_obj.od_premium,
-                            'tp_premium': policy_obj.tp_premium,
-                        }, indent=4)}")
 
                         policy_obj.extracted_text = extracted_data
                         policy_obj.status = 6  # processing complete

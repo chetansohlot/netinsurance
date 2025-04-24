@@ -1,10 +1,11 @@
+from urllib import request
 from django.http import HttpResponse
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib import messages
 from django.template import loader
-from ..models import Commission, SourceMaster,Users, DocumentUpload, Branch, Leads, QuotationCustomer
+from ..models import Commission, LeadUploadExcel, SourceMaster,Users, DocumentUpload, Branch, Leads, QuotationCustomer
 from empPortal.model import BankDetails
 from ..forms import DocumentUploadForm
 from django.core.mail import send_mail
@@ -44,7 +45,8 @@ import re,logging
 from dateutil import parser
 logger = logging.getLogger(__name__)
 OPENAI_API_KEY = settings.OPENAI_API_KEY
-
+from django_q.tasks import async_task
+from ..models import Users, LeadUploadExcel
 app = FastAPI()
 
 def dictfetchall(cursor):
@@ -381,7 +383,7 @@ def create_or_edit_lead(request, lead_id=None):
     return render(request, 'leads/bulk_upload.html')"""
 
 
-def bulk_upload_leads(request):
+"""def bulk_upload_leads(request):
     if request.method == 'POST':
         excel_file = request.FILES.get('excel_file')
 
@@ -544,4 +546,30 @@ def bulk_upload_leads(request):
             messages.error(request, f"Error processing file: {e}")
             return redirect('leads-mgt')
 
-    return render(request, 'leads/bulk_upload.html')
+    return render(request, 'leads/bulk_upload.html')"""
+
+
+@login_required
+def bulk_upload_leads(request):
+    if request.method == 'POST' and request.FILES.get('excel_file'):
+        excel_file = request.FILES['excel_file']
+
+        if not excel_file.name.lower().endswith(('.xlsx', '.xls')):
+            messages.error(request, "Only Excel files (.xlsx, .xls) are allowed!")
+            return redirect('leads-mgt')
+
+        # Save the file record
+        instance = LeadUploadExcel.objects.create(
+            file=excel_file,
+            file_name=excel_file.name,
+            file_url=excel_file.name,
+            created_by=request.user  # assuming request.user is correct
+        )
+
+        # Trigger background task
+        async_task("empPortal.taskz.process_lead_excel.process_lead_excel", instance.id)
+
+        messages.success(request, "File uploaded. It will be processed in the background.")
+        return redirect("leads-mgt")
+
+    return render(request, "leads/bulk_upload.html")
