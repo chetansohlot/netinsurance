@@ -234,6 +234,7 @@ def create_or_edit_allocation(request, employee_id=None):
         role_id = request.POST.get('role', '').strip()
         senior_id = request.POST.get('senior', '').strip()
         team_leader = request.POST.get('team_leader', '').strip()
+        team_leader_insert = request.POST.get('team_leader_insert', '').strip()
 
         # Validate required fields
         if not department_id:
@@ -250,9 +251,15 @@ def create_or_edit_allocation(request, employee_id=None):
         # If role is 5 (Regional Manager), assign senior_id to team_leader
         if role_id == '5':
             if not team_leader:
-                messages.error(request, "Team Leader selection is required for Role 5.")
+                messages.error(request, "Manager selection is required for Role 5.")
             else:
                 senior_id = team_leader  # Assign the Team Leader as senior
+                
+        if role_id == '6':
+            if not team_leader_insert:
+                messages.error(request, "Team Leader selection is required for Role 6.")
+            else:
+                senior_id = team_leader_insert  # Assign the Team Leader as senior
 
         # Check if there are any error messages
         if messages.get_messages(request):
@@ -283,7 +290,7 @@ def create_or_edit_allocation(request, employee_id=None):
 
     senior_details = None
     tl_details = None
-    tl_list = None
+    manager_list = None
     employee = None  # Ensure it's defined before usage
 
     if employee_id:
@@ -302,7 +309,7 @@ def create_or_edit_allocation(request, employee_id=None):
                 ).first()
 
                 # Get all users who report to this senior
-                tl_list = list(Users.objects.filter(senior_id=senior_id).values(
+                manager_list = list(Users.objects.filter(senior_id=senior_id).values(
                     'id', 'first_name', 'last_name', 'role_id'
                 ))
         elif employee and employee.senior_id:
@@ -316,7 +323,7 @@ def create_or_edit_allocation(request, employee_id=None):
         'branches': branches,
         'roles': roles,
         'senior_users': senior_users,
-        'tl_list': tl_list,
+        'manager_list': manager_list,
         'senior_details': senior_details,
     })
 

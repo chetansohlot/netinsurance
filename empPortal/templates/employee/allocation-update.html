@@ -94,9 +94,9 @@ Add Allocation
                                 </div>
                         
                                 <div class="form-group col-sm-6">
-                                    <label for="senior">Select Manager</label>
+                                    <label for="senior">Select Head</label>
                                     <select class="form-control" name="senior" id="senior">
-                                        <option value="">Select Manager</option>
+                                        <option value="">Select Head</option>
                                         {% for senior in senior_users %}
                                             <option value="{{ senior.id }}" 
                                                 {% if employee.role_id|stringformat:"s" == "5" and senior_details and senior.id|stringformat:"s" == senior_details.id|stringformat:"s" %}
@@ -110,10 +110,26 @@ Add Allocation
                                     </select>
                                 </div>
                                 
-                                <!-- Team Leader Selection -->
-                                <div class="form-group col-sm-6" id="teamLeaderContainer" style="{% if tl_list %}display:block;{% else %}display:none;{% endif %};">
-                                    <label for="team_leader">Select Team Leader</label>
-                                    <select class="form-control" name="team_leader" id="team_leader">
+                                <!-- Sales Leader Selection -->
+                                <div class="form-group col-sm-6" id="salesManagerContainer" style="{% if manager_list %}display:block;{% else %}display:none;{% endif %};">
+                                    <label for="sales_manager">Select Manager</label>
+                                    <select class="form-control" name="team_leader" id="sales_manager">
+                                        <option value="">Select Manager</option>
+                                        {% if manager_list %}
+                                            {% for tl in manager_list %}
+                                            <option value="{{ tl.id }}" {% if employee.senior_id|stringformat:"s" == tl.id|stringformat:"s" %}selected{% endif %}>
+                                                {{ tl.first_name }} {{ tl.last_name }}
+                                            </option>
+                                            
+                                            {% endfor %}
+                                        {% endif %}
+                                    </select>
+                                </div>
+
+                                
+                                <div class="form-group col-sm-6" id="tlManagerContainer" style="{% if tl_list %}display:block;{% else %}display:none;{% endif %};">
+                                    <label for="tl_manager">Select Team Leader</label>
+                                    <select class="form-control" name="team_leader_insert" id="tl_manager">
                                         <option value="">Select Team Leader</option>
                                         {% if tl_list %}
                                             {% for tl in tl_list %}
@@ -180,13 +196,14 @@ Add Allocation
             // On Role Change -> Populate Managers
             $('#role').change(function() {
                 var roleId = $(this).val();
-                $('#teamLeaderContainer').hide(); // Hide Team Leader dropdown initially
+                $('#salesManagerContainer').hide(); // Hide Team Leader dropdown initially
+                $('#tlManagerContainer').hide();
     
                 if (roleId) {
                     fetchUsers(roleId, null, $('#senior'));
                 } else {
                     $('#senior').empty().append('<option value="">Select User</option>');
-                    $('#team_leader').empty().append('<option value="">Select User</option>');
+                    $('#sales_manager').empty().append('<option value="">Select User</option>');
                 }
             });
     
@@ -195,12 +212,30 @@ Add Allocation
                 var roleId = $('#role').val();
                 var managerId = $(this).val();
     
-                if (roleId == 5 && managerId) {
-                    $('#teamLeaderContainer').show(); // Show Team Leader dropdown
-                    fetchUsers(5, managerId, $('#team_leader')); // Fetch Team Leaders
+                if ((roleId == 5 && managerId) || (roleId == 6 && managerId)) {
+                    $('#salesManagerContainer').show(); // Show Team Leader dropdown
+                    $('#tlManagerContainer').hide();
+
+                    fetchUsers(5, managerId, $('#sales_manager')); // Fetch Team Leaders
                 } else {
-                    $('#teamLeaderContainer').hide();
-                    $('#team_leader').empty().append('<option value="">Select User</option>');
+                    $('#salesManagerContainer').hide();
+                    $('#tlManagerContainer').hide();
+
+                    $('#sales_manager').empty().append('<option value="">Select User</option>');
+                }
+            });
+
+            
+            $('#sales_manager').change(function() {
+                var roleId = $('#role').val();
+                var managerId = $(this).val();
+    
+                if (roleId == 6 && managerId) {
+                    $('#tlManagerContainer').show(); // Show Team Leader dropdown
+                    fetchUsers(6, managerId, $('#tl_manager')); // Fetch Team Leaders
+                } else {
+                    $('#tlManagerContainer').hide();
+                    $('#tl_manager').empty().append('<option value="">Select User</option>');
                 }
             });
         });

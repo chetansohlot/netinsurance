@@ -9,6 +9,8 @@ from django.conf import settings
 class Roles(models.Model):
     roleGenID = models.CharField(max_length=255)
     roleName = models.CharField(max_length=255)
+    roleDepartment = models.CharField(max_length=255)
+    primaryRoleId = models.CharField(max_length=255)
     roleDescription = models.CharField(max_length=255)
 
     class Meta:
