@@ -49,7 +49,7 @@ Policy Data
           <div class="col-xs-6 col-sm-4 col-md-3">
               <div class="card counter-img-card active">
                   <div class="card-body">
-                      <p class="card-text">File Uploaded</p>
+                      <p class="card-text">Total Files</p>
                       <h5 class="card-title card-number">{{ total_files }}</h5>
                   </div>
               </div>
@@ -58,7 +58,7 @@ Policy Data
           <div class="col-xs-6 col-sm-4 col-md-3">
             <div class="card counter-img-card">
               <div class="card-body">
-                <p class="card-text text-info">File Reading</p>
+                <p class="card-text text-info">File Uploading</p>
                 <h5 class="card-title card-number text-info">{{ status_counts.1|default:"0" }}</h5>
               </div>
             </div>
@@ -67,7 +67,7 @@ Policy Data
           <div class="col-xs-6 col-sm-4 col-md-3">
             <div class="card counter-img-card">
               <div class="card-body">
-                <p class="card-text success-color">Reading Complete</p>
+                <p class="card-text success-color">File Uploaded</p>
                 <h5 class="card-title card-number success-color">{{ status_counts.2|default:"0" }}</h5>
               </div>
             </div>
@@ -162,11 +162,11 @@ Policy Data
                               <td><a href="{{ data.filepath }}" target="_blank" class="btn btn-success btn-xs" download><i class="fa-solid fa-download"></i></a></td>
                               <td>
                                 {% if data.status == 0 %}
-                                  <span class="badge badge-info">File Uploaded</span>
+                                  <span class="badge badge-info">File Created</span>
                                 {% elif data.status == 1 %}
-                                  <span class="badge badge-warning">File Reading</span>
+                                  <span class="badge badge-warning">File Uploading</span>
                                 {% elif data.status == 2 %}
-                                  <span class="badge badge-dark">Reading Complete</span>
+                                  <span class="badge badge-dark">File Uploaded</span>
                                 {% elif data.status == 3 %}
                                   <span class="badge badge-info">File Analysing</span>
                                 {% elif data.status == 4 %}

@@ -253,6 +253,7 @@ def process_text_with_chatpdf_api(file_id):
             headers=headers,
             json=data
         )
+        
         logger.info(f"Result exists. Started second data... {response.status_code}")
 
         if response.status_code == 200:
