@@ -325,10 +325,22 @@ def members_activated(request):
                 Q(phone__icontains=global_search)  
             )
 
-        # Apply filtering
+        '''Apply filtering
         if search_field and search_query:
-            filter_args = {f"{search_field}__icontains": search_query}
-            users = users.filter(**filter_args)
+           filter_args = {f"{search_field}__icontains": search_query}
+           users = users.filter(**filter_args)'''
+
+        ## Apply filtering on specific fields ## ---parth
+        if 'user_gen_id' in request.GET and request.GET['user_gen_id']:
+            users =users.filter(user_gen_id__icontains=request.GET['user_gen_id'])
+        if 'user_name' in request.GET and request.GET['user_name']:
+            users =users.filter(user_name__icontains=request.GET['user_name'])
+        if 'pan_no' in request.GET and request.GET['pan_no']:
+            users =users.filter(pan_no__icontains=request.GET['pan_no'])
+        if 'email' in request.GET and request.GET['email']:
+            users = users.filter(email__icontains=request.GET['email']) 
+        if 'phone' in request.GET and request.GET['phone']:
+            users = users.filter(phone__icontains=request.GET['phone'])
 
         # Apply sorting
         if sorting == "name_a_z":
