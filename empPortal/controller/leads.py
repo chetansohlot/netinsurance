@@ -119,6 +119,9 @@ def index(request):
 
     # Count
     total_leads = leads.count()
+    motor_leads = Leads.objects.filter(lead_type='MOTOR').count()
+    health_leads = Leads.objects.filter(lead_type='HEALTH').count()
+    term_leads = Leads.objects.filter(lead_type='TERM').count()
 
     # Pagination
     paginator = Paginator(leads, per_page)
@@ -132,34 +135,60 @@ def index(request):
         'search_field': search_field,
         'search_query': search_query,
         'shorting': shorting,  # Pass to template to retain selected option
+         'motor_leads': motor_leads,
+        'health_leads': health_leads,
+        'term_leads': term_leads,
     })
 
     
 def viewlead(request, lead_id):
     if request.user.is_authenticated:
         leads = Leads.objects.all()
-        return render(request, 'leads/index.html', {'leads': leads})  # Pass leads to the template
+        return render(request, 'leads/index.html', {
+            'leads': leads,})  # Pass leads to the template
     else:
         return redirect('login')
     
 def healthLead(request):
     if request.user.is_authenticated:
-        return render(request, 'leads/health-lead.html')
+
+        leads = Leads.objects.all()
+        # Count
+        total_leads = leads.count()
+        motor_leads = Leads.objects.filter(lead_type='MOTOR').count()
+        health_leads = Leads.objects.filter(lead_type='HEALTH').count()
+        term_leads = Leads.objects.filter(lead_type='TERM').count()
+
+        
+        return render(request, 'leads/health-lead.html',{
+            'leads': leads,
+            'total_leads':total_leads,
+            'motor_leads': motor_leads,
+            'health_leads': health_leads,
+            'term_leads': term_leads,
+        })  
     else:
         return redirect('login')
-    
-    # Count
-    total_leads = leads.count()
     
 def termlead(request):
     if request.user.is_authenticated:
-        return render(request, 'leads/term-lead.html')
+
+        leads = Leads.objects.all()
+        # Count
+        total_leads = leads.count()
+        motor_leads = Leads.objects.filter(lead_type='MOTOR').count()
+        health_leads = Leads.objects.filter(lead_type='HEALTH').count()
+        term_leads = Leads.objects.filter(lead_type='TERM').count()
+        return render(request, 'leads/term-lead.html',
+        {
+            'leads': leads,
+            'total_leads':total_leads,
+            'motor_leads': motor_leads,
+            'health_leads': health_leads,
+            'term_leads': term_leads,
+        })  # Pass leads to the template
     else:
         return redirect('login')
-    
-    # Count
-    total_leads = leads.count()
-
 
 from datetime import datetime
 
@@ -563,16 +592,23 @@ def create_or_edit_lead(request, lead_id=None):
 def bulk_upload_leads(request):
     if request.method == 'POST' and request.FILES.get('excel_file'):
         excel_file = request.FILES['excel_file']
+        camp_name = request.POST.get("camp_name")
 
         if not excel_file.name.lower().endswith(('.xlsx', '.xls')):
             messages.error(request, "Only Excel files (.xlsx, .xls) are allowed!")
-            return redirect('leads-mgt')
+            return redirect('bulk-upload-leads')
+
+        if not camp_name:
+            messages.error(request, "Campaign Name is mandatory.")
+            return redirect('bulk-upload-leads')
+
 
         # Save the file record
         instance = LeadUploadExcel.objects.create(
             file=excel_file,
             file_name=excel_file.name,
             file_url=excel_file.name,
+            campaign_name=camp_name,
             created_by=request.user  # assuming request.user is correct
         )
 
@@ -583,3 +619,4 @@ def bulk_upload_leads(request):
         return redirect("leads-mgt")
 
     return render(request, "leads/bulk_upload.html")
+    

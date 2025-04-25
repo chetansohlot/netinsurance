@@ -103,7 +103,7 @@ def members(request):
 
     # Get filter values from GET request
         user_gen_id = request.GET.get('user_gen_id', '').strip()
-        user_name = request.GET.get('user_name', '').strip()
+        user_name = request.GET.get('user_name', '').strip() #Apply filter based on full name column not 1st & last name
         email = request.GET.get('email', '').strip()
         phone = request.GET.get('phone', '').strip()
         pan_no = request.GET.get('pan_no', '').strip()  
@@ -120,9 +120,9 @@ def members(request):
         if pan_no:
             users = users.filter(pan_no__icontains=pan_no)
 
-        context = {
+        """context = {
             'users': users
-         }
+         }"""
         
 
         # Apply sorting
@@ -163,6 +163,7 @@ def members(request):
             'global_search': global_search,
             'sorting': sorting,
             'per_page': per_page,
+            'users': users,
         })
     else:
         return redirect('login')

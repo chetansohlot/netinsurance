@@ -65,9 +65,9 @@ def index(request):
     if pan_number:
         franchises = franchises.filter(pan_number__icontains=pan_number)
 
-    context = {
+    """context = {
         'franchises': franchises
-    }
+    }"""
 
     ## Sort Criteria ##
     if sort_by == "name_asc":
@@ -96,6 +96,7 @@ def index(request):
         'search_query': search_query,
         'per_page': per_page,
         'sort_by' : sort_by,
+        'franchises': franchises,
     })
 
 
