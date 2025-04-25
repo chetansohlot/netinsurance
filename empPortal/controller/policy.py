@@ -68,18 +68,19 @@ def parse_date(date_str):
 def edit_policy(request, policy_id):
 
     if request.method == 'POST':
+        policy_id = request.POST.get('policy_id')
         policy_number = request.POST.get('policy_number')
 
         # Try to find another policy with the same number
         policy = PolicyInfo.objects.filter(
-            policy_number=policy_number
+            policy_number=policy_number,policy_id=policy_id
         ).first()
 
         if policy:
-            policy = policy
+            pass
         else:
             policy = PolicyInfo()
-
+            policy.policy_id = policy_id
 
         # Basic Policy
         policy.policy_number = policy_number
@@ -124,6 +125,8 @@ def edit_policy(request, policy_id):
         return redirect('edit-policy-vehicle-details', policy_no=quote(policy.policy_number, safe=''))
 
 
+def none_if_blank(value):
+    return value if value and value.strip() else None
 
 def edit_vehicle_details(request, policy_no):
     
@@ -132,38 +135,46 @@ def edit_vehicle_details(request, policy_no):
         return redirect('login')
     
     decoded_policy_no = unquote(policy_no)
-
-    policy = get_object_or_404(PolicyInfo, policy_number=decoded_policy_no)
-    policy_data = PolicyDocument.objects.filter(policy_number=decoded_policy_no).first()
+    # policy = get_object_or_404(PolicyInfo, policy_number=decoded_policy_no)
+    policy = PolicyInfo.objects.filter(policy_number=decoded_policy_no).first()
+    if not policy:
+        return redirect('policy-data')
     
-    try:
-        vehicle = PolicyVehicleInfo.objects.get(policy_number=policy.policy_number)
-    except PolicyVehicleInfo.DoesNotExist:
-        vehicle = None
+    policy_data = PolicyDocument.objects.filter(policy_number=decoded_policy_no).first()
+    vehicle = None
+    
+    
+    # try:
+    #     vehicle = PolicyVehicleInfo.objects.get(policy_number=policy.policy_number)
+    # except PolicyVehicleInfo.DoesNotExist:
+    #     vehicle = None
 
     if request.method == 'POST':
+        policy_id = request.POST.get('policy_id')
+        
+        vehicle = PolicyVehicleInfo.objects.filter(policy_number=policy.policy_number, policy_id=policy_id).first()
         if not vehicle:
-            vehicle = PolicyVehicleInfo(policy_number=policy.policy_number)
+            vehicle = PolicyVehicleInfo(policy_number=policy.policy_number, policy_id=policy_id)
 
-        vehicle.vehicle_type = request.POST.get('vehicle_type')
-        vehicle.vehicle_make = request.POST.get('vehicle_make')
-        vehicle.vehicle_model = request.POST.get('vehicle_model')
-        vehicle.vehicle_variant = request.POST.get('vehicle_variant')
-        vehicle.fuel_type = request.POST.get('fuel_type')
-        vehicle.gvw = request.POST.get('gvw')
-        vehicle.cubic_capacity = request.POST.get('cubic_capacity')
-        vehicle.seating_capacity = request.POST.get('seating_capacity')
-        vehicle.registration_number = request.POST.get('vehicle_reg_no')
-        vehicle.engine_number = request.POST.get('engine_number')
-        vehicle.chassis_number = request.POST.get('chassis_number')
-        vehicle.manufacture_year = request.POST.get('mgf_year')
-
+        vehicle.vehicle_type = none_if_blank(request.POST.get('vehicle_type'))
+        vehicle.vehicle_make = none_if_blank(request.POST.get('vehicle_make'))
+        vehicle.vehicle_model = none_if_blank(request.POST.get('vehicle_model'))
+        vehicle.vehicle_variant = none_if_blank(request.POST.get('vehicle_variant'))
+        vehicle.fuel_type = none_if_blank(request.POST.get('fuel_type'))
+        vehicle.gvw = none_if_blank(request.POST.get('gvw'))
+        vehicle.cubic_capacity = none_if_blank(request.POST.get('cubic_capacity'))
+        vehicle.seating_capacity = none_if_blank(request.POST.get('seating_capacity'))
+        vehicle.registration_number = none_if_blank(request.POST.get('vehicle_reg_no'))
+        vehicle.engine_number = none_if_blank(request.POST.get('engine_number'))
+        vehicle.chassis_number = none_if_blank(request.POST.get('chassis_number'))
+        vehicle.manufacture_year = none_if_blank(request.POST.get('mgf_year'))
         vehicle.save()
         messages.success(request, "Policy Vehicle details Updated successfully!")
 
         return redirect('edit-policy-docs', policy_no=quote(policy.policy_number, safe=''))
 
-    pdf_path = get_pdf_path(request, policy_data.filepath)
+    # pdf_path = get_pdf_path(request, policy_data.filepath)    
+    pdf_path = get_pdf_path(request, policy_data.filepath if policy_data else None)
 
     extracted_data = {}
     if policy_data and policy_data.extracted_text:
@@ -276,10 +287,11 @@ def edit_agent_payment_info(request, policy_no):
     policy_data = PolicyDocument.objects.filter(policy_number=policy_no).first()
     referrals = Referral.objects.all()
      
+    policy_id =  request.POST.get('policy_id')
     try:
-        agent_payment = AgentPaymentDetails.objects.get(policy_number=policy.policy_number)
+        agent_payment = AgentPaymentDetails.objects.get(policy_number=policy.policy_number,policy_id=policy_id)
     except AgentPaymentDetails.DoesNotExist:
-        agent_payment = AgentPaymentDetails(policy_number=policy.policy_number)
+        agent_payment = AgentPaymentDetails(policy_number=policy.policy_number,policy_id=policy_id)
 
     if request.method == 'POST':
         # agent_payment.agent_name = request.POST.get('agent_name')
@@ -391,7 +403,7 @@ def edit_franchise_payment_info(request, policy_no):
         return redirect('login')
     
     policy_no = unquote(policy_no)
-
+    policy_id =  request.POST.get('policy_id')
     policy = get_object_or_404(PolicyInfo, policy_number=policy_no)
     policy_data = PolicyDocument.objects.filter(policy_number=policy_no).first()
 
@@ -401,9 +413,9 @@ def edit_franchise_payment_info(request, policy_no):
         vehicle = None
 
     try:
-        franchise_payment = FranchisePayment.objects.get(policy_number=policy.policy_number)
+        franchise_payment = FranchisePayment.objects.get(policy_number=policy.policy_number,policy_id=policy_id)
     except FranchisePayment.DoesNotExist:
-        franchise_payment = FranchisePayment(policy_number=policy.policy_number)
+        franchise_payment = FranchisePayment(policy_number=policy.policy_number,policy_id=policy_id)
 
     if request.method == 'POST':
         franchise_payment.franchise_od_comm = request.POST.get('franchise_od_comm')
