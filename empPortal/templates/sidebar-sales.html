@@ -6,7 +6,7 @@
 {% url 'insurer-business-report' as insurer_business_url %}
 
 
-{% if request.user.role_id|stringformat:"s" == "1" or request.user.role_id|stringformat:"s" == "4"%}
+{% if request.user.role_id|stringformat:"s" != "1" and request.user.department_id|stringformat:"s" == "1" %}
 
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
