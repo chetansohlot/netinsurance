@@ -443,7 +443,7 @@
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td>BQP</td>
+                                                <th>BQP</th>
                                             </tr>
                                             <tr>
                                                 <td>Branch</td>
@@ -484,11 +484,6 @@
                                             <form id="bank-form" method="POST" action="{% url 'store-allocation' %}">
                                                 {% csrf_token %}
                                                 <input type="hidden" name="agent_member_id" value="{{ user_details.id }}">
-                                                <div class="form-group">
-                                                   <label for="bqp">BQP</label>
-                                                   <select id="bqp" name="bqp" class="form-control"></select>
-                                                       <option value="">Select BQP</option>
-
                                                 <div class="form-group">
                                                     <label for="branch">Branch</label>
                                                     <select id="branch" name="branch" class="form-control">
@@ -770,8 +765,8 @@
                                                           <img class="preview-img" id="aadhaar_card_front_preview" src="{{ docs.aadhaar_card_front.url }}" 
                                                                alt="Aadhaar Front" 
                                                                onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';" 
-                                                               width="80" >
-                                                               <i class="fa-solid fa-download"></i> <!-- Download Icon for Aadhaar Card Front -->
+                                                               width="80">
+                                                               <i class="fa-solid fa-download"></i>
                                                         </a>
                                                       </td>
                                                     <td>Aadhaar Card front</td>
@@ -814,7 +809,7 @@
                                                                alt="Aadhaar Back" 
                                                                onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';" 
                                                                width="80">
-                                                               <i class="fa-solid fa-download"></i> <!-- Download Icon for Aadhaar Card Front -->
+                                                               <i class="fa-solid fa-download"></i>
                                                         </a>
                                                       </td>
                                                     <td>Aadhaar Card Back</td>
@@ -855,7 +850,7 @@
                                                                alt="PAN Card" 
                                                                onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';" 
                                                                width="80">
-                                                               <i class="fa-solid fa-download"></i> <!-- Download Icon for Pan Card Front -->
+                                                               <i class="fa-solid fa-download"></i>
                                                         </a>
                                                       </td>
                                                     <td>PAN Card</td>
@@ -896,7 +891,7 @@
                                                                alt="Cheque" 
                                                                onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';" 
                                                                width="80">
-                                                               <i class="fa-solid fa-download"></i> <!-- Download Icon for Cancelled Cheque Front -->
+                                                               <i class="fa-solid fa-download"></i>
                                                         </a>
                                                       </td>
                                                     <td>Cancelled Cheque</td>
@@ -937,7 +932,7 @@
                                                                alt="10th Marksheet" 
                                                                onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';" 
                                                                width="80">
-                                                               <i class="fa-solid fa-download"></i> <!-- Download Icon for 10th Front -->        
+                                                               <i class="fa-solid fa-download"></i>
                                                         </a>
                                                       </td>
                                                     <td>10th Marksheet</td>
