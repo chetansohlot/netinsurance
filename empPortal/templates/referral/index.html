@@ -359,8 +359,8 @@ Referral Mgmt.
                                   </li>
                               {% endif %}
 
-                              {% with page_obj.number|add:"-2" as start_page %}
-                              {% with page_obj.number|add:"2" as end_page %}
+                              {% with page_obj.number|add:"-5" as start_page %}
+                              {% with page_obj.number|add:"5" as end_page %}
                                   {% for num in page_obj.paginator.page_range %}
                                       {% if num >= start_page and num <= end_page %}
                                           <li class="page-item {% if num == page_obj.number %}active{% endif %}">
