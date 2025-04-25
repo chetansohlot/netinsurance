@@ -49,6 +49,18 @@ Add Role
                       {% csrf_token %}
                       
                       <div class="form-group col-sm-6">
+                        <label for="department_id">Department</label>
+                        <select class="form-control" name="department_id" id="department_id">
+                            <option value="">Select Department</option>
+                            {% for department in departments %}
+                                <option value="{{ department.id }}">
+                                {{ department.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                      </div>
+
+                      <div class="form-group col-sm-6">
                           <label for="role_name">Role Name</label>
                           <input type="text" class="form-control" name="role_name" id="role_name" placeholder="User Role">
                       </div>
@@ -57,6 +69,21 @@ Add Role
                           <label for="description">Description</label>
                           <input type="text" class="form-control" name="description" id="description" placeholder="Description">
                       </div>
+
+                      <div class="form-group col-sm-6">
+                        <label for="role">
+                            Senior Role <small class="text-muted">(Select senior role if any )</small>
+                        </label>
+                        <select class="form-control" name="role_id" id="role_id">
+                            <option value="">Select Senior Role</option>
+                            {% for role in roles %}
+                                <option value="{{ role.id }}" {% if role.id|stringformat:"s" == employee.role_id|stringformat:"s" %}selected{% endif %}>
+                                    {{ role.roleName }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                      </div>
+                    
 
                       <button type="submit" class="btn btn-primary">Save Role</button>
                     </form>

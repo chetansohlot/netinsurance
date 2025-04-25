@@ -43,7 +43,7 @@ Policy Data
           <div class="col-xs-6 col-sm-4 col-md-3">
               <div class="card counter-img-card active">
                   <div class="card-body">
-                      <p class="card-text">File Uploaded</p>
+                      <p class="card-text">Total Files</p>
                       <h5 class="card-title card-number">{{ total_files }}</h5>
                   </div>
               </div>
@@ -52,7 +52,7 @@ Policy Data
           <div class="col-xs-6 col-sm-4 col-md-3">
             <div class="card counter-img-card">
               <div class="card-body">
-                <p class="card-text text-info">File Reading</p>
+                <p class="card-text text-info">File Uploading</p>
                 <h5 class="card-title card-number text-info">{{ status_counts.1|default:"0" }}</h5>
               </div>
             </div>
@@ -61,7 +61,7 @@ Policy Data
           <div class="col-xs-6 col-sm-4 col-md-3">
             <div class="card counter-img-card">
               <div class="card-body">
-                <p class="card-text success-color">Reading Complete</p>
+                <p class="card-text success-color">File Uploaded</p>
                 <h5 class="card-title card-number success-color">{{ status_counts.2|default:"0" }}</h5>
               </div>
             </div>
@@ -102,7 +102,7 @@ Policy Data
               </div>
             </div>
           </div>
-        
+          
           <div class="col-xs-6 col-sm-4 col-md-3">
             <div class="card counter-img-card">
               <div class="card-body">
@@ -161,8 +161,9 @@ Policy Data
                               Non PDF : {{ log.count_not_pdf }}
                             </td>
                             <td>
-                              Error : {{ log.count_error_pdf_files }} / {{ log.count_error_process_pdf_files }} <br>
-                              Success : {{ log.count_uploaded_files }}
+                              Success : {{ log.count_uploaded_files }} <br>
+                              Duplicate : {{ log.count_duplicate_files }}<br>
+                              Error : {{ log.count_error_pdf_files }} / {{ log.count_error_process_pdf_files }}
                             </td>
                             <td>{{ log.created_date }}</td>
                             <td>

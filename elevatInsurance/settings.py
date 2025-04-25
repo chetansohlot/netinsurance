@@ -91,7 +91,10 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 
 CRON_CLASSES = [
-    'empPortal.crons.ReprocessPoliciesCronJob',
+    'empPortal.crons.ExtractFilesFromZip',
+    'empPortal.crons.GettingSourceId',
+    'empPortal.crons.GettingPdfExtractedData',
+    'empPortal.crons.CreateNewPolicy',
 ]
 
 
@@ -100,7 +103,9 @@ SESSION_COOKIE_AGE = 600  # in seconds (600s = 10 minutes)
 
 # Refresh the session expiry time with every request
 SESSION_SAVE_EVERY_REQUEST = True
-
+CHATPDF_API_KEY = os.getenv('CHATPDF_API_KEY','')
+CHATPDF_SOURCE_API_URL = os.getenv('CHATPDF_SOURCE_API_URL','')
+CHATPDF_CHAT_API_URL = os.getenv('CHATPDF_CHAT_API_URL','')
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
@@ -160,9 +165,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'Asia/Kolkata'
-
 USE_I18N = True
-
 USE_TZ = True
 
 
@@ -271,6 +274,11 @@ LOGGING = {
             'filename': 'policies.log',
             'formatter': 'verbose',
         },
+        'crons':{
+            'class':'logging.FileHandler',
+            'filename': 'logs/crons.log',
+            'formatter':'verbose',
+        }
 
     },
     'loggers': {
@@ -283,7 +291,11 @@ LOGGING = {
             'handlers': ['policies'],
             'level': 'DEBUG',
             'propagate': False,
+        },
+        'empPortal.crons':{
+            'handlers':['crons'],
+            'level': 'DEBUG',  # Can be INFO, WARNING, ERROR in production
+            'propagate': False,
         }
-        
     },
 }

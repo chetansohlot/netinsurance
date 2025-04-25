@@ -231,7 +231,7 @@ urlpatterns = [
     path('policy-mgt/', views.policyMgt, name='policy-mgt'),
     path('browser-policy/', views.browsePolicy, name='browser-policy'),
     path('failed-policy-upload-view/<str:id>', views.failedPolicyUploadView, name='failed-policy-upload-view'),
-    path('bulk-policies/<str:id>', views.bulkPolicyView, name='bulk-policies'),
+    path('bulk-policies/<str:id>', policy.bulkPolicyView, name='bulk-policies'),
     # path('bulk-browser-policy/', views.bulkBrowsePolicy, name='bulk-browser-policy'),
     path('bulk-browser-policy/', policy.bulkBrowsePolicy, name='bulk-browser-policy'),
     path('policy-data/', views.policyData, name='policy-data'),
@@ -252,7 +252,7 @@ urlpatterns = [
     
     path('reprocess-bulk-policies',views.reprocessBulkPolicies,name="reprocess-bulk-policies"),
     path('continue-bulk-policies',views.continueBulkPolicies,name="continue-bulk-policies"),
-    path('bulk-upload-logs/',views.bulkUploadLogs,name='bulk-upload-logs'),
+    path('bulk-upload-logs/',policy.bulkUploadLogs,name='bulk-upload-logs'),
     
     path('change-password/',views.changePassword,name='change-password'),
     path('update-password',views.updatePassword,name='update-password'),

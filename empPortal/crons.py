@@ -1,8 +1,15 @@
 from django_cron import CronJobBase, Schedule
 from empPortal.models import PolicyDocument, FileAnalysis, ExtractedFile
+from empPortal.models import BulkPolicyLog
 from django_q.tasks import async_task
 from django.utils import timezone
-import logging
+from django.utils.encoding import filepath_to_uri
+from empPortal.utils import chatPdfMessage, commisionRateByMemberId, insurercommisionRateByMemberId
+from datetime import datetime
+
+from django.conf import settings
+import logging, os, shutil, zipfile, requests, re, json, ast
+
 logger = logging.getLogger(__name__)
 
 class ReprocessPoliciesCronJob(CronJobBase):
@@ -34,3 +41,327 @@ class ReprocessPoliciesCronJob(CronJobBase):
                 print(f"File with ID {policy.id} not found in ExtractedFile")
         
         print(f"Reprocessed policies with status 4 at {timezone.now()}")
+
+class ExtractFilesFromZip(CronJobBase):
+    RUN_EVERY_MINS = 2
+    
+    schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
+    code = 'empPortal.extract_files_from_zip'
+    
+    def do(self):
+        try:
+            # Fetch First 10 zips with is_processed = 0
+            uploaded_zips_ids = []
+                        
+            cutoff_time = datetime.strptime('2025-04-24 01:01', '%Y-%m-%d %H:%M')
+            zips = BulkPolicyLog.objects.filter(is_processed=0, created_at__gte=cutoff_time)[:10]
+            for zip_entry in zips:
+                try:
+                    pdf_file_ids = []
+                    zip_path = zip_entry.file.path
+                    extract_dir = os.path.join(settings.MEDIA_ROOT,'extracted',str(zip_entry.id))
+                    
+                    # if path exist remove the path
+                    if os.path.exists(extract_dir):
+                        shutil.rmtree(extract_dir)
+                        
+                    # create new path for zip extraction
+                    os.makedirs(extract_dir,exist_ok=True)
+                    
+                    with zipfile.ZipFile(zip_path,'r') as zip_ref:
+                        zip_ref.extractall(extract_dir)
+                        
+                    for filename in os.listdir(extract_dir):
+                        if not filename.lower().endswith('.pdf'):
+                            zip_entry.count_not_pdf += 1
+                            zip_entry.save() 
+                            logger.warning(f"file is not pdf ,path: {filename}")
+                            continue  # skip non-pdf files
+                        
+                        
+                        file_path = os.path.join(extract_dir,filename)
+                        relative_path = os.path.relpath(file_path,settings.MEDIA_ROOT)
+                        file_url = filepath_to_uri(os.path.join(settings.MEDIA_URL,relative_path))
+                        
+                        try:
+                            existing_file = ExtractedFile.objects.filter(
+                                bulk_log_ref=zip_entry,
+                                file_path=relative_path
+                            ).first()
+                            if existing_file:
+                                # zip_entry.count_uploaded_files += 1
+                                # zip_entry.count_duplicate_files += 1
+                                # if(zip_entry.count_uploaded_files >= zip_entry.count_pdf_files):
+                                #     zip_entry.is_processed=True
+                                #     zip_entry.status=3
+                                # zip_entry.save()
+                                # existing_file.status = 7
+                                # existing_file.save()
+                                continue
+                            else:
+                                extracted = ExtractedFile.objects.create(
+                                    bulk_log_ref=zip_entry,
+                                    file_path=relative_path,
+                                    filename=filename,
+                                    file_url=file_url,
+                                )
+                                
+                            zip_entry.count_pdf_files += 1
+                            pdf_file_ids.append(extracted.id)
+                            logger.info(f"File is saved in extracted_file for bulk_log_id: {zip_entry.id} and file_name : {filename}")
+                        except Exception as e:
+                            logger.error(f"Error in processing file_path {file_path} and file_name {filename}: {str(e)}")
+                            continue
+                    
+                except Exception as e:
+                    logger.error(f"Unknown Error in ExtractFilesFromZip Cron Error: {str(e)}")
+                    continue
+                
+                zip_entry.status = 2
+                zip_entry.save()
+                uploaded_zips_ids.append(zip_entry.id)
+                logger.info(f"Zip is completely extracted for bulk_log_id: {zip_entry.id}")
+            logger.info(f"Completely extracted for bulk_log_ids: {uploaded_zips_ids}")
+        except Exception as e:
+            logger.error(f"Unknown Error in ExtractFilesFromZip Cron Job: {str(e)}")
+            
+class GettingSourceId(CronJobBase):
+    RUN_EVERY_MINS = 2
+    schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
+    code = 'empPortal.getting_source_id'
+    
+    def do(self):
+        try:
+
+            
+            cutoff_time = datetime.strptime('2025-04-24 01:01', '%Y-%m-%d %H:%M')
+
+            files = ExtractedFile.objects.filter(source_id__isnull=True, is_uploaded=False, extracted_at__gte=cutoff_time)[:10]
+            for file in files:
+                pdf_path = file.file_path.path
+                file.status = 1
+                file.save()
+                if os.path.exists(pdf_path):
+                    try:
+                        headers = {
+                            'x-api-key': settings.CHATPDF_API_KEY
+                        }
+                        with open(pdf_path, 'rb') as f:
+                            open_files = [('file', (file.filename, f, 'application/pdf'))]
+                            response = requests.post(settings.CHATPDF_SOURCE_API_URL, headers=headers, files=open_files)
+                            
+                        if response.status_code == 200:
+                            source_id = response.json().get('sourceId')
+                            file.source_id = source_id
+                            file.status = 2
+                            file.is_uploaded = True
+                            file.save()
+                            
+                            logger.info(f"Updated source_id for file ID: {file.id}, filename: {file.filename}, Source ID: {source_id}")
+                        else:
+                            logger.error(f"Failed to upload extracted_file {file.id}. Status: {response.status_code}, Error: {response.text}")
+                            continue
+                    except Exception as e:
+                        logger.error(f"Error for extracted_file_id: {file.id}, Error: {str(e)}")
+                else:
+                    logger.error(f"PDF file not found for extracted_file_id: {file.id}")
+            logger.info(f"Complete GettingSourceId Cron Job")
+        except Exception as e:
+            logger.error(f"Unknown Error in GettingSourceId Cron Job: {str(e)}")
+
+class GettingPdfExtractedData(CronJobBase):
+    RUN_EVERY_MINS = 2
+    schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
+    code = 'empPortal.getting_pdf_extracted_data'
+    
+    def do(self):
+        try:
+            
+            cutoff_time = datetime.strptime('2025-04-24 01:01', '%Y-%m-%d %H:%M')
+
+            files = ExtractedFile.objects.filter(source_id__isnull=False,is_uploaded=True, extracted_at__gte=cutoff_time,policy_id__isnull=True)[:10]
+            for file in files:
+                if not file.source_id:
+                    logger.error(f"No source_id found for file_id {file.id}")
+                    continue
+                try:
+                    file.status = 3
+                    file.save()
+                    headers = {
+                        'x-api-key': settings.CHATPDF_API_KEY,
+                        "Content-Type": "application/json",
+                    }
+                    
+                    message = chatPdfMessage()
+                    data = {
+                        'sourceId': file.source_id,
+                        'messages': [
+                            {
+                                'role': "user",
+                                'content': message
+                            }
+                        ]
+                    }
+                    
+                    response = requests.post(
+                        settings.CHATPDF_CHAT_API_URL,
+                        headers=headers,
+                        json=data
+                    )
+                    
+                    logger.info(f"Status Code for Extracting Data for extracted_file_id:{file.id} is {response.status_code}")
+                    
+                    if response.status_code == 200:
+                        result = response.json().get('content')
+                        if isinstance(result, str):
+                            cleaned_result = re.sub(r'```(?:json)?\s*|\s*```', '', result).strip()
+                            extracted_data = json.loads(cleaned_result)
+                        else:
+                            extracted_data = result
+                            
+                        file.chat_response = extracted_data
+                        file.is_extracted = True
+                        file.status = 4
+                        file.save()
+                    else:
+                        logger.error(f"ChatPDF API failed for file_id {file.id}. Status: {response.status_code}, Error: {response.text}")
+                        continue
+                except Exception as e:
+                    logger.error(f"Error in api of pdf text extraction for extracted_file_id: {file.id} is {str(e)}")
+        except Exception as e:
+            logger.error(f"Unknown Error in GettingPdfExtractedData, Error{str(e)}")
+            
+class CreateNewPolicy(CronJobBase):
+    RUN_EVERY_MINS = 2
+    schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
+    code = 'empPortal.create_new_policy'
+    
+    def do(self):
+        try:
+            file_ids = []
+            
+            cutoff_time = datetime.strptime('2025-04-24 01:01', '%Y-%m-%d %H:%M')
+
+            files = ExtractedFile.objects.filter(policy_id__isnull = True, extracted_at__gte=cutoff_time,is_extracted=True)[:10]
+            for file in files:
+                file.status = 5
+                file.save()
+                file_ids.append(file.id)
+                extracted_data = file.chat_response
+                if extracted_data:
+                    if isinstance(extracted_data, str):
+                        try:
+                            extracted_data = ast.literal_eval(extracted_data)
+                            if extracted_data.get('policy_number') and extracted_data.get('insurance_company'):
+                                policy_number = extracted_data.get('policy_number', '')
+                                vehicle_number = extracted_data.get('vehicle_number', '')
+                                bulk_policy_log = file.bulk_log_ref
+                                
+                                try:
+                                    policy_exist = PolicyDocument.objects.filter(policy_number=policy_number).exists()
+                                    if policy_exist:
+                                        try:
+                                            bulk_policy_log.count_uploaded_files += 1
+                                            bulk_policy_log.count_duplicate_files += 1
+                                            bulk_policy_log.is_processed=True
+                                            if(bulk_policy_log.count_uploaded_files >= bulk_policy_log.count_pdf_files):
+                                                bulk_policy_log.is_processed=True
+                                                bulk_policy_log.status=3
+                                            bulk_policy_log.save()
+                                            file.status = 7
+                                            file.policy_id = policy_exist
+                                            file.save()
+                                        except Exception as e:
+                                            logger.error(f"Error in updating bulk_policy_log in CreateNewPolicy job for extracted_file_id: {file.id}")
+                                            continue
+                                    else:
+                                        try:
+                                            rm_id = bulk_policy_log.rm_id
+                                            rm_name = bulk_policy_log.rm_name
+                                            commision_rate = commisionRateByMemberId(rm_id)
+                                            insurer_rate = insurercommisionRateByMemberId(1)
+                                            if commision_rate:
+                                                od_percentage = commision_rate.od_percentage
+                                                net_percentage = commision_rate.net_percentage
+                                                tp_percentage = commision_rate.tp_percentage
+                                            else:
+                                                od_percentage = 0.0
+                                                net_percentage = 0.0
+                                                tp_percentage = 0.0
+                                                
+                                            if insurer_rate:
+                                                insurer_od_percentage = insurer_rate.od_percentage
+                                                insurer_net_percentage = insurer_rate.net_percentage
+                                                insurer_tp_percentage = insurer_rate.tp_percentage
+                                            else:
+                                                insurer_od_percentage = 0.0
+                                                insurer_net_percentage = 0.0
+                                                insurer_tp_percentage = 0.0
+                                                
+                                            policy = PolicyDocument.objects.create(
+                                                policy_number=policy_number,
+                                                vehicle_number=vehicle_number,
+                                                holder_name=extracted_data.get('insured_name', ''),
+                                                policy_issue_date=extracted_data.get('issue_date', ''),
+                                                policy_expiry_date=extracted_data.get('expiry_date', ''),
+                                                policy_start_date=extracted_data.get('start_date', ''),
+                                                policy_period=extracted_data.get('policy_period', ''),
+                                                policy_premium=extracted_data.get('gross_premium', ''),
+                                                policy_total_premium=extracted_data.get('net_premium', ''),
+                                                sum_insured=extracted_data.get('sum_insured', ''),
+                                                insurance_provider=extracted_data.get('insurance_company', ''),
+                                                coverage_details=extracted_data.get('coverage_details', {}),
+                                                vehicle_make=extracted_data.get('vehicle_details', {}).get('make', ''),
+                                                vehicle_model=extracted_data.get('vehicle_details', {}).get('model', ''),
+                                                vehicle_type=extracted_data.get('vehicle_details', {}).get('vehicle_type', ''),
+                                                vehicle_gross_weight=extracted_data.get('vehicle_details', {}).get('vehicle_gross_weight', ''),
+                                                vehicle_manuf_date=extracted_data.get('vehicle_details', {}).get('manufacture_year', ''),
+                                                policy_type=extracted_data.get('additional_details', {}).get('policy_type', ''),
+                                                payment_status=extracted_data.get('additional_details', {}).get('ncb', ''),
+                                                gst=extracted_data.get('gst_premium', ''),
+                                                od_premium=extracted_data.get('coverage_details', {}).get('own_damage', {}).get('premium', ''),
+                                                tp_premium=extracted_data.get('coverage_details', {}).get('third_party', {}).get('premium', ''),
+                                                extracted_text=extracted_data,
+                                                status=6,
+                                                bulk_log_id=bulk_policy_log.id,
+                                                filename=file.filename,
+                                                filepath=file.file_url,
+                                                rm_id=rm_id,
+                                                rm_name=rm_name,
+                                                od_percent=od_percentage,
+                                                tp_percent=tp_percentage,
+                                                net_percent=net_percentage,
+                                                insurer_tp_commission   = insurer_tp_percentage,
+                                                insurer_od_commission   = insurer_od_percentage,
+                                                insurer_net_commission  = insurer_net_percentage,
+                                            )
+                                            bulk_policy_log.count_uploaded_files += 1
+                                            if(bulk_policy_log.count_uploaded_files >= bulk_policy_log.count_pdf_files):
+                                                bulk_policy_log.is_processed=True
+                                                bulk_policy_log.status=3
+                                            bulk_policy_log.save()
+                                            
+                                            file.policy_id = policy
+                                            file.status = 6
+                                            file.save()
+                                        except Exception as e:
+                                            logger.error(f"Error in Creating Policy for extracted_file_id {file.id}, Error:{str(e)}")
+                                except Exception as e:
+                                    logger.error(f"Error in fetching policy data for extracted_file_id {file.id}, Error :{str(e)}")
+                                    continue
+                            else:
+                                logger.error(f"Policy Number or Insurance Company is not found for file_id :{file.id}")
+                                continue
+                        except json.JSONDecodeError:
+                            logger.error(f"Invalid JSON in chat_response for extratced_file_id {file.id}")
+                            continue
+                    else:
+                        logger.error(f"Unable to create instance of extracted data for extratced_file_id: {file.id}")
+                        continue
+                else:
+                    logger.error(f"Extracted Data is not found for extracted_file_id:{file.id}")
+                    continue
+            logger.info(f"Complete CreateNewPolicy Cron Job for extracted_file_ids : {file_ids}")
+        except Exception as e:
+            logger.error(f"Unknown error in CreateNewPolicy Cron Job: {str(e)}")
+            
