@@ -194,9 +194,8 @@ Employee Management
                                             <label for="checkall"></label>
                                         </th>
                                         <th>Employee Name</th>
-                                        <th>Role</th>
-                                        <th>Mobile</th>
-                                        <th>Email</th>
+                                        <th>Role Info</th>
+                                        <th>Contact Info</th>
                                         <th>Supervisor</th>
                                         <th>Branch</th>
                                         <th>Action</th>
@@ -215,9 +214,20 @@ Employee Management
                                                 <span class="text-gray d-block small">PAN#{{ employee.pan_no }}</span>
                                             </a>
                                         </td>
-                                        <td>{{ employee.role.roleName|default:"-" }}</td>
-                                        <td>{{ employee.phone|default:"-" }}</td>
-                                        <td>{{ employee.email|default:"-" }}</td>
+                                        
+                                        <td>
+                                          <a href="{% url 'employee-management-edit' employee_id=employee.id %}" class="trlink">
+                                              {{ employee.role.roleName|default:"N/A" }}
+                                              <span class="text-gray d-block small">{{ employee.department.name }}</span>
+                                          </a>
+                                        </td>
+                                        
+                                        <td>
+                                          <a href="{% url 'employee-management-edit' employee_id=employee.id %}" class="trlink">
+                                              {{ employee.phone|default:"-" }}
+                                              <span class="text-gray d-block small">{{ employee.email|default:"-" }}</span>
+                                          </a>
+                                        </td>
                                         <td>
                                             {% with all_users|get_item:employee.senior_id as supervisor %}
                                                 {% if supervisor and employee.role_id != 2 %}
