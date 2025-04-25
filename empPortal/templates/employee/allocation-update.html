@@ -101,6 +101,8 @@ Add Allocation
                                             <option value="{{ senior.id }}" 
                                                 {% if employee.role_id|stringformat:"s" == "5" and senior_details and senior.id|stringformat:"s" == senior_details.id|stringformat:"s" %}
                                                     selected
+                                                {% elif employee.role_id|stringformat:"s" == "6" and senior_details and senior.id|stringformat:"s" == senior_details.id|stringformat:"s" %}
+                                                    selected
                                                 {% elif senior.id|stringformat:"s" == employee.senior_id|stringformat:"s" %}
                                                     selected
                                                 {% endif %}>
@@ -116,9 +118,15 @@ Add Allocation
                                     <select class="form-control" name="team_leader" id="sales_manager">
                                         <option value="">Select Manager</option>
                                         {% if manager_list %}
-                                            {% for tl in manager_list %}
-                                            <option value="{{ tl.id }}" {% if employee.senior_id|stringformat:"s" == tl.id|stringformat:"s" %}selected{% endif %}>
-                                                {{ tl.first_name }} {{ tl.last_name }}
+                                            {% for manager in manager_list %}
+                                            <option value="{{ manager.id }}"
+                                            
+                                            {% if employee.role_id|stringformat:"s" == "6" and manager_id and manager.id|stringformat:"s" == manager_id|stringformat:"s" %}
+                                                selected
+                                            {% elif manager.id|stringformat:"s" == employee.senior_id|stringformat:"s" %}
+                                                selected
+                                            {% endif %}>
+                                                {{ manager.first_name }} {{ manager.last_name }}
                                             </option>
                                             
                                             {% endfor %}

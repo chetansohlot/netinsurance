@@ -27,7 +27,21 @@ class SourceMaster(models.Model):
     updated_at        = models.DateTimeField(auto_now=True)
 
     class Meta:
-        db_table = 'source_master'        
+        db_table = 'source_master'
+
+## BQPMASTER Details ##
+class BqpMaster(models.Model):
+    bqp_fname =models.CharField(max_length=100)
+    bqp_lname =models.CharField(max_length=100)
+    pan_number =models.CharField(max_length=10,unique=True)
+    mobile_number = models.CharField(max_length=15, null=True, blank=True)
+    email_address =models.CharField(max_length=255,null=True, blank=True)
+    bqp_status = models.BooleanField(default=True)
+    created_at =models.DateTimeField(auto_now_add=True)
+    updated_at =models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table ="bqp_master"
 
         
 class Commission(models.Model):
@@ -310,6 +324,7 @@ class PolicyInfo(models.Model):
     service_provider = models.CharField(max_length=255, null=True, blank=True)
     insurer_contact_name = models.CharField(max_length=255, null=True, blank=True)
     bqp = models.CharField(max_length=255, null=True, blank=True)
+    # bqp =models.ForeignKey(BqpMaster,on_delete=models.SET_NULL,null=True,blank=True,db_column='bqp_id')
     pos_name = models.CharField(max_length=255, null=True, blank=True)
     referral_by = models.CharField(max_length=50, null=True, blank=True)
   
@@ -1290,3 +1305,4 @@ class LeadUploadExcel(models.Model):
     )
     class Meta:
         db_table = 'lead_upload_excels'
+    
