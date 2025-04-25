@@ -105,8 +105,9 @@ urlpatterns = [
 
     path("update-doc-status/", members.update_doc_status, name="update-doc-status"),  
 
-    path('members/requested', members.members, name='members'),
+    path('members/all-partner', members.members, name='members'),
     path('members/in-process', members.members_inprocess, name='members_inprocess'),
+    path('members/member-requested', members.members_requested, name='members_requested'),
     path('members/in-training', members.members_intraining, name='members_intraining'),
     path('members/in-exam', members.members_inexam, name='members_inexam'),
     path('exam', exams.members_exam, name='members_exam'),
