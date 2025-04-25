@@ -142,8 +142,10 @@ def members(request):
         
         total_agents = Users.objects.filter(role_id__in=role_ids).count()
         active_agents = Users.objects.filter(role_id__in=role_ids,activation_status='1').count()
-        deactive_agents = users.filter(
-            Q(activation_status='0') | Q(activation_status__isnull=True) | Q(activation_status='')
+        deactive_agents = Users.objects.filter(
+            role_id__in=role_ids
+        ).exclude(
+            activation_status='1'
         ).count()
         pending_agents = 0  # Define pending logic if needed
 
@@ -224,8 +226,11 @@ def members_inprocess(request):
         
         total_agents = Users.objects.filter(role_id__in=role_ids).count()
         active_agents = Users.objects.filter(role_id__in=role_ids,activation_status='1').count()
-        deactive_agents = users.filter(
-            Q(activation_status='0') | Q(activation_status__isnull=True) | Q(activation_status='')
+        
+        deactive_agents = Users.objects.filter(
+            role_id__in=role_ids
+        ).exclude(
+            activation_status='1'
         ).count()
         pending_agents = 0  # Define pending logic if needed
 
@@ -359,8 +364,11 @@ def members_activated(request):
 
         total_agents = Users.objects.filter(role_id__in=role_ids).count()
         active_agents = Users.objects.filter(role_id__in=role_ids,activation_status='1').count()
-        deactive_agents = users.filter(
-            Q(activation_status='0') | Q(activation_status__isnull=True) | Q(activation_status='')
+        
+        deactive_agents = Users.objects.filter(
+            role_id__in=role_ids
+        ).exclude(
+            activation_status='1'
         ).count()
         pending_agents = 0  # Define pending logic if needed
 
@@ -440,8 +448,11 @@ def members_rejected(request):
         
         total_agents = Users.objects.filter(role_id__in=role_ids).count()
         active_agents = Users.objects.filter(role_id__in=role_ids,activation_status='1').count()
-        deactive_agents = users.filter(
-            Q(activation_status='0') | Q(activation_status__isnull=True) | Q(activation_status='')
+        
+        deactive_agents = Users.objects.filter(
+            role_id__in=role_ids
+        ).exclude(
+            activation_status='1'
         ).count()
         pending_agents = 0  # Define pending logic if needed
 

@@ -583,6 +583,13 @@ class Users(AbstractBaseUser):
         db_table = 'users'
 
     @property
+    def department(self):
+        try:
+            return Department.objects.get(id=self.department_id)
+        except Department.DoesNotExist:
+            return None
+        
+    @property
     def full_name(self):
         return f"{self.first_name} {self.last_name}".strip()
     
@@ -924,7 +931,7 @@ class BulkPolicyLog(models.Model):
     camp_name = models.CharField(max_length=255)
     file_name = models.CharField(max_length=255)
     file_url = models.URLField(max_length=255)
-    count_total_files = models.IntegerField(default=0)
+    count_total_files = models.IntegerField(default=0) 
     count_not_pdf = models.IntegerField(default=0)
     count_pdf_files = models.IntegerField(default=0)
     count_error_pdf_files = models.IntegerField(default=0)
@@ -933,7 +940,8 @@ class BulkPolicyLog(models.Model):
     count_duplicate_files = models.IntegerField(default=0)
     status = models.SmallIntegerField(default=0)
     created_at = models.DateTimeField(default=timezone.now)
-    rm_id = models.IntegerField()
+    rm_id = models.IntegerField(null=True)
+    product_type = models.IntegerField(null=True)
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,

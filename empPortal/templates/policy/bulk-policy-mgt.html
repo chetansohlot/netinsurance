@@ -51,7 +51,7 @@ Policy Management
                 <div class="card box-shadow-none p-md-5 p-3">
                   <div class="card-body px-0 pb-0 pt-0">
                     
-                    <form autocomplete="off" id="myForm" name="browsePolicy" action="{% url 'bulk-browser-policy' %}" method="post" enctype="multipart/form-data">
+                    <form autocomplete="off" id="bulkPolicyUploadIdForm" name="browsePolicy" action="{% url 'bulk-browser-policy' %}" method="post" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="row">
                           <div class="col-sm-6">
@@ -65,18 +65,21 @@ Policy Management
                                 <p class="text-gray small pt-1">Only Zip allowed, Max Size 50 MB Allowed, Zip Contains Max files 50 only and pdfs only</p>
                             </div>
                           </div>
-                          <!-- <div class="col-sm-6">
+                          <div class="col-sm-6">
                             <div class="form-group">
-                                <label class="form-lbl" for="camp_name">Product Type</label>
+                                <label class="form-lbl" for="product_type">Product Type</label>
                                 <select name="product_type" id="product_type" class="form-field">
                                   <option value="">Select</option>
+                                  {% for k,v in product_types.items %}
+                                    <option value="{{k}}">{{v}}</option>
+                                  {% endfor %}
                                 </select>
                                 <span class="error product_type_err"></span>
                                 {% if form.product_type.errors %}
                                     <span class="text-danger">{{ form.product_type.errors.0 }}</span>
                                 {% endif %}
                             </div>
-                          </div> -->
+                          </div>
                           <div class="col-sm-6">
                             <div class="form-group">
                                 <label class="form-lbl" for="camp_name">Campaign Name</label>
@@ -131,9 +134,9 @@ Policy Management
     {% include "footer.html" %}
     {% include "footer-script.html" %}
     <script>
-        document.getElementById("myForm").addEventListener("submit", function() {
+        <!-- document.getElementById("bulkPolicyUploadIdForm").addEventListener("submit", function() {
             document.getElementById("loader").style.display = "flex";
-        });
+        }); -->
       </script>
 </body>
 {% endblock %}

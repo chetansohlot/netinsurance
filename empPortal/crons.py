@@ -298,6 +298,14 @@ class CreateNewPolicy(CronJobBase):
                                                 insurer_net_percentage = 0.0
                                                 insurer_tp_percentage = 0.0
                                                 
+                                            coverage = extracted_data.get('coverage_details', {})
+
+                                            policy_od_premium = coverage.get('own_damage', {}).get('premium', 0)
+                                            policy_tp_premium = coverage.get('third_party', {}).get('premium', 0)
+
+                                            policy_net_premium = policy_od_premium + policy_tp_premium
+                                            policy_gross_premium = extracted_data.get('gross_premium', 0)
+                                                
                                             policy = PolicyDocument.objects.create(
                                                 policy_number=policy_number,
                                                 vehicle_number=vehicle_number,
@@ -306,8 +314,10 @@ class CreateNewPolicy(CronJobBase):
                                                 policy_expiry_date=extracted_data.get('expiry_date', ''),
                                                 policy_start_date=extracted_data.get('start_date', ''),
                                                 policy_period=extracted_data.get('policy_period', ''),
-                                                policy_premium=extracted_data.get('gross_premium', ''),
-                                                policy_total_premium=extracted_data.get('net_premium', ''),
+                                                od_premium=policy_od_premium,
+                                                tp_premium=policy_tp_premium,
+                                                policy_premium=policy_gross_premium,
+                                                policy_total_premium=policy_net_premium,
                                                 sum_insured=extracted_data.get('sum_insured', ''),
                                                 insurance_provider=extracted_data.get('insurance_company', ''),
                                                 coverage_details=extracted_data.get('coverage_details', {}),
@@ -319,8 +329,6 @@ class CreateNewPolicy(CronJobBase):
                                                 policy_type=extracted_data.get('additional_details', {}).get('policy_type', ''),
                                                 payment_status=extracted_data.get('additional_details', {}).get('ncb', ''),
                                                 gst=extracted_data.get('gst_premium', ''),
-                                                od_premium=extracted_data.get('coverage_details', {}).get('own_damage', {}).get('premium', ''),
-                                                tp_premium=extracted_data.get('coverage_details', {}).get('third_party', {}).get('premium', ''),
                                                 extracted_text=extracted_data,
                                                 status=6,
                                                 bulk_log_id=bulk_policy_log.id,

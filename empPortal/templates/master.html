@@ -1689,6 +1689,58 @@
     });
 </script>
 
+<script>
+    $(document).ready(function () {
+
+        // Form validation
+        $.validator.addMethod("zipExtension", function (value, element) {
+            return this.optional(element) || /\.zip$/i.test(value);
+        }, "Only ZIP files are allowed.");
+
+        $("#bulkPolicyUploadIdForm").validate({
+            rules: {
+                zip_file: {
+                    required: true,
+                    zipExtension: true
+                },
+                camp_name: {
+                    required: true,
+                },
+                rm_id: {
+                    required: true,
+                },
+                product_type: {
+                    required: true,
+                }
+            },
+            messages: {
+                zip_file: {
+                    required: "Please upload ZIP file",
+                    zipExtension: "Invalid file format. Only ZIP files are allowed."
+                },
+                camp_name: {
+                    required: "Campaign Name is mandatory"
+                },
+                rm_id: {
+                    required: "RM Name is mandatory"
+                },
+                product_type: {
+                    required: "Please select Product Type"
+                }
+            },
+            errorElement: "div",
+            errorPlacement: function (error, element) {
+                error.addClass("text-danger");
+                error.insertAfter(element);
+            },
+            submitHandler: function (form) {
+                $("#loader").show(); 
+                form.submit();
+            }
+        });
+
+    });
+</script>
 
 <script>
     $(document).ready(function () {
