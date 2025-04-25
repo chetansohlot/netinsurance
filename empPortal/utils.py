@@ -129,7 +129,6 @@ def check_agent_linked_info(data_list):
 
     return results
 
-
 def send_sms_post(number, message):
     """
     Sends an SMS using the POST method.
@@ -163,9 +162,6 @@ class LogType(models.TextChoices):
     AUDIT = "AUDIT", "Audit"
     SECURITY = "SECURITY", "Security"
     OTHER = "OTHER", "Other"
-
-
-
 
 def create_or_update_lead(request, cus_id):
     if not request.user.is_authenticated:
@@ -234,7 +230,6 @@ def commisionRateByMemberId(member_id):
 def insurercommisionRateByMemberId(member_id):
     commission_data = Commission.objects.filter(member_id=member_id).first()
     return commission_data
-
 
 def chatPdfMessage():
     message = f"""
@@ -337,7 +332,6 @@ def chatPdfMessage1():
             
     return message
 
-
 def policy_product():
     policy_product = {
         1: "Motor",
@@ -351,3 +345,4 @@ def getUserNameByUserId(user_id):
         return Users.objects.get(id=user_id).full_name
     except Users.DoesNotExist:
         return None
+  

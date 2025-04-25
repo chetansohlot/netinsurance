@@ -41,7 +41,7 @@ from django_q.tasks import async_task
 import pandas as pd
 from collections import Counter
 from io import BytesIO
-from ..utils import getUserNameByUserId
+from ..utils import getUserNameByUserId, policy_product
 logging.getLogger('faker').setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 OPENAI_API_KEY = settings.OPENAI_API_KEY
@@ -385,9 +385,6 @@ def edit_insurer_payment_info(request, policy_no):
         'insurer_payment': insurer_payment
     })
 
-
-
-
 def edit_franchise_payment_info(request, policy_no):
     if not request.user.is_authenticated and request.user.is_active != 1:
         messages.error(request, "Please Login First")
@@ -530,50 +527,60 @@ def bulkPolicyMgt(request):
     if not request.user.is_authenticated and request.user.is_active != 1:
         return redirect('login')
     rms = Users.objects.all()
-    # product_types = 
-    return render(request,'policy/bulk-policy-mgt.html',{'users':rms})
+    product_types = policy_product()
+    return render(request,'policy/bulk-policy-mgt.html',{'users':rms,'product_types':product_types})
 
 def bulkBrowsePolicy(request):
     if request.user.is_authenticated:
-        if request.method == "POST" and request.FILES.get("zip_file"):
-            zip_file = request.FILES["zip_file"]
+        if request.method == "POST":
+            if request.FILES.get("zip_file"):
+                zip_file = request.FILES["zip_file"]
+            else:
+                zip_file = None
+                
             camp_name = request.POST.get("camp_name") 
             rm_id = request.POST.get("rm_id")
+            product_type = request.POST.get("product_type")
             
             # Validate ZIP file format
             if not zip_file or not zip_file.name.lower().endswith(".zip"):
                 messages.error(request, "Invalid file format. Only ZIP files are allowed.")
-                return redirect("bulk-policy-mgt")
-            
-            if zip_file.size > 50 * 1024 * 1024:
-                messages.error(request, "File too large. Maximum allowed size is 50 MB.")
-                return redirect("bulk-policy-mgt")  
-            
-            try:
-                zip_bytes = BytesIO(zip_file.read())
-                with zipfile.ZipFile(zip_bytes) as zf:
-                    file_list = zf.infolist()
-                    total_files = len(file_list)
-                    pdf_files = [f for f in file_list if f.filename.lower().endswith(".pdf")]
-                    non_pdf_files = [f for f in file_list if not f.filename.lower().endswith(".pdf")]
+            else:
+                if zip_file.size > 50 * 1024 * 1024:
+                    messages.error(request, "File too large. Maximum allowed size is 50 MB.")
+                else:
+                    try:
+                        zip_bytes = BytesIO(zip_file.read())
+                        with zipfile.ZipFile(zip_bytes) as zf:
+                            file_list = zf.infolist()
+                            total_files = len(file_list)
+                            pdf_files = [f for f in file_list if f.filename.lower().endswith(".pdf")]
+                            non_pdf_files = [f for f in file_list if not f.filename.lower().endswith(".pdf")]
+                            directories = [f for f in file_list if f.is_dir()]
+                            pdf_count = len(pdf_files)
+                            non_pdf_count = len(non_pdf_files)
+                            
+                            if directories:
+                                messages.error(request, "ZIP must not contain any folders.")
+                                for folder in directories:
+                                    messages.error(request, f" - Folder: {folder.filename}")
+
+                            if total_files > 50:
+                                messages.error(request, "ZIP contains more than 50 files.")
+                            
+                            if non_pdf_files:
+                                messages.error(request, "ZIP must contain only PDF files.")
+                    except zipfile.BadZipFile:
+                        messages.error(request, "The uploaded ZIP file is corrupted or invalid.")
                     
-                    pdf_count = len(pdf_files)
-                    non_pdf_count = len(non_pdf_files)
-                    
-                    if total_files > 50:
-                        messages.error(request, "ZIP contains more than 50 files.")
-                        return redirect("bulk-policy-mgt")
-                    
-                    if non_pdf_files:
-                        messages.error(request, "ZIP must contain only PDF files.")
-                        return redirect("bulk-policy-mgt")
-            except zipfile.BadZipFile:
-                messages.error(request, "The uploaded ZIP file is corrupted or invalid.")
-                return redirect("bulk-policy-mgt")
-            
             if not camp_name:
                 messages.error(request, "Campaign Name is mandatory.")
-                return redirect("bulk-policy-mgt")
+            
+            if not product_type:
+                messages.error(request, "Product Type is mandatory.")
+            
+            if messages.get_messages(request):
+                return redirect('bulk-policy-mgt')
             
             rm_name = getUserNameByUserId(rm_id) if rm_id else None
             
@@ -590,6 +597,7 @@ def bulkBrowsePolicy(request):
                 count_error_process_pdf_files=0,
                 count_uploaded_files=0,
                 count_duplicate_files=0,
+                product_type=product_type,
                 status=1
             )
                         
@@ -599,7 +607,6 @@ def bulkBrowsePolicy(request):
             return redirect("bulk-policy-mgt")
     else:
         return redirect('login')
-
 
 def bulkPolicyView(request, id):
     if not request.user.is_authenticated or request.user.is_active != 1:
