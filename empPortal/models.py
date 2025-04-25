@@ -303,7 +303,8 @@ class PolicyDocument(models.Model):
 from django.db import models
 
 class PolicyInfo(models.Model):
-    policy_id = models.CharField(max_length=20, null=True, blank=True)
+    policy = models.ForeignKey(PolicyDocument, on_delete=models.CASCADE, related_name='policy_info')
+    # policy_id = models.CharField(max_length=20, null=True, blank=True)
 
     # Basic Policy
     policy_number = models.CharField(max_length=100, null=True, blank=True)
@@ -356,6 +357,7 @@ class PolicyInfo(models.Model):
         return f"Policy {self.policy_number} - {self.policy_id}"
 
 class AgentPaymentDetails(models.Model):
+    policy = models.ForeignKey(PolicyDocument, on_delete=models.CASCADE, related_name='policy_agent_info')
     policy_number = models.CharField(max_length=255)
     agent_name = models.CharField(max_length=255)
     agent_payment_mod = models.CharField(max_length=255)
@@ -385,6 +387,7 @@ class AgentPaymentDetails(models.Model):
         return f"{self.agent_name} - {self.policy_number}"
     
 class FranchisePayment(models.Model):
+    policy = models.ForeignKey(PolicyDocument, on_delete=models.CASCADE, related_name='policy_franchise_info')
     policy_number = models.CharField(max_length=50, unique=True)
     franchise_od_comm = models.CharField(max_length=50, blank=True, null=True)
     franchise_net_comm = models.CharField(max_length=50, blank=True, null=True)
@@ -425,8 +428,6 @@ class PolicyUploadDoc(models.Model):
     def __str__(self):
         return f"Documents for Policy: {self.policy_number}"
 
-
-
 class InsurerPaymentDetails(models.Model):
     policy_number = models.CharField(max_length=100, unique=True)
 
@@ -463,8 +464,8 @@ class InsurerPaymentDetails(models.Model):
         return f"Insurer Payment for {self.policy_number}"
     
 class PolicyVehicleInfo(models.Model):
+    policy = models.ForeignKey(PolicyDocument, on_delete=models.CASCADE, related_name='policy_vehicle_info')
     policy_number = models.CharField(max_length=100)
-
     vehicle_type = models.CharField(max_length=100, null=True, blank=True)
     vehicle_make = models.CharField(max_length=100, null=True, blank=True)
     vehicle_model = models.CharField(max_length=100, null=True, blank=True)

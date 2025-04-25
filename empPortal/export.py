@@ -18,7 +18,6 @@ import json
 from django.http import JsonResponse
 import os
 import zipfile
-from django.http import HttpResponse
 from django.contrib import messages
 from .models import PolicyDocument
 from faker import Faker 
@@ -98,6 +97,7 @@ def commission_report(request):
     if not request.user.is_authenticated and request.user.is_active != 1:
         messages.error(request, "Please Login First")
         return redirect('login')
+    
     # Get filter values from GET parameters
     policy_no = request.GET.get("policy_no", None)
     insurer_name = request.GET.get("insurer_name", None)
