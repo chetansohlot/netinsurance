@@ -584,6 +584,13 @@ class Users(AbstractBaseUser):
         db_table = 'users'
 
     @property
+    def department(self):
+        try:
+            return Department.objects.get(id=self.department_id)
+        except Department.DoesNotExist:
+            return None
+        
+    @property
     def full_name(self):
         return f"{self.first_name} {self.last_name}".strip()
     
