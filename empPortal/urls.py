@@ -2,7 +2,7 @@ from django.urls import path, include
 from . import views,export
 from . import views
 from . import authenticationView
-from .controller import commissions, profile,policy, Referral, globalController, helpAndSupport, Employee, leads, sellMotor, sellHealth, sellTerm, Franchises, Department, Branches, members, customers, quoteManagement, healthQuoteManagement, homeManagement, exams,SourceMaster
+from .controller import commissions, profile,policy, Referral, globalController, helpAndSupport, Employee, leads, sellMotor, sellHealth, sellTerm, Franchises, Department, Branches, members, customers, quoteManagement, healthQuoteManagement, homeManagement, exams,SourceMaster,BQP
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import re_path
@@ -275,6 +275,12 @@ urlpatterns = [
     path('source/create/', SourceMaster.source_create, name='source_create'),
     path('source/edit/<int:source_id>/', SourceMaster.source_edit, name='source_edit'),
     path('source/delete/<int:source_id>/', SourceMaster.source_delete, name='source_delete'),
+    
+    ## BQP Url ##
+    path('bqp/', BQP.bqp_list, name='bqp_list'),
+    path('bqp/create/', BQP.bqp_create, name='bqp_create'),
+    path('bqp/edit/<int:bqp_id>/', BQP.bqp_edit, name='bqp_edit'),
+    path('bqp/delete/<int:bqp_id>/', BQP.bqp_delete, name='bqp_delete'),
 ] 
 
 
