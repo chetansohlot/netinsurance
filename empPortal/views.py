@@ -86,95 +86,151 @@ def addMember(request):
         return redirect('login')
     
 def userAndRoles(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
+    roles = Roles.objects.exclude(id__in=[1, 4])
+    departments = Department.objects.in_bulk(field_name='id')  # {id: Department}
+    all_roles_dict = {str(role.id): role for role in Roles.objects.all()}  # {'2': <Roles object>}
+
+    for role in roles:
+        # Get department name
+        dept_id = role.roleDepartment
+        role.department_name = departments.get(int(dept_id)).name if dept_id and dept_id.isdigit() and int(dept_id) in departments else ''
+
+        # Get primary role name
+        primary_role_id = role.primaryRoleId
+        role.primary_role_name = all_roles_dict.get(primary_role_id).roleName if primary_role_id in all_roles_dict else ''
+
+    return render(request, 'user-and-roles.html', {
+        'role_data': roles,
+    })
+
+
+
+def newRole(request):
     if request.user.is_authenticated:
-        roles = Roles.objects.all()
-        
-        # Exclude users with role_id = 1 and ensure valid users
-        users = Users.objects.exclude(role_id=1).select_related('role')
-
-        # Create a list of users with their respective senior's name
-        user_list = []
-        for user in users:
-            senior_name = "N/A"  # Default value if no senior is found
-            
-            # Ensure senior_id is valid (not None, not empty, not zero)
-            if user.senior_id and str(user.senior_id).strip() not in ["", "None", "null"]:
-                senior = Users.objects.filter(id=user.senior_id).first()
-                if senior:
-                    senior_name = f"{senior.first_name} {senior.last_name}"
-            
-            user_list.append({
-                'id': user.id if user.id else '',
-                'user_gen_id': user.user_gen_id if user.user_gen_id else '',  # Ensure it's not None
-                'full_name': f"{user.first_name} {user.last_name}",
-                'email': user.email,
-                'phone': user.phone,
-                'role_name': user.role_name,
-                'status': user.status,
-                'senior_name': senior_name  # Include senior's name or "N/A"
-            })
-
-        return render(request, 'user-and-roles.html', {
-            'role_data': roles,
-            'user_data': user_list
+        departments = Department.objects.all().order_by('name')
+        roles = Roles.objects.exclude(id__in=[1, 4])
+        return render(request, 'new-role.html', {
+            'departments': departments,
+            'roles': roles
         })
     else:
         return redirect('login')
 
-def newRole(request):
-    if request.user.is_authenticated:
-        return render(request, 'new-role.html')
-    else:
-        return redirect('login')
-
 def insertRole(request):
-    if request.user.is_authenticated:
-        if request.method == "POST":
-            role_name = request.POST.get('role_name', '').strip()
-            role_description = request.POST.get('description', '').strip()
-
-            # Validation
-            if not role_name:
-                messages.error(request, 'Role Name is required')
-                return render(request, 'new-role.html')
-
-            if not role_description:
-                messages.error(request, 'Description is required')
-                return render(request, 'new-role.html')
-
-            if len(role_name) < 3:
-                messages.error(request, 'Role name must be at least 3 characters long')
-                return render(request, 'new-role.html')
-
-            if len(role_description) > 255:
-                messages.error(request, "Description must be under 255 characters.")
-                return render(request, 'new-role.html')
-
-            if Roles.objects.filter(roleName=role_name).exists():
-                messages.error(request, "Role name already exists.")
-                return render(request, 'new-role.html')
-
-            last_role = Roles.objects.all().order_by('-roleGenID').first()
-            if last_role and last_role.roleGenID.startswith('RL-'):
-                last_id = int(last_role.roleGenID.split('-')[1])
-                new_roleGenID = f"RL-{last_id + 1:04d}"
-            else:
-                new_roleGenID = 'RL-0001'
-
-            rl = Roles(roleGenID=new_roleGenID, roleName=role_name, roleDescription=role_description)
-            rl.save()
-
-            messages.success(request, "Role added successfully.")
-            return redirect('user-and-roles')
-
-        messages.error(request, 'Invalid URL')
-        return render(request, 'new-role.html') 
-    else:
+    if not request.user.is_authenticated:
         return redirect('login')
+
+    departments = Department.objects.all().order_by('name')
+    roles = Roles.objects.exclude(id__in=[1, 4])
+
+    if request.method == "POST":
+        role_name = request.POST.get('role_name', '').strip()
+        role_description = request.POST.get('description', '').strip()
+        department_id = request.POST.get('department_id', '').strip()
+        role_id = request.POST.get('role_id', '').strip()
+
+        # Validation
+        if not department_id:
+            messages.error(request, 'Department is required')
+            return render(request, 'new-role.html', {
+                'departments': departments,
+                'roles': roles,
+                'role_name': role_name,
+                'description': role_description
+            })
+        
+        if not role_name:
+            messages.error(request, 'Role Name is required')
+            return render(request, 'new-role.html', {
+                'departments': departments,
+                'roles': roles,
+                'role_name': role_name,
+                'description': role_description
+            })
+
+        if not role_description:
+            messages.error(request, 'Description is required')
+            return render(request, 'new-role.html', {
+                'departments': departments,
+                'roles': roles,
+                'role_name': role_name,
+                'description': role_description
+            })
+
+        if len(role_name) < 3:
+            messages.error(request, 'Role name must be at least 3 characters long')
+            return render(request, 'new-role.html', {
+                'departments': departments,
+                'roles': roles,
+                'role_name': role_name,
+                'description': role_description
+            })
+
+        if len(role_description) > 255:
+            messages.error(request, "Description must be under 255 characters.")
+            return render(request, 'new-role.html', {
+                'departments': departments,
+                'roles': roles,
+                'role_name': role_name,
+                'description': role_description
+            })
+
+        if Roles.objects.filter(roleName__iexact=role_name).exists():
+            messages.error(request, "Role name already exists.")
+            return render(request, 'new-role.html', {
+                'departments': departments,
+                'roles': roles,
+                'role_name': role_name,
+                'description': role_description
+            })
+
+        # Validate department existence
+        if not Department.objects.filter(id=department_id).exists():
+            messages.error(request, "Selected department does not exist.")
+            return render(request, 'new-role.html', {
+                'departments': departments,
+                'roles': roles,
+                'role_name': role_name,
+                'description': role_description
+            })
+
+        # Generate roleGenID
+        last_role = Roles.objects.all().order_by('-roleGenID').first()
+        if last_role and last_role.roleGenID.startswith('RL-'):
+            last_id = int(last_role.roleGenID.split('-')[1])
+            new_roleGenID = f"RL-{last_id + 1:04d}"
+        else:
+            new_roleGenID = 'RL-0001'
+
+        # Save new role with department ID
+        rl = Roles(
+            roleGenID=new_roleGenID,
+            roleName=role_name,
+            roleDepartment=department_id, 
+            primaryRoleId=role_id, 
+            roleDescription=role_description
+        )
+        rl.save()
+
+        messages.success(request, "Role added successfully.")
+        return redirect('user-and-roles')
+
+    messages.error(request, 'Invalid method')
+    return render(request, 'new-role.html', {
+        'departments': departments,
+        'roles': roles
+        })
+
+
+
 
 def createUser(request):
     if request.user.is_authenticated:
-        roles = Roles.objects.all()
+        roles = Roles.objects.exclude(id__in=[1, 4])
+
         branches = Branch.objects.all().order_by('-created_at')
         departments = Department.objects.all().order_by('-created_at')
         return render(request,'create-user.html',{'role_data':roles, 'branches':branches, 'departments':departments})
@@ -191,11 +247,17 @@ def get_users_by_role(request):
 
             if role_id == 3:  # Fetch Branch Managers
                 users = Users.objects.filter(role_id=2).values('id', 'first_name', 'last_name')
-                role_name = "Manager"
+                role_name = "Head"
             elif role_id == 5 and manager_id == '':  # Fetch Regional Managers
                 users = Users.objects.filter(role_id=2).values('id', 'first_name', 'last_name')
-                role_name = "Manager"
+                role_name = "Head"
+            elif role_id == 6 and manager_id == '':  # Fetch Regional Managers
+                users = Users.objects.filter(role_id=2).values('id', 'first_name', 'last_name')
+                role_name = "Head"
             elif role_id == 5 and manager_id != '' and manager_id.isdigit():  # Fetch Team Leaders under selected Manager
+                users = Users.objects.filter(senior_id=manager_id).values('id', 'first_name', 'last_name')
+                role_name = "Manager"
+            elif role_id == 6 and manager_id != '' and manager_id.isdigit():  # Fetch Team Leaders under selected Manager
                 users = Users.objects.filter(senior_id=manager_id).values('id', 'first_name', 'last_name')
                 role_name = "Team Leader"
             else:
@@ -336,7 +398,14 @@ def insertUser(request):
 def editRole(request,id):
     if request.user.is_authenticated:
         role_data = Roles.objects.filter(roleGenID=id).first()
-        return render(request,'edit-role.html',{'role_data':role_data})
+        departments = Department.objects.all().order_by('name')
+        roles = Roles.objects.exclude(id__in=[1, 4])
+
+        return render(request,'edit-role.html',{
+            'role_data':role_data,
+            'roles':roles,
+            'departments': departments
+        })
     else:
         return redirect('login')
     
@@ -362,53 +431,69 @@ def editUser(request, id):
         return redirect('login')
 
 def updateRole(request):
-    if request.user.is_authenticated:
-        if request.method == "POST":
-            if request.POST['role_id'] == '':
-                messages.error(request,'Something Went Wrong. Kindly contact to administrator')
-            
-            role_id = request.POST.get('role_id', '').strip()
-            role_name = request.POST.get('role_name', '').strip()
-            role_description = request.POST.get('description', '').strip()
-
-            # Validation
-            if not role_name:
-                messages.error(request, 'Role Name is required')
-
-            if not role_description:
-                messages.error(request, 'Description is required')
-
-            if len(role_name) < 3:
-                messages.error(request, 'Role name must be at least 3 characters long')
-
-            if len(role_description) > 255:
-                messages.error(request, "Description must be under 255 characters.")
-
-            if Roles.objects.filter(roleName=role_name).exclude(id=role_id).exists():
-                messages.error(request, "Role name already exists.")
-
-            
-            if messages.get_messages(request):
-                return redirect(request.META.get('HTTP_REFERER', '/'))
-            
-            role_data = Roles.objects.filter(id=role_id).first()
-            
-            if role_data is not None:
-                role_data.roleName = role_name
-                role_data.description = role_description
-                role_data.save()
-                
-                messages.success(request, 'Role updated successfully.')
-                return redirect('user-and-roles')
-            
-            else:
-                messages.error(request, 'No Data Found')
-                return redirect(request.META.get('HTTP_REFERER', '/'))
-        else:
-            messages.error(request, 'Invalid URL')
-            return redirect('user-and-roles')
-    else:
+    if not request.user.is_authenticated:
         return redirect('login')
+
+    departments = Department.objects.all().order_by('name')
+    roles = Roles.objects.exclude(id__in=[1, 4])
+
+    if request.method == "POST":
+        role_id = request.POST.get('role_id', '').strip()
+        primary_role_id = request.POST.get('primary_role_id', '').strip()
+        role_name = request.POST.get('role_name', '').strip()
+        role_description = request.POST.get('description', '').strip()
+        department_id = request.POST.get('department_id', '').strip()
+
+        if not role_id:
+            messages.error(request, 'Something went wrong. Kindly contact the administrator')
+            return redirect(request.META.get('HTTP_REFERER', '/'))
+
+        # Validation
+        if not role_name:
+            messages.error(request, 'Role Name is required')
+        if not role_description:
+            messages.error(request, 'Description is required')
+        if not department_id:
+            messages.error(request, 'Department is required')
+        if len(role_name) < 3:
+            messages.error(request, 'Role name must be at least 3 characters long')
+        if len(role_description) > 255:
+            messages.error(request, "Description must be under 255 characters.")
+        if Roles.objects.filter(roleName=role_name).exclude(id=role_id).exists():
+            messages.error(request, "Role name already exists.")
+
+        # If any error, re-render the form with previous input
+        if messages.get_messages(request):
+            role_data = Roles.objects.filter(id=role_id).first()
+            return render(request, 'edit-role.html', {
+                'departments': departments,
+                'roles': roles,
+                'role_data': role_data,
+                'role_name': role_name,
+                'description': role_description,
+                'selected_department_id': department_id,
+            })
+
+        # Update the role
+        role_data = Roles.objects.filter(id=role_id).first()
+        if role_data:
+            role_data.roleName = role_name
+            role_data.roleDescription = role_description
+            role_data.roleDepartment = department_id
+            role_data.primaryRoleId = primary_role_id
+
+            role_data.save()
+
+            messages.success(request, 'Role updated successfully.')
+            return redirect('user-and-roles')
+        else:
+            messages.error(request, 'No data found')
+            return redirect(request.META.get('HTTP_REFERER', '/'))
+
+    else:
+        messages.error(request, 'Invalid request method')
+        return redirect('user-and-roles')
+
    
 def updateUser(request):
     if request.user.is_authenticated:
@@ -1070,40 +1155,6 @@ def updatePolicy(request):
     messages.error(request, 'No Data Found')
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
-def bulkUploadLogs(request):
-    if not request.user.is_authenticated or request.user.is_active != 1:
-        messages.error(request,'Please Login First')
-        return redirect('login')
-    
-    id  = request.user.id
-        # Fetch policies
-    role_id = Users.objects.filter(id=id,status=1).values_list('role_id', flat=True).first()
-    if role_id != 1:
-     logs =  BulkPolicyLog.objects.filter(rm_id=id).exclude(rm_id__isnull=True).order_by('-id')
-    else:
-      logs = BulkPolicyLog.objects.all().order_by('-id')
-    
-    policy_files = PolicyDocument.objects.all()
-    statuses = Counter(file.status for file in policy_files)
-
-    # Ensure all statuses are included in the count, even if they're 0
-    status_counts = {
-        0: statuses.get(0, 0),
-        1: statuses.get(1, 0),
-        2: statuses.get(2, 0),
-        3: statuses.get(3, 0),
-        4: statuses.get(4, 0),
-        5: statuses.get(5, 0),
-        6: statuses.get(6, 0),
-        7: statuses.get(7, 0),
-    }
-
-    return render(request,'policy/bulk-upload-logs.html',{
-        'logs': logs,
-        'status_counts': status_counts,
-        'total_files': len(policy_files)
-    })
-
 def changePassword(request):
     return render(request, 'change-password.html')
 
@@ -1153,32 +1204,6 @@ def failedPolicyUploadView(request, id):
 
     return render(request, 'policy/unprocessable-files.html', {'files': unprocessable_files})
   
-def bulkPolicyView(request, id):
-    if not request.user.is_authenticated or request.user.is_active != 1:
-        return redirect('login')
-
-    # Fetch policy documents based on bulk_log_id
-    policy_files = PolicyDocument.objects.filter(bulk_log_id=id)
-    statuses = Counter(file.status for file in policy_files)
-
-    # Ensure all statuses are included in the count, even if they're 0
-    status_counts = {
-        0: statuses.get(0, 0),
-        1: statuses.get(1, 0),
-        2: statuses.get(2, 0),
-        3: statuses.get(3, 0),
-        4: statuses.get(4, 0),
-        5: statuses.get(5, 0),
-        6: statuses.get(6, 0),
-        7: statuses.get(7, 0),
-    }
-
-    return render(request, 'policy/policy-files.html', {
-        'files': policy_files,
-        'total_files': len(policy_files),
-        'log_id': id,
-        'status_counts': status_counts
-    })
 
 def reprocessBulkPolicies(request):
     if not request.user.is_authenticated and request.user.is_active == 1:
