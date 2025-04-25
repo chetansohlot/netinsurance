@@ -37,7 +37,7 @@
               {% if user.activation_status == '1' %}
                 <p class="text-success">Active</p>
               {% else %}
-                <p class="text-danger">Inactive</p>
+                <p class="text-danger">{% if requested %}Requested{% else %}Inactive{% endif %}</p>
               {% endif %}
               <span class="text-gray d-block small">{{ user.created_at|date:"d M 'y H:i:s" }} - Present</span>
             </td>
