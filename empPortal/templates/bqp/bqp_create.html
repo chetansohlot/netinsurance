@@ -55,45 +55,45 @@ BQP - Create BQP
                                         {% csrf_token %}
                                         <div class="row">
                                             <!-- PAN number -->
-                                            <div class="form-group col-sm-6">
-                                                <label for="pan_number">PAN Number</label>
-                                                <input type="text" class="form-control" name="pan_number" id="pan_number"
+                                            <div class="form-group col-sm-6 col-md-4">
+                                                <label class="form-lbl" for="pan_number">PAN Number</label>
+                                                <input type="text" class="form-field" name="pan_number" id="pan_number"
                                                     placeholder="Enter PAN Number"
                                                     value="{{ bqp.pan_number|default:'' }}">
                                                 <span class="error pan_number_err"></span>
                                             </div>
 
                                             <!-- First Name -->
-                                            <div class="form-group col-sm-6">
-                                                <label for="bqp_fname">First Name</label>
-                                                <input type="text" class="form-control" name="bqp_fname" id="bqp_fname"
+                                            <div class="form-group col-sm-6 col-md-4">
+                                                <label class="form-lbl" for="bqp_fname">First Name</label>
+                                                <input type="text" class="form-field" name="bqp_fname" id="bqp_fname"
                                                     placeholder="First Name"
                                                     value="{{ bqp.bqp_fname|default:'' }}">
                                                 <span class="error bqp_fname_err"></span>
                                             </div>
 
                                             <!-- Last Name -->
-                                            <div class="form-group col-sm-6">
-                                                <label for="bqp_lname">Last Name</label>
-                                                <input type="text" class="form-control" name="bqp_lname" id="bqp_lname"
+                                            <div class="form-group col-sm-6 col-md-4">
+                                                <label class="form-lbl" for="bqp_lname">Last Name</label>
+                                                <input type="text" class="form-field" name="bqp_lname" id="bqp_lname"
                                                     placeholder="Last Name"
                                                     value="{{ bqp.bqp_lname|default:'' }}">
                                                 <span class="error bqp_lname_err"></span>
                                             </div>
 
                                             <!-- Email Address -->
-                                            <div class="form-group col-sm-6">
-                                                <label for="email_address">Email Address</label>
-                                                <input type="email" class="form-control" name="email_address" id="email_address"
+                                            <div class="form-group col-sm-6 col-md-4">
+                                                <label class="form-lbl" for="email_address">Email Address</label>
+                                                <input type="email" class="form-field" name="email_address" id="email_address"
                                                     placeholder="Email Address"
                                                     value="{{ bqp.email_address|default:'' }}">
                                                 <span class="error email_address_err"></span>
                                             </div>
 
                                             <!-- Mobile Number -->
-                                            <div class="form-group col-sm-6">
-                                                <label for="mobile_number">Mobile Number</label>
-                                                <input type="text" class="form-control" name="mobile_number" id="mobile_number"
+                                            <div class="form-group col-sm-6 col-md-4">
+                                                <label class="form-lbl" for="mobile_number">Mobile Number</label>
+                                                <input type="text" class="form-field" name="mobile_number" id="mobile_number"
                                                     placeholder="Mobile Number" maxlength="15"
                                                     value="{{ bqp.mobile_number|default:'' }}">
                                                 <span class="error mobile_number_err"></span>
@@ -101,9 +101,11 @@ BQP - Create BQP
                                         </div>
 
                                         <!-- Submit Button -->
-                                        <button type="submit" class="btn btn-primary">
-                                            {% if bqp %}Update BQP{% else %}Save BQP{% endif %}
-                                        </button>
+                                        <div class="d-flex justify-content-end">
+                                            <button type="submit" class="form-submit-btn">
+                                                {% if bqp %}Update BQP{% else %}Save BQP{% endif %}
+                                            </button>
+                                        </div>    
                                     </form>
                                 </div>
                             </div>
