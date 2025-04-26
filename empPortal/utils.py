@@ -246,8 +246,7 @@ def chatPdfMessage():
             - Find insurer provider and valid policy number don't set mobile number or something in policy number
             - If a detail is not found, leave it as an empty string or null as per the field.
             - Policy number format for GoDigit should be 'XXXXXX / XXXXX' (space before and after the slash).
-            - for go digit  set own_damage value premium equal Total OD Premium
-            - for go digit  set third_party value premium equal Total Act Premium
+
             Input Text:
 
             Expected JSON format:
