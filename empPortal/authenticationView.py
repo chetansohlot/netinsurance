@@ -25,6 +25,8 @@ from django.core.mail import send_mail
 import random
 from .utils import check_agent_linked_info
 OPENAI_API_KEY = settings.OPENAI_API_KEY
+from .helpers import sync_user_to_partner
+from .utils import store_log
 
 app = FastAPI()
 
@@ -155,6 +157,8 @@ def register_view(request):
             if password:
                 user.password = make_password(password)
             user.save()
+
+            sync_user_to_partner(user.id, request)  # Sync user data to Partner model
         else:
             # Generate new User ID
             last_user = Users.objects.all().order_by('-id').first()
@@ -185,6 +189,7 @@ def register_view(request):
                 is_active=False
             )
             user.save()
+            sync_user_to_partner(user.id, request)  # Sync user data to Partner model
 
         # Send OTP Email
         email_subject = "Your OTP Code for Registration"

@@ -5,7 +5,9 @@ from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib import messages
 from django.template import loader
 from ..models import Commission,Users, DocumentUpload, Branch
+from ..helpers import sync_user_to_partner
 from empPortal.model import BankDetails
+from empPortal.model import Partner
 from ..forms import DocumentUploadForm
 from django.core.mail import send_mail
 from django.core.mail import EmailMessage
