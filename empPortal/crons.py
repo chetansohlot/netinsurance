@@ -1,6 +1,6 @@
 from django_cron import CronJobBase, Schedule
 from empPortal.models import PolicyDocument, FileAnalysis, ExtractedFile
-from empPortal.models import BulkPolicyLog
+from empPortal.models import BulkPolicyLog, PolicyInfo, AgentPaymentDetails, FranchisePayment, InsurerPaymentDetails, PolicyVehicleInfo
 from django_q.tasks import async_task
 from django.utils import timezone
 from django.utils.encoding import filepath_to_uri
@@ -343,6 +343,17 @@ class CreateNewPolicy(CronJobBase):
                                                 insurer_od_commission   = insurer_od_percentage,
                                                 insurer_net_commission  = insurer_net_percentage,
                                             )
+                                            
+                                            policy_info = PolicyInfo.objects.create(
+                                                policy_id = policy.id, 
+                                                policy_number = policy.policy_number, 
+                                                policy_issue_date = policy.policy_issue_date, 
+                                                policy_start_date = policy.policy_start_date, 
+                                                policy_expiry_date = policy.policy_expiry_date, 
+                                                insurer_name = policy.insurance_provider, 
+                                                insurance_company = policy.insurance_provider, 
+                                            )
+                                            
                                             bulk_policy_log.count_uploaded_files += 1
                                             if(bulk_policy_log.count_uploaded_files >= bulk_policy_log.count_pdf_files):
                                                 bulk_policy_log.is_processed=True
@@ -373,3 +384,73 @@ class CreateNewPolicy(CronJobBase):
         except Exception as e:
             logger.error(f"Unknown error in CreateNewPolicy Cron Job: {str(e)}")
             
+            
+class updatePolicyInfoByPolicyNumber(CronJobBase):
+    RUN_EVERY_MINS = 1
+    schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
+    code = 'empPortal.updatePolicyInfo'
+    
+    def do(self):
+        print("------ Policy Info Update Cron Started ------")
+
+        # Step 1: Build policy_number -> policy_id mapping
+        policy_mapping = dict(
+            PolicyDocument.objects.filter(status=6)
+            .values_list('policy_number', 'id')
+        )
+        print(f"Loaded {len(policy_mapping)} active policies.")
+
+        updated_counts = {
+            'InsurerPaymentDetails': 0,
+            'AgentPaymentDetails': 0,
+            'FranchisePayment': 0,
+            'PolicyVehicleInfo': 0,
+            'PolicyInfo': 0,
+        }
+
+        # Step 2: Update InsurerPaymentDetails
+        for insurer_detail in InsurerPaymentDetails.objects.filter(policy_id__isnull=True, policy_number__isnull=False):
+            policy_id = policy_mapping.get(insurer_detail.policy_number)
+            if policy_id:
+                insurer_detail.policy_id = policy_id
+                insurer_detail.save()
+                updated_counts['InsurerPaymentDetails'] += 1
+
+        # Step 3: Update AgentPaymentDetails
+        for agent_detail in AgentPaymentDetails.objects.filter(policy_id__isnull=True, policy_number__isnull=False):
+            policy_id = policy_mapping.get(agent_detail.policy_number)
+            if policy_id:
+                agent_detail.policy_id = policy_id
+                agent_detail.save()
+                updated_counts['AgentPaymentDetails'] += 1
+
+        # Step 4: Update FranchisePayment
+        for franchise_detail in FranchisePayment.objects.filter(policy_id__isnull=True, policy_number__isnull=False):
+            policy_id = policy_mapping.get(franchise_detail.policy_number)
+            if policy_id:
+                franchise_detail.policy_id = policy_id
+                franchise_detail.save()
+                updated_counts['FranchisePayment'] += 1
+
+        # Step 5: Update PolicyVehicleInfo
+        for vehicle_detail in PolicyVehicleInfo.objects.filter(policy_id__isnull=True, policy_number__isnull=False):
+            policy_id = policy_mapping.get(vehicle_detail.policy_number)
+            if policy_id:
+                vehicle_detail.policy_id = policy_id
+                vehicle_detail.save()
+                updated_counts['PolicyVehicleInfo'] += 1
+
+        # Step 6: Update PolicyInfo
+        for info_detail in PolicyInfo.objects.filter(policy_id__isnull=True, policy_number__isnull=False):
+            policy_id = policy_mapping.get(info_detail.policy_number)
+            if policy_id:
+                info_detail.policy_id = policy_id
+                info_detail.save()
+                updated_counts['PolicyInfo'] += 1
+
+        # Final Logs
+        print("------ Cron Job Completed ------")
+        for model_name, count in updated_counts.items():
+            print(f"Updated {count} records in {model_name}.")
+
+        print("--------------------------------")
