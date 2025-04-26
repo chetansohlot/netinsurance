@@ -13,7 +13,7 @@ import logging, os, shutil, zipfile, requests, re, json, ast
 logger = logging.getLogger(__name__)
 
 class ReprocessPoliciesCronJob(CronJobBase):
-    RUN_EVERY_MINS = 2  # every 3 minutes
+    RUN_EVERY_MINS = 1  # every 3 minutes
 
     schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
     code = 'empPortal.reprocess_policies_cron'  # Unique code for the cron job
@@ -42,7 +42,7 @@ class ReprocessPoliciesCronJob(CronJobBase):
         
         print(f"Reprocessed policies with status 4 at {timezone.now()}")
 class ExtractFilesFromZip(CronJobBase):
-    RUN_EVERY_MINS = 2
+    RUN_EVERY_MINS = 1
     
     schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
     code = 'empPortal.extract_files_from_zip'
@@ -135,7 +135,7 @@ class ExtractFilesFromZip(CronJobBase):
             logger.error(f"Unknown Error in ExtractFilesFromZip Cron Job: {str(e)}")
             
 class GettingSourceId(CronJobBase):
-    RUN_EVERY_MINS = 2
+    RUN_EVERY_MINS = 1
     schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
     code = 'empPortal.getting_source_id'
     
@@ -184,7 +184,7 @@ class GettingSourceId(CronJobBase):
             logger.error(f"Unknown Error in GettingSourceId Cron Job: {str(e)}")
 
 class GettingPdfExtractedData(CronJobBase):
-    RUN_EVERY_MINS = 2
+    RUN_EVERY_MINS = 1
     schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
     code = 'empPortal.getting_pdf_extracted_data'
     
@@ -253,7 +253,7 @@ class GettingPdfExtractedData(CronJobBase):
             logger.error(f"Unknown Error in GettingPdfExtractedData, Error{str(e)}")
             
 class CreateNewPolicy(CronJobBase):
-    RUN_EVERY_MINS = 2
+    RUN_EVERY_MINS = 1
     schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
     code = 'empPortal.create_new_policy'
     
