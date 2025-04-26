@@ -55,13 +55,27 @@ from django_q.tasks import async_task
 app = FastAPI()
 from empPortal.model import Partner
 from ..helpers import sync_user_to_partner, update_partner_by_user_id
-
+from django.db.models import Count
+from django.db import models
 
 def dictfetchall(cursor):
     "Returns all rows from a cursor as a dict"
     columns = [col[0] for col in cursor.description]
     return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
+
+def partnerCounters():
+    counters = Partner.objects.aggregate(
+        total=Count('id'),
+        requested=Count('id', filter=models.Q(partner_status='0')),
+        document_verification=Count('id', filter=models.Q(partner_status='1')),
+        in_training=Count('id', filter=models.Q(partner_status='2')),
+        in_exam=Count('id', filter=models.Q(partner_status='3')),
+        activated=Count('id', filter=models.Q(partner_status='4')),
+        inactive=Count('id', filter=models.Q(partner_status='5')),
+        rejected=Count('id', filter=models.Q(partner_status='6')),
+    )
+    return counters
 
 def members(request):
     if not request.user.is_authenticated:
@@ -154,10 +168,11 @@ def members(request):
         paginator = Paginator(users, per_page)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
-
+        counters = partnerCounters()
         return render(request, 'members/members.html', {
             'page_obj': page_obj,
             'total_agents': total_agents,
+            'counters': counters,
             'active_agents': active_agents,
             'deactive_agents': deactive_agents,
             'pending_agents': pending_agents,
