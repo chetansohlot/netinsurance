@@ -562,11 +562,9 @@ def bulkBrowsePolicy(request):
                 zip_file = request.FILES["zip_file"]
             else:
                 zip_file = None
-                
-            camp_name = request.POST.get("camp_name") 
+            camp_name = request.POST.get("camp_name")
             rm_id = request.POST.get("rm_id")
             product_type = request.POST.get("product_type")
-            
             # Validate ZIP file format
             if not zip_file or not zip_file.name.lower().endswith(".zip"):
                 messages.error(request, "Invalid file format. Only ZIP files are allowed.")
@@ -578,10 +576,14 @@ def bulkBrowsePolicy(request):
                         zip_bytes = BytesIO(zip_file.read())
                         with zipfile.ZipFile(zip_bytes) as zf:
                             file_list = zf.infolist()
-                            total_files = len(file_list)
-                            pdf_files = [f for f in file_list if f.filename.lower().endswith(".pdf")]
-                            non_pdf_files = [f for f in file_list if not f.filename.lower().endswith(".pdf")]
-                            directories = [f for f in file_list if f.is_dir()]
+                            
+                            root_files = [f for f in file_list if not f.is_dir() and "/" not in f.filename and "\\" not in f.filename]
+                            
+                            total_files = len(root_files)
+                            pdf_files = [f for f in root_files if f.filename.lower().endswith(".pdf")]
+                            non_pdf_files = [f for f in root_files if not f.filename.lower().endswith(".pdf")]
+                            
+                            directories = [f for f in root_files if f.is_dir()]
                             pdf_count = len(pdf_files)
                             non_pdf_count = len(non_pdf_files)
                             
@@ -589,34 +591,27 @@ def bulkBrowsePolicy(request):
                                 messages.error(request, "ZIP must not contain any folders.")
                                 for folder in directories:
                                     messages.error(request, f" - Folder: {folder.filename}")
-
                             if total_files > 50:
                                 messages.error(request, "ZIP contains more than 50 files.")
-                            
                             if non_pdf_files:
                                 messages.error(request, "ZIP must contain only PDF files.")
                     except zipfile.BadZipFile:
                         messages.error(request, "The uploaded ZIP file is corrupted or invalid.")
-                    
             if not camp_name:
                 messages.error(request, "Campaign Name is mandatory.")
-            
             if not product_type:
                 messages.error(request, "Product Type is mandatory.")
-            
             if messages.get_messages(request):
                 return redirect('bulk-policy-mgt')
-            
             rm_name = getUserNameByUserId(rm_id) if rm_id else None
-            
             bulk_log_instance = BulkPolicyLog.objects.create(
                 file=ContentFile(zip_bytes.getvalue(), name=zip_file.name),
                 camp_name=camp_name,
                 rm_id=rm_id,
                 rm_name=rm_name,
                 created_by=request.user,
-                count_total_files=total_files,        
-                count_pdf_files=0,      
+                count_total_files=total_files,
+                count_pdf_files=0,
                 count_not_pdf=0,
                 count_error_pdf_files=0,
                 count_error_process_pdf_files=0,
@@ -625,13 +620,21 @@ def bulkBrowsePolicy(request):
                 product_type=product_type,
                 status=1
             )
-                        
+            
+            bulk_log_instance.file.save(zip_file.name, ContentFile(zip_bytes.getvalue()))
+            bulk_log_instance.save()
+            
             messages.success(request, "ZIP uploaded successfully. Processing started in background.")
             return redirect("bulk-upload-logs")
         else:
             return redirect("bulk-policy-mgt")
     else:
         return redirect('login')
+
+
+
+
+
 
 def bulkPolicyView(request, id):
     if not request.user.is_authenticated or request.user.is_active != 1:

@@ -1029,6 +1029,8 @@ class ExtractedFile(models.Model):
     policy = models.ForeignKey(PolicyDocument, on_delete=models.CASCADE)
     file_url = models.URLField(blank=True, null=True)
     status = models.IntegerField(default=0)
+    retry_source_count = models.IntegerField(default=0)
+    retry_chat_response_count = models.IntegerField(default=0)
     def __str__(self):
         return self.filename
     

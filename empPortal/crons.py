@@ -41,7 +41,6 @@ class ReprocessPoliciesCronJob(CronJobBase):
                 print(f"File with ID {policy.id} not found in ExtractedFile")
         
         print(f"Reprocessed policies with status 4 at {timezone.now()}")
-
 class ExtractFilesFromZip(CronJobBase):
     RUN_EVERY_MINS = 2
     
@@ -68,8 +67,18 @@ class ExtractFilesFromZip(CronJobBase):
                     # create new path for zip extraction
                     os.makedirs(extract_dir,exist_ok=True)
                     
-                    with zipfile.ZipFile(zip_path,'r') as zip_ref:
-                        zip_ref.extractall(extract_dir)
+                    # with zipfile.ZipFile(zip_path,'r') as zip_ref:
+                    #     zip_ref.extractall(extract_dir)
+                    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+                        for member in zip_ref.infolist():
+                            if member.is_dir():
+                                continue
+                            if "/" in member.filename or "\\" in member.filename:
+                                continue
+                            
+                            extracted_path = os.path.join(extract_dir, member.filename)
+                            with open(extracted_path, "wb") as f:
+                                f.write(zip_ref.read(member.filename))
                         
                     for filename in os.listdir(extract_dir):
                         if not filename.lower().endswith('.pdf'):
@@ -132,11 +141,15 @@ class GettingSourceId(CronJobBase):
     
     def do(self):
         try:
-
-            
             cutoff_time = datetime.strptime('2025-04-24 01:01', '%Y-%m-%d %H:%M')
 
-            files = ExtractedFile.objects.filter(source_id__isnull=True, is_uploaded=False, extracted_at__gte=cutoff_time)[:10]
+            files = ExtractedFile.objects.filter(
+                source_id__isnull=True,
+                is_uploaded=False,
+                extracted_at__gte=cutoff_time,
+                retry_source_count__lte=3
+            )[:10]
+
             for file in files:
                 pdf_path = file.file_path.path
                 file.status = 1
@@ -154,6 +167,7 @@ class GettingSourceId(CronJobBase):
                             source_id = response.json().get('sourceId')
                             file.source_id = source_id
                             file.status = 2
+                            file.retry_source_count += 1
                             file.is_uploaded = True
                             file.save()
                             
@@ -179,13 +193,23 @@ class GettingPdfExtractedData(CronJobBase):
             
             cutoff_time = datetime.strptime('2025-04-24 01:01', '%Y-%m-%d %H:%M')
 
-            files = ExtractedFile.objects.filter(source_id__isnull=False,is_uploaded=True, extracted_at__gte=cutoff_time,policy_id__isnull=True)[:10]
+            # files = ExtractedFile.objects.filter(source_id__isnull=False,is_uploaded=True, extracted_at__gte=cutoff_time,policy_id__isnull=True)[:10]
+            
+            
+            files = ExtractedFile.objects.filter(
+                source_id__isnull=True,
+                is_uploaded=False,
+                extracted_at__gte=cutoff_time,
+                policy_id__isnull=True,
+                retry_chat_response_count__lte=3
+            )[:10]
             for file in files:
                 if not file.source_id:
                     logger.error(f"No source_id found for file_id {file.id}")
                     continue
                 try:
                     file.status = 3
+                    file.retry_chat_response_count += 1
                     file.save()
                     headers = {
                         'x-api-key': settings.CHATPDF_API_KEY,
