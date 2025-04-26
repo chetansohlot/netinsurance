@@ -1,7 +1,7 @@
 {% extends 'master.html' %}
 
 {% block title %}
-    Requested Partner
+    All Partner
 {% endblock %}
   
 {% block content %}
@@ -20,7 +20,7 @@
             <div class="container-fluid ">
               <div class="row pt-2 pb-2">
                 <div class="col-sm-6">
-                  <h1 class="admin-title m-0 pt-2">Requested Partner</h1>
+                  <h1 class="admin-title m-0 pt-2">All Partner</h1>
                   <ul class="breadcrump">
                     <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
                     <li>Requested Partner</li>
@@ -182,8 +182,8 @@
                                 </form>
                             </div>
                           </div>
-                          <!-- Partner Filter End -->
-                          <!--<div class="col-md-12">
+                          <!-- Partner Filter End
+                          <div class="col-md-12">
                             <div class=" d-flex justify-content-between">
                               <div class="dropdown">
                                 <div class="shorting-select"  data-toggle="dropdown" aria-expanded="false">
@@ -191,7 +191,7 @@
                                    <span>Short</span>
                                   <img src="{% static 'dist/img/svg/down-arrow-icon.svg' %}" alt="" class="change-arrow">
                                 </div>
-                              </div>-->  
+                              </div>   -->
                               <form method="GET" class="d-flex">
                                   <!-- <select class="table-select-field form-select" name="search_field">
                                       <option value="" disabled selected>Filter By</option>
@@ -218,7 +218,7 @@
                         </div>
                       </div>
 
-                        {% include "components/members/member-list-tab.html" with requested="true" %}
+                        {% include "components/members/member-list-tab.html" with members_all="true" %}
 
                         {% include "components/members/member-list.html" %}
                       </div>

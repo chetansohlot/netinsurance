@@ -3,6 +3,7 @@ from . import views,export
 from . import views
 from . import authenticationView
 from .controller import commissions, profile,policy, Referral, globalController, helpAndSupport, Employee, leads, sellMotor, sellHealth, sellTerm, Franchises, Department, Branches, members, customers, quoteManagement, healthQuoteManagement, homeManagement, exams,SourceMaster,BQP
+from .controller import reports
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import re_path
@@ -105,8 +106,9 @@ urlpatterns = [
 
     path("update-doc-status/", members.update_doc_status, name="update-doc-status"),  
 
-    path('members/requested', members.members, name='members'),
+    path('members/all-partner', members.members, name='members'),
     path('members/in-process', members.members_inprocess, name='members_inprocess'),
+    path('members/member-requested', members.members_requested, name='members_requested'),
     path('members/in-training', members.members_intraining, name='members_intraining'),
     path('members/in-exam', members.members_inexam, name='members_inexam'),
     path('exam', exams.members_exam, name='members_exam'),
@@ -184,11 +186,13 @@ urlpatterns = [
     # SELL-ONLINE 
 
     # REPORTS 
-    path('report/commission-report/', export.commission_report, name='commission-report'),
+    path('report/commission-report/', export.commission_report, name='commission-report-v0'),
     path('report/sm-business-report/', export.sales_manager_business_report, name='sales-manager-business-report'),
     path('report/a-business-report/', export.agent_business_report, name='agent-business-report'),
     path('report/f-business-report/', export.franchisees_business_report, name='franchisees-business-report'),
     path('report/i-business-report/', export.insurer_business_report, name='insurer-business-report'),
+    
+    path('report/v1/commission-report/', reports.commission_report, name='commission-report'),
     
     # REPORTS 
 

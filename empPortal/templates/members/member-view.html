@@ -443,7 +443,7 @@
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td>BQP</td>
+                                                <th>BQP</th>
                                             </tr>
                                             <tr>
                                                 <td>Branch</td>
@@ -767,6 +767,7 @@
                                                                onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';" 
                                                                width="80">
                                                         </a>
+                                                        <a href="{{ docs.aadhaar_card_front.url }}" download><i class="fa-solid fa-download"></i></a>
                                                       </td>
                                                     <td>Aadhaar Card front</td>
                                                     <td>{{ docs.aadhaar_number|default:"-" }}</td>
@@ -809,6 +810,8 @@
                                                                onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';" 
                                                                width="80">
                                                         </a>
+                                                        <a href="{{ docs.aadhaar_card_back.url }}" download><i class="fa-solid fa-download"></i></a>
+
                                                       </td>
                                                     <td>Aadhaar Card Back</td>
                                                     <td>{{ docs.aadhaar_number|default:"-" }}</td>
@@ -849,6 +852,8 @@
                                                                onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';" 
                                                                width="80">
                                                         </a>
+                                                        <a href="{{ docs.upload_pan.url }}" download><i class="fa-solid fa-download"></i></a>
+
                                                       </td>
                                                     <td>PAN Card</td>
                                                     <td>{{ docs.pan_number|default:"-" }}</td>
@@ -889,6 +894,8 @@
                                                                onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';" 
                                                                width="80">
                                                         </a>
+                                                        <a href="{{ docs.upload_cheque.url }}" download><i class="fa-solid fa-download"></i></a>
+
                                                       </td>
                                                     <td>Cancelled Cheque</td>
                                                     <td>{{ docs.cheque_number|default:"-" }}</td>
@@ -929,6 +936,8 @@
                                                                onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';" 
                                                                width="80">
                                                         </a>
+                                                        <a href="{{ docs.tenth_marksheet.url }}" download><i class="fa-solid fa-download"></i></a>
+
                                                       </td>
                                                     <td>10th Marksheet</td>
                                                     <td>{{ docs.role_no|default:"-" }}</td>

@@ -166,9 +166,126 @@ def members(request):
             'sorting': sorting,
             'per_page': per_page,
             'users': users,
+            'members_all': True,
+            'members_requested' : False,
         })
     else:
         return redirect('login')
+    
+
+
+def members_requested(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    if request.user.role_id == 1:
+        role_ids = [4]  # Filter for specific roles
+
+        per_page = request.GET.get('per_page', 10)
+        search_field = request.GET.get('search_field', '')  # Field to search
+        search_query = request.GET.get('search_query', '')  # Search value
+        sorting = request.GET.get('sorting', '')  # Sorting option
+        global_search = request.GET.get('global_search', '').strip()
+        
+        try:
+            per_page = int(per_page)
+        except ValueError:
+            per_page = 10  # Default to 10 if invalid value is given
+
+        # Base QuerySet
+        users = Users.objects.filter(role_id__in=role_ids).exclude(
+            activation_status='1'
+        )
+
+        if global_search:
+            users = users.annotate(
+                search_full_name=Concat('first_name', Value(' '), 'last_name')
+            ).filter(
+                Q(search_full_name__icontains=global_search) |  
+                Q(first_name__icontains=global_search) |
+                Q(last_name__icontains=global_search) |
+                Q(email__icontains=global_search) |
+                Q(phone__icontains=global_search)  
+            )
+
+        """# Apply filtering
+        if search_field and search_query:
+            filter_args = {f"{search_field}__icontains": search_query}
+            users = users.filter(**filter_args)"""
+
+        users = Users.objects.filter(role_id__in=role_ids).exclude(
+            activation_status='1'
+        )
+
+    # Get filter values from GET request
+        user_gen_id = request.GET.get('user_gen_id', '').strip()
+        user_name = request.GET.get('user_name', '').strip()
+        email = request.GET.get('email', '').strip()
+        phone = request.GET.get('phone', '').strip()
+        pan_no = request.GET.get('pan_no', '').strip()  
+
+    # Apply filters
+        if user_gen_id:
+            users = users.filter(user_gen_id__icontains=user_gen_id)
+        if user_name:
+            users = users.filter(user_name__icontains=user_name)
+        if email:
+            users = users.filter(email__icontains=email)
+        if phone:
+            users = users.filter(phone__icontains=phone)
+        if pan_no:
+            users = users.filter(pan_no__icontains=pan_no)
+
+        context = {
+            'users': users
+         }
+        
+
+        # Apply sorting
+        if sorting == "name_a_z":
+            users = users.order_by("first_name")
+        elif sorting == "name_z_a":
+            users = users.order_by("-first_name")
+        elif sorting == "recently_activated":
+            users = users.filter(activation_status='1').order_by("-updated_at")
+        elif sorting == "recently_deactivated":
+            users = users.filter(
+                Q(activation_status='0') | Q(activation_status__isnull=True) | Q(activation_status='')
+            ).order_by("-updated_at")
+        else:
+            users = users.order_by("-updated_at")
+
+        
+        total_agents = Users.objects.filter(role_id__in=role_ids).count()
+        active_agents = Users.objects.filter(role_id__in=role_ids,activation_status='1').count()
+        deactive_agents = Users.objects.filter(
+            role_id__in=role_ids
+        ).exclude(
+            activation_status='1'
+        ).count()
+        pending_agents = 0  # Define pending logic if needed
+
+        # Paginate results
+        paginator = Paginator(users, per_page)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+
+        return render(request, 'members/members-requested.html', {
+            'page_obj': page_obj,
+            'total_agents': total_agents,
+            'active_agents': active_agents,
+            'deactive_agents': deactive_agents,
+            'pending_agents': pending_agents,
+            'search_field': search_field,
+            'search_query': search_query,
+            'global_search': global_search,
+            'sorting': sorting,
+            'per_page': per_page,
+            'requested' : True,
+            'members_all' : False,
+        })
+    else:
+        return redirect('login')    
 
     
 def members_inprocess(request):
