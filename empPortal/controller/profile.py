@@ -33,6 +33,7 @@ from pprint import pprint
 import pdfkit
 from django.templatetags.static import static  # ✅ Import static
 from django.template.loader import render_to_string
+from ..helpers import sync_user_to_partner
 
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 
@@ -172,6 +173,7 @@ def update_user_details(request):
         user_details.pincode = request.POST['pincode']
         user_details.address = request.POST['address']
         user_details.save()
+        sync_user_to_partner(user_details.id, request)  # Sync user data to Partner model
 
         messages.success(request, "User details updated successfully!")
         return redirect('my-account')  # Redirect back to the user profile page
@@ -192,6 +194,8 @@ def storeAllocation(request):
         user.branch_id = branch_id
         user.senior_id = rm_id  # Store sales_manager_id in senior_id
         user.save()
+
+        sync_user_to_partner(user.id, request)  # Sync user data to Partner model
 
         messages.success(request, "Allocation assigned successfully!")
         return redirect('member-view', user_id=user_id)
