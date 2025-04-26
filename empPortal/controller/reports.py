@@ -13,6 +13,14 @@ def commission_report(request):
     # Get filter values from GET parameters
     policy_no = request.GET.get("policy_no", None)
     insurer_name = request.GET.get("insurer_name", None)
+    service_provider = request.GET.get("service_provider", None)
+    insurance_company = request.GET.get("insurance_company", None)
+    policy_type = request.GET.get("policy_type", None)
+    vehicle_type = request.GET.get("vehicle_type", None)
+    referral_name = request.GET.get("referral_name", None)
+    vehicle_reg_no = request.GET.get("vehicle_reg_no", None)
+    policy_start_date = request.GET.get("policy_start_date", None)
+    policy_end_date = request.GET.get("policy_end_date", None)
     per_page = request.GET.get("per_page", 20)  # Default: 20 records per page
     page_number = request.GET.get('page',1)
 
@@ -33,7 +41,32 @@ def commission_report(request):
         policies = policies.filter(policy_number__icontains=policy_no)
     
     if insurer_name:
-        policies = policies.filter(insurance_provider__icontains=insurer_name)
+        policies = policies.filter(policy_info__insurance_company__icontains=insurer_name)  # <-- yeh policy_info vali table se data check krega
+    
+    if service_provider:
+        policies = policies.filter(policy_info__service_provider__icontains=service_provider)  # <-- yeh policy_info vali table se data check krega
+        
+    if insurance_company:
+        policies = policies.filter(policy_info__insurance_company__icontains=insurance_company)  # <-- yeh policy_info vali table se data check krega
+    
+    if policy_type:
+        policies = policies.filter(policy_info__policy_type__icontains=policy_type)  # <-- yeh policy_info vali table se data check krega
+        
+    if vehicle_type:
+        policies = policies.filter(policy_vehicle_info__vehicle_type__icontains=vehicle_type)  # <-- yeh policy_vehicle_info vali table se data check krega
+    
+    if referral_name:
+        policies = policies.filter(policy_agent_info__referral__name__icontains=referral_name)  # <-- yeh agent_payment_details vali table se data check krega
+
+    if vehicle_reg_no:
+        policies = policies.filter(policy_vehicle_info__registration_number__icontains=vehicle_reg_no)  # <-- yeh policy_vehicle_info vali table se data check krega
+
+    if policy_start_date:
+        policies = policies.filter(policy_info__policy_start_date__icontains=policy_start_date)  # <-- yeh policy_info vali table se data check krega
+
+    if policy_end_date:
+        policies = policies.filter(policy_info__policy_end_date__icontains=policy_end_date)  # <-- yeh policy_info vali table se data check krega
+
 
     policies = policies.order_by('-id')
     
@@ -42,26 +75,7 @@ def commission_report(request):
     
     policy_data = []
     for policy in page_obj:  # Iterate only over paginated data
-        # Convert values safely
-        od_premium = float(policy.od_premium.replace(',', '')) if policy.od_premium else 0.0
-        tp_premium = float(policy.tp_premium.replace(',', '')) if policy.tp_premium else 0.0
-        net_premium = float(policy.policy_premium.replace(',', '')) if policy.policy_premium else 0.0
-
-        commission = policy.commission()
-        if commission:
-            od_percentage = float(policy.od_percent) if policy.od_percent else 0
-            tp_percentage = float(policy.tp_percent	) if policy.tp_percent	 else 0
-            net_percentage = float(policy.net_percent) if policy.net_percent else 0
-        else:
-            od_percentage = 0
-            tp_percentage = 0
-            net_percentage = 0
-
-        # Calculate commission amounts
-        od_commission_amount = (od_premium * od_percentage) / 100
-        tp_commission_amount = (tp_premium * tp_percentage) / 100
-        net_commission_amount = (net_premium * net_percentage) / 100
-
+        
         policy_infos = policy.policy_info.first() 
         policy_vehicle_info = policy.policy_vehicle_info.first() 
         policy_agent_info = policy.policy_agent_info.first() 
@@ -74,10 +88,7 @@ def commission_report(request):
             'policy_vehicle_info': policy_vehicle_info,
             'policy_agent_info': policy_agent_info,
             'policy_franchise_info': policy_franchise_info,
-            'policy_insurer_info': policy_insurer_info,
-            'od_commission_amount': od_commission_amount,
-            'tp_commission_amount': tp_commission_amount,
-            'net_commission_amount': net_commission_amount
+            'policy_insurer_info': policy_insurer_info
         })
 
     return render(request, 'reports/commission-report.html', {

@@ -61,6 +61,39 @@
                           <div class="col-sm-2 form-group">
                               <input type="text" placeholder="Policy No" name="policy_no" class="form-field" value="{{ request.GET.policy_no }}">
                           </div>
+
+                          <div class="col-sm-2 form-group">
+                              <input type="text" placeholder="Service Provider" name="service_provider" class="form-field" value="{{ request.GET.service_provider }}">
+                          </div>
+
+                          <div class="col-sm-2 form-group">
+                              <input type="text" placeholder="Insurance Company" name="insurance_company" class="form-field" value="{{ request.GET.insurance_company }}">
+                          </div>
+
+                          <div class="col-sm-2 form-group">
+                              <input type="text" placeholder="Policy Type" name="policy_type" class="form-field" value="{{ request.GET.policy_type }}">
+                          </div>
+
+                          <div class="col-sm-2 form-group">
+                              <input type="text" placeholder="Vehicle Type" name="vehicle_type" class="form-field" value="{{ request.GET.vehicle_type }}">
+                          </div>
+
+                          <div class="col-sm-2 form-group">
+                              <input type="text" placeholder="Referral Name" name="referral_name" class="form-field" value="{{ request.GET.referral_name }}">
+                          </div>
+
+                          <div class="col-sm-2 form-group">
+                              <input type="text" placeholder="Vehicle Registration Number" name="vehicle_reg_no" class="form-field" value="{{ request.GET.vehicle_reg_no }}">
+                          </div>
+
+                          <div class="col-sm-2 form-group">
+                              <input type="text" placeholder="Policy Start Date" name="policy_start_date" class="form-field" value="{{ request.GET.policy_start_date }}">
+                          </div>
+
+                          <div class="col-sm-2 form-group">
+                              <input type="text" placeholder="Policy End Date" name="policy_end_date" class="form-field" value="{{ request.GET.policy_end_date }}">
+                          </div>
+
                             <!-- <div class="col-sm-2 form-group">
                                 <select name="bill_status" id="status" class="form-field">
                                     <option value="">Select Status</option>
@@ -290,7 +323,7 @@
                                 <a class="page-link" href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value|urlencode }}{% endif %}{% endfor %}">{{ num }}</a>
                             </li>
                         {% endfor %}
-            
+                        
                         {% if page_obj.has_next %}
                             <li class="page-item">
                                 <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value|urlencode }}{% endif %}{% endfor %}">Next »</a>

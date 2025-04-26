@@ -95,6 +95,7 @@ CRON_CLASSES = [
     'empPortal.crons.GettingSourceId',
     'empPortal.crons.GettingPdfExtractedData',
     'empPortal.crons.CreateNewPolicy',
+    'empPortal.crons.updatePolicyInfoByPolicyNumber'
 ]
 
 
