@@ -1,5 +1,4 @@
 from django.db import models
-from ..models import Users, Roles
 
 class Partner(models.Model):
     STATUS_CHOICES = [
@@ -34,6 +33,7 @@ class Partner(models.Model):
 
     @property
     def user(self):
+        from ..models import Users  # Lazy import inside the method to avoid circular import
         try:
             return Users.objects.get(id=self.user_id)
         except Users.DoesNotExist:

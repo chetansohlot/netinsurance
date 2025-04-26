@@ -63,59 +63,39 @@ def sync_user_to_partner(user_id, request=None):
     return partner
 
 def update_partner_by_user_id(user_id, update_fields, request=None):
-    """
-    Update Partner record based on user_id and log the update.
-
-    Args:
-        user_id (int): ID from Users table linked to Partner.
-        update_fields (dict): Dictionary of fields and their new values.
-        request (HttpRequest, optional): Request object for logging user and IP info.
-
-    Returns:
-        bool: True if updated successfully, False otherwise.
-    """
     if not update_fields or not isinstance(update_fields, dict):
-        logger.warning("No fields provided for update.")
         return False
 
     try:
         partner = Partner.objects.get(user_id=user_id)
     except Partner.DoesNotExist:
-        logger.error(f"Partner record not found for user_id={user_id}")
         return False
 
     changed_fields = []
     for field, value in update_fields.items():
         if hasattr(partner, field):
             old_value = getattr(partner, field)
-            if old_value != value:
+            if str(old_value) != str(value):
                 setattr(partner, field, value)
                 changed_fields.append((field, old_value, value))
-        else:
-            logger.warning(f"Partner model has no field named '{field}'")
 
     if changed_fields:
         partner.save()
-        
-        # Create a log message
-        changes = "; ".join([f"{field}: '{old}' → '{new}'" for field, old, new in changed_fields])
-        log_message = f"Updated Partner(user_id={user_id}) fields: {changes}"
 
-        # Store log if request provided
         if request:
+            changes = "; ".join([f"{field}: '{old}' → '{new}'" for field, old, new in changed_fields])
             store_log(
                 log_type="INFO",
                 log_for="PARTNER_UPDATE",
-                message=log_message,
+                message=f"Updated Partner(user_id={user_id}) fields: {changes}",
                 user_id=request.user.id if request.user.is_authenticated else None,
                 ip_address=request.META.get("REMOTE_ADDR", "")
             )
-        
-        logger.info(log_message)
+
         return True
     else:
-        logger.info(f"No changes detected for Partner(user_id={user_id}).")
         return False
+
 
 
 def sync_existing_users_to_partner():

@@ -121,6 +121,7 @@ urlpatterns = [
 
     path('member/member-view/<str:user_id>',members.memberView, name='member-view'),
     path('member/activate-user/<str:user_id>',members.activateUser, name='activate-user'),
+    path('member/update-partner-status/<str:user_id>',members.updatePartnerStatus, name='update-partner-status'),
     path('member/login-activate-user/<str:user_id>',members.loginActivateUser, name='login-activate-user'),
     path('member/deactivate-user/<str:user_id>',members.deactivateUser, name='deactivate-user'),
     path('update-commission/', commissions.update_commission, name='update-commission'),
