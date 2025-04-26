@@ -285,12 +285,14 @@ def members_requested(request):
         paginator = Paginator(users, per_page)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
+        counters = partnerCounters()
 
         return render(request, 'members/members-requested.html', {
             'page_obj': page_obj,
             'total_agents': total_agents,
             'active_agents': active_agents,
             'deactive_agents': deactive_agents,
+            'counters': counters,
             'pending_agents': pending_agents,
             'search_field': search_field,
             'search_query': search_query,
@@ -371,10 +373,12 @@ def members_inprocess(request):
         paginator = Paginator(users, per_page)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
+        counters = partnerCounters()
 
         return render(request, 'members/members-inprocess.html', {
             'page_obj': page_obj,
             'total_agents': total_agents,
+            'counters': counters,
             'active_agents': active_agents,
             'deactive_agents': deactive_agents,
             'pending_agents': pending_agents,
@@ -397,7 +401,12 @@ def members_intraining(request):
             users = Users.objects.filter(role_id__in=role_ids)
         else:
             users = Users.objects.none()  # Return an empty queryset for unauthorized users
-        return render(request, 'members/members-intraining.html', {'users': users})
+        counters = partnerCounters()
+
+        return render(request, 'members/members-intraining.html', {
+            'counters': counters,
+            'users': users
+            })
     else:
         return redirect('login')
     
@@ -412,7 +421,12 @@ def members_inexam(request):
             users = Users.objects.filter(role_id__in=role_ids)
         else:
             users = Users.objects.none()  # Return an empty queryset for unauthorized users
-        return render(request, 'members/members-inexam.html', {'users': users})
+        counters = partnerCounters()
+
+        return render(request, 'members/members-inexam.html', {
+            'counters': counters,
+            'users': users
+            })
     else:
         return redirect('login')
     
@@ -509,11 +523,13 @@ def members_activated(request):
         paginator = Paginator(users, per_page)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
+        counters = partnerCounters()
 
         return render(request, 'members/members-activated.html', {
             'page_obj': page_obj,
             'total_agents': total_agents,
             'active_agents': active_agents,
+            'counters': counters,
             'deactive_agents': deactive_agents,
             'pending_agents': pending_agents,
             'search_field': search_field,
@@ -593,12 +609,14 @@ def members_rejected(request):
         paginator = Paginator(users, per_page)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
+        counters = partnerCounters()
 
         return render(request, 'members/members-rejected.html', {
             'page_obj': page_obj,
             'total_agents': total_agents,
             'active_agents': active_agents,
             'deactive_agents': deactive_agents,
+            'counters': counters,
             'pending_agents': pending_agents,
             'search_field': search_field,
             'search_query': search_query,
