@@ -95,7 +95,7 @@
             </li>
           
           
-            <li class="nav-item {% if '/franchise-management/' in request.path or '/branch-management/' in request.path or '/user-and-roles/' in request.path %} menu-is-opening menu-open {% endif %}">
+            {% comment %} <li class="nav-item {% if '/franchise-management/' in request.path or '/branch-management/' in request.path or '/user-and-roles/' in request.path %} menu-is-opening menu-open {% endif %}">
               <a href="#" class="nav-link">
                   <svg class="sidbarmenu-svg">
                       <use xlink:href="#view-policy" />
@@ -157,7 +157,7 @@
                   </li>
 
               </ul>
-          </li>
+          </li> {% endcomment %}
           
           
             <li class="nav-item {% if '/report/' in request.path %} menu-is-opening menu-open {% endif %}">
