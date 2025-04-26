@@ -59,7 +59,7 @@
                                         value="{{ department.name|default_if_none:'' }}">
                                 </div>
 
-
+{% comment %} 
                                 <!-- Mobile Number -->
                                 <div class="form-group col-md-6">
                                     <label for="mobile">Mobile</label>
@@ -82,7 +82,7 @@
                                     <input type="text" class="form-control" name="department_code" id="department_code" 
                                         placeholder="Enter Department Code" maxlength="20"
                                         value="{{ department.department_code|default_if_none:'' }}">
-                                </div>
+                                </div> {% endcomment %}
 
                             </div>
 
