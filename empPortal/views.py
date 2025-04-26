@@ -885,7 +885,7 @@ def policyData(request):
 
     # Base queryset
         
-    if role_id != 1:
+    if role_id != 1 and request.user.department_id != "5":
         base_qs = PolicyDocument.objects.filter(
             status=6,
             rm_id=user_id
@@ -994,7 +994,7 @@ def policyData(request):
     #             data.extracted_text = {}
 
     # Base queryset
-    if role_id != 1:
+    if role_id != 1 and request.user.department_id != "5":
         policy_count = PolicyDocument.objects.filter(status=6, rm_id=user_id).count()
     else:
         policy_count = PolicyDocument.objects.filter(status=6).count()
