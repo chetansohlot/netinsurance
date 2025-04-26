@@ -193,12 +193,9 @@ class GettingPdfExtractedData(CronJobBase):
             
             cutoff_time = datetime.strptime('2025-04-24 01:01', '%Y-%m-%d %H:%M')
 
-            # files = ExtractedFile.objects.filter(source_id__isnull=False,is_uploaded=True, extracted_at__gte=cutoff_time,policy_id__isnull=True)[:10]
-            
-            
             files = ExtractedFile.objects.filter(
-                source_id__isnull=True,
-                is_uploaded=False,
+                source_id__isnull=False,
+                is_uploaded=True,
                 extracted_at__gte=cutoff_time,
                 policy_id__isnull=True,
                 retry_chat_response_count__lte=3
