@@ -51,6 +51,7 @@ from ..models import Users, LeadUploadExcel
 from datetime import datetime, timedelta
 from django.db.models import F, Value, CharField
 from django.db.models.functions import Concat, Coalesce
+from ..models import PolicyInfo
 app = FastAPI()
 
 def dictfetchall(cursor):
@@ -449,7 +450,77 @@ def termlead(request):
 
 from datetime import datetime
 
+
 def create_or_edit_lead(request, lead_id=None):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    customers = QuotationCustomer.objects.all()
+    source_leads = SourceMaster.objects.filter(status=True).order_by('source_name')
+    referrals = Referral.objects.all()
+    lead = None
+
+    if request.method == "GET":
+        return render(request, 'leads/create.html', {
+            'lead': lead,
+            'referrals': referrals,
+            'customers': customers
+        })
+
+    elif request.method == "POST":
+        # Step 1: Collect form inputs
+        mobile_number = request.POST.get("mobile_number", "").strip()
+        pan_card_number = request.POST.get("pan_card_number", "").strip()
+        registration_number = request.POST.get("registration_number", "").strip()
+        name_as_per_pan = request.POST.get("name_as_per_pan", "").strip()
+        email_address = request.POST.get("email_address", "").strip()
+
+        # ... other form fields you want to collect manually ...
+
+        # Step 2: Try to find matching policy
+        matching_policy = PolicyInfo.objects.filter(
+            Q(insured_mobile=mobile_number) |
+            Q(insured_pan=pan_card_number) |
+            Q(policy__registration_number=registration_number)
+        ).order_by('-created_at').first()
+
+        # Step 3: Prepare the lead instance
+        lead = Leads(
+            #lead_id=generate_unique_lead_id(),  # You can implement your logic for this
+            mobile_number=mobile_number,
+            pan_card_number=pan_card_number,
+            registration_number=registration_number,
+            email_address=email_address,
+            name_as_per_pan=name_as_per_pan,
+            # other manual fields...
+        )
+
+        # Step 4: If matching policy found, copy fields
+        if matching_policy:
+            lead.insurance_company = matching_policy.insurance_company
+            lead.policy_number = matching_policy.policy_number
+            lead.policy_date = matching_policy.policy_issue_date
+            lead.policy_type = matching_policy.policy_type
+            lead.make_and_model = matching_policy.policy.make_and_model if hasattr(matching_policy.policy, 'make_and_model') else None
+            lead.fuel_type = matching_policy.fuel_type
+            lead.manufacturing_year = matching_policy.policy.manufacturing_year if hasattr(matching_policy.policy, 'manufacturing_year') else None
+            lead.sum_insured = matching_policy.sum_insured
+            lead.od_premium = matching_policy.od_premium
+            lead.tp_premium = matching_policy.tp_premium
+            lead.net_premium = matching_policy.net_premium
+            lead.gross_premium = matching_policy.gross_premium
+            lead.agent_name = matching_policy.pos_name
+            lead.sales_manager = matching_policy.supervisor_name
+            # Add more as needed
+
+        # Step 5: Save the lead
+        lead.save()
+
+        # Step 6: Redirect or render success
+        messages.success(request, "Lead created successfully!")
+        return redirect("leads_list")  # Update this to your actual lead list URL
+
+"""def create_or_edit_lead(request, lead_id=None):
     if not request.user.is_authenticated:
         return redirect('login')
     
@@ -460,8 +531,8 @@ def create_or_edit_lead(request, lead_id=None):
     lead = None
     referrals = Referral.objects.all()
 
-    """if lead_id:
-        lead = get_object_or_404(Leads, id=lead_id)"""
+    #if lead_id:
+        #lead = get_object_or_404(Leads, id=lead_id)
     
     
     if request.method == "GET":
@@ -560,7 +631,7 @@ def create_or_edit_lead(request, lead_id=None):
             )
             messages.success(request, f"Lead created successfully!")
 
-        return redirect("leads-mgt")
+        return redirect("leads-mgt")"""
 
 """def bulk_upload_leads(request):
     if request.method == 'POST':
