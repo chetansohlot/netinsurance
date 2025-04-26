@@ -259,12 +259,17 @@
         </div>
         <!-- blank 6th column -->
         <div class="col-sm-6 col-md-2">
-          <select class="form-field" name="sales_manager">
+          <select name="sales_manager" class="form-field">
             <option value="">Select Sales Manager</option>
+            {% for manager in sales_managers %}
+              <option value="{{ manager.user_name }}" {% if manager.user_name == selected_sales_manager %}selected{% endif %}>
+                {{ manager.first_name }} {{ manager.last_name }}
+              </option>
+            {% endfor %}
           </select>
+          
         </div>
       </div>
-
       <!-- Row 2: 6 Insurance-related filters -->
       <div class="row mb-3">
         <!-- <div class="col-sm-6 col-md-2">
@@ -272,11 +277,7 @@
             <option value="">Select Sales Manager</option>
           </select>
         </div> -->
-        <div class="col-sm-6 col-md-2">
-          <select class="form-field" name="agent_name">
-            <option value="">Select Agent Name</option>
-          </select>
-        </div>
+               
         <div class="col-sm-6 col-md-2">
           <input class="form-field" name="policy_number" type="text"
                  placeholder="Policy/Registration Number"
@@ -295,13 +296,28 @@
         <div class="col-sm-6 col-md-2">
           <select class="form-field" name="insurance_company">
             <option value="">Select Insurance Company</option>
+            {% for company in insurance_companies %}
+              <option value="{{ company }}" {% if request.GET.insurance_company == company %}selected{% endif %}>{{ company }}</option>
+            {% endfor %}
           </select>
+          
         </div>
         <div class="col-sm-6 col-md-2">
           <select class="form-field" name="policy_type">
             <option value="">Select Policy Type</option>
+            {% for type in policy_types %}
+              <option value="{{ type }}" {% if request.GET.policy_type == type %}selected{% endif %}>{{ type }}</option>
+            {% endfor %}
           </select>
         </div>
+        <div class="col-sm-6 col-md-2">
+          <select name="agent_name" class="form-field">
+            <option value="">Select Agent</option>
+            {% for agent in agents %}
+              <option value="{{ agent }}" {% if selected_agent == agent %}selected{% endif %}>{{ agent }}</option>
+            {% endfor %}
+          </select>        
+        </div>     
       </div>
 
       <!-- Row 3: remaining filters + Apply/Reset in the final slot -->
@@ -314,14 +330,43 @@
         <div class="col-sm-6 col-md-2">
           <select class="form-field" name="vehicle_type">
             <option value="">Select Vehicle Type</option>
+            {% for vehicle in vehicle_types %}
+              <option value="{{ vehicle }}" {% if request.GET.vehicle_type == vehicle %}selected{% endif %}>{{ vehicle }}</option>
+            {% endfor %}
           </select>
+          
         </div>
         <div class="col-sm-6 col-md-2">
           <select class="form-field" name="upcoming_renewals">
             <option value="">Select Upcoming Renewals</option>
+            <option value="0" {% if request.GET.upcoming_renewals == '0' %}selected{% endif %}>Today</option>
+            <option value="3" {% if request.GET.upcoming_renewals == '3' %}selected{% endif %}>In 3 Days</option>
+            <option value="7" {% if request.GET.upcoming_renewals == '7' %}selected{% endif %}>In 7 Days</option>
+            <option value="10" {% if request.GET.upcoming_renewals == '10' %}selected{% endif %}>In 10 Days</option>
+            <option value="15" {% if request.GET.upcoming_renewals == '15' %}selected{% endif %}>In 15 Days</option>
+            <option value="30" {% if request.GET.upcoming_renewals == '30' %}selected{% endif %}>In 30 Days</option>
+          </select>
+                   
+        </div>
+        <!-- Lead Type Dropdown -->
+        <div class="col-sm-6 col-md-2">
+          <select class="form-field" name="lead_type" id="lead_type" onchange="toggleMotorType()">
+            <option value="">Select Lead Type</option>
+            <option value="MOTOR" {% if request.GET.lead_type == 'MOTOR' %}selected{% endif %}>Motor</option>
+            <option value="HEALTH" {% if request.GET.lead_type == 'HEALTH' %}selected{% endif %}>Health</option>
+            <option value="TERM" {% if request.GET.lead_type == 'TERM' %}selected{% endif %}>Term</option>
           </select>
         </div>
-        
+
+<!-- Motor Type Dropdown (Only shows if MOTOR is selected) -->
+<div id="motor_type_container" class="col-sm-6 col-md-2">
+  <select class="form-field" name="motor_type">
+    <option value="">Select Motor Type</option>
+    <option value="2_WHEELER" {% if request.GET.motor_type == '2_WHEELER' %}selected{% endif %}>2 Wheeler</option>
+    <option value="4_WHEELER" {% if request.GET.motor_type == '4_WHEELER' %}selected{% endif %}>4 Wheeler</option>
+    <option value="COMMERCIAL" {% if request.GET.motor_type == 'COMMERCIAL' %}selected{% endif %}>Commercial</option>
+  </select>
+</div>   
         <!-- 6th col: Apply / Reset -->
         <div class="col-sm-6 col-md-2">
           <div class="form-group d-flex">
@@ -564,9 +609,19 @@
     
     {% include 'footer-script.html' %}
     
+    <script>
+      function toggleMotorType() {
+        const leadType = document.getElementById('lead_type').value;
+        const motorTypeContainer = document.getElementById('motor_type_container');
+        if (leadType === 'MOTOR') {
+          motorTypeContainer.style.display = 'block';
+        } else {
+          motorTypeContainer.style.display = 'none';
+        }
+      }
     
-    
-    
-    </body>
-
-{% endblock %}
+      // Trigger on page load if MOTOR is preselected
+      window.onload = toggleMotorType;
+    </script>
+  </body>
+    {% endblock %}
