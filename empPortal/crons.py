@@ -263,9 +263,10 @@ class CreateNewPolicy(CronJobBase):
             
             cutoff_time = datetime.strptime('2025-04-24 01:01', '%Y-%m-%d %H:%M')
 
-            files = ExtractedFile.objects.filter(policy_id__isnull = True, extracted_at__gte=cutoff_time,is_extracted=True)[:10]
+            files = ExtractedFile.objects.filter(policy_id__isnull = True, extracted_at__gte=cutoff_time,retry_creating_policy_count__lte=3,is_extracted=True)[:10]
             for file in files:
                 file.status = 5
+                file.retry_creating_policy_count += 1
                 file.save()
                 file_ids.append(file.id)
                 extracted_data = file.chat_response

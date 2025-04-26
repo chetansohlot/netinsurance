@@ -1031,6 +1031,7 @@ class ExtractedFile(models.Model):
     status = models.IntegerField(default=0)
     retry_source_count = models.IntegerField(default=0)
     retry_chat_response_count = models.IntegerField(default=0)
+    retry_creating_policy_count = models.IntegerField(default=0)
     def __str__(self):
         return self.filename
     
