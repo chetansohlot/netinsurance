@@ -322,7 +322,7 @@ Policy Data
                                 <span class="circle-icon"><i class="far fa-circle"></i></span>
                                 <strong>Net:</strong>
                                 <i class="fa-solid fa-indian-rupee-sign"></i>
-                                {{ data.od_premium|default_if_none:0|add:data.tp_premium|default_if_none:0|floatformat:2 }} <br>
+                                {{ data.policy_premium|default_if_none:0|floatformat:2 }} <br>
 
                                 <span class="circle-icon"><i class="far fa-circle"></i></span>
                                 <strong>Gross:</strong>
