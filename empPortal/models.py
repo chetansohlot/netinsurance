@@ -5,6 +5,7 @@ from datetime import datetime
 from django.utils.timezone import now
 from django.utils.timezone import localtime
 from empPortal.model import Referral
+from empPortal.model import Partner
 
 from django.conf import settings
 

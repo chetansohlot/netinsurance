@@ -1,3 +1,4 @@
+from multiprocessing import Value
 from urllib import request
 from django.http import HttpResponse
 from django.contrib.auth.hashers import make_password
@@ -47,6 +48,10 @@ logger = logging.getLogger(__name__)
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 from django_q.tasks import async_task
 from ..models import Users, LeadUploadExcel
+from datetime import datetime, timedelta
+from django.db.models import F, Value, CharField
+from django.db.models.functions import Concat, Coalesce
+from ..models import PolicyInfo
 app = FastAPI()
 
 def dictfetchall(cursor):
@@ -94,7 +99,7 @@ def index(request):
         leads = leads.filter(**filter_args)
 
      # Apply filters based on form input
-    if 'lead_id' in request.GET and request.GET['lead_id']:
+    """if 'lead_id' in request.GET and request.GET['lead_id']:
         leads = leads.filter(lead_id__icontains=request.GET['lead_id'])
     if 'name_as_per_pan' in request.GET and request.GET['name_as_per_pan']:
         leads = leads.filter(name_as_per_pan__icontains=request.GET['name_as_per_pan'])    
@@ -103,7 +108,84 @@ def index(request):
     if 'email_address' in request.GET and request.GET['email_address']:
         leads = leads.filter(email_address__icontains=request.GET['email_address'])
     if 'mobile_number' in request.GET and request.GET['mobile_number']:
-        leads = leads.filter(mobile_number__icontains=request.GET['mobile_number'])    
+        leads = leads.filter(mobile_number__icontains=request.GET['mobile_number']) """
+
+    # Get filter inputs
+    lead_id = request.GET.get('lead_id', '')
+    name = request.GET.get('name_as_per_pan', '')
+    pan = request.GET.get('pan_card_number', '')
+    email = request.GET.get('email_address', '')
+    mobile = request.GET.get('mobile_number', '')
+    sales_manager = request.GET.get('sales_manager', '')
+    agent_name = request.GET.get('agent_name', '')
+    policy_number = request.GET.get('policy_number', '')
+    start_date = request.GET.get('start_date', '')
+    end_date = request.GET.get('end_date', '')
+    insurance_company = request.GET.get('insurance_company', '')
+    policy_type = request.GET.get('policy_type', '')
+    vehicle_type = request.GET.get('vehicle_type', '')
+    upcoming_renewals = request.GET.get('upcoming_renewals', '')
+    lead_type = request.GET.get('lead_type')
+    motor_type = request.GET.get('motor_type')
+
+    #today = datetime.today().date()
+    #after_30_days = today + timedelta(days=30)
+    # Apply filters
+    if lead_id:
+        leads = leads.filter(lead_id__icontains=lead_id)
+    if name:
+        leads = leads.filter(name_as_per_pan__icontains=name)
+    if pan:
+        leads = leads.filter(pan_card_number__icontains=pan)
+    if email:
+        leads = leads.filter(email_address__icontains=email)
+    if mobile:
+        leads = leads.filter(mobile_number__icontains=mobile)
+    if sales_manager:
+        leads = leads.filter(sales_manager__user_name=sales_manager)
+    if agent_name:
+        leads = leads.filter(agent_name=agent_name)
+    if policy_number:
+        leads = leads.filter(policy_number__icontains=policy_number)
+    if start_date:
+        leads = leads.filter(risk_start_date__gte=start_date)
+    if end_date:
+        leads = leads.filter(risk_start_date__lte=end_date)
+    if insurance_company:
+        leads = leads.filter(insurance_company=insurance_company)
+    if policy_type:
+        leads = leads.filter(policy_type=policy_type)
+    if vehicle_type:
+        leads = leads.filter(vehicle_type=vehicle_type)
+    if lead_type:
+        leads = leads.filter(lead_type=lead_type)
+
+    if lead_type == 'MOTOR' and motor_type:
+        leads = leads.filter(vehicle_type=motor_type)
+
+     # Example logic for upcoming renewals (next 30 days)
+    upcoming_renewals = request.GET.get('upcoming_renewals')
+
+    if upcoming_renewals:
+        try:
+            today = datetime.today().date()
+            days = int(upcoming_renewals)
+            target_date = today + timedelta(days=days)
+
+        # Range from today to target_date
+            leads = leads.filter(risk_start_date__range=[today, target_date])
+        except ValueError:
+            pass  # Invalid number of days (safe fallback)
+    
+   
+    # Get unique dropdown values
+    sales_managers = Users.objects.filter(role_id=3).values('first_name','first_name', 'last_name').distinct()
+      
+    agents = Users.objects.filter(role_id=4).values_list('user_name', flat=True)
+    insurance_companies = Leads.objects.values_list('insurance_company', flat=True).distinct().exclude(insurance_company__isnull=True).exclude(insurance_company__exact='')
+    policy_types = Leads.objects.values_list('policy_type', flat=True).distinct().exclude(policy_type__isnull=True).exclude(policy_type__exact='')
+    vehicle_types = Leads.objects.values_list('vehicle_type', flat=True).distinct().exclude(vehicle_type__isnull=True).exclude(vehicle_type__exact='')
+   
 
     # Sorting
     if shorting == 'name_asc':
@@ -119,6 +201,9 @@ def index(request):
 
     # Count
     total_leads = leads.count()
+    motor_leads = Leads.objects.filter(lead_type='MOTOR').count()
+    health_leads = Leads.objects.filter(lead_type='HEALTH').count()
+    term_leads = Leads.objects.filter(lead_type='TERM').count()
 
     # Pagination
     paginator = Paginator(leads, per_page)
@@ -132,38 +217,310 @@ def index(request):
         'search_field': search_field,
         'search_query': search_query,
         'shorting': shorting,  # Pass to template to retain selected option
+        'motor_leads': motor_leads,
+        'health_leads': health_leads,
+        'term_leads': term_leads,
+        'sales_managers': sales_managers,
+        'selected_sales_manager': sales_manager,
+        'agents': agents,
+        'selected_agent': agent_name,
+        'insurance_companies': insurance_companies,
+        'policy_types': policy_types,
+        'vehicle_types': vehicle_types,
     })
 
     
 def viewlead(request, lead_id):
     if request.user.is_authenticated:
         leads = Leads.objects.all()
-        return render(request, 'leads/index.html', {'leads': leads})  # Pass leads to the template
+        return render(request, 'leads/index.html', {
+            'leads': leads,})  # Pass leads to the template
     else:
         return redirect('login')
     
 def healthLead(request):
     if request.user.is_authenticated:
-        return render(request, 'leads/health-lead.html')
+
+        leads = Leads.objects.all()
+        # Count
+        total_leads = leads.count()
+        motor_leads = Leads.objects.filter(lead_type='MOTOR').count()
+        health_leads = Leads.objects.filter(lead_type='HEALTH').count()
+        term_leads = Leads.objects.filter(lead_type='TERM').count()
+
+        # Get filter inputs
+        lead_id = request.GET.get('lead_id', '')
+        name = request.GET.get('name_as_per_pan', '')
+        pan = request.GET.get('pan_card_number', '')
+        email = request.GET.get('email_address', '')
+        mobile = request.GET.get('mobile_number', '')
+        sales_manager = request.GET.get('sales_manager', '')
+        agent_name = request.GET.get('agent_name', '')
+        policy_number = request.GET.get('policy_number', '')
+        start_date = request.GET.get('start_date', '')
+        end_date = request.GET.get('end_date', '')
+        insurance_company = request.GET.get('insurance_company', '')
+        policy_type = request.GET.get('policy_type', '')
+        vehicle_type = request.GET.get('vehicle_type', '')
+        upcoming_renewals = request.GET.get('upcoming_renewals', '')
+        lead_type = request.GET.get('lead_type')
+        motor_type = request.GET.get('motor_type')
+
+    #today = datetime.today().date()
+    #after_30_days = today + timedelta(days=30)
+    # Apply filters
+        if lead_id:
+            leads = leads.filter(lead_id__icontains=lead_id)
+        if name:
+            leads = leads.filter(name_as_per_pan__icontains=name)
+        if pan:
+            leads = leads.filter(pan_card_number__icontains=pan)
+        if email:
+            leads = leads.filter(email_address__icontains=email)
+        if mobile:
+            leads = leads.filter(mobile_number__icontains=mobile)
+        if sales_manager:
+            leads = leads.filter(sales_manager__user_name=sales_manager)
+        if agent_name:
+            leads = leads.filter(agent_name=agent_name)
+        if policy_number:
+            leads = leads.filter(policy_number__icontains=policy_number)
+        if start_date:
+            leads = leads.filter(risk_start_date__gte=start_date)
+        if end_date:
+            leads = leads.filter(risk_start_date__lte=end_date)
+        if insurance_company:
+            leads = leads.filter(insurance_company=insurance_company)
+        if policy_type:
+            leads = leads.filter(policy_type=policy_type)
+        if vehicle_type:
+            leads = leads.filter(vehicle_type=vehicle_type)
+        if lead_type:
+            leads = leads.filter(lead_type=lead_type)
+
+        if lead_type == 'MOTOR' and motor_type:
+            leads = leads.filter(vehicle_type=motor_type)
+
+     # Example logic for upcoming renewals (next 30 days)
+        upcoming_renewals = request.GET.get('upcoming_renewals')
+
+        if upcoming_renewals:
+            try:
+                today = datetime.today().date()
+                days = int(upcoming_renewals)
+                target_date = today + timedelta(days=days)
+
+        # Range from today to target_date
+                leads = leads.filter(risk_start_date__range=[today, target_date])
+            except ValueError:
+                pass  # Invalid number of days (safe fallback)
+    
+   
+        # Get unique dropdown values
+        sales_managers = Users.objects.filter(role_id=3).values('first_name','first_name', 'last_name').distinct()
+      
+        agents = Users.objects.filter(role_id=4).values_list('user_name', flat=True)
+        insurance_companies = Leads.objects.values_list('insurance_company', flat=True).distinct().exclude(insurance_company__isnull=True).exclude(insurance_company__exact='')
+        policy_types = Leads.objects.values_list('policy_type', flat=True).distinct().exclude(policy_type__isnull=True).exclude(policy_type__exact='')
+        vehicle_types = Leads.objects.values_list('vehicle_type', flat=True).distinct().exclude(vehicle_type__isnull=True).exclude(vehicle_type__exact='')
+   
+
+        return render(request, 'leads/health-lead.html',{
+            'leads': leads,
+            'total_leads':total_leads,
+            'motor_leads': motor_leads,
+            'health_leads': health_leads,
+            'term_leads': term_leads,
+            'sales_managers': sales_managers,
+            'selected_sales_manager': sales_manager,
+            'agents': agents,
+            'selected_agent': agent_name,
+            'insurance_companies': insurance_companies,
+            'policy_types': policy_types,
+            'vehicle_types': vehicle_types,
+            
+        })  
     else:
         return redirect('login')
-    
-    # Count
-    total_leads = leads.count()
     
 def termlead(request):
     if request.user.is_authenticated:
-        return render(request, 'leads/term-lead.html')
+
+        leads = Leads.objects.all()
+        # Count
+        total_leads = leads.count()
+        motor_leads = Leads.objects.filter(lead_type='MOTOR').count()
+        health_leads = Leads.objects.filter(lead_type='HEALTH').count()
+        term_leads = Leads.objects.filter(lead_type='TERM').count()
+
+        # Get filter inputs
+        lead_id = request.GET.get('lead_id', '')
+        name = request.GET.get('name_as_per_pan', '')
+        pan = request.GET.get('pan_card_number', '')
+        email = request.GET.get('email_address', '')
+        mobile = request.GET.get('mobile_number', '')
+        sales_manager = request.GET.get('sales_manager', '')
+        agent_name = request.GET.get('agent_name', '')
+        policy_number = request.GET.get('policy_number', '')
+        start_date = request.GET.get('start_date', '')
+        end_date = request.GET.get('end_date', '')
+        insurance_company = request.GET.get('insurance_company', '')
+        policy_type = request.GET.get('policy_type', '')
+        vehicle_type = request.GET.get('vehicle_type', '')
+        upcoming_renewals = request.GET.get('upcoming_renewals', '')
+        lead_type = request.GET.get('lead_type')
+        motor_type = request.GET.get('motor_type')
+
+    #today = datetime.today().date()
+    #after_30_days = today + timedelta(days=30)
+    # Apply filters
+        if lead_id:
+            leads = leads.filter(lead_id__icontains=lead_id)
+        if name:
+            leads = leads.filter(name_as_per_pan__icontains=name)
+        if pan:
+            leads = leads.filter(pan_card_number__icontains=pan)
+        if email:
+            leads = leads.filter(email_address__icontains=email)
+        if mobile:
+            leads = leads.filter(mobile_number__icontains=mobile)
+        if sales_manager:
+            leads = leads.filter(sales_manager__user_name=sales_manager)
+        if agent_name:
+            leads = leads.filter(agent_name=agent_name)
+        if policy_number:
+            leads = leads.filter(policy_number__icontains=policy_number)
+        if start_date:
+            leads = leads.filter(risk_start_date__gte=start_date)
+        if end_date:
+            leads = leads.filter(risk_start_date__lte=end_date)
+        if insurance_company:
+            leads = leads.filter(insurance_company=insurance_company)
+        if policy_type:
+            leads = leads.filter(policy_type=policy_type)
+        if vehicle_type:
+            leads = leads.filter(vehicle_type=vehicle_type)
+        if lead_type:
+            leads = leads.filter(lead_type=lead_type)
+
+        if lead_type == 'MOTOR' and motor_type:
+            leads = leads.filter(vehicle_type=motor_type)
+
+     # Example logic for upcoming renewals (next 30 days)
+        upcoming_renewals = request.GET.get('upcoming_renewals')
+
+        if upcoming_renewals:
+            try:
+                today = datetime.today().date()
+                days = int(upcoming_renewals)
+                target_date = today + timedelta(days=days)
+
+        # Range from today to target_date
+                leads = leads.filter(risk_start_date__range=[today, target_date])
+            except ValueError:
+                pass  # Invalid number of days (safe fallback)
+    
+   
+        # Get unique dropdown values
+        sales_managers = Users.objects.filter(role_id=3).values('first_name','first_name', 'last_name').distinct()
+        agents = Users.objects.filter(role_id=4).values_list('user_name', flat=True)
+        insurance_companies = Leads.objects.values_list('insurance_company', flat=True).distinct().exclude(insurance_company__isnull=True).exclude(insurance_company__exact='')
+        policy_types = Leads.objects.values_list('policy_type', flat=True).distinct().exclude(policy_type__isnull=True).exclude(policy_type__exact='')
+        vehicle_types = Leads.objects.values_list('vehicle_type', flat=True).distinct().exclude(vehicle_type__isnull=True).exclude(vehicle_type__exact='')
+   
+
+
+        return render(request, 'leads/term-lead.html',
+        {
+            'leads': leads,
+            'total_leads':total_leads,
+            'motor_leads': motor_leads,
+            'health_leads': health_leads,
+            'term_leads': term_leads,
+            'sales_managers': sales_managers,
+            'selected_sales_manager': sales_manager,
+            'agents': agents,
+            'selected_agent': agent_name,
+            'insurance_companies': insurance_companies,
+            'policy_types': policy_types,
+            'vehicle_types': vehicle_types,
+        })  # Pass leads to the template
     else:
         return redirect('login')
-    
-    # Count
-    total_leads = leads.count()
-
 
 from datetime import datetime
 
+
 def create_or_edit_lead(request, lead_id=None):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    customers = QuotationCustomer.objects.all()
+    source_leads = SourceMaster.objects.filter(status=True).order_by('source_name')
+    referrals = Referral.objects.all()
+    lead = None
+
+    if request.method == "GET":
+        return render(request, 'leads/create.html', {
+            'lead': lead,
+            'referrals': referrals,
+            'customers': customers
+        })
+
+    elif request.method == "POST":
+        # Step 1: Collect form inputs
+        mobile_number = request.POST.get("mobile_number", "").strip()
+        pan_card_number = request.POST.get("pan_card_number", "").strip()
+        registration_number = request.POST.get("registration_number", "").strip()
+        name_as_per_pan = request.POST.get("name_as_per_pan", "").strip()
+        email_address = request.POST.get("email_address", "").strip()
+
+        # ... other form fields you want to collect manually ...
+
+        # Step 2: Try to find matching policy
+        matching_policy = PolicyInfo.objects.filter(
+            Q(insured_mobile=mobile_number) |
+            Q(insured_pan=pan_card_number) |
+            Q(policy__registration_number=registration_number)
+        ).order_by('-created_at').first()
+
+        # Step 3: Prepare the lead instance
+        lead = Leads(
+            #lead_id=generate_unique_lead_id(),  # You can implement your logic for this
+            mobile_number=mobile_number,
+            pan_card_number=pan_card_number,
+            registration_number=registration_number,
+            email_address=email_address,
+            name_as_per_pan=name_as_per_pan,
+            # other manual fields...
+        )
+
+        # Step 4: If matching policy found, copy fields
+        if matching_policy:
+            lead.insurance_company = matching_policy.insurance_company
+            lead.policy_number = matching_policy.policy_number
+            lead.policy_date = matching_policy.policy_issue_date
+            lead.policy_type = matching_policy.policy_type
+            lead.make_and_model = matching_policy.policy.make_and_model if hasattr(matching_policy.policy, 'make_and_model') else None
+            lead.fuel_type = matching_policy.fuel_type
+            lead.manufacturing_year = matching_policy.policy.manufacturing_year if hasattr(matching_policy.policy, 'manufacturing_year') else None
+            lead.sum_insured = matching_policy.sum_insured
+            lead.od_premium = matching_policy.od_premium
+            lead.tp_premium = matching_policy.tp_premium
+            lead.net_premium = matching_policy.net_premium
+            lead.gross_premium = matching_policy.gross_premium
+            lead.agent_name = matching_policy.pos_name
+            lead.sales_manager = matching_policy.supervisor_name
+            # Add more as needed
+
+        # Step 5: Save the lead
+        lead.save()
+
+        # Step 6: Redirect or render success
+        messages.success(request, "Lead created successfully!")
+        return redirect("leads_list")  # Update this to your actual lead list URL
+
+"""def create_or_edit_lead(request, lead_id=None):
     if not request.user.is_authenticated:
         return redirect('login')
     
@@ -174,8 +531,9 @@ def create_or_edit_lead(request, lead_id=None):
     lead = None
     referrals = Referral.objects.all()
 
-    if lead_id:
-        lead = get_object_or_404(Leads, id=lead_id)
+    #if lead_id:
+        #lead = get_object_or_404(Leads, id=lead_id)
+    
     
     if request.method == "GET":
         return render(request, 'leads/create.html', {
@@ -220,6 +578,8 @@ def create_or_edit_lead(request, lead_id=None):
 
         if lead_type == "MOTOR":
             registration_number = request.POST.get("registration_number", "").strip()
+            vehicle_type = request.POST.get("vehicle_type", "").strip()
+
         else:
            registration_number = ""
         
@@ -239,6 +599,7 @@ def create_or_edit_lead(request, lead_id=None):
             lead.lead_description = lead_description
             lead.lead_type = lead_type
             lead.registration_number = registration_number  ## vehicle no.
+            lead.vehicle_type = vehicle_type
             lead.lead_source = lead_source
             lead.referral_by = referral_by
             lead.status = status
@@ -260,6 +621,7 @@ def create_or_edit_lead(request, lead_id=None):
                 lead_description=lead_description,
                 lead_type=lead_type,
                 registration_number=registration_number,
+                vehicle_type=vehicle_type,
                 lead_source=lead_source,
                 referral_by=referral_by,
                 status=status,
@@ -269,7 +631,7 @@ def create_or_edit_lead(request, lead_id=None):
             )
             messages.success(request, f"Lead created successfully!")
 
-        return redirect("leads-mgt")
+        return redirect("leads-mgt")"""
 
 """def bulk_upload_leads(request):
     if request.method == 'POST':
@@ -563,16 +925,23 @@ def create_or_edit_lead(request, lead_id=None):
 def bulk_upload_leads(request):
     if request.method == 'POST' and request.FILES.get('excel_file'):
         excel_file = request.FILES['excel_file']
+        camp_name = request.POST.get("camp_name")
 
         if not excel_file.name.lower().endswith(('.xlsx', '.xls')):
             messages.error(request, "Only Excel files (.xlsx, .xls) are allowed!")
-            return redirect('leads-mgt')
+            return redirect('bulk-upload-leads')
+
+        if not camp_name:
+            messages.error(request, "Campaign Name is mandatory.")
+            return redirect('bulk-upload-leads')
+
 
         # Save the file record
         instance = LeadUploadExcel.objects.create(
             file=excel_file,
             file_name=excel_file.name,
             file_url=excel_file.name,
+            campaign_name=camp_name,
             created_by=request.user  # assuming request.user is correct
         )
 
@@ -583,3 +952,4 @@ def bulk_upload_leads(request):
         return redirect("leads-mgt")
 
     return render(request, "leads/bulk_upload.html")
+    

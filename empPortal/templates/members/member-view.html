@@ -63,12 +63,30 @@
                     </div>
                   {% endif %}
                   
-
-                    <div class="col">
-                        <div class="d-flex justify-content-end mt-2">
-                            <!-- <button class="dashboard-btn-outline mb-0 bg-danger border-danger" type="button">Deactivate Membership</button> -->
-                        </div>  
-                    </div>
+                    
+      <!-- STATUS DROPDOWN -->
+      <div class="col">
+        <div class="d-flex justify-content-end mt-2">
+          <form id="change-partner-status-form" method="post" action="{% url 'update-partner-status' user_id=user_details.id %}">
+            {% csrf_token %}
+            <div class="input-group">
+              <select class="form-control" name="partner_status" required>
+                <option value="">-- Change Status --</option>
+                <option value="0" {% if partner_status == '0' %}selected{% endif %}>Requested</option>
+                <option value="1" {% if partner_status == '1' %}selected{% endif %}>Document Verification</option>
+                <option value="2" {% if partner_status == '2' %}selected{% endif %}>In Training</option>
+                <option value="3" {% if partner_status == '3' %}selected{% endif %}>In Exam</option>
+                <option value="4" {% if partner_status == '4' %}selected{% endif %}>Activated</option>
+                <option value="5" {% if partner_status == '5' %}selected{% endif %}>Inactive</option>
+                <option value="6" {% if partner_status == '6' %}selected{% endif %}>Rejected</option>
+              </select>
+              <div class="input-group-append">
+                <button class="dashboard-btn-outline bg-primary border-primary ml-2" id="change-partner-status" type="button">Update</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
                 </div>
               </div>
             </div>
@@ -1335,7 +1353,37 @@
         
 
     </script>
-    
+    <script>
+        document.getElementById('change-partner-status').addEventListener('click', function () {
+          const statusSelect = document.querySelector('select[name="partner_status"]');
+          const selectedStatus = statusSelect.value;
+      
+          if (!selectedStatus) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Please select a status before updating.',
+            });
+            return;
+          }
+      
+          const statusText = statusSelect.options[statusSelect.selectedIndex].text;
+      
+          Swal.fire({
+            title: 'Are you sure?',
+            text: `You are about to change the partner's status to "${statusText}".`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, update it!',
+            cancelButtonText: 'Cancel'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              document.getElementById('change-partner-status-form').submit();
+            }
+          });
+        });
+      </script>
+      
+        
     {% include "js-code.html" %}
     
     

@@ -114,11 +114,11 @@
                                     placeholder="Enter Pincode" value="{{ lead.pincode|default_if_none:'' }}">
                           </div>
 
-                          <div class="form-group col-md-12">
+                          <!--<div class="form-group col-md-12">
                             <label class="form-lbl" for="address">Address</label>
                             <textarea class="form-field" name="address" id="address"
                                       placeholder="Enter Address">{{ lead.address|default_if_none:'' }}</textarea>
-                        </div>
+                        </div>-->
                         <div class="form-group col-md-12">
                             <label class="form-lbl" for="lead_description">Lead Description</label>
                             <textarea class="form-field" name="lead_description" id="lead_description"
@@ -149,7 +149,12 @@
                         <div class="form-group col-md-4" id="registration_number" style="display: none;">
                             <label class="form-lbl" for="registration_number">Vehicle No</label>
                             <input type="text" class="form-field" name="registration_number" id="registration_number" value="{{ lead.registration_number }}" placeholder="Enter Vehicle Number">
-                        </div>
+
+                            <!-- ✅ Vehicle Type -->
+                            <label class="form-lbl" for="registration_number">Vehicle Type</label>
+                            <input type="text" name="vehicle_type" class="form-control" placeholder="Enter Vehicle Type">
+                          </div>
+
 
                           <!-- <div class="form-group col-md-4">
                               <label class="form-lbl" for="status">Status</label>
@@ -248,6 +253,25 @@
       document.getElementById("myForm").addEventListener("submit", function() {
           document.getElementById("loader").style.display = "flex";
       });
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const leadTypeSelect = document.getElementById("lead_type");
+        const vehicleFields = document.getElementById("vehicle_fields");
+
+        function toggleVehicleFields() {
+            if (leadTypeSelect.value === "MOTOR") {
+                vehicleFields.style.display = "block";
+            } else {
+                vehicleFields.style.display = "none";
+            }
+        }
+
+        // Initial check
+        toggleVehicleFields();
+
+        // Listen for changes
+        leadTypeSelect.addEventListener("change", toggleVehicleFields);
+    });
     </script>
 </body>
 {% endblock %}

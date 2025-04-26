@@ -18,7 +18,6 @@ from django.forms.models import model_to_dict
 import json
 from django.utils.timezone import now
 from django.core.paginator import Paginator
-import helpers  
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 
@@ -65,9 +64,9 @@ def index(request):
     if pan_number:
         franchises = franchises.filter(pan_number__icontains=pan_number)
 
-    context = {
+    """context = {
         'franchises': franchises
-    }
+    }"""
 
     ## Sort Criteria ##
     if sort_by == "name_asc":
@@ -96,6 +95,7 @@ def index(request):
         'search_query': search_query,
         'per_page': per_page,
         'sort_by' : sort_by,
+        'franchises': franchises,
     })
 
 

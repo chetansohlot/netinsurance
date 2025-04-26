@@ -53,6 +53,8 @@ import openpyxl
 from django.contrib.auth.decorators import login_required
 from django_q.tasks import async_task
 app = FastAPI()
+from empPortal.model import Partner
+from ..helpers import sync_user_to_partner, update_partner_by_user_id
 
 
 def dictfetchall(cursor):
@@ -98,12 +100,11 @@ def members(request):
         if search_field and search_query:
             filter_args = {f"{search_field}__icontains": search_query}
             users = users.filter(**filter_args)"""
-
-        users = Users.objects.all()
+        users = Users.objects.filter(role_id__in=role_ids)
 
     # Get filter values from GET request
         user_gen_id = request.GET.get('user_gen_id', '').strip()
-        user_name = request.GET.get('user_name', '').strip()
+        user_name = request.GET.get('user_name', '').strip() #Apply filter based on full name column not 1st & last name
         email = request.GET.get('email', '').strip()
         phone = request.GET.get('phone', '').strip()
         pan_no = request.GET.get('pan_no', '').strip()  
@@ -120,9 +121,9 @@ def members(request):
         if pan_no:
             users = users.filter(pan_no__icontains=pan_no)
 
-        context = {
+        """context = {
             'users': users
-         }
+         }"""
         
 
         # Apply sorting
@@ -165,6 +166,7 @@ def members(request):
             'global_search': global_search,
             'sorting': sorting,
             'per_page': per_page,
+            'users': users,
             'members_all': True,
             'members_requested' : False,
         })
@@ -597,6 +599,7 @@ def memberView(request, user_id):
         # Fetch user details and bank details
         user_details = Users.objects.get(id=user_id)
         bank_details = BankDetails.objects.filter(user_id=user_id).first()
+        partner_info = Partner.objects.filter(user_id=user_id).first()
 
         docs = DocumentUpload.objects.filter(user_id=user_id).first()
         # Fetch commissions for the specific member
@@ -660,10 +663,11 @@ def memberView(request, user_id):
         selected_tl_id = tl.id if tl else None
         selected_rm_id = rm.id if rm else None
 
-
+        print(partner_info.partner_status)
         return render(request, 'members/member-view.html', {
             'user_details': user_details,
             'bank_details': bank_details,
+            'partner_status': partner_info.partner_status,
             'docs': docs,
             'manager_list': manager_list,
             'rm_list': rm_list,
@@ -817,8 +821,34 @@ def activateUser(request, user_id):
         messages.error(request, "User cannot be activated. Please ensure all required documents are approved.")
 
     # Redirect to the member view page
+
+    update_partner_by_user_id(25, {"partner_status": "4", "active": False}, request=request)
     return redirect('member-view', user_id=user_id)
 
+
+def updatePartnerStatus(request, user_id):
+    partner_status = request.POST.get('partner_status')
+
+    if partner_status is not None:
+        try:
+            partner_status = int(partner_status)  # Convert to int
+        except ValueError:
+            messages.error(request, "Invalid status selected.")
+            return redirect('member-view', user_id=user_id)
+
+        update_successful = update_partner_by_user_id(
+            user_id=user_id,
+            update_fields={"partner_status": partner_status},
+            request=request
+        )
+
+        if update_successful:
+            messages.success(request, "Partner status updated successfully.")
+        else:
+            messages.warning(request, "No changes were made to the partner status.")
+
+
+    return redirect('member-view', user_id=user_id)  
 
 def deactivateUser(request, user_id):
     if not request.user.is_authenticated:
