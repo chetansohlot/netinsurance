@@ -6,7 +6,7 @@
 {% url 'insurer-business-report' as insurer_business_url %}
 
 
-{% if request.user.role_id|stringformat:"s" not in "1,4" and request.user.department_id|stringformat:"s" == "2" %}
+{% if request.user.role_id|stringformat:"s" not in "1,4" and request.user.department_id|stringformat:"s" == "5" %}
 
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
@@ -31,7 +31,7 @@
             </a>
           </li>
 
-          <li class="nav-item">
+          {% comment %} <li class="nav-item">
             <a href="{% url 'leads-mgt' %}" 
                class="nav-link {% if request.path|slice:9 == '/lead-mgt' %} active {% endif %}">
               <svg class="sidbarmenu-svg">
@@ -39,7 +39,7 @@
               </svg>
               <p>Lead Mgt</p>
             </a>
-          </li>
+          </li> {% endcomment %}
           
           <li class="nav-item">
             <a href="{% url 'policy-data' %}" class="nav-link {% if '/policy-data/' in request.path or '/edit-policy-data/' in request.path or '/edit-policy-vehicle-details/' in request.path or '/edit-policy-docs/' in request.path or '/edit-agent-payment-info/' in request.path or '/edit-insurer-payment-info/' in request.path or '/edit-franchise-payment-info/' in request.path %} active {% endif %}">
@@ -50,7 +50,7 @@
             </a>
           </li>
           
-          
+{% comment %}           
             <li class="nav-item {% if '/motor/' in request.path or '/health/' in request.path %} menu-is-opening menu-open {% endif %}">
               <a href="#" class="nav-link">
                   <svg class="sidbarmenu-svg">
@@ -76,7 +76,7 @@
                       </a>
                   </li>
               </ul>
-            </li>
+            </li> {% endcomment %}
           
           
           

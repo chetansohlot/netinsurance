@@ -229,9 +229,10 @@ def members_requested(request):
             filter_args = {f"{search_field}__icontains": search_query}
             users = users.filter(**filter_args)"""
 
-        users = Users.objects.filter(role_id__in=role_ids).exclude(
-            activation_status='1'
-        )
+        partners = Partner.objects.filter(partner_status='0')
+        partner_ids = partners.values_list('user_id', flat=True)  # Get user IDs
+
+        users = Users.objects.filter(id__in=partner_ids)
 
     # Get filter values from GET request
         user_gen_id = request.GET.get('user_gen_id', '').strip()
@@ -293,6 +294,7 @@ def members_requested(request):
             'active_agents': active_agents,
             'deactive_agents': deactive_agents,
             'counters': counters,
+            'partners': partners,
             'pending_agents': pending_agents,
             'search_field': search_field,
             'search_query': search_query,
@@ -325,8 +327,12 @@ def members_inprocess(request):
             per_page = 10  # Default to 10 if invalid value is given
 
         # Base QuerySet
-        users = Users.objects.filter(role_id__in=role_ids, activation_status=4)
+        # users = Users.objects.filter(role_id__in=role_ids, activation_status=4)
 
+        partners = Partner.objects.filter(partner_status='1')
+        partner_ids = partners.values_list('user_id', flat=True)  # Get user IDs
+
+        users = Users.objects.filter(id__in=partner_ids)
         
         if global_search:
             users = users.annotate(
@@ -403,6 +409,11 @@ def members_intraining(request):
             users = Users.objects.none()  # Return an empty queryset for unauthorized users
         counters = partnerCounters()
 
+        partners = Partner.objects.filter(partner_status='2')
+        partner_ids = partners.values_list('user_id', flat=True)  # Get user IDs
+
+        users = Users.objects.filter(id__in=partner_ids)
+        
         return render(request, 'members/members-intraining.html', {
             'counters': counters,
             'users': users
@@ -423,6 +434,10 @@ def members_inexam(request):
             users = Users.objects.none()  # Return an empty queryset for unauthorized users
         counters = partnerCounters()
 
+        partners = Partner.objects.filter(partner_status='3')
+        partner_ids = partners.values_list('user_id', flat=True)  # Get user IDs
+
+        users = Users.objects.filter(id__in=partner_ids)
         return render(request, 'members/members-inexam.html', {
             'counters': counters,
             'users': users
@@ -466,6 +481,10 @@ def members_activated(request):
         # Base QuerySet
         users = Users.objects.filter(role_id__in=role_ids, activation_status=1)
 
+        partners = Partner.objects.filter(partner_status='4')
+        partner_ids = partners.values_list('user_id', flat=True)  # Get user IDs
+
+        users = Users.objects.filter(id__in=partner_ids)
         
         if global_search:
             users = users.annotate(
@@ -563,6 +582,10 @@ def members_rejected(request):
         # Base QuerySet
         users = Users.objects.filter(role_id__in=role_ids, activation_status=5)
 
+        partners = Partner.objects.filter(partner_status='6')
+        partner_ids = partners.values_list('user_id', flat=True)  # Get user IDs
+
+        users = Users.objects.filter(id__in=partner_ids)
         
         if global_search:
             users = users.annotate(

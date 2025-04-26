@@ -104,9 +104,9 @@ def create_or_edit(request, department_id=None):
         if department:
             # Update existing department
             department.name = name
-            department.contact_number = mobile
-            department.email = email
-            department.department_code = department_code
+            # department.contact_number = mobile
+            # department.email = email
+            # department.department_code = department_code
             department.updated_at = now()
             department.save()
 
@@ -117,9 +117,9 @@ def create_or_edit(request, department_id=None):
             # Create new department
             new_department = Department.objects.create(
                 name=name,
-                contact_number=mobile,
-                email=email,
-                department_code=department_code,  # New Field
+                # contact_number=mobile,
+                # email=email,
+                # department_code=department_code,  # New Field
                 created_at=now(),
                 updated_at=now(),
             )

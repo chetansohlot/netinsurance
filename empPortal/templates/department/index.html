@@ -105,9 +105,6 @@ Department
                                 <select class="table-select-field" name="search_field">
                                     <option value="" disabled selected>Filter By</option>
                                     <option value="name" {% if search_field == "name" %}selected{% endif %}>Franchise Name</option>
-                                    <option value="mobile" {% if search_field == "mobile" %}selected{% endif %}>Mobile Number</option>
-                                    <option value="email" {% if search_field == "email" %}selected{% endif %}>Email ID</option>
-                                    <option value="contact_person" {% if search_field == "contact_person" %}selected{% endif %}>Contact Person</option>
                                 </select>
                             
                                 <input type="text" name="search_query" class="table-search-field" placeholder="Search" value="{{ search_query }}">
@@ -204,8 +201,6 @@ Department
                                             <label for="checkall"></label>
                                         </th>
                                         <th>Department Name</th>
-                                        <th>Mobile</th>
-                                        <th>Email</th>
                                         <th>Status</th>
                                         <th>Info</th>
                                         <th>Action</th>
@@ -224,8 +219,6 @@ Department
                                                 <span class="text-gray d-block small">#{{ department.id }}</span>
                                             </a>
                                         </td>
-                                        <td>{{ department.contact_number }}</td>
-                                        <td>{{ department.email }}</td>
                                         <td>
                                             <span class="badge {% if department.status == 'Active' %}bg-success{% else %}bg-danger{% endif %}">
                                                 {{ department.status }}
@@ -263,9 +256,6 @@ Department
 
                                
                                               </div>
-                                            <a href="{% url 'department-management-edit' department_id=department.id %}" class="btn btn-xs btn-warning">
-                                                <i class="fas fa-edit"></i> 
-                                            </a>
                                         </td>
                                     </tr>
                                     {% endfor %}
