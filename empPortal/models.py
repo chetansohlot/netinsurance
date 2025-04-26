@@ -4,6 +4,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from datetime import datetime
 from django.utils.timezone import now
 from django.utils.timezone import localtime
+from empPortal.model import Referral
 
 from django.conf import settings
 
@@ -345,6 +346,7 @@ class PolicyInfo(models.Model):
     be_fuel_amount = models.CharField(max_length=50, null=True, blank=True)
     gross_premium = models.CharField(max_length=50, null=True, blank=True)
     net_premium = models.CharField(max_length=50, null=True, blank=True)
+    gst_premium = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, null=True, blank=True)
     active = models.CharField(max_length=1, choices=[('0', 'Inactive'), ('1', 'Active')], default='1')
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -355,9 +357,20 @@ class PolicyInfo(models.Model):
 
     def __str__(self):
         return f"Policy {self.policy_number} - {self.policy_id}"
+    
+    @property
+    def policy_month_year(self):
+        if not self.policy_issue_date:
+            return None
+        try:
+            issue_date = datetime.strptime(self.policy_issue_date.strip(), "%Y-%m-%d %H:%M:%S")
+            return issue_date.strftime("%b-%Y")  # e.g., May-2023
+        except ValueError:
+            return None
 
 class AgentPaymentDetails(models.Model):
     policy = models.ForeignKey(PolicyDocument, on_delete=models.CASCADE, related_name='policy_agent_info')
+    referral = models.ForeignKey(Referral, on_delete=models.CASCADE, related_name='policy_referal')
     policy_number = models.CharField(max_length=255)
     agent_name = models.CharField(max_length=255)
     agent_payment_mod = models.CharField(max_length=255)
@@ -429,6 +442,7 @@ class PolicyUploadDoc(models.Model):
         return f"Documents for Policy: {self.policy_number}"
 
 class InsurerPaymentDetails(models.Model):
+    policy = models.ForeignKey(PolicyDocument, on_delete=models.CASCADE, related_name='policy_insurer_info')
     policy_number = models.CharField(max_length=100, unique=True)
 
     insurer_payment_mode = models.CharField(max_length=100, blank=True, null=True)

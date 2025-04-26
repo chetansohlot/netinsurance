@@ -93,3 +93,10 @@ def get_index(sequence, index):
         return sequence[index]
     except (IndexError, TypeError):
         return ""
+    
+@register.filter(name='subtract')
+def subtract(value, arg):
+    try:
+        return float(value) - float(arg)
+    except (ValueError, TypeError):
+        return 0

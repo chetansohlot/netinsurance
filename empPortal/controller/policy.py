@@ -118,6 +118,7 @@ def edit_policy(request, policy_id):
         policy.be_fuel_amount = request.POST.get('be_fuel_amount')
         policy.gross_premium = request.POST.get('gross_premium')
         policy.net_premium = request.POST.get('net_premium')
+        policy.gst_premium = request.POST.get('gst_premium')
 
         policy.save()
         messages.success(request, "Policy Updated successfully!")
@@ -283,19 +284,25 @@ def edit_agent_payment_info(request, policy_no):
     
     policy_no = unquote(policy_no)
 
-    policy = get_object_or_404(PolicyInfo, policy_number=policy_no)
+    policy = PolicyInfo.objects.filter(policy_number=policy_no).first()
+    # policy = get_object_or_404(PolicyInfo, policy_number=policy_no)
+    if not policy:
+        return redirect('policy-data')
+    
     policy_data = PolicyDocument.objects.filter(policy_number=policy_no).first()
     referrals = Referral.objects.all()
-     
-    policy_id =  request.POST.get('policy_id')
-    try:
-        agent_payment = AgentPaymentDetails.objects.get(policy_number=policy.policy_number,policy_id=policy_id)
-    except AgentPaymentDetails.DoesNotExist:
-        agent_payment = AgentPaymentDetails(policy_number=policy.policy_number,policy_id=policy_id)
-
+    agent_payment = AgentPaymentDetails.objects.filter(policy_number=policy.policy_number).last()
+    
     if request.method == 'POST':
+        policy_id =  request.POST.get('policy_id')
+        agent_payment = AgentPaymentDetails.objects.filter(policy_number=policy.policy_number,policy_id=policy_id).first()
+        
+        if not agent_payment:
+            agent_payment = AgentPaymentDetails(policy_number=policy.policy_number,policy_id=policy_id)
+        
         # agent_payment.agent_name = request.POST.get('agent_name')
         agent_payment.agent_name = request.POST.get('referral_by')
+        agent_payment.referral_id = request.POST.get('referral_by')
         agent_payment.agent_payment_mod = request.POST.get('agent_payment_mod')
         agent_payment.transaction_id = request.POST.get('transaction_id')
         agent_payment.agent_payment_date = request.POST.get('agent_payment_date')
@@ -341,7 +348,7 @@ def edit_insurer_payment_info(request, policy_no):
         return redirect('login')
     
     policy_no = unquote(policy_no)
-
+    
     policy = get_object_or_404(PolicyInfo, policy_number=policy_no)
     policy_data = PolicyDocument.objects.filter(policy_number=policy_no).first()
 
@@ -350,12 +357,16 @@ def edit_insurer_payment_info(request, policy_no):
     except PolicyVehicleInfo.DoesNotExist:
         vehicle = None
 
-    try:
-        insurer_payment = InsurerPaymentDetails.objects.get(policy_number=policy.policy_number)
-    except InsurerPaymentDetails.DoesNotExist:
-        insurer_payment = InsurerPaymentDetails(policy_number=policy.policy_number)
-
+    insurer_payment = InsurerPaymentDetails.objects.filter(policy_number=policy.policy_number).last()
+    
     if request.method == 'POST':
+        policy_id =  request.POST.get('policy_id')
+        
+        try:
+            insurer_payment = InsurerPaymentDetails.objects.filter(policy_number=policy.policy_number,policy_id=policy_id).first()
+        except InsurerPaymentDetails.DoesNotExist:
+            insurer_payment = InsurerPaymentDetails(policy_number=policy.policy_number,policy_id=policy_id)
+
         insurer_payment.insurer_payment_mode = request.POST.get('insurer_payment_mode')
         insurer_payment.insurer_payment_date = request.POST.get('insurer_payment_date')
         insurer_payment.insurer_amount = request.POST.get('insurer_amount')
@@ -403,7 +414,6 @@ def edit_franchise_payment_info(request, policy_no):
         return redirect('login')
     
     policy_no = unquote(policy_no)
-    policy_id =  request.POST.get('policy_id')
     policy = get_object_or_404(PolicyInfo, policy_number=policy_no)
     policy_data = PolicyDocument.objects.filter(policy_number=policy_no).first()
 
@@ -412,12 +422,15 @@ def edit_franchise_payment_info(request, policy_no):
     except PolicyVehicleInfo.DoesNotExist:
         vehicle = None
 
-    try:
-        franchise_payment = FranchisePayment.objects.get(policy_number=policy.policy_number,policy_id=policy_id)
-    except FranchisePayment.DoesNotExist:
-        franchise_payment = FranchisePayment(policy_number=policy.policy_number,policy_id=policy_id)
-
+    franchise_payment = FranchisePayment.objects.filter(policy_number=policy.policy_number).last()
+    
     if request.method == 'POST':
+        policy_id =  request.POST.get('policy_id')
+        try:
+            franchise_payment = FranchisePayment.objects.filter(policy_number=policy.policy_number,policy_id=policy_id).first()
+        except FranchisePayment.DoesNotExist:
+            franchise_payment = FranchisePayment(policy_number=policy.policy_number,policy_id=policy_id)
+
         franchise_payment.franchise_od_comm = request.POST.get('franchise_od_comm')
         franchise_payment.franchise_net_comm = request.POST.get('franchise_net_comm')
         franchise_payment.franchise_tp_comm = request.POST.get('franchise_tp_comm')

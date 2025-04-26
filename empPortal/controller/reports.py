@@ -66,6 +66,7 @@ def commission_report(request):
         policy_vehicle_info = policy.policy_vehicle_info.first() 
         policy_agent_info = policy.policy_agent_info.first() 
         policy_franchise_info = policy.policy_franchise_info.first() 
+        policy_insurer_info = policy.policy_insurer_info.first() 
         
         policy_data.append({
             'policy': policy,
@@ -73,6 +74,7 @@ def commission_report(request):
             'policy_vehicle_info': policy_vehicle_info,
             'policy_agent_info': policy_agent_info,
             'policy_franchise_info': policy_franchise_info,
+            'policy_insurer_info': policy_insurer_info,
             'od_commission_amount': od_commission_amount,
             'tp_commission_amount': tp_commission_amount,
             'net_commission_amount': net_commission_amount

@@ -319,10 +319,25 @@ Policy Data
                               <!-- <td>{{ data.start_date|default:"-" }}</td>
                               <td>{{ data.expiry_date|default:"-" }}</td> -->
                               <td>
-                                <span class="circle-icon"><i class="far fa-circle"></i></span> <strong>Net:</strong> <i class="fa-solid fa-indian-rupee-sign"></i> {{ data.policy_premium }} <br>
-                                <span class="circle-icon"><i class="far fa-circle"></i></span> <strong>Gross:</strong> <i class="fa-solid fa-indian-rupee-sign"></i> {{ data.policy_total_premium }} <br>
-                                <span class="circle-icon"><i class="far fa-circle"></i></span> <strong>OD:</strong> <i class="fa-solid fa-indian-rupee-sign"></i> {{ data.od_premium }} <br>
-                                <span class="circle-icon"><i class="far fa-circle"></i></span> <strong>TP:</strong> <i class="fa-solid fa-indian-rupee-sign"></i> {{ data.tp_premium }}
+                                <span class="circle-icon"><i class="far fa-circle"></i></span>
+                                <strong>Net:</strong>
+                                <i class="fa-solid fa-indian-rupee-sign"></i>
+                                {{ data.od_premium|default_if_none:0|add:data.tp_premium|default_if_none:0|floatformat:2 }} <br>
+
+                                <span class="circle-icon"><i class="far fa-circle"></i></span>
+                                <strong>Gross:</strong>
+                                <i class="fa-solid fa-indian-rupee-sign"></i>
+                                {{ data.policy_total_premium|default_if_none:0|floatformat:2 }} <br>
+
+                                <span class="circle-icon"><i class="far fa-circle"></i></span>
+                                <strong>OD:</strong>
+                                <i class="fa-solid fa-indian-rupee-sign"></i>
+                                {{ data.od_premium|default_if_none:0|floatformat:2 }} <br>
+
+                                <span class="circle-icon"><i class="far fa-circle"></i></span>
+                                <strong>TP:</strong>
+                                <i class="fa-solid fa-indian-rupee-sign"></i>
+                                {{ data.tp_premium|default_if_none:0|floatformat:2 }}
                               </td>
                               <!-- <td>{{ data.policy_total_premium }}</td>
                               <td>{{ data.od_premium }}</td>

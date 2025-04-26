@@ -6,7 +6,7 @@
 
 {% block content %}
 {% load static %}
-
+{% load custom_filters %}
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
   {% include 'navbar.html' %}
@@ -127,6 +127,8 @@
                               <th class="nowrap">Agent Name</th>
                               <th class="nowrap">SM Name</th>
                               <th class="nowrap">Franchise Name</th>
+                              <th class="nowrap">Insurer Name</th>
+                              <th class="nowrap">SP Name</th>
                               <th class="nowrap">Issue Date</th>
                               <th class="nowrap">Risk Start Date</th>
                               <th class="nowrap">Payment Status</th>
@@ -144,33 +146,55 @@
                               <th class="nowrap">GST</th>
                               <th class="nowrap">Net Prem.</th>
                               <th class="nowrap">OD Prem.</th>
+                              <th class="nowrap">TP Prem.</th>
                               <th class="nowrap">Agent Comm.% OD</th>
+                              <th class="nowrap">Agent OD Amount</th>
                               <th class="nowrap">Agent TP Comm</th>
                               <th class="nowrap">Agent TP Amount</th>
                               <th class="nowrap">Agent Comm.% Net</th>
                               <th class="nowrap">Agent Net Amt</th>
                               <th class="nowrap">Agent Bonus</th>
                               <th class="nowrap">Agent Total Comm.</th>
-                              <th class="nowrap">Franchise Comm.% OD</th>
+                              {% comment %} <th class="nowrap">Franchise Comm.% OD</th>
                               <th class="nowrap">Franchise OD Amount</th>
                               <th class="nowrap">Franchise TP Comm</th>
                               <th class="nowrap">Franchise Agent TP Amount</th>
                               <th class="nowrap">Franchise Agent Comm.% Net</th>
                               <th class="nowrap">Franchise Agent Net Amt</th>
-                              <th class="nowrap">Franchise Bonus</th>
+                              <th class="nowrap">Franchise Bonus</th> {% endcomment %}
                               <th class="nowrap">Franchise Total Comm.</th>
+                              <th class="nowrap">Insurer Comm.% OD</th>
+                              <th class="nowrap">Insurer OD Amount</th>
+                              <th class="nowrap">Insurer TP Comm</th>
+                              <th class="nowrap">Insurer TP Amount</th>
+                              <th class="nowrap">Insurer Comm.% Net</th>
+                              <th class="nowrap">Insurer Net Amt</th>
+                              <th class="nowrap">Insurer Bonus</th>
+                              <th class="nowrap">Insurer Total Comm.</th>
+                              <th class="nowrap">Profit/Loss.</th>
+                              <th class="nowrap">TDS %</th>
+                              <th class="nowrap">TDS Amount</th>
+                              <th class="nowrap">Net Profit</th>
                             </tr>
                         </thead>
                         <tbody>
                           {% for data in policy_data %}
                           <tr>
+                            <td>{{ data.policy_infos.policy_month_year|default:"-" }}</td>
+                            <td>{{ data.policy_agent_info.referral.name|default:"-" }}</td>
+                            <td>{{ data.policy_agent_info.referral.sales|default:"-" }}</td>
                             <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
+                            <td>{{ data.policy_infos.insurance_company|default:"-" }}</td>
                             <td>-</td>
                             <td>{{ data.policy_infos.policy_issue_date|default:"-" }}</td>
                             <td>{{ data.policy_infos.policy_start_date|default:"-" }}</td>
-                            <td>Confirmed</td>
+                            <td>
+                              {% if data.policy_infos.net_premium %}
+                                Confirmed
+                              {% else %}
+                                -
+                              {% endif %}
+                            </td>
                             <td>{{ data.policy_infos.insurance_company|default:"-" }}</td>
                             <td>{{ data.policy_infos.policy_type|default:"-" }}</td>
                             <td>{{ data.policy_infos.policy_number|default:"-" }}</td>
@@ -180,26 +204,68 @@
                             <td>{{ data.policy_vehicle_info.gvw|default:"-" }}</td>
                             <td>{{ data.policy_vehicle_info.registration_number|default:"-" }}</td>
                             <td>{{ data.policy_vehicle_info.manufacture_year|default:"-" }}</td>
-                            <td>{{ data.policy_infos.sum_insured|default:"-" }}</td>
-                            <td>{{ data.policy_infos.gross_premium|default:"-" }}</td>
-                            <td>GST</td>
-                            <td>{{ data.policy_infos.net_premium|default:"-" }}</td>
-                            <td>{{ data.policy_infos.od_premium|default:"-" }}</td>
-                            <td>{{ data.policy_agent_info.agent_od_comm|default:"-" }}</td>
-                            <td>{{ data.policy_agent_info.agent_tp_comm|default:"-" }}</td>
-                            <td>{{ data.policy_agent_info.agent_tp_amount|default:"-" }}</td>
-                            <td>{{ data.policy_agent_info.agent_net_comm|default:"-" }}</td>
-                            <td>{{ data.policy_agent_info.agent_net_amount|default:"-" }}</td>
-                            <td>{{ data.policy_agent_info.agent_incentive_amount|default:"-" }}</td>
-                            <td>{{ data.policy_agent_info.agent_total_comm_amount|default:"-" }}</td>
-                            <td>{{ data.policy_franchise_info.franchise_od_comm|default:"-" }}</td>
-                            <td>{{ data.policy_franchise_info.franchise_od_amount|default:"-" }}</td>
-                            <td>{{ data.policy_franchise_info.franchise_tp_comm|default:"-" }}</td>
-                            <td>{{ data.policy_franchise_info.franchise_tp_amount|default:"-" }}</td>
-                            <td>{{ data.policy_franchise_info.franchise_net_comm|default:"-" }}</td>
-                            <td>{{ data.policy_franchise_info.franchise_net_amount|default:"-" }}</td>
-                            <td>{{ data.policy_franchise_info.franchise_incentive_amount|default:"-" }}</td>
-                            <td>{{ data.policy_franchise_info.franchise_total_comm_amount|default:"-" }}</td>
+                            <td>{{ data.policy_infos.sum_insured|floatformat:2|default:"-" }}</td>
+                            <td>{{ data.policy_infos.gross_premium|floatformat:2|default:"-" }}</td>
+                            <td>{{ data.policy_infos.gst_premium|floatformat:2|default:"-" }}</td>
+                            <td>{{ data.policy_infos.net_premium|floatformat:2|default:"-" }}</td>
+                            <td>{{ data.policy_infos.od_premium|floatformat:2|default:"-" }}</td>
+                            <td>{{ data.policy_infos.tp_premium|floatformat:2|default:"-" }}</td>
+                            <td>{{ data.policy_agent_info.agent_od_comm|floatformat:2|default:"-" }}</td>
+                            <td>{{ data.policy_agent_info.agent_od_amount|floatformat:2|default:"-" }}</td>
+                            <td>{{ data.policy_agent_info.agent_tp_comm|floatformat:2|default:"-" }}</td>
+                            <td>{{ data.policy_agent_info.agent_tp_amount|floatformat:2|default:"-" }}</td>
+                            <td>{{ data.policy_agent_info.agent_net_comm|floatformat:2|default:"-" }}</td>
+                            <td>{{ data.policy_agent_info.agent_net_amount|floatformat:2|default:"-" }}</td>
+                            <td>{{ data.policy_agent_info.agent_incentive_amount|floatformat:2|default:"-" }}</td>
+                            <td>{{ data.policy_agent_info.agent_total_comm_amount|floatformat:2|default:"-" }}</td>
+                            {% comment %} <td>{{ data.policy_franchise_info.franchise_od_comm|floatformat:2|default:"-" }}</td>
+                            <td>{{ data.policy_franchise_info.franchise_od_amount|floatformat:2|default:"-" }}</td>
+                            <td>{{ data.policy_franchise_info.franchise_tp_comm|floatformat:2|default:"-" }}</td>
+                            <td>{{ data.policy_franchise_info.franchise_tp_amount|floatformat:2|default:"-" }}</td>
+                            <td>{{ data.policy_franchise_info.franchise_net_comm|floatformat:2|default:"-" }}</td>
+                            <td>{{ data.policy_franchise_info.franchise_net_amount|floatformat:2|default:"-" }}</td>
+                            <td>{{ data.policy_franchise_info.franchise_incentive_amount|floatformat:2|default:"-" }}</td> {% endcomment %}
+                            <td>{{ data.policy_franchise_info.franchise_total_comm_amount|floatformat:2|default:"-" }}</td>
+                            <td>{{ data.policy_insurer_info.insurer_od_comm|floatformat:2|default:"-" }}</td>
+                            <td>{{ data.policy_insurer_info.insurer_od_amount|floatformat:2|default:"-" }}</td>
+                            <td>{{ data.policy_insurer_info.insurer_tp_comm|floatformat:2|default:"-" }}</td>
+                            <td>{{ data.policy_insurer_info.insurer_tp_amount|floatformat:2|default:"-" }}</td>
+                            <td>{{ data.policy_insurer_info.insurer_net_comm|floatformat:2|default:"-" }}</td>
+                            <td>{{ data.policy_insurer_info.insurer_net_amount|floatformat:2|default:"-" }}</td>
+                            <td>{{ data.policy_insurer_info.insurer_incentive_amount|floatformat:2|default:"-" }}</td>
+                            <td>{{ data.policy_insurer_info.insurer_total_comm_amount|floatformat:2|default:"-" }}</td>
+                            <td>
+                              {% with insurer_comm=data.policy_insurer_info.insurer_total_comm_amount|default_if_none:0 %}
+                                {% with agent_comm=data.policy_agent_info.agent_total_comm_amount|default_if_none:0 %}
+                                  {% with franchise_comm=data.policy_franchise_info.franchise_total_comm_amount|default_if_none:0 %}
+                                    {% with insurer_tds=data.policy_insurer_info.insurer_tds_amount|default_if_none:0 %}
+                                      {% if insurer_comm %}
+                                        {{ insurer_comm|subtract:agent_comm|subtract:franchise_comm|floatformat:2|default:"-" }}
+                                      {% else %}
+                                        -
+                                      {% endif %}
+                                    {% endwith %}
+                                  {% endwith %}
+                                {% endwith %}
+                              {% endwith %}
+                            </td>
+                            <td>{{ data.policy_insurer_info.insurer_tds|floatformat:2|default:"-" }}</td>
+                            <td>{{ data.policy_insurer_info.insurer_tds_amount|floatformat:2|default:"-" }}</td>
+                            <td>
+                              {% with insurer_comm=data.policy_insurer_info.insurer_total_comm_amount|default_if_none:0 %}
+                                {% with agent_comm=data.policy_agent_info.agent_total_comm_amount|default_if_none:0 %}
+                                  {% with franchise_comm=data.policy_franchise_info.franchise_total_comm_amount|default_if_none:0 %}
+                                    {% with insurer_tds=data.policy_insurer_info.insurer_tds_amount|default_if_none:0 %}
+                                      {% if insurer_comm %}
+                                        {{ insurer_comm|subtract:agent_comm|subtract:franchise_comm|subtract:insurer_tds|floatformat:2|default:"-" }}
+                                      {% else %}
+                                        -
+                                      {% endif %}
+                                    {% endwith %}
+                                  {% endwith %}
+                                {% endwith %}
+                              {% endwith %}
+                            </td>
                           </tr>
                           {% endfor %}
                       </tbody>
