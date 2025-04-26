@@ -5,7 +5,9 @@ from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib import messages
 from django.template import loader
 from ..models import Commission,Users, DocumentUpload, Branch
+from ..helpers import sync_user_to_partner, update_partner_by_user_id
 from empPortal.model import BankDetails
+from empPortal.model import Partner
 from ..forms import DocumentUploadForm
 from django.core.mail import send_mail
 from django.core.mail import EmailMessage
@@ -818,6 +820,8 @@ def activateUser(request, user_id):
         messages.error(request, "User cannot be activated. Please ensure all required documents are approved.")
 
     # Redirect to the member view page
+
+    update_partner_by_user_id(25, {"partner_status": "4", "active": False}, request=request)
     return redirect('member-view', user_id=user_id)
 
 

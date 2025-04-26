@@ -7,6 +7,7 @@ from django.urls import reverse
 import pprint  # Import pprint for better formatting
 from django.http import JsonResponse
 import pdfkit
+from empPortal.model import Partner
 import os
 from django.conf import settings
 import os

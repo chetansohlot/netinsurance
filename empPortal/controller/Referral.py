@@ -22,7 +22,6 @@ from django.forms.models import model_to_dict
 import json
 from django.utils.timezone import now
 from django.core.paginator import Paginator
-import helpers  
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
