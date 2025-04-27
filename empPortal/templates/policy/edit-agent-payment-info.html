@@ -146,7 +146,12 @@
                                   <div class="col-sm-6">
                                     <div class="form-group">
                                       <label class="form-lbl">BQP</label>
-                                      <input type="text" class="form-field" name="bqp" placeholder="Enter BQP" value="{{ policy.bqp|default:'' }}">
+                                      <select name="bqp" class="form-field" id="bqp">
+                                        <option value="">Select BQP</option>
+                                        {% for bqp in bqps %}
+                                          <option value="{{bqp.id}}" {% if policy.bqp_id == bqp.id %}selected{% endif %}>{{bqp.bqp_name}}</option>
+                                        {% endfor %}
+                                      </select>
                                     </div>
                                   </div>
                             
@@ -190,7 +195,7 @@
                                   <div class="col-sm-6">
                                     <div class="form-group">
                                       <label class="form-lbl">Agent Amount</label>
-                                      <input type="text" class="form-field" name="agent_amount" placeholder="Agent Amount" value="{{ agent_payment.agent_amount }}">
+                                      <input type="text" class="form-field number" name="agent_amount" placeholder="Agent Amount" value="{{ agent_payment.agent_amount }}">
                                     </div>
                                   </div>
                                  

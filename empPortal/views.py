@@ -883,55 +883,18 @@ def policyData(request):
     user_id = request.user.id
     role_id = Users.objects.filter(id=user_id).values_list('role_id', flat=True).first()
 
-    # Base queryset
-        
+    filters_q = Q(status=6) & Q(policy_number__isnull=False) & ~Q(policy_number='')
     if role_id != 1 and request.user.department_id != "5":
-        base_qs = PolicyDocument.objects.filter(
-            status=6,
-            rm_id=user_id
-        ).filter(
-            Q(policy_number__isnull=False) & ~Q(policy_number='')
-        ).order_by('-id')
-    else:
-        base_qs = PolicyDocument.objects.filter(
-            status=6
-        ).filter(
-            Q(policy_number__isnull=False) & ~Q(policy_number='')
-        ).order_by('-id')
-    # Handle search filters
-    # search_field = request.GET.get('search_field')
-    # search_query = request.GET.get('search_query')
-
-    # if search_field and search_query:
-    #     if search_field == 'policy_number':
-    #         queryset = queryset.filter(policy_number__icontains=search_query)
-    #     elif search_field == 'vehicle_number':
-    #         queryset = queryset.filter(vehicle_number__icontains=search_query)
-    #     elif search_field == 'holder_name':
-    #         queryset = queryset.filter(holder_name__icontains=search_query)
-    #     elif search_field == 'insurance_provider':
-    #         queryset = queryset.filter(insurance_provider__icontains=search_query)
-
-    # # Apply filters based on form input
-    # if 'policy_number' in request.GET and request.GET['policy_number']:
-    #     queryset = queryset.filter(policy_number__icontains=request.GET['policy_number'])
-    # if 'vehicle_reg_no' in request.GET and request.GET['vehicle_reg_no']:
-    #     queryset = queryset.filter(vehicle_reg_no__icontains=request.GET['vehicle_reg_no']) 
-    # if 'vehicle_type'  in request.GET and request.GET['vehicle_type']:
-    #     queryset = queryset.filter(vehicle_type__icontains=request.GET['vehicle_type'])
-    # if 'policy_holder_name' in request.GET and request.GET['policy_holder_name']:
-    #     queryset = queryset.filter(policy_holder_name__icontains =request.GET['policy_holder_name'])
-    # if 'insurer_name' in request.GET and request.GET['insurer_name']:
-    #     queryset = queryset.filter(insurer__icontains=request.GET['insurer_name']) 
-    # 
-
+        filters_q &= Q(rm_id=user_id)
+        
+    base_qs = PolicyDocument.objects.filter(filters_q).order_by('-id').prefetch_related(
+        'policy_agent_info', 'policy_franchise_info', 'policy_insurer_info'
+    )
+    
     def get_nested(data, path, default=''):
-      for key in path:
-          if isinstance(data, dict):
-            data = data.get(key, default)
-          else:
-            return default
-      return str(data).lower()  # always return as lowercase string
+        for key in path:
+            data = data.get(key) if isinstance(data, dict) else default
+        return str(data).lower()
 
 
 
@@ -944,15 +907,13 @@ def policyData(request):
         'policy_holder_name':      request.GET.get('policy_holder_name', '').strip().lower(),      # maps to "Customer Name"
         'mobile_number':      request.GET.get('mobile_number', '').strip().lower(),      # maps to "Mobile Number"
         'insurance_provider': request.GET.get('insurance_provider', '').strip().lower(), # maps to "Insurance Provider"
-        # add more if you need: 'total_count', 'insurer_wise', etc.
     }
 
-     # 3) Manually parse & filter
     filtered = []
     for obj in base_qs:
         raw = obj.extracted_text
-
-        # parse only if string; if dict, use directly
+        data = {}
+        
         if isinstance(raw, str):
             try:
                 data = json.loads(raw)
@@ -960,10 +921,10 @@ def policyData(request):
                 continue
         elif isinstance(raw, dict):
             data = raw
-        else:
+    
+        if not data:
             continue
 
-         # apply each non‑empty filter
         if filters['policy_number'] and filters['policy_number'] not in data.get('policy_number', '').lower():
             continue
         if filters['vehicle_number'] and filters['vehicle_number'] not in data.get('vehicle_number', '').lower():
@@ -981,19 +942,9 @@ def policyData(request):
         if filters['insurance_provider'] and filters['insurance_provider'] not in data.get('insurance_company', '').lower():
             continue   
 
-        # passed all checks → keep it
         obj.json_data = data    # attach parsed dict for the template
         filtered.append(obj)
 
-    # # Convert extracted_text JSON string to dict
-    # for data in queryset:
-    #     if isinstance(data.extracted_text, str):
-    #         try:
-    #             data.extracted_text = json.loads(data.extracted_text)
-    #         except json.JSONDecodeError:
-    #             data.extracted_text = {}
-
-    # Base queryset
     if role_id != 1 and request.user.department_id != "5":
         policy_count = PolicyDocument.objects.filter(status=6, rm_id=user_id).count()
     else:
@@ -1013,8 +964,6 @@ def policyData(request):
     return render(request, 'policy/policy-data.html', {
         "page_obj": page_obj,
         "policy_count": policy_count,
-        # "search_field": search_field,
-        # "search_query": search_query,
         "per_page": per_page,
         'filters': {k: request.GET.get(k,'') for k in filters}
     })

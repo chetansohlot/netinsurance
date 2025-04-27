@@ -5,7 +5,7 @@ from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib import messages
 from django.template import loader
 from ..models import Commission,Users, PolicyUploadDoc,Branch,PolicyInfo,PolicyDocument, DocumentUpload, FranchisePayment, InsurerPaymentDetails, PolicyVehicleInfo, AgentPaymentDetails, UploadedExcel, UploadedZip
-from ..models import BulkPolicyLog,ExtractedFile
+from ..models import BulkPolicyLog,ExtractedFile, BqpMaster
 from empPortal.model import Referral
 
 from empPortal.model import BankDetails
@@ -291,6 +291,7 @@ def edit_agent_payment_info(request, policy_no):
     
     policy_data = PolicyDocument.objects.filter(policy_number=policy_no).first()
     referrals = Referral.objects.all()
+    bqps = BqpMaster.objects.all()
     agent_payment = AgentPaymentDetails.objects.filter(policy_number=policy.policy_number).last()
     
     if request.method == 'POST':
@@ -301,30 +302,32 @@ def edit_agent_payment_info(request, policy_no):
             agent_payment = AgentPaymentDetails(policy_number=policy.policy_number,policy_id=policy_id)
         
         # agent_payment.agent_name = request.POST.get('agent_name')
-        agent_payment.agent_name = request.POST.get('referral_by')
-        agent_payment.referral_id = request.POST.get('referral_by')
-        agent_payment.agent_payment_mod = request.POST.get('agent_payment_mod')
-        agent_payment.transaction_id = request.POST.get('transaction_id')
-        agent_payment.agent_payment_date = request.POST.get('agent_payment_date')
-        agent_payment.agent_amount = request.POST.get('agent_amount')
-        agent_payment.agent_remarks = request.POST.get('agent_remarks')
-        agent_payment.agent_od_comm = request.POST.get('agent_od_comm')
-        agent_payment.agent_tp_comm = request.POST.get('agent_tp_comm')
-        agent_payment.agent_net_comm = request.POST.get('agent_net_comm')
-        agent_payment.agent_incentive_amount = request.POST.get('agent_incentive_amount')
-        agent_payment.agent_tds = request.POST.get('agent_tds')
-        agent_payment.agent_od_amount = request.POST.get('agent_od_amount')
-        agent_payment.agent_net_amount = request.POST.get('agent_net_amount')
-        agent_payment.agent_tp_amount = request.POST.get('agent_tp_amount')
-        agent_payment.agent_total_comm_amount = request.POST.get('agent_total_comm_amount')
-        agent_payment.agent_net_payable_amount = request.POST.get('agent_net_payable_amount')
-        agent_payment.agent_tds_amount = request.POST.get('agent_tds_amount')
-
+        agent_payment.agent_name = request.POST.get('referral_by',None)
+        agent_payment.referral_id = request.POST.get('referral_by',None)
+        agent_payment.agent_payment_mod = request.POST.get('agent_payment_mod',None)
+        agent_payment.transaction_id = request.POST.get('transaction_id',None)
+        agent_payment.agent_payment_date = request.POST.get('agent_payment_date',None)
+        agent_payment.agent_amount = request.POST.get('agent_amount',None)
+        agent_payment.agent_remarks = request.POST.get('agent_remarks',None)
+        agent_payment.agent_od_comm = request.POST.get('agent_od_comm',None)
+        agent_payment.agent_tp_comm = request.POST.get('agent_tp_comm',None)
+        agent_payment.agent_net_comm = request.POST.get('agent_net_comm',None)
+        agent_payment.agent_incentive_amount = request.POST.get('agent_incentive_amount',None)
+        agent_payment.agent_tds = request.POST.get('agent_tds',None)
+        agent_payment.agent_od_amount = request.POST.get('agent_od_amount',None)
+        agent_payment.agent_net_amount = request.POST.get('agent_net_amount',None)
+        agent_payment.agent_tp_amount = request.POST.get('agent_tp_amount',None)
+        agent_payment.agent_total_comm_amount = request.POST.get('agent_total_comm_amount',None)
+        agent_payment.agent_net_payable_amount = request.POST.get('agent_net_payable_amount',None)
+        agent_payment.agent_tds_amount = request.POST.get('agent_tds_amount',None)
+        agent_payment.updated_by = request.user
         agent_payment.save()
         
-        policy.bqp = request.POST.get('bqp')
-        policy.pos_name = request.POST.get('pos_name')
-        policy.referral_by = request.POST.get('referral_by')
+    
+        
+        policy.bqp_id = request.POST.get('bqp',None)
+        policy.pos_name = request.POST.get('pos_name',None)
+        policy.referral_by = request.POST.get('referral_by',None)
         policy.save()
         messages.success(request, "Policy Agent Payment Updated successfully!")
 
@@ -337,6 +340,7 @@ def edit_agent_payment_info(request, policy_no):
         'pdf_path': pdf_path,
         'policy_data': policy_data,
         'agent_payment': agent_payment,
+        'bqps': bqps,
         'referrals':referrals
     })
 
@@ -367,32 +371,34 @@ def edit_insurer_payment_info(request, policy_no):
         except InsurerPaymentDetails.DoesNotExist:
             insurer_payment = InsurerPaymentDetails(policy_number=policy.policy_number,policy_id=policy_id)
 
-        insurer_payment.insurer_payment_mode = request.POST.get('insurer_payment_mode')
-        insurer_payment.insurer_payment_date = request.POST.get('insurer_payment_date')
-        insurer_payment.insurer_amount = request.POST.get('insurer_amount')
-        insurer_payment.insurer_remarks = request.POST.get('insurer_remarks')
+        insurer_payment.insurer_payment_mode = request.POST.get('insurer_payment_mode',None)
+        insurer_payment.insurer_payment_date = request.POST.get('insurer_payment_date',None)
+        insurer_payment.insurer_amount = request.POST.get('insurer_amount',None)
+        insurer_payment.insurer_remarks = request.POST.get('insurer_remarks',None)
 
-        insurer_payment.insurer_od_comm = request.POST.get('insurer_od_comm')
-        insurer_payment.insurer_od_amount = request.POST.get('insurer_od_amount')
+        insurer_payment.insurer_od_comm = request.POST.get('insurer_od_comm',None)
+        insurer_payment.insurer_od_amount = request.POST.get('insurer_od_amount',None)
 
-        insurer_payment.insurer_tp_comm = request.POST.get('insurer_tp_comm')
-        insurer_payment.insurer_tp_amount = request.POST.get('insurer_tp_amount')
+        insurer_payment.insurer_tp_comm = request.POST.get('insurer_tp_comm',None)
+        insurer_payment.insurer_tp_amount = request.POST.get('insurer_tp_amount',None)
 
-        insurer_payment.insurer_net_comm = request.POST.get('insurer_net_comm')
-        insurer_payment.insurer_net_amount = request.POST.get('insurer_net_amount')
+        insurer_payment.insurer_net_comm = request.POST.get('insurer_net_comm',None)
+        insurer_payment.insurer_net_amount = request.POST.get('insurer_net_amount',None)
         
-        insurer_payment.insurer_tds = request.POST.get('insurer_tds')
-        insurer_payment.insurer_tds_amount = request.POST.get('insurer_tds_amount')
+        insurer_payment.insurer_tds = request.POST.get('insurer_tds',None)
+        insurer_payment.insurer_tds_amount = request.POST.get('insurer_tds_amount',None)
         
-        insurer_payment.insurer_incentive_amount = request.POST.get('insurer_incentive_amount')
-        insurer_payment.insurer_total_comm_amount = request.POST.get('insurer_total_comm_amount')
-        insurer_payment.insurer_net_payable_amount = request.POST.get('insurer_net_payable_amount')
+        insurer_payment.insurer_incentive_amount = request.POST.get('insurer_incentive_amount',None)
+        insurer_payment.insurer_total_comm_amount = request.POST.get('insurer_total_comm_amount',None)
+        insurer_payment.insurer_net_payable_amount = request.POST.get('insurer_net_payable_amount',None)
         
-        insurer_payment.insurer_total_commission = request.POST.get('insurer_total_commission')
-        insurer_payment.insurer_receive_amount = request.POST.get('insurer_receive_amount')
-        insurer_payment.insurer_balance_amount = request.POST.get('insurer_balance_amount')
+        insurer_payment.insurer_total_commission = request.POST.get('insurer_total_commission',None)
+        insurer_payment.insurer_receive_amount = request.POST.get('insurer_receive_amount',None)
+        insurer_payment.insurer_balance_amount = request.POST.get('insurer_balance_amount',None)
 
         insurer_payment.active = '1'
+        insurer_payment.updated_by = request.user
+        
         insurer_payment.save()
 
         messages.success(request, "Insurer Payment details updated successfully!")
@@ -445,6 +451,8 @@ def edit_franchise_payment_info(request, policy_no):
         franchise_payment.franchise_tds_amount = request.POST.get('franchise_tds_amount')
 
         franchise_payment.active = True
+        franchise_payment.updated_by = request.user
+        
         franchise_payment.save()
 
         messages.success(request, "Franchise Payment details updated successfully!")
@@ -562,11 +570,9 @@ def bulkBrowsePolicy(request):
                 zip_file = request.FILES["zip_file"]
             else:
                 zip_file = None
-                
-            camp_name = request.POST.get("camp_name") 
+            camp_name = request.POST.get("camp_name")
             rm_id = request.POST.get("rm_id")
             product_type = request.POST.get("product_type")
-            
             # Validate ZIP file format
             if not zip_file or not zip_file.name.lower().endswith(".zip"):
                 messages.error(request, "Invalid file format. Only ZIP files are allowed.")
@@ -578,10 +584,14 @@ def bulkBrowsePolicy(request):
                         zip_bytes = BytesIO(zip_file.read())
                         with zipfile.ZipFile(zip_bytes) as zf:
                             file_list = zf.infolist()
-                            total_files = len(file_list)
-                            pdf_files = [f for f in file_list if f.filename.lower().endswith(".pdf")]
-                            non_pdf_files = [f for f in file_list if not f.filename.lower().endswith(".pdf")]
-                            directories = [f for f in file_list if f.is_dir()]
+                            
+                            root_files = [f for f in file_list if not f.is_dir() and "/" not in f.filename and "\\" not in f.filename]
+                            
+                            total_files = len(root_files)
+                            pdf_files = [f for f in root_files if f.filename.lower().endswith(".pdf")]
+                            non_pdf_files = [f for f in root_files if not f.filename.lower().endswith(".pdf")]
+                            
+                            directories = [f for f in root_files if f.is_dir()]
                             pdf_count = len(pdf_files)
                             non_pdf_count = len(non_pdf_files)
                             
@@ -589,34 +599,27 @@ def bulkBrowsePolicy(request):
                                 messages.error(request, "ZIP must not contain any folders.")
                                 for folder in directories:
                                     messages.error(request, f" - Folder: {folder.filename}")
-
                             if total_files > 50:
                                 messages.error(request, "ZIP contains more than 50 files.")
-                            
                             if non_pdf_files:
                                 messages.error(request, "ZIP must contain only PDF files.")
                     except zipfile.BadZipFile:
                         messages.error(request, "The uploaded ZIP file is corrupted or invalid.")
-                    
             if not camp_name:
                 messages.error(request, "Campaign Name is mandatory.")
-            
             if not product_type:
                 messages.error(request, "Product Type is mandatory.")
-            
             if messages.get_messages(request):
                 return redirect('bulk-policy-mgt')
-            
             rm_name = getUserNameByUserId(rm_id) if rm_id else None
-            
             bulk_log_instance = BulkPolicyLog.objects.create(
                 file=ContentFile(zip_bytes.getvalue(), name=zip_file.name),
                 camp_name=camp_name,
                 rm_id=rm_id,
                 rm_name=rm_name,
                 created_by=request.user,
-                count_total_files=total_files,        
-                count_pdf_files=0,      
+                count_total_files=total_files,
+                count_pdf_files=0,
                 count_not_pdf=0,
                 count_error_pdf_files=0,
                 count_error_process_pdf_files=0,
@@ -625,13 +628,21 @@ def bulkBrowsePolicy(request):
                 product_type=product_type,
                 status=1
             )
-                        
+            
+            bulk_log_instance.file.save(zip_file.name, ContentFile(zip_bytes.getvalue()))
+            bulk_log_instance.save()
+            
             messages.success(request, "ZIP uploaded successfully. Processing started in background.")
             return redirect("bulk-upload-logs")
         else:
             return redirect("bulk-policy-mgt")
     else:
         return redirect('login')
+
+
+
+
+
 
 def bulkPolicyView(request, id):
     if not request.user.is_authenticated or request.user.is_active != 1:

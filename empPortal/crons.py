@@ -13,7 +13,7 @@ import logging, os, shutil, zipfile, requests, re, json, ast
 logger = logging.getLogger(__name__)
 
 class ReprocessPoliciesCronJob(CronJobBase):
-    RUN_EVERY_MINS = 2  # every 3 minutes
+    RUN_EVERY_MINS = 1  # every 3 minutes
 
     schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
     code = 'empPortal.reprocess_policies_cron'  # Unique code for the cron job
@@ -41,9 +41,8 @@ class ReprocessPoliciesCronJob(CronJobBase):
                 print(f"File with ID {policy.id} not found in ExtractedFile")
         
         print(f"Reprocessed policies with status 4 at {timezone.now()}")
-
 class ExtractFilesFromZip(CronJobBase):
-    RUN_EVERY_MINS = 2
+    RUN_EVERY_MINS = 1
     
     schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
     code = 'empPortal.extract_files_from_zip'
@@ -68,8 +67,18 @@ class ExtractFilesFromZip(CronJobBase):
                     # create new path for zip extraction
                     os.makedirs(extract_dir,exist_ok=True)
                     
-                    with zipfile.ZipFile(zip_path,'r') as zip_ref:
-                        zip_ref.extractall(extract_dir)
+                    # with zipfile.ZipFile(zip_path,'r') as zip_ref:
+                    #     zip_ref.extractall(extract_dir)
+                    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+                        for member in zip_ref.infolist():
+                            if member.is_dir():
+                                continue
+                            if "/" in member.filename or "\\" in member.filename:
+                                continue
+                            
+                            extracted_path = os.path.join(extract_dir, member.filename)
+                            with open(extracted_path, "wb") as f:
+                                f.write(zip_ref.read(member.filename))
                         
                     for filename in os.listdir(extract_dir):
                         if not filename.lower().endswith('.pdf'):
@@ -126,17 +135,21 @@ class ExtractFilesFromZip(CronJobBase):
             logger.error(f"Unknown Error in ExtractFilesFromZip Cron Job: {str(e)}")
             
 class GettingSourceId(CronJobBase):
-    RUN_EVERY_MINS = 2
+    RUN_EVERY_MINS = 1
     schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
     code = 'empPortal.getting_source_id'
     
     def do(self):
         try:
-
-            
             cutoff_time = datetime.strptime('2025-04-24 01:01', '%Y-%m-%d %H:%M')
 
-            files = ExtractedFile.objects.filter(source_id__isnull=True, is_uploaded=False, extracted_at__gte=cutoff_time)[:10]
+            files = ExtractedFile.objects.filter(
+                source_id__isnull=True,
+                is_uploaded=False,
+                extracted_at__gte=cutoff_time,
+                retry_source_count__lte=2
+            )[:10]
+
             for file in files:
                 pdf_path = file.file_path.path
                 file.status = 1
@@ -154,6 +167,7 @@ class GettingSourceId(CronJobBase):
                             source_id = response.json().get('sourceId')
                             file.source_id = source_id
                             file.status = 2
+                            file.retry_source_count += 1
                             file.is_uploaded = True
                             file.save()
                             
@@ -170,7 +184,7 @@ class GettingSourceId(CronJobBase):
             logger.error(f"Unknown Error in GettingSourceId Cron Job: {str(e)}")
 
 class GettingPdfExtractedData(CronJobBase):
-    RUN_EVERY_MINS = 2
+    RUN_EVERY_MINS = 1
     schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
     code = 'empPortal.getting_pdf_extracted_data'
     
@@ -179,13 +193,20 @@ class GettingPdfExtractedData(CronJobBase):
             
             cutoff_time = datetime.strptime('2025-04-24 01:01', '%Y-%m-%d %H:%M')
 
-            files = ExtractedFile.objects.filter(source_id__isnull=False,is_uploaded=True, extracted_at__gte=cutoff_time,policy_id__isnull=True)[:10]
+            files = ExtractedFile.objects.filter(
+                source_id__isnull=False,
+                is_uploaded=True,
+                extracted_at__gte=cutoff_time,
+                policy_id__isnull=True,
+                retry_chat_response_count__lte=2
+            )[:10]
             for file in files:
                 if not file.source_id:
                     logger.error(f"No source_id found for file_id {file.id}")
                     continue
                 try:
                     file.status = 3
+                    file.retry_chat_response_count += 1
                     file.save()
                     headers = {
                         'x-api-key': settings.CHATPDF_API_KEY,
@@ -213,12 +234,15 @@ class GettingPdfExtractedData(CronJobBase):
                     
                     if response.status_code == 200:
                         result = response.json().get('content')
+                        logger.info(f"Extracting Data for extracted_file_id:{file.id} is {result}")
+                        
                         if isinstance(result, str):
                             cleaned_result = re.sub(r'```(?:json)?\s*|\s*```', '', result).strip()
                             extracted_data = json.loads(cleaned_result)
                         else:
                             extracted_data = result
                             
+                        
                         file.chat_response = extracted_data
                         file.is_extracted = True
                         file.status = 4
@@ -232,7 +256,7 @@ class GettingPdfExtractedData(CronJobBase):
             logger.error(f"Unknown Error in GettingPdfExtractedData, Error{str(e)}")
             
 class CreateNewPolicy(CronJobBase):
-    RUN_EVERY_MINS = 2
+    RUN_EVERY_MINS = 1
     schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
     code = 'empPortal.create_new_policy'
     
@@ -242,9 +266,10 @@ class CreateNewPolicy(CronJobBase):
             
             cutoff_time = datetime.strptime('2025-04-24 01:01', '%Y-%m-%d %H:%M')
 
-            files = ExtractedFile.objects.filter(policy_id__isnull = True, extracted_at__gte=cutoff_time,is_extracted=True)[:10]
+            files = ExtractedFile.objects.filter(policy_id__isnull = True, extracted_at__gte=cutoff_time,retry_creating_policy_count__lte=2,is_extracted=True)[:10]
             for file in files:
                 file.status = 5
+                file.retry_creating_policy_count += 1
                 file.save()
                 file_ids.append(file.id)
                 extracted_data = file.chat_response
