@@ -3,7 +3,7 @@ from . import views,export
 from . import views
 from . import authenticationView
 from .controller import commissions, profile,policy, Referral, globalController, helpAndSupport, Employee, leads, sellMotor, sellHealth, sellTerm, Franchises, Department, Branches, members, customers, quoteManagement, healthQuoteManagement, homeManagement, exams,SourceMaster,BQP
-from .controller import reports
+from .controller import reports, PolicyCommission
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import re_path
@@ -197,6 +197,13 @@ urlpatterns = [
     
     # REPORTS 
 
+
+    # POLICY-COMMISION 
+    path('policy-commission/agent-commission/', PolicyCommission.agent_commission, name='agent-commission'),
+    path('policy-commission/franchisees-commission/', PolicyCommission.franchisees_commission, name='franchisees-commission'),
+    path('policy-commission/insurer-commission/', PolicyCommission.insurer_commission, name='insurer-commission'),
+    # POLICY-COMMISION 
+    
 
     # HELP-SUPPORT 
     path('help-and-support', helpAndSupport.index, name='help'),

@@ -5,6 +5,10 @@
 {% url 'franchisees-business-report' as franchise_business_url %}
 {% url 'insurer-business-report' as insurer_business_url %}
 
+{% url 'agent-commission' as agent_commission %}
+{% url 'franchisees-commission' as franchise_commission %}
+{% url 'insurer-commission' as insurer_commission %}
+
 
 {% if request.user.role_id|stringformat:"s" not in "1,4" and request.user.department_id|stringformat:"s" == "5" %}
 
@@ -49,36 +53,46 @@
               <p>Policy Mgt</p>
             </a>
           </li>
+
+          {% comment %} ____ COMMISSION POLICY _____  {% endcomment %}
           
-{% comment %}           
-            <li class="nav-item {% if '/motor/' in request.path or '/health/' in request.path %} menu-is-opening menu-open {% endif %}">
-              <a href="#" class="nav-link">
+          <li class="nav-item {% if '/policy-commission/' in request.path %} menu-is-opening menu-open {% endif %}">
+            <a href="#" class="nav-link {% if '/policy-commission/' in request.path %} active {% endif %}" {% if "/policy-commission/" in request.path %} style="display:block" {% endif %}>
+              <svg class="sidbarmenu-svg">
+                <use xlink:href="#billing-icon" />
+              </svg>
+              <p>P. Comm. Mgt  <i class="fas fa-angle-right right"></i></p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{ agent_commission }}" class="nav-link sidebar-menutext {% if request.path == agent_commission %} active {% endif %}">
                   <svg class="sidbarmenu-svg">
-                      <use xlink:href="#quote-mgt-icon"></use>
+                    <use xlink:href="#commission-icon" />
                   </svg>
-                  <p>Quote Mgt <i class="fas fa-angle-right right"></i></p>
-              </a>
-              <ul class="nav nav-treeview" {% if '/motor/' in request.path or '/health/' in request.path %} style="display: block;" {% else %} style="display: none;" {% endif %}>
-                  <li class="nav-item">
-                      <a href="{% url 'quote-management' %}" class="nav-link {% if '/motor/' in request.path %} active {% endif %}">
-                        <svg class="sidbarmenu-svg">
-                          <use xlink:href="#car-icon" />
-                        </svg>
-                          <p> Motor </p>
-                      </a>
-                  </li>
-                  <li class="nav-item">
-                      <a href="{% url 'health-quote-management' %}" class="nav-link {% if '/health/' in request.path %} active {% endif %}">
-                        <svg class="sidbarmenu-svg">
-                          <use xlink:href="#health-icon" />
-                        </svg>
-                          <p> Health </p>
-                      </a>
-                  </li>
-              </ul>
-            </li> {% endcomment %}
-          
-          
+                  <p>Agent Comm.</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ insurer_commission }}" class="nav-link sidebar-menutext {% if request.path == insurer_commission %} active {% endif %}">
+                  <svg class="sidbarmenu-svg">
+                    <use xlink:href="#sales-icon" />
+                  </svg>
+                    <p>Insurer Comm.</p>
+                </a>
+              </li>
+              
+              <li class="nav-item">
+                  <a href="{{ franchise_commission }}" class="nav-link sidebar-menutext {% if request.path == franchise_commission %} active {% endif %}">
+                    <svg class="sidbarmenu-svg">
+                      <use xlink:href="#agent-business-icon" />
+                    </svg>
+                      <p>Franchise Comm.</p>
+                  </a>
+              </li>
+            </ul>
+            
+          </li>
+          {% comment %} ____ COMMISSION POLICY _____  {% endcomment %}
           
           
             <li class="nav-item {% if '/report/' in request.path %} menu-is-opening menu-open {% endif %}">
