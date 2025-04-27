@@ -231,7 +231,7 @@ def insurercommisionRateByMemberId(member_id):
     commission_data = Commission.objects.filter(member_id=member_id).first()
     return commission_data
 
-def chatPdfMessage_v1():
+def chatPdfMessage():
     message = f"""
             Convert the following insurance document text into a structured JSON format without any extra comments.
 
@@ -327,7 +327,7 @@ def chatPdfMessage_v1():
             
     return message
 
-def chatPdfMessage():
+def chatPdfMessage_updated_not_working():
     message = f"""
             Summarize this policy that include policy number, Insured Name, policy period details, Premium break-up includes Own Damage Premium, Liability Premium, Total Premium or Gross Premium, Net Premium, Vehicle details which includes make, model, variant in vehicle, GST details after that Expected JSON format as output like this
             Input Text:
