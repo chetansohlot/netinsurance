@@ -283,6 +283,7 @@ Policy Data
                             <th class="nowrap">Gross Weight</th>
                             <th class="nowrap">Sum Insured</th>
                             <th class="nowrap">Manufacture Year</th>
+                            <th class="nowrap">Commission Status</th>
                             <th class="nowrap">Action</th>
                           </tr>
                         </thead>
@@ -348,8 +349,33 @@ Policy Data
                               <td>{{ data.vehicle_type|default:"-" }}</td>
                               <td>{{ data.vehicle_make|default:"-" }} / {{ data.vehicle_model|default:"-" }} </td>
                               <td>{{ data.vehicle_gross_weight|default:"-" }}</td>
-                              <td> {{ data.sum_insured|default:"-" }}</td>
+                              <td>{{ data.sum_insured|default:"-" }}</td>
                               <td>{{ data.vehicle_manuf_date|default:"-" }}</td>
+                              <td>
+                                <strong>Agent Commission:</strong>
+                                {% if data.agent_payment_details.id != None %}
+                                   <i class="fa fa-check text-success"></i>
+                                {% else %}
+                                   <i class="fa fa-times text-danger"></i>
+                                {% endif %}
+                                <br>
+
+                                <strong>Insurer Commission:</strong>
+                                {% if data.insurer_payment_details.id != None %}
+                                   <i class="fa fa-check text-success"></i>
+                                {% else %}
+                                   <i class="fa fa-times text-danger"></i>
+                                {% endif %}
+                                <br>
+
+                                <strong>Franchise Commission:</strong>
+                                {% if data.franchise_payment_details.id != None %}
+                                   <i class="fa fa-check text-success"></i>
+                                {% else %}
+                                   <i class="fa fa-times text-danger"></i>
+                                {% endif %}
+                                <br>
+                              </td>
                               <td>
                                 <div class="d-flex">
                                   <a href="{{ data.filepath }}" class="tooltip-sec mx-2 text-success" data-title="Download {{ data.filename }}" target="_blank" download><i class="fas fa-download"></i></a>

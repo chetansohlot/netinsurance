@@ -301,6 +301,30 @@ class PolicyDocument(models.Model):
         except (ValueError, TypeError):
             return None
         
+    @property
+    def agent_payment_details(self):
+        from .models import AgentPaymentDetails  # Lazy import inside the method to avoid circular import
+        try:
+            return AgentPaymentDetails.objects.get(policy_id=self.id)
+        except AgentPaymentDetails.DoesNotExist:
+            return None
+        
+    @property
+    def insurer_payment_details(self):
+        from .models import InsurerPaymentDetails  # Lazy import inside the method to avoid circular import
+        try:
+            return InsurerPaymentDetails.objects.get(policy_id=self.id)
+        except InsurerPaymentDetails.DoesNotExist:
+            return None
+        
+    @property
+    def franchise_payment_details(self):
+        from .models import FranchisePayment  # Lazy import inside the method to avoid circular import
+        try:
+            return FranchisePayment.objects.get(policy_id=self.id)
+        except FranchisePayment.DoesNotExist:
+            return None
+
     class Meta:
         db_table = 'policydocument'
 
@@ -393,6 +417,13 @@ class AgentPaymentDetails(models.Model):
     agent_total_comm_amount = models.CharField(max_length=255)
     agent_net_payable_amount = models.CharField(max_length=255)
     agent_tds_amount = models.CharField(max_length=255)
+    updated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='agent_info_updated_by'
+    )
     active = models.CharField(max_length=1, choices=[('0', 'Inactive'), ('1', 'Active')], default='1')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -417,6 +448,13 @@ class FranchisePayment(models.Model):
     franchise_total_comm_amount = models.CharField(max_length=50, blank=True, null=True)
     franchise_net_payable_amount = models.CharField(max_length=50, blank=True, null=True)
     franchise_tds_amount = models.CharField(max_length=50, blank=True, null=True)
+    updated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='franchise_payments_updated_by'
+    )
     active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -470,6 +508,14 @@ class InsurerPaymentDetails(models.Model):
     insurer_total_commission = models.CharField(max_length=50, blank=True, null=True)
     insurer_receive_amount = models.CharField(max_length=50, blank=True, null=True)
     insurer_balance_amount = models.CharField(max_length=50, blank=True, null=True)
+    
+    updated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='insurer_payment_details_updated_by'
+    )
 
     active = models.CharField(max_length=1, choices=[('0', 'Inactive'), ('1', 'Active')], default='1')
     created_at = models.DateTimeField(auto_now_add=True)

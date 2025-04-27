@@ -320,7 +320,7 @@ def edit_agent_payment_info(request, policy_no):
         agent_payment.agent_total_comm_amount = request.POST.get('agent_total_comm_amount',None)
         agent_payment.agent_net_payable_amount = request.POST.get('agent_net_payable_amount',None)
         agent_payment.agent_tds_amount = request.POST.get('agent_tds_amount',None)
-
+        agent_payment.updated_by = request.user
         agent_payment.save()
         
     
@@ -371,32 +371,34 @@ def edit_insurer_payment_info(request, policy_no):
         except InsurerPaymentDetails.DoesNotExist:
             insurer_payment = InsurerPaymentDetails(policy_number=policy.policy_number,policy_id=policy_id)
 
-        insurer_payment.insurer_payment_mode = request.POST.get('insurer_payment_mode')
-        insurer_payment.insurer_payment_date = request.POST.get('insurer_payment_date')
-        insurer_payment.insurer_amount = request.POST.get('insurer_amount')
-        insurer_payment.insurer_remarks = request.POST.get('insurer_remarks')
+        insurer_payment.insurer_payment_mode = request.POST.get('insurer_payment_mode',None)
+        insurer_payment.insurer_payment_date = request.POST.get('insurer_payment_date',None)
+        insurer_payment.insurer_amount = request.POST.get('insurer_amount',None)
+        insurer_payment.insurer_remarks = request.POST.get('insurer_remarks',None)
 
-        insurer_payment.insurer_od_comm = request.POST.get('insurer_od_comm')
-        insurer_payment.insurer_od_amount = request.POST.get('insurer_od_amount')
+        insurer_payment.insurer_od_comm = request.POST.get('insurer_od_comm',None)
+        insurer_payment.insurer_od_amount = request.POST.get('insurer_od_amount',None)
 
-        insurer_payment.insurer_tp_comm = request.POST.get('insurer_tp_comm')
-        insurer_payment.insurer_tp_amount = request.POST.get('insurer_tp_amount')
+        insurer_payment.insurer_tp_comm = request.POST.get('insurer_tp_comm',None)
+        insurer_payment.insurer_tp_amount = request.POST.get('insurer_tp_amount',None)
 
-        insurer_payment.insurer_net_comm = request.POST.get('insurer_net_comm')
-        insurer_payment.insurer_net_amount = request.POST.get('insurer_net_amount')
+        insurer_payment.insurer_net_comm = request.POST.get('insurer_net_comm',None)
+        insurer_payment.insurer_net_amount = request.POST.get('insurer_net_amount',None)
         
-        insurer_payment.insurer_tds = request.POST.get('insurer_tds')
-        insurer_payment.insurer_tds_amount = request.POST.get('insurer_tds_amount')
+        insurer_payment.insurer_tds = request.POST.get('insurer_tds',None)
+        insurer_payment.insurer_tds_amount = request.POST.get('insurer_tds_amount',None)
         
-        insurer_payment.insurer_incentive_amount = request.POST.get('insurer_incentive_amount')
-        insurer_payment.insurer_total_comm_amount = request.POST.get('insurer_total_comm_amount')
-        insurer_payment.insurer_net_payable_amount = request.POST.get('insurer_net_payable_amount')
+        insurer_payment.insurer_incentive_amount = request.POST.get('insurer_incentive_amount',None)
+        insurer_payment.insurer_total_comm_amount = request.POST.get('insurer_total_comm_amount',None)
+        insurer_payment.insurer_net_payable_amount = request.POST.get('insurer_net_payable_amount',None)
         
-        insurer_payment.insurer_total_commission = request.POST.get('insurer_total_commission')
-        insurer_payment.insurer_receive_amount = request.POST.get('insurer_receive_amount')
-        insurer_payment.insurer_balance_amount = request.POST.get('insurer_balance_amount')
+        insurer_payment.insurer_total_commission = request.POST.get('insurer_total_commission',None)
+        insurer_payment.insurer_receive_amount = request.POST.get('insurer_receive_amount',None)
+        insurer_payment.insurer_balance_amount = request.POST.get('insurer_balance_amount',None)
 
         insurer_payment.active = '1'
+        insurer_payment.updated_by = request.user
+        
         insurer_payment.save()
 
         messages.success(request, "Insurer Payment details updated successfully!")
@@ -449,6 +451,8 @@ def edit_franchise_payment_info(request, policy_no):
         franchise_payment.franchise_tds_amount = request.POST.get('franchise_tds_amount')
 
         franchise_payment.active = True
+        franchise_payment.updated_by = request.user
+        
         franchise_payment.save()
 
         messages.success(request, "Franchise Payment details updated successfully!")
