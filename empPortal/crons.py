@@ -240,6 +240,8 @@ class GettingPdfExtractedData(CronJobBase):
                         else:
                             extracted_data = result
                             
+                        logger.info(f"Extracting Data for extracted_file_id:{file.id} is {result}")
+                        
                         file.chat_response = extracted_data
                         file.is_extracted = True
                         file.status = 4
