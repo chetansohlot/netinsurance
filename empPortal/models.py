@@ -45,6 +45,9 @@ class BqpMaster(models.Model):
     class Meta:
         db_table ="bqp_master"
 
+    @property
+    def bqp_name(self):
+        return self.bqp_fname +" "+ self.bqp_lname
         
 class Commission(models.Model):
     rm_name  =models.CharField(max_length=255, unique=True)
@@ -326,8 +329,8 @@ class PolicyInfo(models.Model):
     insurance_company = models.CharField(max_length=255, null=True, blank=True)
     service_provider = models.CharField(max_length=255, null=True, blank=True)
     insurer_contact_name = models.CharField(max_length=255, null=True, blank=True)
-    bqp = models.CharField(max_length=255, null=True, blank=True)
-    # bqp =models.ForeignKey(BqpMaster,on_delete=models.SET_NULL,null=True,blank=True,db_column='bqp_id')
+    # bqp = models.CharField(max_length=255, null=True, blank=True)
+    bqp = models.ForeignKey(BqpMaster,on_delete=models.SET_NULL,null=True,blank=True)
     pos_name = models.CharField(max_length=255, null=True, blank=True)
     referral_by = models.CharField(max_length=50, null=True, blank=True)
   

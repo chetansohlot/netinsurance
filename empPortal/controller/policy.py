@@ -5,7 +5,7 @@ from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib import messages
 from django.template import loader
 from ..models import Commission,Users, PolicyUploadDoc,Branch,PolicyInfo,PolicyDocument, DocumentUpload, FranchisePayment, InsurerPaymentDetails, PolicyVehicleInfo, AgentPaymentDetails, UploadedExcel, UploadedZip
-from ..models import BulkPolicyLog,ExtractedFile
+from ..models import BulkPolicyLog,ExtractedFile, BqpMaster
 from empPortal.model import Referral
 
 from empPortal.model import BankDetails
@@ -291,6 +291,7 @@ def edit_agent_payment_info(request, policy_no):
     
     policy_data = PolicyDocument.objects.filter(policy_number=policy_no).first()
     referrals = Referral.objects.all()
+    bqps = BqpMaster.objects.all()
     agent_payment = AgentPaymentDetails.objects.filter(policy_number=policy.policy_number).last()
     
     if request.method == 'POST':
@@ -301,30 +302,32 @@ def edit_agent_payment_info(request, policy_no):
             agent_payment = AgentPaymentDetails(policy_number=policy.policy_number,policy_id=policy_id)
         
         # agent_payment.agent_name = request.POST.get('agent_name')
-        agent_payment.agent_name = request.POST.get('referral_by')
-        agent_payment.referral_id = request.POST.get('referral_by')
-        agent_payment.agent_payment_mod = request.POST.get('agent_payment_mod')
-        agent_payment.transaction_id = request.POST.get('transaction_id')
-        agent_payment.agent_payment_date = request.POST.get('agent_payment_date')
-        agent_payment.agent_amount = request.POST.get('agent_amount')
-        agent_payment.agent_remarks = request.POST.get('agent_remarks')
-        agent_payment.agent_od_comm = request.POST.get('agent_od_comm')
-        agent_payment.agent_tp_comm = request.POST.get('agent_tp_comm')
-        agent_payment.agent_net_comm = request.POST.get('agent_net_comm')
-        agent_payment.agent_incentive_amount = request.POST.get('agent_incentive_amount')
-        agent_payment.agent_tds = request.POST.get('agent_tds')
-        agent_payment.agent_od_amount = request.POST.get('agent_od_amount')
-        agent_payment.agent_net_amount = request.POST.get('agent_net_amount')
-        agent_payment.agent_tp_amount = request.POST.get('agent_tp_amount')
-        agent_payment.agent_total_comm_amount = request.POST.get('agent_total_comm_amount')
-        agent_payment.agent_net_payable_amount = request.POST.get('agent_net_payable_amount')
-        agent_payment.agent_tds_amount = request.POST.get('agent_tds_amount')
+        agent_payment.agent_name = request.POST.get('referral_by',None)
+        agent_payment.referral_id = request.POST.get('referral_by',None)
+        agent_payment.agent_payment_mod = request.POST.get('agent_payment_mod',None)
+        agent_payment.transaction_id = request.POST.get('transaction_id',None)
+        agent_payment.agent_payment_date = request.POST.get('agent_payment_date',None)
+        agent_payment.agent_amount = request.POST.get('agent_amount',None)
+        agent_payment.agent_remarks = request.POST.get('agent_remarks',None)
+        agent_payment.agent_od_comm = request.POST.get('agent_od_comm',None)
+        agent_payment.agent_tp_comm = request.POST.get('agent_tp_comm',None)
+        agent_payment.agent_net_comm = request.POST.get('agent_net_comm',None)
+        agent_payment.agent_incentive_amount = request.POST.get('agent_incentive_amount',None)
+        agent_payment.agent_tds = request.POST.get('agent_tds',None)
+        agent_payment.agent_od_amount = request.POST.get('agent_od_amount',None)
+        agent_payment.agent_net_amount = request.POST.get('agent_net_amount',None)
+        agent_payment.agent_tp_amount = request.POST.get('agent_tp_amount',None)
+        agent_payment.agent_total_comm_amount = request.POST.get('agent_total_comm_amount',None)
+        agent_payment.agent_net_payable_amount = request.POST.get('agent_net_payable_amount',None)
+        agent_payment.agent_tds_amount = request.POST.get('agent_tds_amount',None)
 
         agent_payment.save()
         
-        policy.bqp = request.POST.get('bqp')
-        policy.pos_name = request.POST.get('pos_name')
-        policy.referral_by = request.POST.get('referral_by')
+    
+        
+        policy.bqp_id = request.POST.get('bqp',None)
+        policy.pos_name = request.POST.get('pos_name',None)
+        policy.referral_by = request.POST.get('referral_by',None)
         policy.save()
         messages.success(request, "Policy Agent Payment Updated successfully!")
 
@@ -337,6 +340,7 @@ def edit_agent_payment_info(request, policy_no):
         'pdf_path': pdf_path,
         'policy_data': policy_data,
         'agent_payment': agent_payment,
+        'bqps': bqps,
         'referrals':referrals
     })
 
