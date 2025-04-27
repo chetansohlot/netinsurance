@@ -234,13 +234,14 @@ class GettingPdfExtractedData(CronJobBase):
                     
                     if response.status_code == 200:
                         result = response.json().get('content')
+                        logger.info(f"Extracting Data for extracted_file_id:{file.id} is {result}")
+                        
                         if isinstance(result, str):
                             cleaned_result = re.sub(r'```(?:json)?\s*|\s*```', '', result).strip()
                             extracted_data = json.loads(cleaned_result)
                         else:
                             extracted_data = result
                             
-                        logger.info(f"Extracting Data for extracted_file_id:{file.id} is {result}")
                         
                         file.chat_response = extracted_data
                         file.is_extracted = True
