@@ -147,7 +147,7 @@ class GettingSourceId(CronJobBase):
                 source_id__isnull=True,
                 is_uploaded=False,
                 extracted_at__gte=cutoff_time,
-                retry_source_count__lte=3
+                retry_source_count__lte=2
             )[:10]
 
             for file in files:
@@ -198,7 +198,7 @@ class GettingPdfExtractedData(CronJobBase):
                 is_uploaded=True,
                 extracted_at__gte=cutoff_time,
                 policy_id__isnull=True,
-                retry_chat_response_count__lte=3
+                retry_chat_response_count__lte=2
             )[:10]
             for file in files:
                 if not file.source_id:
@@ -263,7 +263,7 @@ class CreateNewPolicy(CronJobBase):
             
             cutoff_time = datetime.strptime('2025-04-24 01:01', '%Y-%m-%d %H:%M')
 
-            files = ExtractedFile.objects.filter(policy_id__isnull = True, extracted_at__gte=cutoff_time,retry_creating_policy_count__lte=3,is_extracted=True)[:10]
+            files = ExtractedFile.objects.filter(policy_id__isnull = True, extracted_at__gte=cutoff_time,retry_creating_policy_count__lte=2,is_extracted=True)[:10]
             for file in files:
                 file.status = 5
                 file.retry_creating_policy_count += 1

@@ -231,7 +231,7 @@ def insurercommisionRateByMemberId(member_id):
     commission_data = Commission.objects.filter(member_id=member_id).first()
     return commission_data
 
-def chatPdfMessage():
+def chatPdfMessage_v1():
     message = f"""
             Convert the following insurance document text into a structured JSON format without any extra comments.
 
@@ -247,6 +247,89 @@ def chatPdfMessage():
             - If a detail is not found, leave it as an empty string or null as per the field.
             - Policy number format for GoDigit should be 'XXXXXX / XXXXX' (space before and after the slash).
 
+            Input Text:
+
+            Expected JSON format:
+            {{
+                "policy_number": "XXXXXX/XXXXX",
+                "vehicle_number": "XXXXXXXXXX",
+                "insured_name": "XXXXXX",
+                "issue_date": "YYYY-MM-DD H:i:s",
+                "start_date": "YYYY-MM-DD H:i:s",
+                "expiry_date": "YYYY-MM-DD H:i:s",
+                "gross_premium": XXXX,
+                "net_premium": XXXX,
+                "gst_premium": XXXX,
+                "sum_insured": XXXX,
+                "policy_period": "XX Year(s)",
+                "insurance_company": "XXXXX",
+                "coverage_details": {{
+                    "own_damage": {{
+                        "premium": XXXX,
+                        "additional_premiums": XXXX,
+                        "addons": {{
+                            "addons": [
+                                {{"name": "XXXX", "amount": XXXX}},
+                                {{"name": "XXXX", "amount": XXXX}}
+                            ],
+                            "discounts": [
+                                {{"name": "XXXX", "amount": XXXX}},
+                                {{"name": "XXXX", "amount": XXXX}}
+                            ]
+                        }}
+                    }},
+                    "third_party": {{
+                        "premium": XXXX,
+                        "additional_premiums": XXXX,
+                        "addons": {{
+                            "addons": [
+                                {{"name": "XXXX", "amount": XXXX}},
+                                {{"name": "XXXX", "amount": XXXX}}
+                            ],
+                            "discounts": [
+                                {{"name": "XXXX", "amount": XXXX}},
+                                {{"name": "XXXX", "amount": XXXX}}
+                            ]
+                        }}
+                    }}
+                }},
+                "vehicle_details": {{
+                    "make": "XXXX",
+                    "model": "XXXX",
+                    "variant": "XXXX",
+                    "registration_year": YYYY,
+                    "manufacture_year": YYYY,
+                    "engine_number": "XXXXXXXXXXXX",
+                    "chassis_number": "XXXXXXXXXXXX",
+                    "fuel_type": "XXXX",
+                    "cubic_capacity": XXXX,
+                    "seating_capacity": XXXX,
+                    "vehicle_gross_weight": XXXX,
+                    "vehicle_type": "XXXX XXXX",
+                    "commercial_vehicle_detail": "XXXX XXXX"
+                }},
+                "additional_details": {{
+                    "policy_type": "XXXX",
+                    "ncb": XX,
+                    "addons": ["XXXX", "XXXX"],
+                    "previous_insurer": "XXXX",
+                    "previous_policy_number": "XXXX"
+                }},
+                "contact_information": {{
+                    "address": "XXXXXX",
+                    "phone_number": "XXXXXXXXXX",
+                    "email": "XXXXXX",
+                    "pan_no": "XXXXX1111X",
+                    "aadhar_no": "XXXXXXXXXXXX"
+                }}
+            }}
+            """
+            
+    return message
+
+def chatPdfMessage():
+    message = f"""
+            Summarize this policy that include policy number, Insured Name, policy period details, Premium break-up includes Own Damage Premium, Liability Premium, Total Premium or Gross Premium, Net Premium, Vehicle details which includes make, model, variant in vehicle, GST details after that Expected JSON format as output like this
             Input Text:
 
             Expected JSON format:
