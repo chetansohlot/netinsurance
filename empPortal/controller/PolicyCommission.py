@@ -219,6 +219,7 @@ def update_agent_commission(request):
         obj.agent_tds = request.POST.get('agent_tds')
         obj.updated_by = request.user
         obj.save()
+        messages.success(request, "Agent Commission Updated successfully!")
 
     return redirect('agent-commission')
 
@@ -407,6 +408,7 @@ def update_franchise_commission(request):
 
         # Save the updated franchise payment
         obj.save()
+        messages.success(request, "Franchise Commission Updated successfully!")
 
     return redirect('franchisees-commission')
 
@@ -599,5 +601,6 @@ def update_insurer_commission(request):
             pass
 
         obj.save()
+        messages.success(request, "Insurer Commission Updated successfully!")
 
     return redirect('insurer-commission')
