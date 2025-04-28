@@ -65,7 +65,8 @@ def parse_date(date_str):
             return datetime.strptime(date_str, "%Y-%m-%d").date()
         except ValueError:
             return None  # You can handle invalid dates as needed
-        
+     
+
 def agent_commission(request):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -90,64 +91,119 @@ def agent_commission(request):
             data = data.get(key) if isinstance(data, dict) else default
         return str(data).lower()
 
+    # Get all filters from GET
     filters = {
-        'policy_number':      request.GET.get('policy_number', '').strip().lower(),
-        'vehicle_number':     request.GET.get('vehicle_number', '').strip().lower(),
-        'engine_number':      request.GET.get('engine_number', '').strip().lower(),
-        'chassis_number':     request.GET.get('chassis_number', '').strip().lower(),
-        'vehicle_type':       request.GET.get('vehicle_type', '').strip().lower(),
+        'policy_number': request.GET.get('policy_number', '').strip().lower(),
+        'vehicle_number': request.GET.get('vehicle_number', '').strip().lower(),
+        'engine_number': request.GET.get('engine_number', '').strip().lower(),
+        'chassis_number': request.GET.get('chassis_number', '').strip().lower(),
+        'vehicle_type': request.GET.get('vehicle_type', '').strip().lower(),
         'policy_holder_name': request.GET.get('policy_holder_name', '').strip().lower(),
-        'mobile_number':      request.GET.get('mobile_number', '').strip().lower(),
+        'mobile_number': request.GET.get('mobile_number', '').strip().lower(),
         'insurance_provider': request.GET.get('insurance_provider', '').strip().lower(),
+        'start_date': request.GET.get('start_date', '').strip(),
+        'end_date': request.GET.get('end_date', '').strip(),
+        'manufacturing_year_from': request.GET.get('manufacturing_year_from', '').strip(),
+        'manufacturing_year_to': request.GET.get('manufacturing_year_to', '').strip(),
+        'fuel_type': request.GET.get('fuel_type', '').strip().lower(),
+        'gvw_from': request.GET.get('gvw_from', '').strip(),
     }
 
+    any_filter_applied = any(value for key, value in filters.items() if key not in ['start_date', 'end_date', 'manufacturing_year_from', 'manufacturing_year_to', 'gvw_from'])
+
     filtered = []
-    for obj in base_qs:
-        raw = obj.extracted_text
-        data = {}
-        
-        if isinstance(raw, str):
-            try:
-                data = json.loads(raw)
-            except json.JSONDecodeError:
+
+    if any_filter_applied:
+        for obj in base_qs:
+            raw = obj.extracted_text
+            data = {}
+            if isinstance(raw, str):
+                try:
+                    data = json.loads(raw)
+                except json.JSONDecodeError:
+                    continue
+            elif isinstance(raw, dict):
+                data = raw
+
+            if not data:
                 continue
-        elif isinstance(raw, dict):
-            data = raw
-    
-        if not data:
-            continue
 
-        if filters['policy_number'] and filters['policy_number'] not in data.get('policy_number', '').lower():
-            continue
-        if filters['vehicle_number'] and filters['vehicle_number'] not in data.get('vehicle_number', '').lower():
-            continue
-        if filters['engine_number'] and filters['engine_number'] not in get_nested(data, ['vehicle_details', 'engine_number']).lower():
-            continue
-        if filters['chassis_number'] and filters['chassis_number'] not in get_nested(data, ['vehicle_details', 'chassis_number']).lower():
-            continue
-        if filters['vehicle_type'] and filters['vehicle_type'] not in get_nested(data, ['vehicle_details', 'vehicle_type']).lower():
-            continue
-        if filters['policy_holder_name'] and filters['policy_holder_name'] not in data.get('insured_name', '').lower():
-            continue
-        if filters['mobile_number'] and filters['mobile_number'] not in data.get('contact_information', {}).get('phone_number', '').lower():
-            continue
-        if filters['insurance_provider'] and filters['insurance_provider'] not in data.get('insurance_company', '').lower():
-            continue   
+            if filters['policy_number'] and filters['policy_number'] not in data.get('policy_number', '').lower():
+                continue
+            if filters['vehicle_number'] and filters['vehicle_number'] not in data.get('vehicle_number', '').lower():
+                continue
+            if filters['engine_number'] and filters['engine_number'] not in get_nested(data, ['vehicle_details', 'engine_number']).lower():
+                continue
+            if filters['chassis_number'] and filters['chassis_number'] not in get_nested(data, ['vehicle_details', 'chassis_number']).lower():
+                continue
+            if filters['vehicle_type'] and filters['vehicle_type'] not in get_nested(data, ['vehicle_details', 'vehicle_type']).lower():
+                continue
+            if filters['policy_holder_name'] and filters['policy_holder_name'] not in data.get('insured_name', '').lower():
+                continue
+            if filters['mobile_number'] and filters['mobile_number'] not in data.get('contact_information', {}).get('phone_number', '').lower():
+                continue
+            if filters['insurance_provider'] and filters['insurance_provider'] not in data.get('insurance_company', '').lower():
+                continue
+            if filters['start_date']:
+                try:
+                    start_date = datetime.strptime(filters['start_date'], '%Y-%m-%d').date()
+                    policy_start = datetime.strptime(data.get('start_date', '')[:10], '%Y-%m-%d').date()
+                    if policy_start < start_date:
+                        continue
+                except (ValueError, TypeError):
+                    continue
+            if filters['end_date']:
+                try:
+                    end_date = datetime.strptime(filters['end_date'], '%Y-%m-%d').date()
+                    policy_expiry = datetime.strptime(data.get('expiry_date', '')[:10], '%Y-%m-%d').date()
+                    if policy_expiry > end_date:
+                        continue
+                except (ValueError, TypeError):
+                    continue
+            if filters['manufacturing_year_from']:
+                try:
+                    manuf_year = int(get_nested(data, ['vehicle_details', 'manufacture_year'], '0'))
+                    if manuf_year < int(filters['manufacturing_year_from']):
+                        continue
+                except (ValueError, TypeError):
+                    continue
+            if filters['manufacturing_year_to']:
+                try:
+                    manuf_year = int(get_nested(data, ['vehicle_details', 'manufacture_year'], '0'))
+                    if manuf_year > int(filters['manufacturing_year_to']):
+                        continue
+                except (ValueError, TypeError):
+                    continue
+            if filters['fuel_type']:
+                if filters['fuel_type'] not in get_nested(data, ['vehicle_details', 'fuel_type']):
+                    continue
+            if filters['gvw_from']:
+                try:
+                    gvw = int(get_nested(data, ['vehicle_details', 'vehicle_gross_weight'], '0'))
+                    if gvw < int(filters['gvw_from']):
+                        continue
+                except (ValueError, TypeError):
+                    continue
 
-        obj.json_data = data    # attach parsed dict for the template
-        filtered.append(obj)
+            obj.json_data = data  # Attach parsed dict
+            filtered.append(obj)
+    else:
+        # No filter applied, return empty
+        filtered = []
 
     if role_id != 1 and request.user.department_id != "5":
         policy_count = PolicyDocument.objects.filter(status=6, rm_id=user_id).count()
     else:
         policy_count = PolicyDocument.objects.filter(status=6).count()
 
-    # Pagination
     per_page = request.GET.get('per_page', 10)
     try:
         per_page = int(per_page)
     except ValueError:
         per_page = 10
+
+    filtered_policy_ids = [obj.id for obj in filtered]
+    filtered_count = len(filtered)
 
     paginator = Paginator(filtered, per_page)
     page_number = request.GET.get('page')
@@ -157,28 +213,30 @@ def agent_commission(request):
         "page_obj": page_obj,
         "policy_count": policy_count,
         "per_page": per_page,
-        'filters': {k: request.GET.get(k, '') for k in filters}
+        'filters': {k: request.GET.get(k, '') for k in filters},
+        'filtered_policy_ids': filtered_policy_ids,
+        'filtered_count': filtered_count,   # <-- new
     })
-
 
 def update_agent_commission(request):
     if not request.user.is_authenticated:
         return redirect('login')
-    
-    user_id = request.user.id
-    role_id = Users.objects.filter(id=user_id).values_list('role_id', flat=True).first()
+
+    policy_ids_str = request.POST.get('policy_ids', '')
+    policy_ids = [int(id.strip()) for id in policy_ids_str.split(',') if id.strip().isdigit()]
+
+    for policy_id in policy_ids:
+        obj, created = AgentPaymentDetails.objects.get_or_create(policy_id=policy_id)
+        obj.agent_od_comm = request.POST.get('agent_od_commission')
+        obj.agent_net_comm = request.POST.get('agent_net_commission')
+        obj.agent_tp_comm = request.POST.get('agent_tp_commission')
+        obj.agent_incentive_amount = request.POST.get('agent_incentive_amount')
+        obj.agent_tds = request.POST.get('agent_tds')
+        obj.save()
+
+    return redirect('agent-commission')
 
 
-    filters = {
-        'policy_number':      request.GET.get('policy_number', '').strip().lower(),
-        'vehicle_number':     request.GET.get('vehicle_number', '').strip().lower(),
-        'engine_number':      request.GET.get('engine_number', '').strip().lower(),
-        'chassis_number':     request.GET.get('chassis_number', '').strip().lower(),
-        'vehicle_type':       request.GET.get('vehicle_type', '').strip().lower(),
-        'policy_holder_name': request.GET.get('policy_holder_name', '').strip().lower(),
-        'mobile_number':      request.GET.get('mobile_number', '').strip().lower(),
-        'insurance_provider': request.GET.get('insurance_provider', '').strip().lower(),
-    }
 
     
 def franchisees_commission(request):

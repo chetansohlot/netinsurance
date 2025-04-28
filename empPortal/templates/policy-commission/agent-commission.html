@@ -134,94 +134,7 @@ Pending Agent Commission
                           <div class="row align-items-center">
                             
                             <!-- Policy Number -->
-                            <div class="col-6 col-md-2">
-                              <div class="form-group">
-                                <input class="form-field" name="policy_number" type="text" placeholder="Policy Number" value="{{filters.policy_number }}">
-                              </div>
-                            </div>
-
-                                    <!-- Vehicle Number -->
-                            <div class="col-6 col-md-2">
-                              <div class="form-group">
-                                <input class="form-field" name="vehicle_number" type="text" placeholder="Vehicle Number" value="{{ filters.vehicle_number }}">
-                              </div>
-                            </div> 
-                            
-                            <!-- Engine Number -->
-                            <div class="col-sm-6 col-md-2">
-                              <div class="form-group">
-                                <input class="form-field" name="engine_number" type="text" placeholder="Engine Number" value="{{ filters.engine_number }}">
-                              </div>
-                            </div>
-
-                            <!-- Chassis Number -->
-                            <div class="col-sm-6 col-md-2">
-                              <div class="form-group">
-                                <input class="form-field" name="chassis_number" type="text" placeholder="Chassis Number" value="{{ filters.chassis_number }}">
-                              </div>
-                            </div>
-
-                            <!-- Vehicle Type -->
-                            <div class="col-sm-6 col-md-2">
-                              <div class="form-group">
-                                <input class="form-field" name="vehicle_type" type="text" placeholder="Vehicle Type" value="{{ filters.vehicle_type }}">
-                              </div>
-                            </div>
-
-                            <!-- Customer Name -->
-                            <div class="col-sm-6 col-md-2">
-                              <div class="form-group">
-                                <input class="form-field" name="policy_holder_name" type="text" placeholder="Customer Name" value="{{filters.policy_holder_name }}">
-                              </div>
-                            </div>
-
-                            <div class="col-sm-6 col-md-2">
-                              <div class="form-group">
-                                <input class="form-field" name="insurance_provider" type="text" placeholder="Insurance Provider" value="{{ filters.insurance_provider }}">
-                              </div>
-                            </div>
-
-                            <!-- Start Date -->
-                            <div class="col-sm-6 col-md-2">
-                                <div class="form-group">
-                                <input class="form-field" name="start_date" type="date" placeholder="Start Date" value="{{ filters.start_date }}">
-                                </div>
-                            </div>
-
-                            <!-- End Date -->
-                            <div class="col-sm-6 col-md-2">
-                                <div class="form-group">
-                                <input class="form-field" name="end_date" type="date" placeholder="End Date" value="{{ filters.end_date }}">
-                                </div>
-                            </div>
-
-                            <!-- Manufacturing Year From -->
-                            <div class="col-sm-6 col-md-2">
-                                <div class="form-group">
-                                <input class="form-field" name="manufacturing_year_from" type="number" min="1900" max="2100" placeholder="Mfg Year From" value="{{ filters.manufacturing_year_from }}">
-                                </div>
-                            </div>
-
-                            <!-- Manufacturing Year To -->
-                            <div class="col-sm-6 col-md-2">
-                                <div class="form-group">
-                                <input class="form-field" name="manufacturing_year_to" type="number" min="1900" max="2100" placeholder="Mfg Year To" value="{{ filters.manufacturing_year_to }}">
-                                </div>
-                            </div>
-
-                            <!-- Fuel Type -->
-                            <div class="col-sm-6 col-md-2">
-                                <div class="form-group">
-                                <input class="form-field" name="fuel_type" type="text" placeholder="Fuel Type" value="{{ filters.fuel_type }}">
-                                </div>
-                            </div>
-
-                            <!-- GVW/Cubic Capacity From -->
-                            <div class="col-sm-6 col-md-2">
-                                <div class="form-group">
-                                <input class="form-field" name="gvw_from" type="number" placeholder="GVW/CC From" value="{{ filters.gvw_from }}">
-                                </div>
-                            </div>
+                            {% include "components/policy-commission/commission-filter.html" %}
 
                             <!-- Buttons -->
                             <div class="col-sm-6 col-md-2">
@@ -247,54 +160,57 @@ Pending Agent Commission
                   
                           <!-- Update Insurer Commission Form -->
                           <h5 class="mb-3">Update Agent Commission</h5>
+                          
                           <form method="post" action="{% url 'update-agent-commission' %}">
                             {% csrf_token %}
                             <div class="row align-items-center">
-                  
-                              <!-- Insurer OD Commission -->
+                              <input type="hidden" name="policy_ids" value="{{ filtered_policy_ids|join:',' }}">
+                        
+                              <!-- Agent OD Commission -->
                               <div class="col-6 col-md-2">
                                 <div class="form-group">
-                                  <input class="form-field" name="insurer_od_commission" type="text" placeholder="Agent OD Commission">
+                                  <input class="form-field" name="agent_od_commission" type="text" placeholder="Agent OD Commission">
                                 </div>
                               </div>
-                  
-                              <!-- Insurer Net Commission -->
+                        
+                              <!-- Agent Net Commission -->
                               <div class="col-6 col-md-2">
                                 <div class="form-group">
-                                  <input class="form-field" name="insurer_net_commission" type="text" placeholder="Agent Net Commission">
+                                  <input class="form-field" name="agent_net_commission" type="text" placeholder="Agent Net Commission">
                                 </div>
                               </div>
-                  
-                              <!-- Insurer TP Commission -->
+                        
+                              <!-- Agent TP Commission -->
                               <div class="col-6 col-md-2">
                                 <div class="form-group">
-                                  <input class="form-field" name="insurer_tp_commission" type="text" placeholder="Agent TP Commission">
+                                  <input class="form-field" name="agent_tp_commission" type="text" placeholder="Agent TP Commission">
                                 </div>
                               </div>
-                  
-                              <!-- Insurer Incentive Amount -->
+                        
+                              <!-- Agent Incentive Amount -->
                               <div class="col-6 col-md-2">
                                 <div class="form-group">
-                                  <input class="form-field" name="insurer_incentive_amount" type="text" placeholder="Agent Incentive Amount">
+                                  <input class="form-field" name="agent_incentive_amount" type="text" placeholder="Agent Incentive Amount">
                                 </div>
                               </div>
-                  
-                              <!-- Insurer TDS -->
+                        
+                              <!-- Agent TDS -->
                               <div class="col-6 col-md-2">
                                 <div class="form-group">
-                                  <input class="form-field" name="insurer_tds" type="text" placeholder="Agent TDS">
+                                  <input class="form-field" name="agent_tds" type="text" placeholder="Agent TDS">
                                 </div>
                               </div>
-                  
+                        
                               <!-- Submit Button -->
                               <div class="col-6 col-md-2">
                                 <div class="form-group">
                                   <button type="submit" class="wrap-btn w-100 bg-danger text-white">Update Commission</button>
                                 </div>
                               </div>
-                  
+                        
                             </div>
-                          </form>
+                        </form>
+                        
                         </div>
                       </div>
                     </div>
