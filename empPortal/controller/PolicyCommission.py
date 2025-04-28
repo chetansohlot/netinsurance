@@ -69,23 +69,26 @@ def parse_date(date_str):
 def agent_commission(request):
     if not request.user.is_authenticated:
         return redirect('login')
+    
     user_id = request.user.id
     role_id = Users.objects.filter(id=user_id).values_list('role_id', flat=True).first()
 
     filters_q = Q(status=6) & Q(policy_number__isnull=False) & ~Q(policy_number='')
+
     if role_id != 1 and request.user.department_id != "5":
         filters_q &= Q(rm_id=user_id)
-        
+
     base_qs = PolicyDocument.objects.filter(filters_q).order_by('-id').prefetch_related(
         'policy_agent_info', 'policy_franchise_info', 'policy_insurer_info'
     )
-    
+
+    # Only keep policies that do NOT have agent_payment_details
+    base_qs = [obj for obj in base_qs if obj.agent_payment_details is None]
+
     def get_nested(data, path, default=''):
         for key in path:
             data = data.get(key) if isinstance(data, dict) else default
         return str(data).lower()
-
-
 
     filters = {
         'policy_number':      request.GET.get('policy_number', '').strip().lower(),
@@ -93,9 +96,9 @@ def agent_commission(request):
         'engine_number':      request.GET.get('engine_number', '').strip().lower(),
         'chassis_number':     request.GET.get('chassis_number', '').strip().lower(),
         'vehicle_type':       request.GET.get('vehicle_type', '').strip().lower(),
-        'policy_holder_name':      request.GET.get('policy_holder_name', '').strip().lower(),      # maps to "Customer Name"
-        'mobile_number':      request.GET.get('mobile_number', '').strip().lower(),      # maps to "Mobile Number"
-        'insurance_provider': request.GET.get('insurance_provider', '').strip().lower(), # maps to "Insurance Provider"
+        'policy_holder_name': request.GET.get('policy_holder_name', '').strip().lower(),
+        'mobile_number':      request.GET.get('mobile_number', '').strip().lower(),
+        'insurance_provider': request.GET.get('insurance_provider', '').strip().lower(),
     }
 
     filtered = []
@@ -154,8 +157,28 @@ def agent_commission(request):
         "page_obj": page_obj,
         "policy_count": policy_count,
         "per_page": per_page,
-        'filters': {k: request.GET.get(k,'') for k in filters}
+        'filters': {k: request.GET.get(k, '') for k in filters}
     })
+
+
+def update_agent_commission(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
+    user_id = request.user.id
+    role_id = Users.objects.filter(id=user_id).values_list('role_id', flat=True).first()
+
+
+    filters = {
+        'policy_number':      request.GET.get('policy_number', '').strip().lower(),
+        'vehicle_number':     request.GET.get('vehicle_number', '').strip().lower(),
+        'engine_number':      request.GET.get('engine_number', '').strip().lower(),
+        'chassis_number':     request.GET.get('chassis_number', '').strip().lower(),
+        'vehicle_type':       request.GET.get('vehicle_type', '').strip().lower(),
+        'policy_holder_name': request.GET.get('policy_holder_name', '').strip().lower(),
+        'mobile_number':      request.GET.get('mobile_number', '').strip().lower(),
+        'insurance_provider': request.GET.get('insurance_provider', '').strip().lower(),
+    }
 
     
 def franchisees_commission(request):

@@ -200,6 +200,7 @@ urlpatterns = [
 
     # POLICY-COMMISION 
     path('policy-commission/agent-commission/', PolicyCommission.agent_commission, name='agent-commission'),
+    path('policy-commission/update-agent-commission/', PolicyCommission.update_agent_commission, name='update-agent-commission'),
     path('policy-commission/franchisees-commission/', PolicyCommission.franchisees_commission, name='franchisees-commission'),
     path('policy-commission/insurer-commission/', PolicyCommission.insurer_commission, name='insurer-commission'),
     # POLICY-COMMISION 

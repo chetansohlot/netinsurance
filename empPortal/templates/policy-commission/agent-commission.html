@@ -181,6 +181,48 @@ Pending Agent Commission
                               </div>
                             </div>
 
+                            <!-- Start Date -->
+                            <div class="col-sm-6 col-md-2">
+                                <div class="form-group">
+                                <input class="form-field" name="start_date" type="date" placeholder="Start Date" value="{{ filters.start_date }}">
+                                </div>
+                            </div>
+
+                            <!-- End Date -->
+                            <div class="col-sm-6 col-md-2">
+                                <div class="form-group">
+                                <input class="form-field" name="end_date" type="date" placeholder="End Date" value="{{ filters.end_date }}">
+                                </div>
+                            </div>
+
+                            <!-- Manufacturing Year From -->
+                            <div class="col-sm-6 col-md-2">
+                                <div class="form-group">
+                                <input class="form-field" name="manufacturing_year_from" type="number" min="1900" max="2100" placeholder="Mfg Year From" value="{{ filters.manufacturing_year_from }}">
+                                </div>
+                            </div>
+
+                            <!-- Manufacturing Year To -->
+                            <div class="col-sm-6 col-md-2">
+                                <div class="form-group">
+                                <input class="form-field" name="manufacturing_year_to" type="number" min="1900" max="2100" placeholder="Mfg Year To" value="{{ filters.manufacturing_year_to }}">
+                                </div>
+                            </div>
+
+                            <!-- Fuel Type -->
+                            <div class="col-sm-6 col-md-2">
+                                <div class="form-group">
+                                <input class="form-field" name="fuel_type" type="text" placeholder="Fuel Type" value="{{ filters.fuel_type }}">
+                                </div>
+                            </div>
+
+                            <!-- GVW/Cubic Capacity From -->
+                            <div class="col-sm-6 col-md-2">
+                                <div class="form-group">
+                                <input class="form-field" name="gvw_from" type="number" placeholder="GVW/CC From" value="{{ filters.gvw_from }}">
+                                </div>
+                            </div>
+
                             <!-- Buttons -->
                             <div class="col-sm-6 col-md-2">
                               <div class="form-group d-flex">
@@ -205,7 +247,8 @@ Pending Agent Commission
                   
                           <!-- Update Insurer Commission Form -->
                           <h5 class="mb-3">Update Agent Commission</h5>
-                          <form method="post">
+                          <form method="post" action="{% url 'update-agent-commission' %}">
+                            {% csrf_token %}
                             <div class="row align-items-center">
                   
                               <!-- Insurer OD Commission -->
