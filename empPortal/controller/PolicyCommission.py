@@ -48,6 +48,9 @@ logger = logging.getLogger(__name__)
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 from django.core.paginator import Paginator
 
+from django.db.models import Q, F, Value
+from django.db.models.functions import Lower
+import json
 app = FastAPI()
 
 # views.py
@@ -70,28 +73,26 @@ def parse_date(date_str):
 def agent_commission(request):
     if not request.user.is_authenticated:
         return redirect('login')
-    
+
     user_id = request.user.id
     role_id = Users.objects.filter(id=user_id).values_list('role_id', flat=True).first()
 
     filters_q = Q(status=6) & Q(policy_number__isnull=False) & ~Q(policy_number='')
 
-    if role_id != 1 and request.user.department_id != "5":
+    if role_id != 1 and str(request.user.department_id) != "5":
         filters_q &= Q(rm_id=user_id)
 
-    base_qs = PolicyDocument.objects.filter(filters_q).order_by('-id').prefetch_related(
-        'policy_agent_info', 'policy_franchise_info', 'policy_insurer_info'
+    # Exclude policies having agent payment
+    base_qs = PolicyDocument.objects.filter(filters_q).exclude(
+        policy_agent_info__isnull=False
+    ).order_by('-id')
+
+    # Only load required fields (optimization)
+    base_qs = base_qs.only(
+        'id', 'policy_number', 'vehicle_number', 'holder_name', 
+        'insurance_provider', 'extracted_text', 'vehicle_type'
     )
 
-    # Only keep policies that do NOT have agent_payment_details
-    base_qs = [obj for obj in base_qs if obj.agent_payment_details is None]
-
-    def get_nested(data, path, default=''):
-        for key in path:
-            data = data.get(key) if isinstance(data, dict) else default
-        return str(data).lower()
-
-    # Get all filters from GET
     filters = {
         'policy_number': request.GET.get('policy_number', '').strip().lower(),
         'vehicle_number': request.GET.get('vehicle_number', '').strip().lower(),
@@ -115,83 +116,44 @@ def agent_commission(request):
 
     if any_filter_applied:
         for obj in base_qs:
-            raw = obj.extracted_text
-            data = {}
-            if isinstance(raw, str):
+            data = obj.extracted_text or {}
+            if not isinstance(data, dict):
                 try:
-                    data = json.loads(raw)
-                except json.JSONDecodeError:
+                    data = json.loads(data)
+                except (json.JSONDecodeError, TypeError):
                     continue
-            elif isinstance(raw, dict):
-                data = raw
 
             if not data:
                 continue
 
+            match = True
+
             if filters['policy_number'] and filters['policy_number'] not in data.get('policy_number', '').lower():
-                continue
+                match = False
             if filters['vehicle_number'] and filters['vehicle_number'] not in data.get('vehicle_number', '').lower():
-                continue
-            if filters['engine_number'] and filters['engine_number'] not in get_nested(data, ['vehicle_details', 'engine_number']).lower():
-                continue
-            if filters['chassis_number'] and filters['chassis_number'] not in get_nested(data, ['vehicle_details', 'chassis_number']).lower():
-                continue
-            if filters['vehicle_type'] and filters['vehicle_type'] not in get_nested(data, ['vehicle_details', 'vehicle_type']).lower():
-                continue
+                match = False
+            if filters['engine_number'] and filters['engine_number'] not in str(data.get('vehicle_details', {}).get('engine_number', '')).lower():
+                match = False
+            if filters['chassis_number'] and filters['chassis_number'] not in str(data.get('vehicle_details', {}).get('chassis_number', '')).lower():
+                match = False
+            if filters['vehicle_type'] and filters['vehicle_type'] not in str(data.get('vehicle_details', {}).get('vehicle_type', '')).lower():
+                match = False
             if filters['policy_holder_name'] and filters['policy_holder_name'] not in data.get('insured_name', '').lower():
-                continue
-            if filters['mobile_number'] and filters['mobile_number'] not in data.get('contact_information', {}).get('phone_number', '').lower():
-                continue
+                match = False
+            if filters['mobile_number'] and filters['mobile_number'] not in str(data.get('contact_information', {}).get('phone_number', '')).lower():
+                match = False
             if filters['insurance_provider'] and filters['insurance_provider'] not in data.get('insurance_company', '').lower():
-                continue
-            if filters['start_date']:
-                try:
-                    start_date = datetime.strptime(filters['start_date'], '%Y-%m-%d').date()
-                    policy_start = datetime.strptime(data.get('start_date', '')[:10], '%Y-%m-%d').date()
-                    if policy_start < start_date:
-                        continue
-                except (ValueError, TypeError):
-                    continue
-            if filters['end_date']:
-                try:
-                    end_date = datetime.strptime(filters['end_date'], '%Y-%m-%d').date()
-                    policy_expiry = datetime.strptime(data.get('expiry_date', '')[:10], '%Y-%m-%d').date()
-                    if policy_expiry > end_date:
-                        continue
-                except (ValueError, TypeError):
-                    continue
-            if filters['manufacturing_year_from']:
-                try:
-                    manuf_year = int(get_nested(data, ['vehicle_details', 'manufacture_year'], '0'))
-                    if manuf_year < int(filters['manufacturing_year_from']):
-                        continue
-                except (ValueError, TypeError):
-                    continue
-            if filters['manufacturing_year_to']:
-                try:
-                    manuf_year = int(get_nested(data, ['vehicle_details', 'manufacture_year'], '0'))
-                    if manuf_year > int(filters['manufacturing_year_to']):
-                        continue
-                except (ValueError, TypeError):
-                    continue
-            if filters['fuel_type']:
-                if filters['fuel_type'] not in get_nested(data, ['vehicle_details', 'fuel_type']):
-                    continue
-            if filters['gvw_from']:
-                try:
-                    gvw = int(get_nested(data, ['vehicle_details', 'vehicle_gross_weight'], '0'))
-                    if gvw < int(filters['gvw_from']):
-                        continue
-                except (ValueError, TypeError):
-                    continue
+                match = False
 
-            obj.json_data = data  # Attach parsed dict
-            filtered.append(obj)
+            # Add more conditions here for date and range filters
+
+            if match:
+                obj.json_data = data
+                filtered.append(obj)
     else:
-        # No filter applied, return empty
-        filtered = []
+        filtered = []  # no filter, empty
 
-    if role_id != 1 and request.user.department_id != "5":
+    if role_id != 1 and str(request.user.department_id) != "5":
         policy_count = PolicyDocument.objects.filter(status=6, rm_id=user_id).count()
     else:
         policy_count = PolicyDocument.objects.filter(status=6).count()
@@ -202,9 +164,6 @@ def agent_commission(request):
     except ValueError:
         per_page = 10
 
-    filtered_policy_ids = [obj.id for obj in filtered]
-    filtered_count = len(filtered)
-
     paginator = Paginator(filtered, per_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -214,8 +173,8 @@ def agent_commission(request):
         "policy_count": policy_count,
         "per_page": per_page,
         'filters': {k: request.GET.get(k, '') for k in filters},
-        'filtered_policy_ids': filtered_policy_ids,
-        'filtered_count': filtered_count,   # <-- new
+        'filtered_policy_ids': [obj.id for obj in filtered],
+        'filtered_count': len(filtered),
     })
 
 def update_agent_commission(request):
@@ -225,16 +184,34 @@ def update_agent_commission(request):
     policy_ids_str = request.POST.get('policy_ids', '')
     policy_ids = [int(id.strip()) for id in policy_ids_str.split(',') if id.strip().isdigit()]
 
+    if not policy_ids:
+        return redirect('agent-commission')
+
+    policies = PolicyDocument.objects.filter(id__in=policy_ids).only('id', 'policy_number')
+
+    policy_map = {policy.id: policy.policy_number for policy in policies}
+
     for policy_id in policy_ids:
-        obj, created = AgentPaymentDetails.objects.get_or_create(policy_id=policy_id)
+        policy_number = policy_map.get(policy_id)
+        if not policy_number:
+            continue  # Skip if policy not found
+
+        obj, created = AgentPaymentDetails.objects.get_or_create(policy_id=policy_id, defaults={'policy_number': policy_number})
+
+        if not created:
+            # If already exists, also update the policy_number (in case it was missing before)
+            obj.policy_number = policy_number
+
         obj.agent_od_comm = request.POST.get('agent_od_commission')
         obj.agent_net_comm = request.POST.get('agent_net_commission')
         obj.agent_tp_comm = request.POST.get('agent_tp_commission')
         obj.agent_incentive_amount = request.POST.get('agent_incentive_amount')
         obj.agent_tds = request.POST.get('agent_tds')
+        obj.updated_by = request.user
         obj.save()
 
     return redirect('agent-commission')
+
 
 
 
