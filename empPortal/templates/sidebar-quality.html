@@ -65,29 +65,12 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="{{ agent_commission }}" class="nav-link sidebar-menutext {% if request.path == agent_commission %} active {% endif %}">
-                  <svg class="sidbarmenu-svg">
-                    <use xlink:href="#commission-icon" />
-                  </svg>
-                  <p>Agent Comm.</p>
-                </a>
-              </li>
-              <li class="nav-item">
                 <a href="{{ insurer_commission }}" class="nav-link sidebar-menutext {% if request.path == insurer_commission %} active {% endif %}">
                   <svg class="sidbarmenu-svg">
                     <use xlink:href="#sales-icon" />
                   </svg>
                     <p>Insurer Comm.</p>
                 </a>
-              </li>
-              
-              <li class="nav-item">
-                  <a href="{{ franchise_commission }}" class="nav-link sidebar-menutext {% if request.path == franchise_commission %} active {% endif %}">
-                    <svg class="sidbarmenu-svg">
-                      <use xlink:href="#agent-business-icon" />
-                    </svg>
-                      <p>Franchise Comm.</p>
-                  </a>
               </li>
             </ul>
             

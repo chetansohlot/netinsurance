@@ -118,6 +118,8 @@ urlpatterns = [
     
     path('members/activated', members.members_activated, name='members_activated'),
     path('members/rejected', members.members_rejected, name='members_rejected'),
+    path('members/inactive', members.members_inactive, name='members_inactive'), ## members_inactive ##
+
 
     path('member/member-view/<str:user_id>',members.memberView, name='member-view'),
     path('member/activate-user/<str:user_id>',members.activateUser, name='activate-user'),
