@@ -1090,11 +1090,47 @@ class ExtractedFile(models.Model):
     retry_source_count = models.IntegerField(default=0)
     retry_chat_response_count = models.IntegerField(default=0)
     retry_creating_policy_count = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return self.filename
     
     class Meta:
         db_table = 'extracted_file'
+        
+class SingleUploadFile(models.Model):
+    file_path = models.FileField(upload_to='pdf_files/')
+    filename = models.CharField(max_length=255)
+    product_type = models.IntegerField()
+    content = models.TextField(blank=True, null=True)
+    source_id = models.CharField(max_length=255, null=True, blank=True)
+    is_uploaded = models.BooleanField(default=False)
+    is_extracted = models.BooleanField(default=False)
+    chat_response = models.TextField(null=True, blank=True)
+    extracted_at = models.DateTimeField(auto_now_add=True)
+    policy = models.ForeignKey(PolicyDocument, on_delete=models.SET_NULL, null=True, blank=True)
+    file_url = models.URLField(blank=True, null=True)
+    status = models.IntegerField(default=0)
+    retry_source_count = models.IntegerField(default=0)
+    retry_chat_response_count = models.IntegerField(default=0)
+    retry_creating_policy_count = models.IntegerField(default=0)
+    is_completed = models.BooleanField(default=False)
+    is_failed = models.BooleanField(default=False)
+    
+
+    upload_at = models.DateTimeField(default=timezone.now)
+    create_by = models.ForeignKey(Users, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if self.file_path:
+            self.filename = self.file_path.name
+            self.file_url = self.file_path.url  # Assumes MEDIA_URL and MEDIA_ROOT properly set
+        super().save(*args, **kwargs)
+        
+    def __str__(self):
+        return self.filename
+
+    class Meta:
+        db_table = 'single_upload_file'
         
 class FileAnalysis(models.Model):
     zip = models.ForeignKey(UploadedZip, on_delete=models.CASCADE)

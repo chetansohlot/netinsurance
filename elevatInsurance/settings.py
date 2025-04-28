@@ -89,15 +89,17 @@ WSGI_APPLICATION = 'elevatInsurance.wsgi.application'
 # Session will expire when the browser is closed
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
-
 CRON_CLASSES = [
     'empPortal.crons.ExtractFilesFromZip',
     'empPortal.crons.GettingSourceId',
     'empPortal.crons.GettingPdfExtractedData',
-    'empPortal.crons.CreateNewPolicy'
+    'empPortal.crons.CreateNewPolicy',
+    'empPortal.crons.GettingSourceIdForSinglePolicies',
+    'empPortal.crons.GettingPdfExtractedDataSinglePolicies',
+    'empPortal.crons.CreateNewPolicySinglePolicy'
+    
     # 'empPortal.crons.updatePolicyInfoByPolicyNumber'
 ]
-
 
 # Inactivity timeout — auto logout after 10 minutes of no activity
 SESSION_COOKIE_AGE = 600  # in seconds (600s = 10 minutes)

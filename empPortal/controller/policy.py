@@ -5,13 +5,17 @@ from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib import messages
 from django.template import loader
 from ..models import Commission,Users, PolicyUploadDoc,Branch,PolicyInfo,PolicyDocument, DocumentUpload, FranchisePayment, InsurerPaymentDetails, PolicyVehicleInfo, AgentPaymentDetails, UploadedExcel, UploadedZip
-from ..models import BulkPolicyLog,ExtractedFile, BqpMaster
+from ..models import BulkPolicyLog,ExtractedFile, BqpMaster, SingleUploadFile
 from empPortal.model import Referral
 
 from empPortal.model import BankDetails
 from ..forms import DocumentUploadForm
 from django.contrib.auth import authenticate, login ,logout
 from django.core.files.storage import FileSystemStorage
+from django.core.paginator import Paginator
+from django.db.models import Q
+
+
 import re,openpyxl
 from django.db import IntegrityError
 import requests
@@ -42,6 +46,7 @@ import pandas as pd
 from collections import Counter
 from io import BytesIO
 from ..utils import getUserNameByUserId, policy_product
+
 logging.getLogger('faker').setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 OPENAI_API_KEY = settings.OPENAI_API_KEY
@@ -599,6 +604,8 @@ def bulkBrowsePolicy(request):
                                 messages.error(request, "ZIP must contain only PDF files.")
                     except zipfile.BadZipFile:
                         messages.error(request, "The uploaded ZIP file is corrupted or invalid.")
+                        
+                        
             if not camp_name:
                 messages.error(request, "Campaign Name is mandatory.")
             if not product_type:
@@ -633,11 +640,179 @@ def bulkBrowsePolicy(request):
     else:
         return redirect('login')
 
+def policyMgt(request):
+    if not request.user.is_authenticated and request.user.is_active != 1:
+        messages.error(request, "Please Login First")
+        return redirect('login')
+    product_types = policy_product()
+    return render(request,'policy/single-policy-upload.html',{'product_types':product_types})
 
 
+# def browsePolicy(request):
+#     if not request.user.is_authenticated and request.user.is_active != 1:
+#         messages.error(request, "Please Login First")
+#         return redirect('login')
+#     if request.method == "POST" and request.FILES.get("image"):
+#         image = request.FILES["image"]
+#          # Validate ZIP file format
+#         if not image.name.lower().endswith(".pdf"):
+#             messages.error(request, "Invalid file format. Only pdf files are allowed.")
+#             return redirect("policy-mgt")
+        
+#         if image.size > 2 * 1024 * 1024:  # 2MB = 1024*1024*2 bytes
+#             messages.error(request, "File too large. Maximum allowed size is 2 MB.")
+#             return redirect("policy-mgt")
+
+#         fs = FileSystemStorage()
+#         filename = fs.save(image.name, image)
+#         filepath = fs.path(filename)
+#         fileurl = fs.url(filename)
+#         extracted_text = extract_text_from_pdf(filepath)
+#         if "Error" in extracted_text:
+#             messages.error(request, extracted_text)
+#             return redirect('policy-mgt')
+        
+#         member_id = request.user.id
+       
+#         commision_rate = commisionRateByMemberId(member_id)
+#         insurer_rate = insurercommisionRateByMemberId(1)
+#         if commision_rate:
+#             od_percentage = commision_rate.od_percentage
+#             net_percentage = commision_rate.net_percentage
+#             tp_percentage = commision_rate.tp_percentage
+#         else:
+#             od_percentage = 0.0
+#             net_percentage = 0.0
+#             tp_percentage = 0.0
+            
+#         if insurer_rate:
+#             insurer_od_percentage = insurer_rate.od_percentage
+#             insurer_net_percentage = insurer_rate.net_percentage
+#             insurer_tp_percentage = insurer_rate.tp_percentage
+#         else:
+#             insurer_od_percentage = 0.0
+#             insurer_net_percentage = 0.0
+#             insurer_tp_percentage = 0.0
+
+        
+#         processed_text = process_text_with_chatgpt(extracted_text)
+#         if "error" in processed_text:
+#             PolicyDocument.objects.create(
+#                 filename=image.name,
+#                 extracted_text=processed_text,
+#                 filepath=fileurl,
+#                 rm_name=request.user.first_name,
+#                 rm_id=request.user.id,
+#                 od_percent=od_percentage,
+#                 tp_percent=tp_percentage,
+#                 net_percent=net_percentage,
+#                 insurer_tp_commission   = insurer_tp_percentage,
+#                 insurer_od_commission   = insurer_od_percentage,
+#                 insurer_net_commission  = insurer_net_percentage,
+#                 status=3,
+#             )
+            
+#             messages.error(request, f"Failed to process policy")
+#             return redirect('policy-mgt')
+#         else:
+#             policy_number = processed_text.get("policy_number", None)
+#             if PolicyDocument.objects.filter(policy_number=policy_number).exists():
+#                 messages.error(request, "Policy Number already exists.")
+#                 return redirect('policy-mgt')
+            
+#             vehicle_number = re.sub(r"[^a-zA-Z0-9]", "", processed_text.get("vehicle_number", ""))
+#             coverage_details = processed_text.get("coverage_details", [{}])
+#             od_premium = coverage_details.get('own_damage', {}).get('premium', 0)
+#             tp_premium = coverage_details.get('third_party', {}).get('premium', 0)
+#             PolicyDocument.objects.create(
+#                 filename=image.name,
+#                 extracted_text=processed_text,
+#                 filepath=fileurl,
+#                 rm_name=request.user.full_name,
+#                 rm_id=request.user.id,
+#                 insurance_provider=processed_text.get("insurance_company", ""),
+#                 vehicle_number=vehicle_number,
+#                 policy_number=policy_number,
+#                 policy_issue_date=processed_text.get("issue_date", ""),
+#                 policy_expiry_date=processed_text.get("expiry_date", ""),
+#                 policy_start_date=processed_text.get('start_date', ""),
+#                 policy_period=processed_text.get("policy_period", ""),
+#                 holder_name=processed_text.get("insured_name", ""),
+#                 policy_total_premium=processed_text.get("gross_premium", 0),
+#                 policy_premium=processed_text.get("net_premium", 0),
+#                 sum_insured=processed_text.get("sum_insured", 0),
+#                 coverage_details=processed_text.get("coverage_details", ""),
+#                 payment_status='Confirmed',
+#                 policy_type=processed_text.get('additional_details', {}).get('policy_type', ""),
+#                 vehicle_type=processed_text.get('vehicle_details', {}).get('vehicle_type', ""),
+#                 vehicle_make=processed_text.get('vehicle_details', {}).get('make', ""),                      
+#                 vehicle_model=processed_text.get('vehicle_details', {}).get('model', ""),                      
+#                 vehicle_gross_weight=processed_text.get('vehicle_details', {}).get('vehicle_gross_weight', ""),                     
+#                 vehicle_manuf_date=processed_text.get('vehicle_details', {}).get('registration_year', ""),                      
+#                 gst=processed_text.get('gst_premium', 0),                      
+#                 od_premium=od_premium,
+#                 tp_premium=tp_premium,
+#                 od_percent=od_percentage,
+#                 tp_percent=tp_percentage,
+#                 net_percent=net_percentage,
+#                 insurer_tp_commission   = insurer_rate.tp_percentage,
+#                 insurer_od_commission   = insurer_rate.od_percentage,
+#                 insurer_net_commission  = insurer_rate.net_percentage,
+
+#                 status=6,
+#             )
+#             messages.success(request, "PDF uploaded and processed successfully.")
+            
+#         return redirect('policy-data')
+    
+#     else:
+#         messages.error(request, "Please upload a PDF file.")
+
+#     return redirect('policy-mgt')
 
 
-
+def browsePolicy(request):
+    if not request.user.is_authenticated and request.user.is_active != 1:
+        messages.error(request, "Please Login First")
+        return redirect('login')
+    
+    if request.method != "POST":
+        return redirect('policy-mgt')
+    
+    if request.FILES.get("file"):
+        file = request.FILES["file"]
+    else:
+        file = None
+        
+    product_type = request.POST.get("product_type")
+    if not file:
+        messages.error(request, "Upload PDF file.")
+        
+    if not file or not file.name.lower().endswith(".pdf"):
+        messages.error(request, "Invalid file format. Only PDF files are allowed.")
+    else:
+        if file.size > 2 * 1024 * 1024:
+            messages.error(request, "File too large. Maximum allowed size is 2 MB.")
+                        
+    if not product_type:
+        messages.error(request, "Product Type is mandatory.")
+        return redirect('policy-mgt')
+    if messages.get_messages(request):
+        return redirect('policy-mgt')
+    
+    single_policy = SingleUploadFile.objects.create(
+        file_path=file,
+        status=1,
+        retry_source_count=0,
+        product_type=product_type,
+        retry_chat_response_count=0,
+        retry_creating_policy_count=0,
+        create_by=request.user
+    )
+    
+    messages.success(request, "Pdf Uploaded Successfully")
+    return redirect("policy-mgt")
+        
 def bulkPolicyView(request, id):
     if not request.user.is_authenticated or request.user.is_active != 1:
         return redirect('login')
@@ -658,13 +833,12 @@ def bulkPolicyView(request, id):
         7: statuses.get(7, 0),
     }
 
-    return render(request, 'policy/policy-files.html', {
+    return render(request, 'policy/extracted-files.html', {
         'files': policy_files,
         'total_files': len(policy_files),
         'log_id': id,
         'status_counts': status_counts
     })
-
 
 def bulkUploadLogs(request):
     if not request.user.is_authenticated or request.user.is_active != 1:
@@ -699,3 +873,124 @@ def bulkUploadLogs(request):
         'status_counts': status_counts,
         'total_files': len(policy_files)
     })
+
+def policyData(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    user_id = request.user.id
+    role_id = Users.objects.filter(id=user_id).values_list('role_id', flat=True).first()
+
+    filters_q = Q(status=6) & Q(policy_number__isnull=False) & ~Q(policy_number='')
+    if role_id != 1 and request.user.department_id != "5":
+        filters_q &= Q(rm_id=user_id)
+        
+    base_qs = PolicyDocument.objects.filter(filters_q).order_by('-id').prefetch_related(
+        'policy_agent_info', 'policy_franchise_info', 'policy_insurer_info'
+    )
+    
+    def get_nested(data, path, default=''):
+        for key in path:
+            data = data.get(key) if isinstance(data, dict) else default
+        return str(data).lower()
+
+
+
+    filters = {
+        'policy_number':      request.GET.get('policy_number', '').strip().lower(),
+        'vehicle_number':     request.GET.get('vehicle_number', '').strip().lower(),
+        'engine_number':      request.GET.get('engine_number', '').strip().lower(),
+        'chassis_number':     request.GET.get('chassis_number', '').strip().lower(),
+        'vehicle_type':       request.GET.get('vehicle_type', '').strip().lower(),
+        'policy_holder_name':      request.GET.get('policy_holder_name', '').strip().lower(),      # maps to "Customer Name"
+        'mobile_number':      request.GET.get('mobile_number', '').strip().lower(),      # maps to "Mobile Number"
+        'insurance_provider': request.GET.get('insurance_provider', '').strip().lower(), # maps to "Insurance Provider"
+    }
+
+    filtered = []
+    for obj in base_qs:
+        raw = obj.extracted_text
+        data = {}
+        
+        if isinstance(raw, str):
+            try:
+                data = json.loads(raw)
+            except json.JSONDecodeError:
+                continue
+        elif isinstance(raw, dict):
+            data = raw
+    
+        if not data:
+            continue
+
+        if filters['policy_number'] and filters['policy_number'] not in data.get('policy_number', '').lower():
+            continue
+        if filters['vehicle_number'] and filters['vehicle_number'] not in data.get('vehicle_number', '').lower():
+            continue
+        if filters['engine_number'] and filters['engine_number'] not in get_nested(data, ['vehicle_details', 'engine_number']).lower():
+            continue
+        if filters['chassis_number'] and filters['chassis_number'] not in get_nested(data, ['vehicle_details', 'chassis_number']).lower():
+            continue
+        if filters['vehicle_type'] and filters['vehicle_type'] not in get_nested(data, ['vehicle_details', 'vehicle_type']).lower():
+            continue
+        if filters['policy_holder_name'] and filters['policy_holder_name'] not in data.get('insured_name', '').lower():
+            continue
+        if filters['mobile_number'] and filters['mobile_number'] not in data.get('contact_information', {}).get('phone_number', '').lower():
+            continue
+        if filters['insurance_provider'] and filters['insurance_provider'] not in data.get('insurance_company', '').lower():
+            continue   
+
+        obj.json_data = data    # attach parsed dict for the template
+        filtered.append(obj)
+
+    if role_id != 1 and request.user.department_id != "5":
+        policy_count = PolicyDocument.objects.filter(status=6, rm_id=user_id).count()
+    else:
+        policy_count = PolicyDocument.objects.filter(status=6).count()
+
+    # Pagination
+    per_page = request.GET.get('per_page', 10)
+    try:
+        per_page = int(per_page)
+    except ValueError:
+        per_page = 10
+
+    paginator = Paginator(filtered, per_page)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'policy/index.html', {
+        "page_obj": page_obj,
+        "policy_count": policy_count,
+        "per_page": per_page,
+        'filters': {k: request.GET.get(k,'') for k in filters}
+    })
+
+def viewSinglePolicyLog(request):
+    if not request.user.is_authenticated and request.user.is_active != 1:
+        messages.error(request,'Please Login First')
+        
+    log_files = SingleUploadFile.objects.all()
+    
+    non_failed_files = log_files.filter(is_failed = False)
+    statuses = Counter(file.status for file in non_failed_files)
+    # Ensure all statuses are included in the count, even if they're 0
+    status_counts = {
+        0: statuses.get(0, 0),
+        1: statuses.get(1, 0),
+        2: statuses.get(2, 0),
+        3: statuses.get(3, 0),
+        4: statuses.get(4, 0),
+        5: statuses.get(5, 0),
+        6: statuses.get(6, 0),
+        7: statuses.get(7, 0),
+    }
+
+    failed_files_count = log_files.filter(is_failed=True).count()
+    
+    return render(request,'policy/single-policy-log.html',{
+        "log_files":log_files,
+        "total_files":len(log_files),
+        "failed_files":failed_files_count,
+        "status_counts":status_counts
+    })
+    
