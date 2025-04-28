@@ -195,9 +195,12 @@ urlpatterns = [
     path('report/f-business-report/', export.franchisees_business_report, name='franchisees-business-report'),
     path('report/i-business-report/', export.insurer_business_report, name='insurer-business-report'),
     
-    path('report/v1/commission-report/', reports.commission_report, name='commission-report'),
-    
+    path('report/v1/commission-report/', reports.commission_report, name='commission-report'),    
     # REPORTS 
+    
+    # EXPORT
+    path('export-commission-report/', export.export_commission_data, name='export-commission-report-v0'),
+    path('v1/export-commission-report/', export.export_commission_data_v1, name='export-commission-report'),
 
 
     # POLICY-COMMISION 
@@ -278,7 +281,7 @@ urlpatterns = [
     path("logout/", views.userLogout, name="logout"),
     #  for creating of the export functionality 
     #  path('export-policy/', views.exportPolicies, name='update-policy'),
-      path('export-policy/', export.exportPolicies, name='export-policy'),   
+    path('export-policy/', export.exportPolicies, name='export-policy'),   
     #   path('check-relations/', export.check_related_policies, name='check-relation'),   
 
     
@@ -286,7 +289,6 @@ urlpatterns = [
     #  path('export-policy/', views.exportPolicies, name='update-policy'),
     path('export-policy/', export.exportPolicies, name='export-policy'),   
     path('save-policy-data/', export.download_policy_data, name='save-policy-data'),
-    path('export-commission-report/', export.export_commission_data, name='export-commission-report'),
 
 
     ####  source master ---- parth url  ####

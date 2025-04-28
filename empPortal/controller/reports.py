@@ -4,6 +4,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 
 from ..models import PolicyDocument,Users
+from empPortal.export import export_commission_data_v1
 
 def commission_report(request):
     if not request.user.is_authenticated and request.user.is_active != 1:
@@ -28,7 +29,7 @@ def commission_report(request):
         per_page = int(per_page)
     except ValueError:
         per_page = 10
-
+    
     user_id  = request.user.id
     role_id = request.user.role_id
     
