@@ -195,7 +195,7 @@
                                   <div class="col-sm-6">
                                     <div class="form-group">
                                       <label class="form-lbl">Agent Amount</label>
-                                      <input type="text" class="form-field number" name="agent_amount" placeholder="Agent Amount" value="{{ agent_payment.agent_amount }}">
+                                      <input type="text" class="form-field number" name="agent_amount" placeholder="Agent Amount" value="{{ agent_payment.agent_amount|default:policy.gross_premium }}">
                                     </div>
                                   </div>
                                  

@@ -295,8 +295,8 @@ def edit_agent_payment_info(request, policy_no):
         return redirect('policy-data')
     
     policy_data = PolicyDocument.objects.filter(policy_number=policy_no).first()
-    referrals = Referral.objects.all()
-    bqps = BqpMaster.objects.all()
+    referrals = Referral.objects.all().order_by('name')
+    bqps = BqpMaster.objects.all().order_by('bqp_fname')
     agent_payment = AgentPaymentDetails.objects.filter(policy_number=policy.policy_number).last()
     
     if request.method == 'POST':
