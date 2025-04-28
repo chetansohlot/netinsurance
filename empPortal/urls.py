@@ -201,8 +201,11 @@ urlpatterns = [
     # POLICY-COMMISION 
     path('policy-commission/agent-commission/', PolicyCommission.agent_commission, name='agent-commission'),
     path('policy-commission/update-agent-commission/', PolicyCommission.update_agent_commission, name='update-agent-commission'),
+    path('policy-commission/update-franchise-commission/', PolicyCommission.update_franchise_commission, name='update-franchise-commission'),
     path('policy-commission/franchisees-commission/', PolicyCommission.franchisees_commission, name='franchisees-commission'),
     path('policy-commission/insurer-commission/', PolicyCommission.insurer_commission, name='insurer-commission'),
+    path('policy-commission/update-insurer-commission/', PolicyCommission.update_insurer_commission, name='update-insurer-commission'),
+
     # POLICY-COMMISION 
     
 
