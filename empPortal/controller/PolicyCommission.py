@@ -102,6 +102,7 @@ def agent_commission(request):
         'policy_holder_name': request.GET.get('policy_holder_name', '').strip().lower(),
         'mobile_number': request.GET.get('mobile_number', '').strip().lower(),
         'insurance_provider': request.GET.get('insurance_provider', '').strip().lower(),
+        'insurance_company': request.GET.get('insurance_company', '').strip().lower(),
         'start_date': request.GET.get('start_date', '').strip(),
         'end_date': request.GET.get('end_date', '').strip(),
         'manufacturing_year_from': request.GET.get('manufacturing_year_from', '').strip(),
@@ -143,6 +144,8 @@ def agent_commission(request):
             if filters['mobile_number'] and filters['mobile_number'] not in str(data.get('contact_information', {}).get('phone_number', '')).lower():
                 match = False
             if filters['insurance_provider'] and filters['insurance_provider'] not in data.get('insurance_company', '').lower():
+                match = False
+            if filters['insurance_company'] and filters['insurance_company'] not in data.get('insurance_company', '').lower():
                 match = False
 
             # Add more conditions here for date and range filters
