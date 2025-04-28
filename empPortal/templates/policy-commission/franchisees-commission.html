@@ -133,53 +133,9 @@ Policy Data
                         <form method="get">
                           <div class="row align-items-center">
                             
-                            <!-- Policy Number -->
-                            <div class="col-6 col-md-2">
-                              <div class="form-group">
-                                <input class="form-field" name="policy_number" type="text" placeholder="Policy Number" value="{{filters.policy_number }}">
-                              </div>
-                            </div>
-
-                                    <!-- Vehicle Number -->
-                            <div class="col-6 col-md-2">
-                              <div class="form-group">
-                                <input class="form-field" name="vehicle_number" type="text" placeholder="Vehicle Number" value="{{ filters.vehicle_number }}">
-                              </div>
-                            </div> 
+                        
+                            {% include "components/policy-commission/commission-filter.html" %}
                             
-                            <!-- Engine Number -->
-                            <div class="col-sm-6 col-md-2">
-                              <div class="form-group">
-                                <input class="form-field" name="engine_number" type="text" placeholder="Engine Number" value="{{ filters.engine_number }}">
-                              </div>
-                            </div>
-
-                            <!-- Chassis Number -->
-                            <div class="col-sm-6 col-md-2">
-                              <div class="form-group">
-                                <input class="form-field" name="chassis_number" type="text" placeholder="Chassis Number" value="{{ filters.chassis_number }}">
-                              </div>
-                            </div>
-
-                            <!-- Vehicle Type -->
-                            <div class="col-sm-6 col-md-2">
-                              <div class="form-group">
-                                <input class="form-field" name="vehicle_type" type="text" placeholder="Vehicle Type" value="{{ filters.vehicle_type }}">
-                              </div>
-                            </div>
-
-                            <!-- Customer Name -->
-                            <div class="col-sm-6 col-md-2">
-                              <div class="form-group">
-                                <input class="form-field" name="policy_holder_name" type="text" placeholder="Customer Name" value="{{filters.policy_holder_name }}">
-                              </div>
-                            </div>
-
-                            <div class="col-sm-6 col-md-2">
-                              <div class="form-group">
-                                <input class="form-field" name="insurance_provider" type="text" placeholder="Insurance Provider" value="{{ filters.insurance_provider }}">
-                              </div>
-                            </div>
 
                             <!-- Buttons -->
                             <div class="col-sm-6 col-md-2">
@@ -205,54 +161,59 @@ Policy Data
                         <div class="card-body pb-0">
                   
                           <!-- Update Insurer Commission Form -->
-                          <h5 class="mb-3">Update Franchise Commission</h5>
-                          <form method="post">
+                          <h5 class="mb-3">Update Insurer Commission</h5>
+                          <form method="post" action="{% url 'update-insurer-commission' %}">
+                            {% csrf_token %}
                             <div class="row align-items-center">
-                  
+                              <input type="hidden" name="policy_ids" value="{{ filtered_policy_ids|join:',' }}">
+                          
                               <!-- Insurer OD Commission -->
                               <div class="col-6 col-md-2">
                                 <div class="form-group">
-                                  <input class="form-field" name="insurer_od_commission" type="text" placeholder="Franchise OD Commission">
+                                  <input class="form-field" name="insurer_od_commission" type="text" placeholder="Insurer OD Commission">
                                 </div>
                               </div>
-                  
+                          
                               <!-- Insurer Net Commission -->
                               <div class="col-6 col-md-2">
                                 <div class="form-group">
-                                  <input class="form-field" name="insurer_net_commission" type="text" placeholder="Franchise Net Commission">
+                                  <input class="form-field" name="insurer_net_commission" type="text" placeholder="Insurer Net Commission">
                                 </div>
                               </div>
-                  
+                          
                               <!-- Insurer TP Commission -->
                               <div class="col-6 col-md-2">
                                 <div class="form-group">
-                                  <input class="form-field" name="insurer_tp_commission" type="text" placeholder="Franchise TP Commission">
+                                  <input class="form-field" name="insurer_tp_commission" type="text" placeholder="Insurer TP Commission">
                                 </div>
                               </div>
-                  
+                          
                               <!-- Insurer Incentive Amount -->
                               <div class="col-6 col-md-2">
                                 <div class="form-group">
-                                  <input class="form-field" name="insurer_incentive_amount" type="text" placeholder="Franchise Incentive Amount">
+                                  <input class="form-field" name="insurer_incentive_amount" type="text" placeholder="Insurer Incentive Amount">
                                 </div>
                               </div>
-                  
+                          
                               <!-- Insurer TDS -->
                               <div class="col-6 col-md-2">
                                 <div class="form-group">
-                                  <input class="form-field" name="insurer_tds" type="text" placeholder="Franchise TDS">
+                                  <input class="form-field" name="insurer_tds" type="text" placeholder="Insurer TDS">
                                 </div>
                               </div>
-                  
+                          
                               <!-- Submit Button -->
                               <div class="col-6 col-md-2">
                                 <div class="form-group">
                                   <button type="submit" class="wrap-btn w-100 bg-danger text-white">Update Commission</button>
                                 </div>
                               </div>
-                  
+                          
                             </div>
                           </form>
+                          
+                          
+
                         </div>
                       </div>
                     </div>
