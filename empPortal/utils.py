@@ -246,7 +246,8 @@ def chatPdfMessage():
             - Find insurer provider and valid policy number don't set mobile number or something in policy number
             - If a detail is not found, leave it as an empty string or null as per the field.
             - Policy number format for GoDigit should be 'XXXXXX / XXXXX' (space before and after the slash).
-
+            - Policy Type must have value form Third Party Liability Policy, Stand Alone Own Damage Policy, Package Policy 
+            - Vehicle number should have only alphabets and numbers (no special characters or extra text).
             Input Text:
 
             Expected JSON format:

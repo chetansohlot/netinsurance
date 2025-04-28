@@ -135,9 +135,9 @@ Policy Data
                       <table class="table table-design">
                         <thead class="table-thead-bg-light table-header-fix">
                           <tr>
-                            <th>
+                            <!-- <th>
                               <input type="checkbox" id="select-all">
-                            </th>
+                            </th> -->
                             <th>File Name</th>
                             <th>Date of Upload</th>
                             <th>File</th>
@@ -147,7 +147,7 @@ Policy Data
                         <tbody>
                           {% for data in files %}
                             <tr>
-                              <td>
+                              <!-- <td>
                                 <input type="checkbox"
                                   name="reupload[]"
                                   class="reprocess"
@@ -156,10 +156,10 @@ Policy Data
                                   data-status="{{ data.status }}"
                                   data-created-at="{{ data.created_at|date:'U' }}"
                                   id="checkbox-{{ data.id }}">
-                              </td>
-                              <td>{{ data.filename }} <span class="tooltip-sec text-info" data-title="{{ data.filepath }}"><i class="fa-solid fa-circle-info"></i></span></td>
+                              </td> -->
+                              <td>{{ data.filename }} <span class="tooltip-sec text-info" data-title="{{ data.file_url }}"><i class="fa-solid fa-circle-info"></i></span></td>
                               <td>{{ data.created_at }}</td>
-                              <td><a href="{{ data.filepath }}" target="_blank" class="btn btn-success btn-xs" download><i class="fa-solid fa-download"></i></a></td>
+                              <td><a href="{{ data.file_url }}" target="_blank" class="btn btn-success btn-xs" download><i class="fa-solid fa-download"></i></a></td>
                               <td>
                                 {% if data.status == 0 %}
                                   <span class="badge badge-info">File Created</span>

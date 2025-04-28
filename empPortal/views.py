@@ -581,12 +581,6 @@ def updateUserStatus(request):
             return redirect('user-and-roles')
     else:
         return redirect('login')
-    
-def policyMgt(request):
-    if not request.user.is_authenticated and request.user.is_active != 1:
-        messages.error(request, "Please Login First")
-        return redirect('login')
-    return render(request,'policy/policy-mgt.html')
 
 def browsePolicy(request):
     if not request.user.is_authenticated and request.user.is_active != 1:
