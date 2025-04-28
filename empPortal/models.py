@@ -679,6 +679,13 @@ class Users(AbstractBaseUser):
             return 'Inactive'
         else :
             return 'N/A'
+    @property
+    def partner(self):
+        from empPortal.model import Partner  # Lazy import inside the method to avoid circular import
+        try:
+            return Partner.objects.get(user_id=self.id)
+        except Partner.DoesNotExist:
+            return None    
 
 class Franchises(models.Model):
     name = models.CharField(max_length=255, verbose_name="Franchise Name")
