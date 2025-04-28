@@ -244,13 +244,12 @@ urlpatterns = [
     path('update-role/', views.updateRole, name='update-role'),
     path('update-user/', views.updateUser, name='update-user'),
     
-    path('policy-mgt/', views.policyMgt, name='policy-mgt'),
-    path('browser-policy/', views.browsePolicy, name='browser-policy'),
+    path('browser-policy/', policy.browsePolicy, name='browser-policy'),
     path('failed-policy-upload-view/<str:id>', views.failedPolicyUploadView, name='failed-policy-upload-view'),
     path('bulk-policies/<str:id>', policy.bulkPolicyView, name='bulk-policies'),
     # path('bulk-browser-policy/', views.bulkBrowsePolicy, name='bulk-browser-policy'),
     path('bulk-browser-policy/', policy.bulkBrowsePolicy, name='bulk-browser-policy'),
-    path('policy-data/', views.policyData, name='policy-data'),
+    path('policy-data/', policy.policyData, name='policy-data'),
     path('edit-policy-data/<str:id>', views.editPolicy, name='edit-policy'),
     path('edit-policy/<str:policy_id>/', policy.edit_policy, name='edit-policy-data'),
     re_path(r'^edit-policy-vehicle-details/(?P<policy_no>.+)/$', policy.edit_vehicle_details, name='edit-policy-vehicle-details'),
@@ -263,7 +262,9 @@ urlpatterns = [
     path('edit-bulk-policy/', policy.editBulkPolicy, name='edit-bulk-policy'),
     path('update-bulk-policies/', policy.updateBulkPolicy, name='update-bulk-policies'),
     path('bulk-update-logs/', policy.viewBulkUpdates, name='bulk-update-logs'),
+    path('single-policy-log/', policy.viewSinglePolicyLog, name='single-policy-log'),
     path('bulk-policy-mgt/', policy.bulkPolicyMgt, name='bulk-policy-mgt'),
+    path('policy-mgt/', policy.policyMgt, name='policy-mgt'),
     
     
     path('reprocess-bulk-policies',views.reprocessBulkPolicies,name="reprocess-bulk-policies"),

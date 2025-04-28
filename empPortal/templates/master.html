@@ -1483,7 +1483,41 @@
 
 <script>
     $(document).ready(function () {
+        $("#single_policy_upload").validate({
+            rules: {
+                file: {
+                    required: true,
+                    accept: "application/pdf",
+                },
+                product_type: {
+                    required:true
+                }
+            },
+            messages: {
+                file: {
+                    required: "Please upload an PDF file.",
+                    accept: "Only PDF files are allowed."
+                },
+                product_type : {
+                    required: "Please enter Product Type"
+                }
+            },
+            errorElement: "div",
+            errorPlacement: function (error, element) {
+                error.addClass("text-danger");
+                error.insertAfter(element);
+            },
+            submitHandler: function (form) {
+                $("#loader").show();
+                form.submit();
+            }
+        });
+    });
+    
+</script>
 
+<script>
+    $(document).ready(function () {
         // Form validation
         $("#quotationCustomerForm").validate({
             rules: {
