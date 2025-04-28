@@ -461,7 +461,21 @@
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <th>BQP</th>
+                                                <td>BQP</td>
+                                                <td>
+                                                    {% if bqp_details %}
+                                                    {{ user_details.bqpData.bqp_fname }}
+                                                    {{ bqp_details.bqp_fname|default:"" }} {{ bqp_details.bqp_lname|default:"" }}
+                                                    {% if not bqp_details.bqp_fname and not bqp_details.bqp_lname %}
+                                                        N/A
+                                                    {% endif %}
+                                                {% else %}
+                                                    N/A
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ user_details.bqpData.email_address|default:"N/A" }}</td>
+                                            <td>{{ user_details.bqpData.mobile_number|default:"N/A" }}</td>
+                                            
                                             </tr>
                                             <tr>
                                                 <td>Branch</td>
@@ -502,6 +516,19 @@
                                             <form id="bank-form" method="POST" action="{% url 'store-allocation' %}">
                                                 {% csrf_token %}
                                                 <input type="hidden" name="agent_member_id" value="{{ user_details.id }}">
+                                                <!-- ← NEW BQP Dropdown -->
+                                                <select id="bqp" name="bqp" class="form-control">
+                                                    <option value="">Select BQP</option>
+                                                    {% if bqp_details %}
+                                                        {% for bqp_s in bqp_details %}
+                                                            <option value="{{ bqp_s.id }}" {% if bqp_s.id == selected_bqp_id %}selected{% endif %}>
+                                                                {{ bqp_s.bqp_fname }} {{ bqp_s.bqp_lname }}
+                                                            </option>
+                                                        {% endfor %}
+                                                    {% else %}
+                                                        <option disabled>No BQPs available</option>
+                                                    {% endif %}
+                                                </select>
                                                 <div class="form-group">
                                                     <label for="branch">Branch</label>
                                                     <select id="branch" name="branch" class="form-control">

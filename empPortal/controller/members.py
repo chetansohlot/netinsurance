@@ -4,7 +4,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib import messages
 from django.template import loader
-from ..models import Commission,Users, DocumentUpload, Branch
+from ..models import Commission,Users, DocumentUpload, Branch,BqpMaster
 from empPortal.model import BankDetails
 from ..forms import DocumentUploadForm
 from django.core.mail import send_mail
@@ -649,13 +649,109 @@ def members_rejected(request):
         })
     else:
         return redirect('login')
+
+def members_inactive(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    if request.user.role_id == 1:
+        role_ids = [4]  # Filter for specific roles
+
+        per_page = request.GET.get('per_page', 10)
+        search_field = request.GET.get('search_field', '')  # Field to search
+        search_query = request.GET.get('search_query', '')  # Search value
+        sorting = request.GET.get('sorting', '')  # Sorting option
+        global_search = request.GET.get('global_search', '').strip()
+
+        try:
+            per_page = int(per_page)
+        except ValueError:
+            per_page = 10  # Default to 10 if invalid value is given
+
+        # Base QuerySet
+        users = Users.objects.filter(role_id__in=role_ids, activation_status='0')  # Inactive users
+
+        # Get partners with 'Inactive' status
+        partners = Partner.objects.filter(partner_status='5')  # Inactive partners
+        partner_ids = partners.values_list('user_id', flat=True)  # Get user IDs
+
+        users = Users.objects.filter(id__in=partner_ids)
+
+        if global_search:
+            users = users.annotate(
+                search_full_name=Concat('first_name', Value(' '), 'last_name')
+            ).filter(
+                Q(search_full_name__icontains=global_search) |  
+                Q(first_name__icontains=global_search) |
+                Q(last_name__icontains=global_search) |
+                Q(email__icontains=global_search) |
+                Q(phone__icontains=global_search)
+            )
+
+        # Apply filtering
+        if 'user_gen_id' in request.GET and request.GET['user_gen_id']:
+            users = users.filter(user_gen_id__icontains=request.GET['user_gen_id'])
+        if 'user_name' in request.GET and request.GET['user_name']:
+            users = users.filter(user_name__icontains=request.GET['user_name'])
+        if 'pan_no' in request.GET and request.GET['pan_no']:
+            users = users.filter(pan_no__icontains=request.GET['pan_no'])
+        if 'email' in request.GET and request.GET['email']:
+            users = users.filter(email__icontains=request.GET['email'])
+        if 'phone' in request.GET and request.GET['phone']:
+            users = users.filter(phone__icontains=request.GET['phone'])
+
+        # Apply sorting
+        if sorting == "name_a_z":
+            users = users.order_by("first_name")
+        elif sorting == "name_z_a":
+            users = users.order_by("-first_name")
+        elif sorting == "recently_activated":
+            users = users.filter(activation_status='1').order_by("-updated_at")
+        elif sorting == "recently_deactivated":
+            users = users.filter(
+                Q(activation_status='0') | Q(activation_status__isnull=True) | Q(activation_status='')
+            ).order_by("-updated_at")
+        else:
+            users = users.order_by("-updated_at")
+
+        total_agents = Users.objects.filter(role_id__in=role_ids).count()
+        active_agents = Users.objects.filter(role_id__in=role_ids, activation_status='1').count()
+        deactive_agents = Users.objects.filter(role_id__in=role_ids, activation_status='0').count()
+
+        # Paginate results
+        paginator = Paginator(users, per_page)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+        counters = partnerCounters()
+
+        return render(request, 'members/members-inactive.html', {
+            'page_obj': page_obj,
+            'total_agents': total_agents,
+            'active_agents': active_agents,
+            'counters': counters,
+            'deactive_agents': deactive_agents,
+            'pending_agents': 0,  # Define pending logic if needed
+            'search_field': search_field,
+            'search_query': search_query,
+            'global_search': global_search,
+            'sorting': sorting,
+            'per_page': per_page,
+        })
+    else:
+        return redirect('login')
+
     
 def memberView(request, user_id):
     if request.user.is_authenticated:
         # Fetch user details and bank details
-        user_details = Users.objects.get(id=user_id)
-        bank_details = BankDetails.objects.filter(user_id=user_id).first()
-        partner_info = Partner.objects.filter(user_id=user_id).first()
+        user_details  = Users.objects.get(id=user_id)
+        bank_details  = BankDetails.objects.filter(user_id=user_id).first()
+        partner_info  = Partner.objects.filter(user_id=user_id).first()
+        # bqp_details = BqpMaster.objects.filter(id=user_details.bqp_id).first()
+        bqp_details  = BqpMaster.objects.all()
+
+        # if in partner table user_id not exist only then hit this 
+        sync_user_to_partner(user_id, request)  # Sync user data to Partner model
 
         docs = DocumentUpload.objects.filter(user_id=user_id).first()
         # Fetch commissions for the specific member
@@ -719,7 +815,9 @@ def memberView(request, user_id):
         selected_tl_id = tl.id if tl else None
         selected_rm_id = rm.id if rm else None
 
-        print(partner_info.partner_status)
+        print('hello')
+        # print(bqp_details.id)
+        print('hello')
         return render(request, 'members/member-view.html', {
             'user_details': user_details,
             'bank_details': bank_details,
@@ -729,6 +827,7 @@ def memberView(request, user_id):
             'rm_list': rm_list,
             'tl_list': tl_list,
             'branches': branches,
+            'bqp_details' : bqp_details,
             'rm_details': rm,
             'tl_details': tl,
             'branch': branch,

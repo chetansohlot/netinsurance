@@ -21,6 +21,6 @@
         <a class="nav-link {% if rejected %}active{% endif %}" href="{% url 'members_rejected' %}">Rejected</a> <!--Replaces In Rejected with InActive-->
     </li>
     <li class="nav-item text-bold">
-        <a class="nav-link {% if inactive %}active{% endif %}" href="#">Inactive</a> <!--Replaces In Rejected with InActive-->
+        <a class="nav-link {% if inactive %}active{% endif %}" href="{% url 'members_inactive' %}">Inactive</a> <!--Replaces In Rejected with InActive-->
     </li>
 </ul>

@@ -4,7 +4,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib import messages
 from django.template import loader
-from ..models import Commission,Users,Branch, DocumentUpload, ExamResult
+from ..models import Commission,Users,Branch, DocumentUpload, ExamResult,BqpMaster
 from empPortal.model import BankDetails
 from ..forms import DocumentUploadForm
 from django.contrib.auth import authenticate, login ,logout
@@ -173,7 +173,7 @@ def update_user_details(request):
         user_details.pincode = request.POST['pincode']
         user_details.address = request.POST['address']
         user_details.save()
-        sync_user_to_partner(user_details.id, request)  # Sync user data to Partner model
+        (user_details.id, request)  # Sync user data to Partner model
 
         messages.success(request, "User details updated successfully!")
         return redirect('my-account')  # Redirect back to the user profile page
@@ -185,6 +185,7 @@ def storeAllocation(request):
         user_id = request.POST.get('agent_member_id')
         branch_id = request.POST.get('branch')
         rm_id = request.POST.get('role_rm')
+        bqp_id =request.POST.get('bqp') # <-- Get BQP Id
 
         if not branch_id or not rm_id:
             messages.error(request, "Branch and RM cannot be empty.")
@@ -193,6 +194,7 @@ def storeAllocation(request):
         user = get_object_or_404(Users, id=user_id)
         user.branch_id = branch_id
         user.senior_id = rm_id  # Store sales_manager_id in senior_id
+        user.bqp_id = bqp_id # Save BQP ID ()
         user.save()
 
         sync_user_to_partner(user.id, request)  # Sync user data to Partner model

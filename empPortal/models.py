@@ -632,6 +632,9 @@ class Users(AbstractBaseUser):
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
     password = models.CharField(max_length=255, null=True)
+    ## bqp id ##
+    bqp = models.ForeignKey(BqpMaster, on_delete=models.SET_NULL, null=True, blank=True)
+
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -652,6 +655,12 @@ class Users(AbstractBaseUser):
         try:
             return Department.objects.get(id=self.department_id)
         except Department.DoesNotExist:
+            return None
+        
+    def bqpData(self):
+        try:
+            return BqpMaster.objects.get(id=self.bqp_id)
+        except BqpMaster.DoesNotExist:
             return None
         
     @property
