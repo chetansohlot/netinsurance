@@ -170,25 +170,30 @@ Policy Data
                               <td>{{ data.created_at }}</td>
                               <td><a href="{{ data.file_url }}" target="_blank" class="btn btn-success btn-xs" download><i class="fa-solid fa-download"></i></a></td>
                               <td>
-                                {% if data.status == 0 %}
-                                  <span class="badge badge-info">File Created</span>
-                                {% elif data.status == 1 %}
-                                  <span class="badge badge-warning">File Uploading</span>
-                                {% elif data.status == 2 %}
-                                  <span class="badge badge-dark">File Uploaded</span>
-                                {% elif data.status == 3 %}
-                                  <span class="badge badge-info">File Analysing</span>
-                                {% elif data.status == 4 %}
-                                  <span class="badge badge-info">File Analysed</span>
-                                {% elif data.status == 5 %}
-                                  <span class="badge badge-info">Policy Creating</span>
-                                {% elif data.status == 6 %}
-                                  <span class="badge badge-success">Complete</span>
-                                {% elif data.status == 7 %}
-                                  <span class="badge badge-success">Duplicate File</span>
+                                {% if data.is_failed == True %}
+                                  <span class="badge badge-danger">Failed</span>
                                 {% else %}
-                                  <span class="badge badge-secondary">Pending</span>
+                                  {% if data.status == 0 %}
+                                    <span class="badge badge-info">File Created</span>
+                                  {% elif data.status == 1 %}
+                                    <span class="badge badge-warning">File Uploading</span>
+                                  {% elif data.status == 2 %}
+                                    <span class="badge badge-dark">File Uploaded</span>
+                                  {% elif data.status == 3 %}
+                                    <span class="badge badge-info">File Analysing</span>
+                                  {% elif data.status == 4 %}
+                                    <span class="badge badge-info">File Analysed</span>
+                                  {% elif data.status == 5 %}
+                                    <span class="badge badge-info">Policy Creating</span>
+                                  {% elif data.status == 6 %}
+                                    <span class="badge badge-success">Complete</span>
+                                  {% elif data.status == 7 %}
+                                    <span class="badge badge-success">Duplicate File</span>
+                                  {% else %}
+                                    <span class="badge badge-secondary">Pending</span>
+                                  {% endif %}
                                 {% endif %}
+                                
                               </td>
                             </tr>
                           {% endfor %}
