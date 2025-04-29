@@ -4,7 +4,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib import messages
 from django.template import loader
-from ..models import Commission,Users, DocumentUpload, Branch,BqpMaster
+from ..models import Commission, ExamResult,Users, DocumentUpload, Branch,BqpMaster
 from empPortal.model import BankDetails
 from ..forms import DocumentUploadForm
 from django.core.mail import send_mail
@@ -116,6 +116,8 @@ def members(request):
             users = users.filter(**filter_args)"""
         users = Users.objects.filter(role_id__in=role_ids)
 
+        
+
     # Get filter values from GET request
         user_gen_id = request.GET.get('user_gen_id', '').strip()
         user_name = request.GET.get('user_name', '').strip() #Apply filter based on full name column not 1st & last name
@@ -154,6 +156,11 @@ def members(request):
         else:
             users = users.order_by("-updated_at")
 
+        # Exam Result
+        examresult = ExamResult.objects.filter(user=request.user) # or .first()
+        inexam = True if examresult else False
+ 
+
         
         total_agents = Users.objects.filter(role_id__in=role_ids).count()
         active_agents = Users.objects.filter(role_id__in=role_ids,activation_status='1').count()
@@ -182,6 +189,8 @@ def members(request):
             'sorting': sorting,
             'per_page': per_page,
             'users': users,
+            'inexam': inexam,
+            'examresult': examresult , # Pass the exam result to the template
             'members_all': True,
             'members_requested' : False,
         })
@@ -578,6 +587,11 @@ def members_inexam(request):
 
         users = Users.objects.filter(id__in=partner_ids, role_id__in=role_ids)
 
+        # inexam = True  # Example condition to check if the user is in an exam
+        # examresult = ExamResult.objects.filter(user_id__in=users.values_list('id', flat=True))  # Assu
+        examresult_qs = ExamResult.objects.filter(user_id__in=users.values_list('id', flat=True))
+        examresult_map = {result.user_id: result for result in examresult_qs}
+
         # Global search filtering
         if global_search:
             users = users.annotate(
@@ -639,6 +653,9 @@ def members_inexam(request):
             'active_agents': active_agents,
             'deactive_agents': deactive_agents,
             'counters': counters,
+            'user': users,
+            # 'inexam': inexam,
+            'examresult': examresult_map,  # pass all results
             'search_field': search_field,
             'search_query': search_query,
             'global_search': global_search,
@@ -967,6 +984,11 @@ def memberView(request, user_id):
         # bqp_details = BqpMaster.objects.filter(id=user_details.bqp_id).first()
         bqp_details  = BqpMaster.objects.all()
 
+        # Exam Result
+        examresult = ExamResult.objects.filter(user=request.user).first()
+        inexam =True if examresult else False  
+
+
         # if in partner table user_id not exist only then hit this 
         sync_user_to_partner(user_id, request)  # Sync user data to Partner model
 
@@ -1045,6 +1067,8 @@ def memberView(request, user_id):
             'tl_list': tl_list,
             'branches': branches,
             'bqp_details' : bqp_details,
+            'inexam': inexam,
+            'examresult': examresult , # Pass the exam result to the template
             'rm_details': rm,
             'tl_details': tl,
             'branch': branch,

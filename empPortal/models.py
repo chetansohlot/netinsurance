@@ -688,6 +688,13 @@ class Users(AbstractBaseUser):
         try:
             return Partner.objects.get(user_id=self.id)
         except Partner.DoesNotExist:
+            return None  
+          
+    @property
+    def examRes(self):
+        try:
+            return ExamResult.objects.filter(status='passed').get(user_id=self.id)
+        except ExamResult.DoesNotExist:
             return None    
 
 class Franchises(models.Model):

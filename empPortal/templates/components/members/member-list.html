@@ -13,6 +13,10 @@
           <th>Contact Details</th>
           <!-- <th>Role</th> -->
           <th>Member Status</th>
+          {% if inexam %}
+          <th>Exam Score & Status</th>
+          <th>Certificate</th>
+          {% endif  %}
           <th width="50"></th>
         </tr>
       </thead>
@@ -53,7 +57,23 @@
               {% endif %}
               <span class="text-gray d-block small">{{ user.created_at|date:"d M 'y H:i:s" }} - Present</span>
             </td>
+
+            {% if inexam %}
+            <td>
+              {% if user %}
+                <span class="badge badge-success">
+                  Score: {{ user.examRes.percentage|default:"Not Attempted" }}<br>
+                  Status: {{ user.examRes.status|default:"Not Attempted" }}
+                </span>
+              {% else %}
+                <span class="badge badge-secondary">N/A</span>
+              {% endif %}
+            </td>
+            {% endif %}
+
             
+            
+              
             <td>
               <div class="dropdown">
                 <img src="{% static 'dist/img/svg/menu-dot-vr.svg' %}" alt="" class="table-doticon" data-toggle="dropdown" aria-expanded="false">
