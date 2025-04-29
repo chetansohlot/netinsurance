@@ -123,11 +123,16 @@
                                               <input class="form-field" name="mobile" type="text" placeholder="Mobile Number" value="">
                                           </div>
                                       </div>
+                                      <div class="col-sm-6 col-md-2">
+                                        <div class="form-group">
+                                            <input class="form-field" name="pan_no" type="text" placeholder="PAN Number" value="{{ request.GET.pan_no }}">
+                                        </div>
+                                    </div>
                                       
                                       <div class="col-sm-6 col-md-2">
                                           <div class="form-group d-flex">
                                               <button type="submit" class="wrap-btn w-100">Apply</button>
-                                              <a href="{% url 'members_inprocess' %}" class="wrap-btn w-100 bg-danger ml-2 text-center">Reset</a>
+                                              <a href="{% url 'members_intraining' %}" class="wrap-btn w-100 bg-danger ml-2 text-center">Reset</a>
                                           </div>
                                       </div>
                                   </div>

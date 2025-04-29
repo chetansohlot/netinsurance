@@ -49,7 +49,7 @@
                 <div class="col-sm-12 col-md-12">  
                     <div class="card box-shadow-none">
                       <div class="card-body px-0 pb-0">
-                        <div class="row">
+                        <!-- <div class="row">
                           <div class="col-md-6">
                             <div class="table-search-area">
                               <form>
@@ -66,10 +66,53 @@
                                 </button>
                               </form>
                             </div>
-                          </div>
+                          </div> -->
+                          
+                        <!-- Partner Filter Start -->
+                        <div class="card w-100">
+                          <div class="card-body pb-0">
+                              <form method="GET">
+                                  <div class="row">
+                                      <div class="col-sm-6 col-md-2">
+                                          <div class="form-group">
+                                              <input class="form-field" name="user_gen_id" type="text" placeholder="Agent Name" value="">
+                                          </div>
+                                      </div>
+                                      <div class="col-sm-6 col-md-2">
+                                          <div class="form-group">
+                                              <input class="form-field" name="user_name" type="text" placeholder="Employee ID" value="">
+                                          </div>
+                                      </div>
+                                      <div class="col-sm-6 col-md-2">
+                                          <div class="form-group">
+                                              <input class="form-field" name="email" type="email" placeholder="Email" value="">
+                                          </div>
+                                      </div>
+                                      <div class="col-sm-6 col-md-2">
+                                          <div class="form-group">
+                                              <input class="form-field" name="mobile" type="text" placeholder="Mobile Number" value="">
+                                          </div>
+                                      </div>
+                                      <div class="col-sm-6 col-md-2">
+                                        <div class="form-group">
+                                            <input class="form-field" name="pan_no" type="text" placeholder="PAN Number" value="{{ request.GET.pan_no }}">
+                                        </div>
+                                    </div>
+
+                                      <div class="col-sm-6 col-md-2">
+                                        <div class="form-group d-flex">
+                                            <button type="submit" class="wrap-btn w-100">Apply</button>
+                                            <a href="{% url 'members_inexam' %}" class="wrap-btn w-100 bg-danger ml-2 text-center">Reset</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                      </div>
+
                           <div class="col-md-6">
                             <div class=" d-flex justify-content-end">
-                              <div class="dropdown">
+                              <!-- <div class="dropdown">
                                 <div class="shorting-select"  data-toggle="dropdown" aria-expanded="false">
                                   <img src="{% static 'dist/img/svg/shorting-icon.svg' %}" alt="">
                                   <span>Short</span>
@@ -87,12 +130,12 @@
                                     </div>   
                                   </ul>
                                 </form>
-                              </div>  
-                              <div class="shorting-select" data-toggle="modal" data-target="#modal-filter">
+                              </div>   -->
+                              <!-- <div class="shorting-select" data-toggle="modal" data-target="#modal-filter">
                                 <img src="{% static 'dist/img/svg/filter-icon.svg' %}" alt="">
                                 <span>Filter</span>
                                 <img src="{% static 'dist/img/svg/down-arrow-icon.svg' %}" alt="" class="change-arrow">
-                              </div>
+                              </div> -->
                             </div>  
                           </div>
                         </div>
