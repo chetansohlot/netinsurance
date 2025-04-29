@@ -132,8 +132,8 @@ def edit_policy(request, policy_id):
         policy.save()
         messages.success(request, "Policy Updated successfully!")
         
-        if request.user.department_id and int(request.user.department_id) == 2:
-            return redirect('edit-agent-payment-info',policy_id=quote(policy.policy_id, safe=''))
+        if request.user.department_id and request.user.department_id == "2":
+            return redirect('edit-agent-payment-info',policy_id=quote(policy_id, safe=''))
         else:
             return redirect('edit-policy-vehicle-details', policy_id=quote(policy_id, safe=''))
 
