@@ -239,7 +239,7 @@ def edit_policy_docs(request, policy_id):
         doc_data = PolicyUploadDoc.objects.filter(policy_id=policy_id).first()
     except PolicyUploadDoc.DoesNotExist:
         doc_data = PolicyUploadDoc(policy_id=policy_id,policy_number = policy_data.policy_number)
-
+        
     # AJAX file upload
     if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
         field_name = request.POST.get('field_name')
