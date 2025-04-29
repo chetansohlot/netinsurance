@@ -455,6 +455,9 @@ class GettingSourceId(CronJobBase):
                             logger.info(f"Updated source_id for file ID: {file.id}, filename: {file.filename}, Source ID: {source_id}")
                         else:
                             file.retry_source_count += 1
+                            if(file.retry_source_count == 3):
+                                file.is_failed = True
+                                file.bulk_log_ref.count_error_pdf_files += 1
                             file.save()
                             logger.error(f"Failed to upload extracted_file {file.id}. Status: {response.status_code}, Error: {response.text}")
                             continue
@@ -490,6 +493,9 @@ class GettingPdfExtractedData(CronJobBase):
                 try:
                     file.status = 3
                     file.retry_chat_response_count += 1
+                    if(file.retry_chat_response_count == 3):
+                        file.is_failed = True
+                        file.bulk_log_ref.count_error_pdf_files += 1
                     file.save()
                     headers = {
                         'x-api-key': settings.CHATPDF_API_KEY,
@@ -553,6 +559,9 @@ class CreateNewPolicy(CronJobBase):
             for file in files:
                 file.status = 5
                 file.retry_creating_policy_count += 1
+                if(file.retry_creating_policy_count == 3):
+                    file.is_failed = True
+                    file.bulk_log_ref.count_error_pdf_files += 1
                 file.save()
                 file_ids.append(file.id)
                 extracted_data = file.chat_response

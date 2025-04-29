@@ -152,7 +152,7 @@
                                       <div class="form-group">
                                         <label class="form-lbl">Insurer Amount</label>
                                         <input type="text" class="form-field number" name="insurer_amount" placeholder="Amount"
-                                          value="{{ insurer_payment.insurer_amount|blank_if_none_or_text_none }}">
+                                          value="{{ insurer_payment.insurer_amount|default:policy.gross_premium }}">
                                       </div>
                                     </div>
 
@@ -198,9 +198,6 @@
                                               value="{{ insurer_payment.insurer_tp_amount|blank_if_none_or_text_none }}">
                                       </div>
                                     </div>
-
-                                    
-                                    
 
                                     <div class="col-sm-6">
                                       <div class="form-group">

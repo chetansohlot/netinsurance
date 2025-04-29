@@ -1089,6 +1089,7 @@ class ExtractedFile(models.Model):
     source_id = models.CharField(max_length=255, null=True, blank=True)
     is_uploaded = models.BooleanField(default=False)
     is_extracted = models.BooleanField(default=False)
+    is_failed = models.BooleanField(default=False)
     chat_response = models.TextField(null=True, blank=True)
     extracted_at = models.DateTimeField(auto_now_add=True)
     policy = models.ForeignKey(PolicyDocument, on_delete=models.CASCADE)

@@ -819,8 +819,10 @@ def bulkPolicyView(request, id):
 
     # Fetch policy documents based on bulk_log_id
     policy_files = ExtractedFile.objects.filter(bulk_log_ref_id=id)
-    statuses = Counter(file.status for file in policy_files)
+    status_files = ExtractedFile.objects.filter(bulk_log_ref_id=id,is_failed = False)
+    statuses = Counter(file.status for file in status_files)
 
+    failed_files = ExtractedFile.objects.filter(bulk_log_ref_id=id,is_failed=True).count()
     # Ensure all statuses are included in the count, even if they're 0
     status_counts = {
         0: statuses.get(0, 0),
@@ -837,6 +839,7 @@ def bulkPolicyView(request, id):
         'files': policy_files,
         'total_files': len(policy_files),
         'log_id': id,
+        'failed_files_count': failed_files,
         'status_counts': status_counts
     })
 
