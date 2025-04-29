@@ -661,7 +661,7 @@ class Users(AbstractBaseUser):
         try:
             return BqpMaster.objects.get(id=self.bqp_id)
         except BqpMaster.DoesNotExist:
-            return None
+            return None    
         
     @property
     def full_name(self):
@@ -679,6 +679,7 @@ class Users(AbstractBaseUser):
             return 'Inactive'
         else :
             return 'N/A'
+        
     @property
     def partner(self):
         from empPortal.model import Partner  # Lazy import inside the method to avoid circular import
