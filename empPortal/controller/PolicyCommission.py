@@ -197,14 +197,27 @@ def agent_commission(request):
                     except:
                         match = False
                         break
-                elif key == 'start_date' and data.get('start_date') and val:
-                    if data.get('start_date') < val:
+
+                elif key == 'start_date' and val:
+                    try:
+                        start_dt = datetime.strptime(val, '%Y-%m-%d')
+                        if obj.created_at.date() < start_dt.date():
+                            match = False
+                            break
+                    except ValueError:
                         match = False
                         break
-                elif key == 'end_date' and data.get('end_date') and val:
-                    if data.get('end_date') > val:
+
+                elif key == 'end_date' and val:
+                    try:
+                        end_dt = datetime.strptime(val, '%Y-%m-%d')
+                        if obj.created_at.date() > end_dt.date():
+                            match = False
+                            break
+                    except ValueError:
                         match = False
                         break
+
 
         if match:
             obj.json_data = data
@@ -215,6 +228,12 @@ def agent_commission(request):
         policy_count = PolicyDocument.objects.filter(status=6, rm_id=user_id).exclude(exclude_q).count()
     else:
         policy_count = PolicyDocument.objects.filter(status=6).exclude(exclude_q).count()
+
+    # Count for display
+    if role_id != 1 and str(request.user.department_id) not in ["3", "5"]:
+        policy_total_count = PolicyDocument.objects.filter(status=6, rm_id=user_id).count()
+    else:
+        policy_total_count = PolicyDocument.objects.filter(status=6).count()
 
     per_page = request.GET.get('per_page', 10)
     try:
@@ -229,6 +248,7 @@ def agent_commission(request):
     return render(request, 'policy-commission/agent-commission.html', {
         "page_obj": page_obj,
         "policy_count": policy_count,
+        "policy_total_count": policy_total_count,
         "per_page": per_page,
         'filters': {k: request.GET.get(k, '') for k in filters},
         'filtered_policy_ids': [obj.id for obj in filtered],
@@ -298,48 +318,33 @@ def franchisees_commission(request):
 
     filters_q = Q(status=6) & Q(policy_number__isnull=False) & ~Q(policy_number='')
 
-    if role_id != 1 and str(request.user.department_id) != "5":
+    if role_id != 1 and str(request.user.department_id) not in ["3", "5"]:
         filters_q &= Q(rm_id=user_id)
 
-
+    # Handle dropdown filters
     branch_name = request.GET.get('branch_name', '').strip()
     referred_by = request.GET.get('referred_by', '').strip()
-
     branch = Branch.objects.filter(branch_name__iexact=branch_name).first()
     referral = Referral.objects.filter(name__iexact=referred_by).first()
 
     if branch:
         filters_q &= Q(policy_info__branch_name=str(branch.id))
-
     if referral:
         filters_q &= Q(policy_agent_info__referral_id=str(referral.id))
 
-    exclude_q = Q(
-        policy_franchise_info__franchise_od_comm__isnull=False
-    ) | Q(
-        policy_franchise_info__franchise_net_comm__isnull=False
-    ) | Q(
-        policy_franchise_info__franchise_tp_comm__isnull=False
-    ) | Q(
-        policy_franchise_info__franchise_incentive_amount__isnull=False
-    ) | Q(
-        policy_franchise_info__franchise_tds__isnull=False
-    ) | Q(
-        policy_franchise_info__isnull=False
-    )
-   
-    base_qs = PolicyDocument.objects.filter(filters_q).exclude(exclude_q).order_by('-id')
+    # Exclude already processed
+    exclude_q = Q(policy_franchise_info__franchise_od_comm__isnull=False) | \
+                Q(policy_franchise_info__franchise_net_comm__isnull=False) | \
+                Q(policy_franchise_info__franchise_tp_comm__isnull=False) | \
+                Q(policy_franchise_info__franchise_incentive_amount__isnull=False) | \
+                Q(policy_franchise_info__franchise_tds__isnull=False) | \
+                Q(policy_franchise_info__isnull=False)
 
-    # Only load required fields (optimization)
-    base_qs = base_qs.only(
-        'id', 'policy_number', 'vehicle_number', 'holder_name', 
-        'insurance_provider', 'extracted_text', 'vehicle_type'
-    )
+    base_qs = PolicyDocument.objects.filter(filters_q).exclude(exclude_q)
 
+    # Applying search filters
     filters = {
         'policy_number': request.GET.get('policy_number', '').strip().lower(),
-        'branch_name': request.GET.get('branch_name', '').strip().lower(),
-        'referred_by': request.GET.get('referred_by', '').strip().lower(),
         'vehicle_number': request.GET.get('vehicle_number', '').strip().lower(),
         'engine_number': request.GET.get('engine_number', '').strip().lower(),
         'chassis_number': request.GET.get('chassis_number', '').strip().lower(),
@@ -347,6 +352,7 @@ def franchisees_commission(request):
         'policy_holder_name': request.GET.get('policy_holder_name', '').strip().lower(),
         'mobile_number': request.GET.get('mobile_number', '').strip().lower(),
         'insurance_provider': request.GET.get('insurance_provider', '').strip().lower(),
+        'insurance_company': request.GET.get('insurance_company', '').strip().lower(),
         'start_date': request.GET.get('start_date', '').strip(),
         'end_date': request.GET.get('end_date', '').strip(),
         'manufacturing_year_from': request.GET.get('manufacturing_year_from', '').strip(),
@@ -355,67 +361,117 @@ def franchisees_commission(request):
         'gvw_from': request.GET.get('gvw_from', '').strip(),
     }
 
-    any_filter_applied = any(value for key, value in filters.items() if key not in ['start_date', 'end_date', 'manufacturing_year_from', 'manufacturing_year_to', 'gvw_from'])
-
     filtered = []
 
-    if any_filter_applied:
-        for obj in base_qs:
-            data = obj.extracted_text or {}
-            if not isinstance(data, dict):
-                try:
-                    data = json.loads(data)
-                except (json.JSONDecodeError, TypeError):
-                    continue
-
-            if not data:
+    for obj in base_qs.only(
+        'id', 'policy_number', 'vehicle_number', 'holder_name',
+        'insurance_provider', 'extracted_text', 'vehicle_type'
+    ).order_by('-id'):
+        data = obj.extracted_text or {}
+        if not isinstance(data, dict):
+            try:
+                data = json.loads(data)
+            except (json.JSONDecodeError, TypeError):
                 continue
 
-            match = True
+        if not data:
+            continue
 
-            if filters['policy_number'] and filters['policy_number'] not in data.get('policy_number', '').lower():
-                match = False
-            if filters['vehicle_number'] and filters['vehicle_number'] not in data.get('vehicle_number', '').lower():
-                match = False
-            if filters['engine_number'] and filters['engine_number'] not in str(data.get('vehicle_details', {}).get('engine_number', '')).lower():
-                match = False
-            if filters['chassis_number'] and filters['chassis_number'] not in str(data.get('vehicle_details', {}).get('chassis_number', '')).lower():
-                match = False
-            if filters['vehicle_type'] and filters['vehicle_type'] not in str(data.get('vehicle_details', {}).get('vehicle_type', '')).lower():
-                match = False
-            if filters['policy_holder_name'] and filters['policy_holder_name'] not in data.get('insured_name', '').lower():
-                match = False
-            if filters['mobile_number'] and filters['mobile_number'] not in str(data.get('contact_information', {}).get('phone_number', '')).lower():
-                match = False
-            if filters['insurance_provider'] and filters['insurance_provider'] not in data.get('insurance_company', '').lower():
-                match = False
+        match = True
+        # Apply individual field-level match
+        for key, val in filters.items():
+            if val:
+                if key == 'policy_number' and val not in (obj.policy_number or '').lower():
+                    match = False
+                    break
+                elif key == 'vehicle_number' and val not in (obj.vehicle_number or '').lower():
+                    match = False
+                    break
+                elif key == 'vehicle_type' and val != (obj.vehicle_type or '').lower():
+                    match = False
+                    break
+                elif key == 'policy_holder_name' and val not in (obj.holder_name or '').lower():
+                    match = False
+                    break
+                elif key == 'insurance_provider' and val not in (obj.insurance_provider or '').lower():
+                    match = False
+                    break
+                elif key == 'insurance_company' and val not in data.get('insurance_company', '').lower():
+                    match = False
+                    break
+                elif key == 'mobile_number' and val not in data.get('mobile_number', '').lower():
+                    match = False
+                    break
+                elif key == 'engine_number' and val not in data.get('engine_number', '').lower():
+                    match = False
+                    break
+                elif key == 'chassis_number' and val not in data.get('chassis_number', '').lower():
+                    match = False
+                    break
+                elif key == 'fuel_type' and val not in data.get('fuel_type', '').lower():
+                    match = False
+                    break
+                elif key == 'gvw_from':
+                    try:
+                        if int(data.get('gvw', '0')) < int(val):
+                            match = False
+                            break
+                    except:
+                        match = False
+                        break
+                elif key == 'manufacturing_year_from':
+                    try:
+                        if int(data.get('manufacturing_year', '0')) < int(val):
+                            match = False
+                            break
+                    except:
+                        match = False
+                        break
+                elif key == 'manufacturing_year_to':
+                    try:
+                        if int(data.get('manufacturing_year', '0')) > int(val):
+                            match = False
+                            break
+                    except:
+                        match = False
+                        break
 
-            # Add more conditions here for date and range filters
+                elif key == 'start_date' and val:
+                    try:
+                        start_dt = datetime.strptime(val, '%Y-%m-%d')
+                        if obj.created_at.date() < start_dt.date():
+                            match = False
+                            break
+                    except ValueError:
+                        match = False
+                        break
 
-            if match:
-                obj.json_data = data
-                filtered.append(obj)
+                elif key == 'end_date' and val:
+                    try:
+                        end_dt = datetime.strptime(val, '%Y-%m-%d')
+                        if obj.created_at.date() > end_dt.date():
+                            match = False
+                            break
+                    except ValueError:
+                        match = False
+                        break
+
+
+        if match:
+            obj.json_data = data
+            filtered.append(obj)
+
+    # Count for display
+    if role_id != 1 and str(request.user.department_id) not in ["3", "5"]:
+        policy_count = PolicyDocument.objects.filter(status=6, rm_id=user_id).exclude(exclude_q).count()
     else:
-        filtered = []  # no filter, empty
+        policy_count = PolicyDocument.objects.filter(status=6).exclude(exclude_q).count()
 
-
-    exclude_count_q = Q(
-        policy_franchise_info__franchise_od_comm__isnull=False
-    ) | Q(
-        policy_franchise_info__franchise_net_comm__isnull=False
-    ) | Q(
-        policy_franchise_info__franchise_tp_comm__isnull=False
-    ) | Q(
-        policy_franchise_info__franchise_incentive_amount__isnull=False
-    ) | Q(
-        policy_franchise_info__franchise_tds__isnull=False
-    ) | Q(
-        policy_franchise_info__isnull=False
-    )
-    if role_id != 1 and str(request.user.department_id) != "5" and str(request.user.department_id) != "3":
-        policy_count = PolicyDocument.objects.filter(status=6, rm_id=user_id).exclude(exclude_count_q).count()
+    # Count for display
+    if role_id != 1 and str(request.user.department_id) not in ["3", "5"]:
+        policy_total_count = PolicyDocument.objects.filter(status=6, rm_id=user_id).count()
     else:
-        policy_count = PolicyDocument.objects.filter(status=6).exclude(exclude_count_q).count()
+        policy_total_count = PolicyDocument.objects.filter(status=6).count()
 
     per_page = request.GET.get('per_page', 10)
     try:
@@ -430,11 +486,13 @@ def franchisees_commission(request):
     return render(request, 'policy-commission/franchisees-commission.html', {
         "page_obj": page_obj,
         "policy_count": policy_count,
+        "policy_total_count": policy_total_count,
         "per_page": per_page,
         'filters': {k: request.GET.get(k, '') for k in filters},
         'filtered_policy_ids': [obj.id for obj in filtered],
         'filtered_count': len(filtered),
     })
+
 
 
 def update_franchise_commission(request):
@@ -509,6 +567,7 @@ def update_franchise_commission(request):
 
     return redirect('franchisees-commission')
 
+
 def insurer_commission(request):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -518,48 +577,30 @@ def insurer_commission(request):
 
     filters_q = Q(status=6) & Q(policy_number__isnull=False) & ~Q(policy_number='')
 
-    if role_id != 1 and str(request.user.department_id) != "5":
+    if role_id != 1 and str(request.user.department_id) not in ["3", "5"]:
         filters_q &= Q(rm_id=user_id)
 
     branch_name = request.GET.get('branch_name', '').strip()
     referred_by = request.GET.get('referred_by', '').strip()
-
     branch = Branch.objects.filter(branch_name__iexact=branch_name).first()
     referral = Referral.objects.filter(name__iexact=referred_by).first()
 
     if branch:
         filters_q &= Q(policy_info__branch_name=str(branch.id))
-
     if referral:
         filters_q &= Q(policy_agent_info__referral_id=str(referral.id))
-        
-    exclude_q = Q(
-        policy_insurer_info__insurer_od_comm__isnull=False
-    ) | Q(
-        policy_insurer_info__insurer_net_comm__isnull=False
-    ) | Q(
-        policy_insurer_info__insurer_tp_comm__isnull=False
-    ) | Q(
-        policy_insurer_info__insurer_incentive_amount__isnull=False
-    ) | Q(
-        policy_insurer_info__insurer_tds__isnull=False
-    ) | Q(
-        policy_insurer_info__isnull=False
-    )
 
+    exclude_q = Q(policy_insurer_info__insurer_od_comm__isnull=False) | \
+                Q(policy_insurer_info__insurer_net_comm__isnull=False) | \
+                Q(policy_insurer_info__insurer_tp_comm__isnull=False) | \
+                Q(policy_insurer_info__insurer_incentive_amount__isnull=False) | \
+                Q(policy_insurer_info__insurer_tds__isnull=False) | \
+                Q(policy_insurer_info__isnull=False)
 
-
-    base_qs = PolicyDocument.objects.filter(filters_q).exclude(exclude_q).order_by('-id')
-    # Only load required fields (optimization)
-    base_qs = base_qs.only(
-        'id', 'policy_number', 'vehicle_number', 'holder_name', 
-        'insurance_provider', 'extracted_text', 'vehicle_type'
-    )
+    base_qs = PolicyDocument.objects.filter(filters_q).exclude(exclude_q)
 
     filters = {
         'policy_number': request.GET.get('policy_number', '').strip().lower(),
-        'branch_name': request.GET.get('branch_name', '').strip().lower(),
-        'referred_by': request.GET.get('referred_by', '').strip().lower(),
         'vehicle_number': request.GET.get('vehicle_number', '').strip().lower(),
         'engine_number': request.GET.get('engine_number', '').strip().lower(),
         'chassis_number': request.GET.get('chassis_number', '').strip().lower(),
@@ -567,6 +608,7 @@ def insurer_commission(request):
         'policy_holder_name': request.GET.get('policy_holder_name', '').strip().lower(),
         'mobile_number': request.GET.get('mobile_number', '').strip().lower(),
         'insurance_provider': request.GET.get('insurance_provider', '').strip().lower(),
+        'insurance_company': request.GET.get('insurance_company', '').strip().lower(),
         'start_date': request.GET.get('start_date', '').strip(),
         'end_date': request.GET.get('end_date', '').strip(),
         'manufacturing_year_from': request.GET.get('manufacturing_year_from', '').strip(),
@@ -575,72 +617,113 @@ def insurer_commission(request):
         'gvw_from': request.GET.get('gvw_from', '').strip(),
     }
 
-    any_filter_applied = any(value for key, value in filters.items() if key not in ['start_date', 'end_date', 'manufacturing_year_from', 'manufacturing_year_to', 'gvw_from'])
-
     filtered = []
 
-    if any_filter_applied:
-        for obj in base_qs:
-            data = obj.extracted_text or {}
-            if not isinstance(data, dict):
-                try:
-                    data = json.loads(data)
-                except (json.JSONDecodeError, TypeError):
-                    continue
-
-            if not data:
+    for obj in base_qs.only(
+        'id', 'policy_number', 'vehicle_number', 'holder_name',
+        'insurance_provider', 'extracted_text', 'vehicle_type'
+    ).order_by('-id'):
+        data = obj.extracted_text or {}
+        if not isinstance(data, dict):
+            try:
+                data = json.loads(data)
+            except (json.JSONDecodeError, TypeError):
                 continue
 
-            match = True
+        if not data:
+            continue
 
-            if filters['policy_number'] and filters['policy_number'] not in data.get('policy_number', '').lower():
-                match = False
-            if filters['vehicle_number'] and filters['vehicle_number'] not in data.get('vehicle_number', '').lower():
-                match = False
-            if filters['engine_number'] and filters['engine_number'] not in str(data.get('vehicle_details', {}).get('engine_number', '')).lower():
-                match = False
-            if filters['chassis_number'] and filters['chassis_number'] not in str(data.get('vehicle_details', {}).get('chassis_number', '')).lower():
-                match = False
-            if filters['vehicle_type'] and filters['vehicle_type'] not in str(data.get('vehicle_details', {}).get('vehicle_type', '')).lower():
-                match = False
-            if filters['policy_holder_name'] and filters['policy_holder_name'] not in data.get('insured_name', '').lower():
-                match = False
-            if filters['mobile_number'] and filters['mobile_number'] not in str(data.get('contact_information', {}).get('phone_number', '')).lower():
-                match = False
-            if filters['insurance_provider'] and filters['insurance_provider'] not in data.get('insurance_company', '').lower():
-                match = False
+        match = True
+        for key, val in filters.items():
+            if val:
+                if key == 'policy_number' and val not in (obj.policy_number or '').lower():
+                    match = False
+                    break
+                elif key == 'vehicle_number' and val not in (obj.vehicle_number or '').lower():
+                    match = False
+                    break
+                elif key == 'vehicle_type' and val != (obj.vehicle_type or '').lower():
+                    match = False
+                    break
+                elif key == 'policy_holder_name' and val not in (obj.holder_name or '').lower():
+                    match = False
+                    break
+                elif key == 'insurance_provider' and val not in (obj.insurance_provider or '').lower():
+                    match = False
+                    break
+                elif key == 'insurance_company' and val not in data.get('insurance_company', '').lower():
+                    match = False
+                    break
+                elif key == 'mobile_number' and val not in data.get('mobile_number', '').lower():
+                    match = False
+                    break
+                elif key == 'engine_number' and val not in data.get('engine_number', '').lower():
+                    match = False
+                    break
+                elif key == 'chassis_number' and val not in data.get('chassis_number', '').lower():
+                    match = False
+                    break
+                elif key == 'fuel_type' and val not in data.get('fuel_type', '').lower():
+                    match = False
+                    break
+                elif key == 'gvw_from':
+                    try:
+                        if int(data.get('gvw', '0')) < int(val):
+                            match = False
+                            break
+                    except:
+                        match = False
+                        break
+                elif key == 'manufacturing_year_from':
+                    try:
+                        if int(data.get('manufacturing_year', '0')) < int(val):
+                            match = False
+                            break
+                    except:
+                        match = False
+                        break
+                elif key == 'manufacturing_year_to':
+                    try:
+                        if int(data.get('manufacturing_year', '0')) > int(val):
+                            match = False
+                            break
+                    except:
+                        match = False
+                        break
+                elif key == 'start_date' and val:
+                    try:
+                        start_dt = datetime.strptime(val, '%Y-%m-%d')
+                        if obj.created_at.date() < start_dt.date():
+                            match = False
+                            break
+                    except ValueError:
+                        match = False
+                        break
+                elif key == 'end_date' and val:
+                    try:
+                        end_dt = datetime.strptime(val, '%Y-%m-%d')
+                        if obj.created_at.date() > end_dt.date():
+                            match = False
+                            break
+                    except ValueError:
+                        match = False
+                        break
 
-            # Add more conditions here for date and range filters
+        if match:
+            obj.json_data = data
+            filtered.append(obj)
 
-            if match:
-                obj.json_data = data
-                filtered.append(obj)
+    # Count for display
+    if role_id != 1 and str(request.user.department_id) not in ["3", "5"]:
+        policy_count = PolicyDocument.objects.filter(status=6, rm_id=user_id).exclude(exclude_q).count()
     else:
-        filtered = []  # no filter, empty
+        policy_count = PolicyDocument.objects.filter(status=6).exclude(exclude_q).count()
 
-
-
-    exclude_count_q = Q(
-        policy_insurer_info__insurer_od_comm__isnull=False
-    ) | Q(
-        policy_insurer_info__insurer_net_comm__isnull=False
-    ) | Q(
-        policy_insurer_info__insurer_tp_comm__isnull=False
-    ) | Q(
-        policy_insurer_info__insurer_incentive_amount__isnull=False
-    ) | Q(
-        policy_insurer_info__insurer_tds__isnull=False
-    ) | Q(
-        policy_insurer_info__isnull=False
-    )
-
-    # Get the count of policies
-    if role_id != 1 and str(request.user.department_id) != "5" and str(request.user.department_id) != "3":
-        policy_count = PolicyDocument.objects.filter(status=6, rm_id=user_id).exclude(exclude_count_q).count()
+    if role_id != 1 and str(request.user.department_id) not in ["3", "5"]:
+        policy_total_count = PolicyDocument.objects.filter(status=6, rm_id=user_id).count()
     else:
-        policy_count = PolicyDocument.objects.filter(status=6).exclude(exclude_count_q).count()
+        policy_total_count = PolicyDocument.objects.filter(status=6).count()
 
-    # Pagination logic
     per_page = request.GET.get('per_page', 10)
     try:
         per_page = int(per_page)
@@ -651,15 +734,13 @@ def insurer_commission(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    # Extract filtered policy IDs to pass to the template
-    filtered_policy_ids = [obj.id for obj in filtered]
-
     return render(request, 'policy-commission/insurer-commission.html', {
         "page_obj": page_obj,
         "policy_count": policy_count,
+        "policy_total_count": policy_total_count,
         "per_page": per_page,
         'filters': {k: request.GET.get(k, '') for k in filters},
-        'filtered_policy_ids': filtered_policy_ids,  # Correctly passing filtered_policy_ids
+        'filtered_policy_ids': [obj.id for obj in filtered],
         'filtered_count': len(filtered),
     })
 

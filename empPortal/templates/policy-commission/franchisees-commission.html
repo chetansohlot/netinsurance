@@ -22,10 +22,10 @@ Policy Data
       <div class="container-fluid ">
         <div class="row py-2">
           <div class="col-sm-6">
-            <h1 class="admin-title m-0 pt-2">Policy Mgt.</h1>
+            <h1 class="admin-title m-0 pt-2">Pending Franchise Commission</h1>
             <ul class="breadcrump">
               <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
-              <li>Post Policies Mgt</li>
+              <li>Pending Franchise Commission</li>
             </ul>
           </div>
           <div class="col-sm-6">
@@ -40,6 +40,7 @@ Policy Data
           </div>
         </div>
         <div class="row">
+          
           <div class="col-xs-6 col-sm-4 col-md-3">
             <a href="#">
               <div class="card counter-img-card active">
@@ -49,6 +50,25 @@ Policy Data
                       
                       <p class="card-text">
                         Total Policy
+                      </p>
+                      <h5 class="card-title card-number">{{ policy_total_count }} </h5>
+                    </div>
+                    
+                  </div>
+                </div>
+              </div>
+            </a>   
+          </div>  
+
+          <div class="col-xs-6 col-sm-4 col-md-3">
+            <a href="#">
+              <div class="card counter-img-card active">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col">
+                      
+                      <p class="card-text">
+                        Pending Policy
                       </p>
                       <h5 class="card-title card-number">{{ policy_count }}</h5>
                     </div>
@@ -141,7 +161,7 @@ Policy Data
                             <div class="col-sm-6 col-md-2">
                               <div class="form-group d-flex">
                                 <button type="submit" class="wrap-btn w-100 mr-2">Apply</button>
-                                <a href="{% url 'policy-data' %}" class="wrap-btn w-100 bg-danger text-white text-center">Reset</a>
+                                <a href="{% url 'franchisees-commission' %}" class="wrap-btn w-100 bg-danger text-white text-center">Reset</a>
                               </div>
                             </div>
                            
@@ -363,64 +383,8 @@ Policy Data
                     </div>
                 </div>
               </div>
-              
-              <div class="bottom-fix-pagination">
-                <div class="d-flex justify-content-between align-items-center">
-                    <ul class="pagination">
-                        {% if page_obj.has_previous %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page=1&per_page={{ per_page }}" aria-label="First">
-                                    <span aria-hidden="true">&laquo;&laquo;</span>
-                                    <span class="sr-only">First</span>
-                                </a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}&per_page={{ per_page }}" aria-label="Previous">
-                                    <span aria-hidden="true">&laquo;</span>
-                                    <span class="sr-only">Previous</span>
-                                </a>
-                            </li>
-                        {% endif %}
+              {% include "components/filter/paginator.html" %}
 
-                        {% with page_obj.number|add:"-5" as start_page %}
-                        {% with page_obj.number|add:"5" as end_page %}
-                            {% for num in page_obj.paginator.page_range %}
-                                {% if num >= start_page and num <= end_page %}
-                                    <li class="page-item {% if num == page_obj.number %}active{% endif %}">
-                                        <a class="page-link" href="?page={{ num }}&per_page={{ per_page }}">{{ num }}</a>
-                                    </li>
-                                {% endif %}
-                            {% endfor %}
-                        {% endwith %}
-                        {% endwith %}
-
-                        {% if page_obj.has_next %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.next_page_number }}&per_page={{ per_page }}" aria-label="Next">
-                                    <span aria-hidden="true">&raquo;</span>
-                                    <span class="sr-only">Next</span>
-                                </a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&per_page={{ per_page }}" aria-label="Last">
-                                    <span aria-hidden="true">&raquo;&raquo;</span>
-                                    <span class="sr-only">Last</span>
-                                </a>
-                            </li>
-                        {% endif %}
-                    </ul>
-
-                    <form method="GET" class="d-flex">
-                        <select class="pagination-dropdown form-select" name="per_page" onchange="this.form.submit()">
-                            <option value="10" {% if per_page == '10' %}selected{% endif %}>10 / Page</option>
-                            <option value="20" {% if per_page == '20' %}selected{% endif %}>20 / Page</option>
-                            <option value="50" {% if per_page == '50' %}selected{% endif %}>50 / Page</option>
-                            <option value="100" {% if per_page == '100' %}selected{% endif %}>100 / Page</option>
-                        </select>
-                        <input type="hidden" name="page" value="1">
-                    </form>
-                </div>
-              </div>
             </div>
             
             
