@@ -32,16 +32,6 @@
           </li>
 
           <li class="nav-item">
-            <a href="{% url 'leads-mgt' %}" 
-               class="nav-link {% if request.path|slice:9 == '/lead-mgt' %} active {% endif %}">
-              <svg class="sidbarmenu-svg">
-                <use xlink:href="#members" />
-              </svg>
-              <p>Lead Mgt</p>
-            </a>
-          </li>
-          
-          <li class="nav-item">
             <a href="{% url 'policy-data' %}" class="nav-link {% if '/policy-data/' in request.path or '/edit-policy-data/' in request.path or '/edit-policy-vehicle-details/' in request.path or '/edit-policy-docs/' in request.path or '/edit-agent-payment-info/' in request.path or '/edit-insurer-payment-info/' in request.path or '/edit-franchise-payment-info/' in request.path %} active {% endif %}">
               <svg class="sidbarmenu-svg">
                 <use xlink:href="#view-policy" />
@@ -49,94 +39,6 @@
               <p>Policy Mgt</p>
             </a>
           </li>
-          
-          
-            <li class="nav-item {% if '/motor/' in request.path or '/health/' in request.path %} menu-is-opening menu-open {% endif %}">
-              <a href="#" class="nav-link">
-                  <svg class="sidbarmenu-svg">
-                      <use xlink:href="#quote-mgt-icon"></use>
-                  </svg>
-                  <p>Quote Mgt <i class="fas fa-angle-right right"></i></p>
-              </a>
-              <ul class="nav nav-treeview" {% if '/motor/' in request.path or '/health/' in request.path %} style="display: block;" {% else %} style="display: none;" {% endif %}>
-                  <li class="nav-item">
-                      <a href="{% url 'quote-management' %}" class="nav-link {% if '/motor/' in request.path %} active {% endif %}">
-                        <svg class="sidbarmenu-svg">
-                          <use xlink:href="#car-icon" />
-                        </svg>
-                          <p> Motor </p>
-                      </a>
-                  </li>
-                  <li class="nav-item">
-                      <a href="{% url 'health-quote-management' %}" class="nav-link {% if '/health/' in request.path %} active {% endif %}">
-                        <svg class="sidbarmenu-svg">
-                          <use xlink:href="#health-icon" />
-                        </svg>
-                          <p> Health </p>
-                      </a>
-                  </li>
-              </ul>
-            </li>
-          
-          
-          
-          
-            <li class="nav-item {% if '/report/' in request.path %} menu-is-opening menu-open {% endif %}">
-              <a href="#" class="nav-link {% if '/report/' in request.path %} active {% endif %}" {% if "/report/" in request.path %} style="display:block" {% endif %}>
-                <svg class="sidbarmenu-svg">
-                  <use xlink:href="#billing-icon" />
-                </svg>
-                <p>Reports  <i class="fas fa-angle-right right"></i></p>
-              </a>
-              <ul class="nav nav-treeview">
-                <li class="nav-item">
-                  <a href="{{ commission_url }}" class="nav-link sidebar-menutext {% if request.path == commission_url %} active {% endif %}">
-                    <svg class="sidbarmenu-svg">
-                      <use xlink:href="#commission-icon" />
-                    </svg>
-                    <p>Commission Report </p>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a href="{{ sm_business_url }}" class="nav-link sidebar-menutext {% if request.path == sm_business_url %} active {% endif %}">
-                    <svg class="sidbarmenu-svg">
-                      <use xlink:href="#sales-icon" />
-                    </svg>
-                      <p>Sales Manager Business </p>
-                  </a>
-              </li>
-              
-              <li class="nav-item">
-                  <a href="{{ agent_business_url }}" class="nav-link sidebar-menutext {% if request.path == agent_business_url %} active {% endif %}">
-                    <svg class="sidbarmenu-svg">
-                      <use xlink:href="#agent-business-icon" />
-                    </svg>
-                      <p>Agent Business </p>
-                  </a>
-              </li>
-              
-              <li class="nav-item">
-                  <a href="{{ franchise_business_url }}" class="nav-link sidebar-menutext {% if request.path == franchise_business_url %} active {% endif %}">
-                    <svg class="sidbarmenu-svg">
-                      <use xlink:href="#franchise-icon" />
-                    </svg>
-                      <p>Franchisees Business </p>
-                  </a>
-              </li>
-              
-              <li class="nav-item">
-                  <a href="{{ insurer_business_url }}" class="nav-link sidebar-menutext {% if request.path == insurer_business_url %} active {% endif %}">
-                    <svg class="sidbarmenu-svg">
-                      <use xlink:href="#insurer-business-icon" />
-                    </svg>
-                      <p>Insurer Business </p>
-                  </a>
-              </li>
-              
-              </ul>
-              
-            </li>
-            
         </ul>
       </nav>
     </div>

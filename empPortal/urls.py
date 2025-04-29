@@ -257,11 +257,11 @@ urlpatterns = [
     path('policy-data/', policy.policyData, name='policy-data'),
     path('edit-policy-data/<str:id>', views.editPolicy, name='edit-policy'),
     path('edit-policy/<str:policy_id>/', policy.edit_policy, name='edit-policy-data'),
-    re_path(r'^edit-policy-vehicle-details/(?P<policy_no>.+)/$', policy.edit_vehicle_details, name='edit-policy-vehicle-details'),
-    re_path(r'^edit-policy-docs/(?P<policy_no>.+)/$', policy.edit_policy_docs, name='edit-policy-docs'),
-    re_path(r'^edit-agent-payment-info/(?P<policy_no>.+)/$', policy.edit_agent_payment_info, name='edit-agent-payment-info'),
-    re_path(r'^edit-insurer-payment-info/(?P<policy_no>.+)/$', policy.edit_insurer_payment_info, name='edit-insurer-payment-info'),
-    re_path(r'^edit-franchise-payment-info/(?P<policy_no>.+)/$', policy.edit_franchise_payment_info, name='edit-franchise-payment-info'),
+    re_path(r'^edit-policy-vehicle-details/(?P<policy_id>.+)/$', policy.edit_vehicle_details, name='edit-policy-vehicle-details'),
+    re_path(r'^edit-policy-docs/(?P<policy_id>.+)/$', policy.edit_policy_docs, name='edit-policy-docs'),
+    re_path(r'^edit-agent-payment-info/(?P<policy_id>.+)/$', policy.edit_agent_payment_info, name='edit-agent-payment-info'),
+    re_path(r'^edit-insurer-payment-info/(?P<policy_id>.+)/$', policy.edit_insurer_payment_info, name='edit-insurer-payment-info'),
+    re_path(r'^edit-franchise-payment-info/(?P<policy_id>.+)/$', policy.edit_franchise_payment_info, name='edit-franchise-payment-info'),
 
     path('update-policy/', views.updatePolicy, name='update-policy'),
     path('edit-bulk-policy/', policy.editBulkPolicy, name='edit-bulk-policy'),
@@ -302,6 +302,8 @@ urlpatterns = [
     path('bqp/create/', BQP.bqp_create, name='bqp_create'),
     path('bqp/edit/<int:bqp_id>/', BQP.bqp_edit, name='bqp_edit'),
     path('bqp/delete/<int:bqp_id>/', BQP.bqp_delete, name='bqp_delete'),
+    
+    path('get-pos-partners-by-bqp/', views.get_pos_partners_by_bqp,name="get-pos-partners-by-bqp")
 ] 
 
 

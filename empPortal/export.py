@@ -21,7 +21,7 @@ import zipfile
 from django.contrib import messages
 from .models import PolicyDocument
 from faker import Faker 
-from .models import PolicyDocument ,Commission, AgentPaymentDetails, InsurerPaymentDetails
+from .models import PolicyDocument ,Commission, AgentPaymentDetails, InsurerPaymentDetails, PolicyInfo
 import openpyxl
 from openpyxl.styles import Font, PatternFill
 from django.http import HttpResponse
@@ -274,7 +274,7 @@ def agent_business_report(request):
     id  = request.user.id
     # Fetch policies
     role_id = Users.objects.filter(id=id).values_list('role_id', flat=True).first()
-    if role_id == 2:
+    if role_id == 2 and str(request.user.department_id) not in ["3", "5"]:
         policies = PolicyDocument.objects.filter(status=1,rm_id=id).exclude(rm_id__isnull=True).all().order_by('-id')
     else:
         policies = PolicyDocument.objects.filter(status=1).exclude(rm_id__isnull=True).all().order_by('-id')
@@ -351,7 +351,7 @@ def franchisees_business_report(request):
     id  = request.user.id
     # Fetch policies
     role_id = Users.objects.filter(id=id).values_list('role_id', flat=True).first()
-    if role_id == 2:
+    if role_id == 2 and str(request.user.department_id) not in ["3", "5"]:
         policies = PolicyDocument.objects.filter(status=1,rm_id=id).exclude(rm_id__isnull=True).all().order_by('-id')
     else:
         policies = PolicyDocument.objects.filter(status=1).exclude(rm_id__isnull=True).all().order_by('-id')
@@ -428,7 +428,7 @@ def insurer_business_report(request):
     id  = request.user.id
     # Fetch policies
     role_id = Users.objects.filter(id=id).values_list('role_id', flat=True).first()
-    if role_id == 2:
+    if role_id == 2 and str(request.user.department_id) not in ["3", "5"]:
         policies = PolicyDocument.objects.filter(status=1,rm_id=id).exclude(rm_id__isnull=True).all().order_by('-id')
     else:
         policies = PolicyDocument.objects.filter(status=1).exclude(rm_id__isnull=True).all().order_by('-id')
@@ -944,6 +944,7 @@ def export_commission_data_v1(request):
         risk_start_date = policy.start_date or "-"
         
         agent_payment_info = AgentPaymentDetails.objects.filter(policy_number=policy.policy_number).first()
+        policy_info = PolicyInfo.objects.filter(policy_number=policy.policy_number).first()
         insurer_payment_info = InsurerPaymentDetails.objects.filter(policy_number=policy.policy_number).first()
         
         admin_id = policy.rm_id  
@@ -964,7 +965,7 @@ def export_commission_data_v1(request):
             policy.insurance_provider or "-",
             policy.policy_type or "-",
             policy.policy_number or "-",
-            policy.holder_name or "-",
+            policy_info.insured_name or "-",
             policy.vehicle_type or "-",
             f"{policy.vehicle_make}/{policy.vehicle_model}" if policy.vehicle_make and policy.vehicle_model else "-",
             policy.vehicle_gross_weight or "-",

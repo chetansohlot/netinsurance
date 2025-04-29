@@ -343,6 +343,7 @@ class PolicyInfo(models.Model):
 
     # Insured Details
     insurer_name = models.CharField(max_length=255, null=True, blank=True)
+    insured_name = models.CharField(max_length=255, null=True, blank=True)
     insured_mobile = models.CharField(max_length=15, null=True, blank=True)
     insured_email = models.CharField(max_length=255, null=True, blank=True)
     insured_address = models.TextField(null=True, blank=True)
@@ -468,6 +469,7 @@ class FranchisePayment(models.Model):
         return f"Franchise Payment #{self.id}"
 
 class PolicyUploadDoc(models.Model):
+    policy = models.ForeignKey(PolicyDocument, on_delete=models.CASCADE, related_name='policy_upload_doc_info')
     policy_number = models.CharField(max_length=100)
     re_other_endorsement = models.FileField(upload_to='policy_doc/', null=True, blank=True)
     previous_policy = models.FileField(upload_to='policy_doc/', null=True, blank=True)
@@ -1097,6 +1099,7 @@ class ExtractedFile(models.Model):
     source_id = models.CharField(max_length=255, null=True, blank=True)
     is_uploaded = models.BooleanField(default=False)
     is_extracted = models.BooleanField(default=False)
+    is_failed = models.BooleanField(default=False)
     chat_response = models.TextField(null=True, blank=True)
     extracted_at = models.DateTimeField(auto_now_add=True)
     policy = models.ForeignKey(PolicyDocument, on_delete=models.CASCADE)

@@ -71,7 +71,10 @@ def parse_date(date_str):
         
 
 def edit_policy(request, policy_id):
-
+    if not request.user.is_authenticated and request.user.is_active != 1:
+        messages.error(request,'Please Login First')
+        return redirect('login')
+    
     if request.method == 'POST':
         policy_id = request.POST.get('policy_id')
         policy_number = request.POST.get('policy_number')
@@ -95,6 +98,7 @@ def edit_policy(request, policy_id):
 
         # Insured Details
         policy.insurer_name = request.POST.get('owner_name')
+        policy.insured_name = request.POST.get('holder_name')
         policy.insured_mobile = request.POST.get('insured_mobile')
         policy.insured_email = request.POST.get('insured_email')
         policy.insured_address = request.POST.get('insured_address')
@@ -127,41 +131,37 @@ def edit_policy(request, policy_id):
 
         policy.save()
         messages.success(request, "Policy Updated successfully!")
-
-        return redirect('edit-policy-vehicle-details', policy_no=quote(policy.policy_number, safe=''))
-
+        
+        if request.user.department_id and request.user.department_id == "2":
+            return redirect('edit-agent-payment-info',policy_id=quote(policy_id, safe=''))
+        else:
+            return redirect('edit-policy-vehicle-details', policy_id=quote(policy_id, safe=''))
 
 def none_if_blank(value):
     return value if value and value.strip() else None
 
-def edit_vehicle_details(request, policy_no):
+def edit_vehicle_details(request, policy_id):
     
     if not request.user.is_authenticated and request.user.is_active != 1:
         messages.error(request, "Please Login First")
         return redirect('login')
     
-    decoded_policy_no = unquote(policy_no)
+    policy_id = policy_id
+    # decoded_policy_no = unquote(policy_no)
     # policy = get_object_or_404(PolicyInfo, policy_number=decoded_policy_no)
-    policy = PolicyInfo.objects.filter(policy_number=decoded_policy_no).first()
+    policy = PolicyInfo.objects.filter(policy_id=policy_id).first()
+    policy_no = policy.policy_number
     if not policy:
         return redirect('policy-data')
     
-    policy_data = PolicyDocument.objects.filter(policy_number=decoded_policy_no).first()
-    vehicle = None
-    
-    
-    # try:
-    #     vehicle = PolicyVehicleInfo.objects.get(policy_number=policy.policy_number)
-    # except PolicyVehicleInfo.DoesNotExist:
-    #     vehicle = None
-
-    if request.method == 'POST':
-        policy_id = request.POST.get('policy_id')
+    policy_id = request.POST.get('policy_id',policy_id)
         
-        vehicle = PolicyVehicleInfo.objects.filter(policy_number=policy.policy_number, policy_id=policy_id).first()
+    vehicle = PolicyVehicleInfo.objects.filter(policy_id=policy_id).first()
+        
+    if request.method == 'POST':
         if not vehicle:
             vehicle = PolicyVehicleInfo(policy_number=policy.policy_number, policy_id=policy_id)
-
+    
         vehicle.vehicle_type = none_if_blank(request.POST.get('vehicle_type'))
         vehicle.vehicle_make = none_if_blank(request.POST.get('vehicle_make'))
         vehicle.vehicle_model = none_if_blank(request.POST.get('vehicle_model'))
@@ -177,11 +177,10 @@ def edit_vehicle_details(request, policy_no):
         vehicle.save()
         messages.success(request, "Policy Vehicle details Updated successfully!")
 
-        return redirect('edit-policy-docs', policy_no=quote(policy.policy_number, safe=''))
+        return redirect('edit-policy-docs', policy_id=quote(policy_id, safe=''))
 
-    # pdf_path = get_pdf_path(request, policy_data.filepath)    
+    policy_data = PolicyDocument.objects.filter(id=policy_id).first()
     pdf_path = get_pdf_path(request, policy_data.filepath if policy_data else None)
-
     extracted_data = {}
     if policy_data and policy_data.extracted_text:
         if isinstance(policy_data.extracted_text, str):
@@ -199,8 +198,6 @@ def edit_vehicle_details(request, policy_no):
         'extracted_data': extracted_data,
         'vehicle': vehicle
     })
-
-
 
 def get_pdf_path(request, filepath):
     """
@@ -230,28 +227,19 @@ def get_pdf_path(request, filepath):
 
     return ""
 
-
-
-def edit_policy_docs(request, policy_no):
+def edit_policy_docs(request, policy_id):
     if not request.user.is_authenticated and request.user.is_active != 1:
         messages.error(request, "Please Login First")
         return redirect('login')
     
-    policy_no = unquote(policy_no)
-
-    policy = get_object_or_404(PolicyInfo, policy_number=policy_no)
-    policy_data = PolicyDocument.objects.filter(policy_number=policy_no).first()
+    policy_id = unquote(policy_id)
+    policy_data = PolicyDocument.objects.filter(id=policy_id).first()
 
     try:
-        vehicle = PolicyVehicleInfo.objects.get(policy_number=policy.policy_number)
-    except PolicyVehicleInfo.DoesNotExist:
-        vehicle = None
-
-    try:
-        doc_data = PolicyUploadDoc.objects.get(policy_number=policy_no)
+        doc_data = PolicyUploadDoc.objects.filter(policy_id=policy_id).first()
     except PolicyUploadDoc.DoesNotExist:
-        doc_data = PolicyUploadDoc(policy_number=policy_no)
-
+        doc_data = PolicyUploadDoc(policy_id=policy_id,policy_number = policy_data.policy_number)
+        
     # AJAX file upload
     if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
         field_name = request.POST.get('field_name')
@@ -274,34 +262,27 @@ def edit_policy_docs(request, policy_no):
     pdf_path = get_pdf_path(request, policy_data.filepath if policy_data else None)
 
     return render(request, 'policy/edit-policy-docs.html', {
-        'policy': policy,
         'policy_data': policy_data,
         'pdf_path': pdf_path,
-        'vehicle': vehicle,
         'doc_data': doc_data
     })
 
-
-def edit_agent_payment_info(request, policy_no):
+def edit_agent_payment_info(request, policy_id):
     if not request.user.is_authenticated and request.user.is_active != 1:
         messages.error(request, "Please Login First")
         return redirect('login')
-    
-    policy_no = unquote(policy_no)
 
-    policy = PolicyInfo.objects.filter(policy_number=policy_no).first()
-    # policy = get_object_or_404(PolicyInfo, policy_number=policy_no)
+    policy_id = unquote(policy_id)
+
+    policy = PolicyInfo.objects.filter(policy_id=policy_id).first()
     if not policy:
         return redirect('policy-data')
     
-    policy_data = PolicyDocument.objects.filter(policy_number=policy_no).first()
-    referrals = Referral.objects.all().order_by('name')
-    bqps = BqpMaster.objects.all().order_by('bqp_fname')
-    agent_payment = AgentPaymentDetails.objects.filter(policy_number=policy.policy_number).last()
+    policy_data = PolicyDocument.objects.filter(id=policy_id).first()
+    agent_payment = AgentPaymentDetails.objects.filter(policy_id=policy_id).last()
     
     if request.method == 'POST':
         policy_id =  request.POST.get('policy_id')
-        agent_payment = AgentPaymentDetails.objects.filter(policy_number=policy.policy_number,policy_id=policy_id).first()
         
         if not agent_payment:
             agent_payment = AgentPaymentDetails(policy_number=policy.policy_number,policy_id=policy_id)
@@ -314,30 +295,38 @@ def edit_agent_payment_info(request, policy_no):
         agent_payment.agent_payment_date = request.POST.get('agent_payment_date',None)
         agent_payment.agent_amount = request.POST.get('agent_amount',None)
         agent_payment.agent_remarks = request.POST.get('agent_remarks',None)
-        agent_payment.agent_od_comm = request.POST.get('agent_od_comm',None)
-        agent_payment.agent_tp_comm = request.POST.get('agent_tp_comm',None)
-        agent_payment.agent_net_comm = request.POST.get('agent_net_comm',None)
-        agent_payment.agent_incentive_amount = request.POST.get('agent_incentive_amount',None)
-        agent_payment.agent_tds = request.POST.get('agent_tds',None)
-        agent_payment.agent_od_amount = request.POST.get('agent_od_amount',None)
-        agent_payment.agent_net_amount = request.POST.get('agent_net_amount',None)
-        agent_payment.agent_tp_amount = request.POST.get('agent_tp_amount',None)
-        agent_payment.agent_total_comm_amount = request.POST.get('agent_total_comm_amount',None)
-        agent_payment.agent_net_payable_amount = request.POST.get('agent_net_payable_amount',None)
-        agent_payment.agent_tds_amount = request.POST.get('agent_tds_amount',None)
-        agent_payment.updated_by = request.user
+        if request.user.department_id and int(request.user.department_id) == 2:
+            pass
+        else:
+            agent_payment.agent_od_comm = request.POST.get('agent_od_comm',None)
+            agent_payment.agent_tp_comm = request.POST.get('agent_tp_comm',None)
+            agent_payment.agent_net_comm = request.POST.get('agent_net_comm',None)
+            agent_payment.agent_incentive_amount = request.POST.get('agent_incentive_amount',None)
+            agent_payment.agent_tds = request.POST.get('agent_tds',None)
+            agent_payment.agent_od_amount = request.POST.get('agent_od_amount',None)
+            agent_payment.agent_net_amount = request.POST.get('agent_net_amount',None)
+            agent_payment.agent_tp_amount = request.POST.get('agent_tp_amount',None)
+            agent_payment.agent_total_comm_amount = request.POST.get('agent_total_comm_amount',None)
+            agent_payment.agent_net_payable_amount = request.POST.get('agent_net_payable_amount',None)
+            agent_payment.agent_tds_amount = request.POST.get('agent_tds_amount',None)
+            agent_payment.updated_by = request.user
+        
         agent_payment.save()
-        
-    
-        
+       
         policy.bqp_id = request.POST.get('bqp',None)
         policy.pos_name = request.POST.get('pos_name',None)
         policy.referral_by = request.POST.get('referral_by',None)
         policy.save()
+            
+        if request.user.department_id and int(request.user.department_id) == 2:
+            messages.success(request, "Policy Agent Details Updated successfully!")
+            return redirect('policy-data')
+
         messages.success(request, "Policy Agent Payment Updated successfully!")
+        return redirect('edit-insurer-payment-info', policy_id=quote(policy_id))
 
-        return redirect('edit-insurer-payment-info', policy_no=quote(policy.policy_number))
-
+    referrals = Referral.objects.all().order_by('name')
+    bqps = BqpMaster.objects.all().order_by('bqp_fname')
     pdf_path = get_pdf_path(request, policy_data.filepath)
 
     return render(request, 'policy/edit-agent-payment-info.html', {
@@ -349,25 +338,20 @@ def edit_agent_payment_info(request, policy_no):
         'referrals':referrals
     })
 
-
-
-def edit_insurer_payment_info(request, policy_no):
+def edit_insurer_payment_info(request, policy_id):
     if not request.user.is_authenticated and request.user.is_active != 1:
         messages.error(request, "Please Login First")
         return redirect('login')
     
-    policy_no = unquote(policy_no)
-    policy = get_object_or_404(PolicyInfo, policy_number=policy_no)
-    policy_data = PolicyDocument.objects.filter(policy_number=policy_no).first()
+    policy_id = unquote(policy_id)
+        
+    policy_data = PolicyDocument.objects.filter(id=policy_id).first()
 
-    insurer_payment = InsurerPaymentDetails.objects.filter(policy_number=policy.policy_number).last()
+    insurer_payment = InsurerPaymentDetails.objects.filter(policy_id=policy_id).first()
     if request.method == 'POST':
         policy_id =  request.POST.get('policy_id')
-        
-        insurer_payment = InsurerPaymentDetails.objects.filter(policy_id=policy_id).first()
-
         if insurer_payment is None:
-            insurer_payment = InsurerPaymentDetails(policy_number=policy_no, policy_id=policy_id)
+            insurer_payment = InsurerPaymentDetails(policy_number=policy_data.policy_number, policy_id=policy_id)
 
         # Now safely update fields
         insurer_payment.insurer_payment_mode = request.POST.get('insurer_payment_mode', None)
@@ -401,10 +385,15 @@ def edit_insurer_payment_info(request, policy_no):
         insurer_payment.save()
 
         messages.success(request, "Insurer Payment details updated successfully!")
-        return redirect('edit-franchise-payment-info', policy_no=quote(policy.policy_number))
+        return redirect('edit-franchise-payment-info', policy_id=quote(policy_id))
 
     pdf_path = get_pdf_path(request, policy_data.filepath)
 
+    try:
+        policy = PolicyInfo.objects.filter(policy_id=policy_id).first()
+    except Exception as e:
+        policy = None
+        
     return render(request, 'policy/edit-insurer-payment-info.html', {
         'policy': policy,
         'policy_data': policy_data,
@@ -412,26 +401,26 @@ def edit_insurer_payment_info(request, policy_no):
         'insurer_payment': insurer_payment
     })
 
-def edit_franchise_payment_info(request, policy_no):
+def edit_franchise_payment_info(request, policy_id):
     if not request.user.is_authenticated and request.user.is_active != 1:
         messages.error(request, "Please Login First")
         return redirect('login')
     
-    policy_no = unquote(policy_no)
-    policy = get_object_or_404(PolicyInfo, policy_number=policy_no)
-    policy_data = PolicyDocument.objects.filter(policy_number=policy_no).first()
+    policy_id = unquote(policy_id)
+    try:
+        policy = PolicyInfo.objects.filter(policy_id=policy_id).first()
+    except Exception as e:
+        policy = None
 
-    franchise_payment = FranchisePayment.objects.filter(policy_number=policy.policy_number).last()
+    policy_data = PolicyDocument.objects.filter(id=policy_id).first()
+
+    franchise_payment = FranchisePayment.objects.filter(policy_id=policy_id).first()
     
     if request.method == 'POST':
         policy_id = request.POST.get('policy_id')
-        
-        # Retrieve the franchise_payment object for the given policy_id
-        franchise_payment = FranchisePayment.objects.filter(policy_id=policy_id).first()
-        
-        # If no franchise_payment is found, create a new one
+      
         if not franchise_payment:
-            franchise_payment = FranchisePayment(policy_number=policy_no, policy_id=policy_id)
+            franchise_payment = FranchisePayment(policy_number=policy_data.policy_number, policy_id=policy_id)
 
         # Update fields from POST data
         franchise_payment.franchise_od_comm = request.POST.get('franchise_od_comm', None)
@@ -819,8 +808,10 @@ def bulkPolicyView(request, id):
 
     # Fetch policy documents based on bulk_log_id
     policy_files = ExtractedFile.objects.filter(bulk_log_ref_id=id)
-    statuses = Counter(file.status for file in policy_files)
+    status_files = ExtractedFile.objects.filter(bulk_log_ref_id=id,is_failed = False)
+    statuses = Counter(file.status for file in status_files)
 
+    failed_files = ExtractedFile.objects.filter(bulk_log_ref_id=id,is_failed=True).count()
     # Ensure all statuses are included in the count, even if they're 0
     status_counts = {
         0: statuses.get(0, 0),
@@ -837,6 +828,7 @@ def bulkPolicyView(request, id):
         'files': policy_files,
         'total_files': len(policy_files),
         'log_id': id,
+        'failed_files_count': failed_files,
         'status_counts': status_counts
     })
 
