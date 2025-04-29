@@ -14,6 +14,7 @@ from django.contrib.auth import authenticate, login ,logout
 from django.core.files.storage import FileSystemStorage
 from django.core.paginator import Paginator
 from django.db.models import Q
+from django.http import Http404
 
 
 import re,openpyxl
@@ -246,7 +247,10 @@ def edit_policy_docs(request, policy_no):
     
     policy_no = unquote(policy_no)
 
-    policy = get_object_or_404(PolicyInfo, policy_number=policy_no)
+    policy = PolicyInfo.objects.filter(policy_number=policy_no).last()
+    if not policy:
+        raise Http404("Policy not found")
+
     policy_data = PolicyDocument.objects.filter(policy_number=policy_no).first()
 
     try:
@@ -370,7 +374,11 @@ def edit_insurer_payment_info(request, policy_no):
         return redirect('login')
     
     policy_no = unquote(policy_no)
-    policy = get_object_or_404(PolicyInfo, policy_number=policy_no)
+    
+    policy = PolicyInfo.objects.filter(policy_number=policy_no).last()
+    if not policy:
+        raise Http404("Policy not found")
+    
     policy_data = PolicyDocument.objects.filter(policy_number=policy_no).first()
 
     insurer_payment = InsurerPaymentDetails.objects.filter(policy_number=policy.policy_number).last()
@@ -431,7 +439,9 @@ def edit_franchise_payment_info(request, policy_no):
         return redirect('login')
     
     policy_no = unquote(policy_no)
-    policy = get_object_or_404(PolicyInfo, policy_number=policy_no)
+    policy = PolicyInfo.objects.filter(policy_number=policy_no).last()
+    if not policy:
+        raise Http404("Policy not found")
     policy_data = PolicyDocument.objects.filter(policy_number=policy_no).first()
 
     franchise_payment = FranchisePayment.objects.filter(policy_number=policy.policy_number).last()
