@@ -6,6 +6,11 @@
 {% url 'insurer-business-report' as insurer_business_url %}
 
 
+{% url 'agent-commission' as agent_commission %}
+{% url 'franchisees-commission' as franchise_commission %}
+{% url 'insurer-commission' as insurer_commission %}
+
+
 {% if request.user.role_id|stringformat:"s" not in "1,4" and request.user.department_id|stringformat:"s" == "3" %}
 
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
@@ -81,14 +86,14 @@
           </li>
           {% comment %} ____ COMMISSION POLICY _____  {% endcomment %}
           
-            <li class="nav-item">
+            {% comment %} <li class="nav-item">
                 <a href="{% url 'members' %}" class="nav-link {% if '/members/' in request.path or '/member/member-view/' in request.path %} active {% endif %}">
                     <svg class="sidbarmenu-svg">
                         <use xlink:href="#members" />
                     </svg>
                     <p>Partners</p>
                 </a>
-            </li>
+            </li> {% endcomment %}
           
           
           
@@ -116,7 +121,7 @@
                     <svg class="sidbarmenu-svg">
                       <use xlink:href="#franchise-icon" />
                     </svg>
-                      <p>Franchisees Business </p>
+                      <p>Fr. Business </p>
                   </a>
               </li>
               

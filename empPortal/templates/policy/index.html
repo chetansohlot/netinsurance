@@ -29,11 +29,13 @@ Policy Data
             </ul>
           </div>
           <div class="col-sm-6">
-            {% if request.user.role_id == 1 or request.user.department_id|stringformat:"s" == "5"%}
+            {% if request.user.role_id == 1 or request.user.department_id|stringformat:"s" == "5" or request.user.department_id|stringformat:"s" == "3"%}
               <div class="d-flex justify-content-end">
+                {% if request.user.department_id|stringformat:"s" != "5" and request.user.department_id|stringformat:"s" != "3" %}
                 <a href="{% url 'edit-bulk-policy' %}" class="breadcrump-addbtn mx-1">Edit Bulk Policy</a>
                 <a href="{% url 'bulk-upload-logs' %}" class="breadcrump-addbtn mx-1">View Bulk Logs</a>
                 <a href="{% url 'bulk-policy-mgt' %}" class="breadcrump-addbtn mx-1">Add Bulk Policy</a>
+                {% endif %}
                 <a href="{% url 'policy-mgt' %}" class="breadcrump-addbtn mx-1">Add Policy</a>
                 <a href="{% url 'single-policy-log' %}" class="breadcrump-addbtn mx-1">View S. Policy Logs</a>
               </div>
