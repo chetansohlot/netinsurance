@@ -317,6 +317,75 @@ def members_requested(request):
         return redirect('login')    
 
     
+def posTrainingCertificate(request, user_id):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    wkhtml_path = os.getenv('WKHTML_PATH', r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
+    config = pdfkit.configuration(wkhtmltopdf=wkhtml_path)
+
+    customer = get_object_or_404(Users, id=user_id)
+
+
+
+    context = {
+        "customer": customer,
+        "logo_url": request.build_absolute_uri(static('dist/img/logo2.png')),
+        "default_image_pos": request.build_absolute_uri(static('dist/img/default-image-pos.jpg')),
+        "signature_pos": request.build_absolute_uri(static('dist/img/signature-pos.webp')),
+    }
+
+    html_content = render_to_string("members/download-training-certificate.html", context)
+
+    options = {
+        'enable-local-file-access': '',
+        'page-size': 'A4',
+        'encoding': "UTF-8",
+    }
+
+    pdf = pdfkit.from_string(html_content, False, configuration=config, options=options)
+
+    response = HttpResponse(pdf, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="training_certificate_20250{user_id}.pdf"'
+
+    return response
+
+ 
+def posCertificate(request, user_id):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    wkhtml_path = os.getenv('WKHTML_PATH', r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
+    config = pdfkit.configuration(wkhtmltopdf=wkhtml_path)
+
+    customer = get_object_or_404(Users, id=user_id)
+
+
+
+    context = {
+        "customer": customer,
+        "logo_url": request.build_absolute_uri(static('dist/img/logo2.png')),
+        "default_image_pos": request.build_absolute_uri(static('dist/img/default-image-pos.jpg')),
+        "signature_pos": request.build_absolute_uri(static('dist/img/signature-pos.webp')),
+    }
+
+    html_content = render_to_string("members/download-certificate.html", context)
+
+    options = {
+        'enable-local-file-access': '',
+        'page-size': 'A4',
+        'encoding': "UTF-8",
+    }
+
+    pdf = pdfkit.from_string(html_content, False, configuration=config, options=options)
+
+    response = HttpResponse(pdf, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="pos_certificate_20250{user_id}.pdf"'
+
+    return response
+
+
+
 def members_inprocess(request):
     if not request.user.is_authenticated:
         return redirect('login')
