@@ -128,19 +128,10 @@ def insertRole(request):
 
     if request.method == "POST":
         role_name = request.POST.get('role_name', '').strip()
-        role_description = request.POST.get('description', '').strip()
-        department_id = request.POST.get('department_id', '').strip()
         role_id = request.POST.get('role_id', '').strip()
 
         # Validation
-        if not department_id:
-            messages.error(request, 'Department is required')
-            return render(request, 'new-role.html', {
-                'departments': departments,
-                'roles': roles,
-                'role_name': role_name,
-                'description': role_description
-            })
+        
         
         if not role_name:
             messages.error(request, 'Role Name is required')
@@ -148,17 +139,8 @@ def insertRole(request):
                 'departments': departments,
                 'roles': roles,
                 'role_name': role_name,
-                'description': role_description
             })
 
-        if not role_description:
-            messages.error(request, 'Description is required')
-            return render(request, 'new-role.html', {
-                'departments': departments,
-                'roles': roles,
-                'role_name': role_name,
-                'description': role_description
-            })
 
         if len(role_name) < 3:
             messages.error(request, 'Role name must be at least 3 characters long')
@@ -166,17 +148,9 @@ def insertRole(request):
                 'departments': departments,
                 'roles': roles,
                 'role_name': role_name,
-                'description': role_description
             })
 
-        if len(role_description) > 255:
-            messages.error(request, "Description must be under 255 characters.")
-            return render(request, 'new-role.html', {
-                'departments': departments,
-                'roles': roles,
-                'role_name': role_name,
-                'description': role_description
-            })
+    
 
         if Roles.objects.filter(roleName__iexact=role_name).exists():
             messages.error(request, "Role name already exists.")
@@ -184,18 +158,8 @@ def insertRole(request):
                 'departments': departments,
                 'roles': roles,
                 'role_name': role_name,
-                'description': role_description
             })
 
-        # Validate department existence
-        if not Department.objects.filter(id=department_id).exists():
-            messages.error(request, "Selected department does not exist.")
-            return render(request, 'new-role.html', {
-                'departments': departments,
-                'roles': roles,
-                'role_name': role_name,
-                'description': role_description
-            })
 
         # Generate roleGenID
         last_role = Roles.objects.all().order_by('-roleGenID').first()
@@ -209,9 +173,7 @@ def insertRole(request):
         rl = Roles(
             roleGenID=new_roleGenID,
             roleName=role_name,
-            roleDepartment=department_id, 
             primaryRoleId=role_id, 
-            roleDescription=role_description
         )
         rl.save()
 
@@ -441,8 +403,6 @@ def updateRole(request):
         role_id = request.POST.get('role_id', '').strip()
         primary_role_id = request.POST.get('primary_role_id', '').strip()
         role_name = request.POST.get('role_name', '').strip()
-        role_description = request.POST.get('description', '').strip()
-        department_id = request.POST.get('department_id', '').strip()
 
         if not role_id:
             messages.error(request, 'Something went wrong. Kindly contact the administrator')
@@ -451,14 +411,10 @@ def updateRole(request):
         # Validation
         if not role_name:
             messages.error(request, 'Role Name is required')
-        if not role_description:
-            messages.error(request, 'Description is required')
-        if not department_id:
-            messages.error(request, 'Department is required')
+      
         if len(role_name) < 3:
             messages.error(request, 'Role name must be at least 3 characters long')
-        if len(role_description) > 255:
-            messages.error(request, "Description must be under 255 characters.")
+      
         if Roles.objects.filter(roleName=role_name).exclude(id=role_id).exists():
             messages.error(request, "Role name already exists.")
 
@@ -470,16 +426,12 @@ def updateRole(request):
                 'roles': roles,
                 'role_data': role_data,
                 'role_name': role_name,
-                'description': role_description,
-                'selected_department_id': department_id,
             })
 
         # Update the role
         role_data = Roles.objects.filter(id=role_id).first()
         if role_data:
             role_data.roleName = role_name
-            role_data.roleDescription = role_description
-            role_data.roleDepartment = department_id
             role_data.primaryRoleId = primary_role_id
 
             role_data.save()

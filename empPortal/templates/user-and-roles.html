@@ -67,10 +67,8 @@ Users and Roles
                           {% for rl in role_data %}
                             <tr>
                               <td>{{ rl.roleGenID }}</td>
-                              <td>{{ rl.department_name }}</td>
                               <td>{{ rl.roleName }}</td>
                               <td>{{ rl.primary_role_name }}</td>
-                              <td>{{ rl.roleDescription }}</td>
                               <td>
                                 <a href="{% url 'edit-role' id=rl.roleGenID %}" class="circle-arrow-link tooltip-sec" data-title="Edit Role"><i class="fa-solid fa-chevron-right"></i></a>
                               </td>
