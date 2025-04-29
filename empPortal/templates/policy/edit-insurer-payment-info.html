@@ -169,7 +169,7 @@
                                     <div class="col-sm-6">
                                       <div class="form-group">
                                         <label class="form-lbl">Insurer OD Comm (in %)</label>
-                                        <input type="text" class="form-field percentage" name="insurer_od_comm" placeholder="OD Commission (%)"
+                                        <input type="text" class="form-field percentage" name="insurer_od_comm" id="insurer_od_comm" placeholder="OD Commission (%)"
                                               value="{{ insurer_payment.insurer_od_comm|default:policy_data.insurer_od_commission }}">
                                       </div>
                                     </div>
@@ -177,7 +177,7 @@
                                     <div class="col-sm-6">
                                       <div class="form-group">
                                         <label class="form-lbl">Insurer OD Amount</label>
-                                        <input type="text" class="form-field number" name="insurer_od_amount" placeholder="OD Amount"
+                                        <input type="text" class="form-field number" name="insurer_od_amount" id="insurer_od_amount" placeholder="OD Amount"
                                               value="{{ insurer_payment.insurer_od_amount|blank_if_none_or_text_none }}">
                                       </div>
                                     </div>
@@ -186,7 +186,7 @@
                                     <div class="col-sm-6">
                                       <div class="form-group">
                                         <label class="form-lbl">Insurer TP Comm (in %)</label>
-                                        <input type="text" class="form-field percentage" name="insurer_tp_comm" placeholder="TP Commission (%)"
+                                        <input type="text" class="form-field percentage" name="insurer_tp_comm" id="insurer_tp_comm" placeholder="TP Commission (%)"
                                               value="{{ insurer_payment.insurer_tp_comm|default:policy_data.insurer_tp_commission }}">
                                       </div>
                                     </div>
@@ -194,7 +194,7 @@
                                     <div class="col-sm-6">
                                       <div class="form-group">
                                         <label class="form-lbl">Insurer TP Amount</label>
-                                        <input type="text" class="form-field number" name="insurer_tp_amount" placeholder="TP Amount"
+                                        <input type="text" class="form-field number" name="insurer_tp_amount" id="insurer_tp_amount" placeholder="TP Amount"
                                               value="{{ insurer_payment.insurer_tp_amount|blank_if_none_or_text_none }}">
                                       </div>
                                     </div>
@@ -202,7 +202,7 @@
                                     <div class="col-sm-6">
                                       <div class="form-group">
                                         <label class="form-lbl">Insurer Net Comm (in %)</label>
-                                        <input type="text" class="form-field percentage" name="insurer_net_comm" placeholder="Net Commission (%)"
+                                        <input type="text" class="form-field percentage" name="insurer_net_comm" id="insurer_net_comm" placeholder="Net Commission (%)"
                                               value="{{ insurer_payment.insurer_net_comm|default:policy_data.insurer_net_commission }}">
                                       </div>
                                     </div>
@@ -210,7 +210,7 @@
                                     <div class="col-sm-6">
                                       <div class="form-group">
                                         <label class="form-lbl">Insurer Net Amount</label>
-                                        <input type="text" class="form-field number" name="insurer_net_amount" placeholder="Net Amount"
+                                        <input type="text" class="form-field number" name="insurer_net_amount" id="insurer_net_amount" placeholder="Net Amount"
                                               value="{{ insurer_payment.insurer_net_amount|blank_if_none_or_text_none }}">
                                       </div>
                                     </div>
@@ -218,7 +218,7 @@
                                     <div class="col-sm-6">
                                       <div class="form-group">
                                         <label class="form-lbl">Insurer Incentive Amount</label>
-                                        <input type="text" class="form-field number" name="insurer_incentive_amount" placeholder="Incentive Amount"
+                                        <input type="text" class="form-field number" name="insurer_incentive_amount" id="insurer_incentive_amount" placeholder="Incentive Amount"
                                               value="{{ insurer_payment.insurer_incentive_amount|blank_if_none_or_text_none }}">
                                       </div>
                                     </div>
@@ -226,7 +226,7 @@
                                     <div class="col-sm-6">
                                       <div class="form-group">
                                         <label class="form-lbl">Total Commission Amount</label>
-                                        <input type="text" class="form-field number" name="insurer_total_comm_amount" placeholder="Total Commission"
+                                        <input type="text" class="form-field number" name="insurer_total_comm_amount" id="insurer_total_comm_amount" placeholder="Total Commission"
                                               value="{{ insurer_payment.insurer_total_comm_amount|blank_if_none_or_text_none }}">
                                       </div>
                                     </div>
@@ -234,14 +234,14 @@
                                     <div class="col-sm-6">
                                       <div class="form-group">
                                         <label class="form-lbl">Insurer TDS (in %) </label>
-                                        <input type="text" class="form-field percentage" name="insurer_tds" placeholder="TDS (%)"
+                                        <input type="text" class="form-field percentage" name="insurer_tds" id="insurer_tds" placeholder="TDS (%)"
                                               value="{{ insurer_payment.insurer_tds|blank_if_none_or_text_none }}">
                                       </div>
                                     </div>
                                     <div class="col-sm-6">
                                       <div class="form-group">
                                         <label class="form-lbl">TDS Amount</label>
-                                        <input type="text" class="form-field number" name="insurer_tds_amount" placeholder="TDS Amount"
+                                        <input type="text" class="form-field number" name="insurer_tds_amount" id="insurer_tds_amount" placeholder="TDS Amount"
                                               value="{{ insurer_payment.insurer_tds_amount|blank_if_none_or_text_none }}">
                                       </div>
                                     </div>
@@ -249,7 +249,7 @@
                                     <div class="col-sm-6">
                                       <div class="form-group">
                                         <label class="form-lbl">Net Payable Amount</label>
-                                        <input type="text" class="form-field number" name="insurer_net_payable_amount" placeholder="Net Payable"
+                                        <input type="text" class="form-field number" name="insurer_net_payable_amount" id="insurer_net_payable_amount" placeholder="Net Payable"
                                               value="{{ insurer_payment.insurer_net_payable_amount|blank_if_none_or_text_none }}">
                                       </div>
                                     </div>
@@ -316,9 +316,47 @@
     {% include "footer.html" %}
     {% include "footer-script.html" %}
     <script>
+
+      $(document).ready(function(){
+        updateTotalCommissionAmount(); 
+        updateTDSAmount();
+
+        function updateTotalCommissionAmount(){
+          let od_amount = parseFloat($('#insurer_od_amount').val()) || 0;
+          let tp_amount = parseFloat($('#insurer_tp_amount').val()) || 0;
+          let net_amount = parseFloat($('#insurer_net_amount').val()) || 0;
+          let incentive_amount = parseFloat($('#insurer_incentive_amount').val()) || 0;
+      
+          let total_commission_amount = od_amount + tp_amount + net_amount + incentive_amount;
+          $('#insurer_total_comm_amount').val(total_commission_amount.toFixed(2));
+          updateTDSAmount();
+        }
+  
+        function updateTDSAmount(){
+          insurer_tds = parseFloat($('#insurer_tds').val()) || 0;
+          insurer_comm_amt = parseFloat($('#insurer_total_comm_amount').val()) || 0;
+          insurer_tds_amount = parseFloat(insurer_comm_amt*insurer_tds/100) || 0;
+          net_payable_amt = parseFloat(insurer_comm_amt-insurer_tds_amount) || 0;
+  
+          $('#insurer_tds_amount').val(insurer_tds_amount);
+          $('#insurer_net_payable_amount').val(net_payable_amt);
+        }
+  
+        $('#insurer_od_amount, #insurer_tp_amount, #insurer_net_amount, #insurer_incentive_amount').on('input', function() {
+          console.log('d');
+          updateTotalCommissionAmount(); 
+        });
+  
+        $('#insurer_tds').on('input',function(){
+          updateTDSAmount();
+        });
+      });
+
       document.getElementById("myInsurerPaymentForm").addEventListener("submit", function() {
           document.getElementById("loader").style.display = "flex";
       });
+
+      
     </script>
 </body>
 {% endblock %}
