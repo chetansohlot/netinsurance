@@ -204,11 +204,17 @@
                                         </div>
                                     </li>
                                     
+                                  
+
                                     <li>
-                                        <img src="{% static 'dist/img/svg/exam.svg' %}" alt="">
+                                        <img src="{% static 'dist/img/svg/exam.svg' %}" alt="Exam Icon">
                                         <span class="list">Exam Score & Status</span>
-                                        <span class="list-output">N/A</span>
+                                        <span class="list-output">
+                                            Attempted: {{ user_details.examRes.percentage|default:"0" }} |
+                                            Passed: {% if user_details.exam_pass %}Yes{% else %}No{% endif %}
+                                        </span>
                                     </li>
+
                                     <li>
                                         <img src="{% static 'dist/img/svg/training-status.svg' %}" alt="">
                                         <span class="list">Training Status</span>
