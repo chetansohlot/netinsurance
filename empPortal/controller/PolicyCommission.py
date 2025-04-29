@@ -216,6 +216,12 @@ def agent_commission(request):
     else:
         policy_count = PolicyDocument.objects.filter(status=6).exclude(exclude_q).count()
 
+    # Count for display
+    if role_id != 1 and str(request.user.department_id) not in ["3", "5"]:
+        policy_total_count = PolicyDocument.objects.filter(status=6, rm_id=user_id).count()
+    else:
+        policy_total_count = PolicyDocument.objects.filter(status=6).count()
+
     per_page = request.GET.get('per_page', 10)
     try:
         per_page = int(per_page)
@@ -229,6 +235,7 @@ def agent_commission(request):
     return render(request, 'policy-commission/agent-commission.html', {
         "page_obj": page_obj,
         "policy_count": policy_count,
+        "policy_total_count": policy_total_count,
         "per_page": per_page,
         'filters': {k: request.GET.get(k, '') for k in filters},
         'filtered_policy_ids': [obj.id for obj in filtered],
@@ -417,6 +424,12 @@ def franchisees_commission(request):
     else:
         policy_count = PolicyDocument.objects.filter(status=6).exclude(exclude_count_q).count()
 
+    # Count for display
+    if role_id != 1 and str(request.user.department_id) not in ["3", "5"]:
+        policy_total_count = PolicyDocument.objects.filter(status=6, rm_id=user_id).count()
+    else:
+        policy_total_count = PolicyDocument.objects.filter(status=6).count()
+
     per_page = request.GET.get('per_page', 10)
     try:
         per_page = int(per_page)
@@ -430,6 +443,7 @@ def franchisees_commission(request):
     return render(request, 'policy-commission/franchisees-commission.html', {
         "page_obj": page_obj,
         "policy_count": policy_count,
+        "policy_total_count": policy_total_count,
         "per_page": per_page,
         'filters': {k: request.GET.get(k, '') for k in filters},
         'filtered_policy_ids': [obj.id for obj in filtered],
@@ -640,6 +654,12 @@ def insurer_commission(request):
     else:
         policy_count = PolicyDocument.objects.filter(status=6).exclude(exclude_count_q).count()
 
+    # Count for display
+    if role_id != 1 and str(request.user.department_id) not in ["3", "5"]:
+        policy_total_count = PolicyDocument.objects.filter(status=6, rm_id=user_id).count()
+    else:
+        policy_total_count = PolicyDocument.objects.filter(status=6).count()
+
     # Pagination logic
     per_page = request.GET.get('per_page', 10)
     try:
@@ -657,6 +677,7 @@ def insurer_commission(request):
     return render(request, 'policy-commission/insurer-commission.html', {
         "page_obj": page_obj,
         "policy_count": policy_count,
+        "policy_total_count": policy_total_count,
         "per_page": per_page,
         'filters': {k: request.GET.get(k, '') for k in filters},
         'filtered_policy_ids': filtered_policy_ids,  # Correctly passing filtered_policy_ids
