@@ -881,7 +881,7 @@ def policyData(request):
     role_id = Users.objects.filter(id=user_id).values_list('role_id', flat=True).first()
 
     filters_q = Q(status=6) & Q(policy_number__isnull=False) & ~Q(policy_number='')
-    if role_id != 1 and request.user.department_id != "5" and request.user.department_id != "3":
+    if role_id != 1 and request.user.department_id != "5" and request.user.department_id != "3" and request.user.department_id != "2":
         filters_q &= Q(rm_id=user_id)
         
     base_qs = PolicyDocument.objects.filter(filters_q).order_by('-id').prefetch_related(
@@ -942,7 +942,7 @@ def policyData(request):
         obj.json_data = data    # attach parsed dict for the template
         filtered.append(obj)
 
-    if role_id != 1 and request.user.department_id != "5" and request.user.department_id != "3":
+    if role_id != 1 and request.user.department_id != "5" and request.user.department_id != "3" and request.user.department_id != "2":
         policy_count = PolicyDocument.objects.filter(status=6, rm_id=user_id).count()
     else:
         policy_count = PolicyDocument.objects.filter(status=6).count()
