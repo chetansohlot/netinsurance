@@ -7,8 +7,8 @@ from django.template import loader
 from ..models import Commission,Users, PolicyUploadDoc,Branch,PolicyInfo,PolicyDocument, DocumentUpload, FranchisePayment, InsurerPaymentDetails, PolicyVehicleInfo, AgentPaymentDetails, UploadedExcel, UploadedZip
 from ..models import BulkPolicyLog,ExtractedFile, BqpMaster
 from empPortal.model import Referral
+from empPortal.model import CommissionUpdateLog
 from django.db.models import Q
-
 from empPortal.model import BankDetails
 from ..forms import DocumentUploadForm
 from django.contrib.auth import authenticate, login ,logout
@@ -232,6 +232,23 @@ def update_agent_commission(request):
         obj.agent_tds = request.POST.get('agent_tds')
         obj.updated_by = request.user
         obj.save()
+
+        
+        # Log the update
+        log_commission_update(
+            commission_type='agent',
+            policy_id=policy_id,
+            policy_number=policy_number,
+            updated_by_id=request.user.id,
+            updated_from='agent-commission',
+            data={
+                'agent_od_comm': obj.agent_od_comm,
+                'agent_net_comm': obj.agent_net_comm,
+                'agent_tp_comm': obj.agent_tp_comm,
+                'agent_incentive_amount': obj.agent_incentive_amount,
+                'agent_tds': obj.agent_tds,
+            }
+        )
         messages.success(request, "Agent Commission Updated successfully!")
 
     return redirect('agent-commission')
@@ -435,6 +452,23 @@ def update_franchise_commission(request):
 
         # Save the updated franchise payment
         obj.save()
+
+        
+        log_commission_update(
+            commission_type='franchise',
+            policy_id=policy_id,
+            policy_number=policy_number,
+            updated_by_id=request.user.id,
+            updated_from='franchise-commission',
+            data={
+                'franchise_od_comm': obj.franchise_od_comm,
+                'franchise_net_comm': obj.franchise_net_comm,
+                'franchise_tp_comm': obj.franchise_tp_comm,
+                'franchise_incentive_amount': obj.franchise_incentive_amount,
+                'franchise_tds': obj.franchise_tds,
+            }
+        )
+
         messages.success(request, "Franchise Commission Updated successfully!")
 
     return redirect('franchisees-commission')
@@ -643,6 +677,33 @@ def update_insurer_commission(request):
             pass
 
         obj.save()
+
+        
+        log_commission_update(
+            commission_type='insurer',
+            policy_id=policy_id,
+            policy_number=policy_number,
+            updated_by_id=request.user.id,
+            updated_from='insurer-commission',
+            data={
+                'insurer_od_comm': obj.insurer_od_comm,
+                'insurer_net_comm': obj.insurer_net_comm,
+                'insurer_tp_comm': obj.insurer_tp_comm,
+                'insurer_incentive_amount': obj.insurer_incentive_amount,
+                'insurer_tds': obj.insurer_tds,
+            }
+        )
         messages.success(request, "Insurer Commission Updated successfully!")
 
     return redirect('insurer-commission')
+
+
+def log_commission_update(commission_type, policy_id, policy_number, updated_by_id, updated_from, data):
+    CommissionUpdateLog.objects.create(
+        commission_type=commission_type,
+        policy_id=policy_id,
+        policy_number=policy_number,
+        updated_by_id=updated_by_id,
+        updated_from=updated_from,
+        updated_data=data,
+    )
