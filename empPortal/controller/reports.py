@@ -33,7 +33,7 @@ def commission_report(request):
     user_id  = request.user.id
     role_id = request.user.role_id
     
-    if role_id != 1:
+    if role_id != 1 and str(request.user.department_id) not in ["3", "5"]:
         policies = PolicyDocument.objects.filter(status=6,rm_id=user_id).exclude(rm_id__isnull=True).all()
     else:
         policies = PolicyDocument.objects.filter(status=6).exclude(rm_id__isnull=True).all()
