@@ -273,6 +273,24 @@ def get_users_by_role(request):
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
+def get_pos_partners_by_bqp(request):
+    if request.method == "GET" and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        bqp_id = request.GET.get('bqp_id', '')
+
+        if bqp_id and bqp_id.isdigit():
+            bqp_id = int(bqp_id)
+
+            users = Users.objects.filter(bqp_id=bqp_id).values('id', 'first_name', 'last_name')
+            users_list = [
+                {'id': user['id'], 'full_name': f"{user['first_name']} {user['last_name']}".strip()}
+                for user in users
+            ]
+            return JsonResponse({'users': users_list}, status=200)
+
+        return JsonResponse({'users': []}, status=200)
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
 def insertUser(request):
     if request.user.is_authenticated:
         

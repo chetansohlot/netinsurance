@@ -302,6 +302,8 @@ urlpatterns = [
     path('bqp/create/', BQP.bqp_create, name='bqp_create'),
     path('bqp/edit/<int:bqp_id>/', BQP.bqp_edit, name='bqp_edit'),
     path('bqp/delete/<int:bqp_id>/', BQP.bqp_delete, name='bqp_delete'),
+    
+    path('get-pos-partners-by-bqp/', views.get_pos_partners_by_bqp,name="get-pos-partners-by-bqp")
 ] 
 
 

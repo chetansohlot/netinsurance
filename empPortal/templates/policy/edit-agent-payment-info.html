@@ -162,7 +162,10 @@
                                   <div class="col-sm-6">
                                     <div class="form-group">
                                       <label class="form-lbl">POS Name</label>
-                                      <input type="text" class="form-field" name="pos_name" placeholder="Pos Name" value="{{ policy.pos_name|default:'Subash Bisnoi' }}">
+                                      <select name="pos_name" id="pos_name" class="form-field" data-value="{{ policy.pos_name|default:None }}">
+                                        <option value="">Select POS Name</option>
+                                      </select>
+                                      <!-- <input type="text" class="form-field" name="pos_name" placeholder="Pos Name" value="{{ policy.pos_name|default:'Subash Bisnoi' }}"> -->
                                     </div>
                                   </div>
 
@@ -329,7 +332,8 @@
 
       $(document).ready(function(){
         updateTotalCommissionAmount(); 
-        updateTDSAmount();       
+        updateTDSAmount();
+        fetchPosUsers($('#bqp').val())
       });
       function updateTotalCommissionAmount(){
         let od_amount = parseFloat($('#agent_od_amount').val()) || 0;
@@ -360,6 +364,34 @@
         updateTDSAmount();
       });
 
+      function fetchPosUsers(bqp_id){
+        let pos_name_value = $('#pos_name').attr('data-value')||'';
+        $.ajax({
+          url: "{% url 'get-pos-partners-by-bqp' %}",
+          type: 'GET',
+          data: { 'bqp_id': bqp_id },
+          headers: { 'X-Requested-With': 'XMLHttpRequest' },
+          success: function(response) {
+              $('#pos_name').empty();
+              $('#pos_name').append('<option value="">Select POS Name</option>');
+              if (response.users && response.users.length > 0) {
+                  $.each(response.users, function(index, user) {
+                    $('#pos_name').append(
+                        `<option value="${user.id}" ${user.id == pos_name_value ? 'selected' : ''}>${user.full_name}</option>`
+                      );
+                  });
+              }
+          },
+          error: function() {
+              console.log('Error fetching POS Name');
+          }
+        });
+      }
+
+      $('#bqp').on('change',function(){
+        bqp_id = $(this).val();
+        fetchPosUsers(bqp_id)
+      });
     </script>
     
 </body>
