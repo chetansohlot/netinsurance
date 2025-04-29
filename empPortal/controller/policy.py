@@ -127,8 +127,10 @@ def edit_policy(request, policy_id):
 
         policy.save()
         messages.success(request, "Policy Updated successfully!")
-
-        return redirect('edit-policy-vehicle-details', policy_no=quote(policy.policy_number, safe=''))
+        if int(request.user.department_id) == 2:
+            return redirect('edit-agent-payment-info',policy_no=quote(policy.policy_number, safe=''))
+        else:
+            return redirect('edit-policy-vehicle-details', policy_no=quote(policy.policy_number, safe=''))
 
 
 def none_if_blank(value):
@@ -314,28 +316,32 @@ def edit_agent_payment_info(request, policy_no):
         agent_payment.agent_payment_date = request.POST.get('agent_payment_date',None)
         agent_payment.agent_amount = request.POST.get('agent_amount',None)
         agent_payment.agent_remarks = request.POST.get('agent_remarks',None)
-        agent_payment.agent_od_comm = request.POST.get('agent_od_comm',None)
-        agent_payment.agent_tp_comm = request.POST.get('agent_tp_comm',None)
-        agent_payment.agent_net_comm = request.POST.get('agent_net_comm',None)
-        agent_payment.agent_incentive_amount = request.POST.get('agent_incentive_amount',None)
-        agent_payment.agent_tds = request.POST.get('agent_tds',None)
-        agent_payment.agent_od_amount = request.POST.get('agent_od_amount',None)
-        agent_payment.agent_net_amount = request.POST.get('agent_net_amount',None)
-        agent_payment.agent_tp_amount = request.POST.get('agent_tp_amount',None)
-        agent_payment.agent_total_comm_amount = request.POST.get('agent_total_comm_amount',None)
-        agent_payment.agent_net_payable_amount = request.POST.get('agent_net_payable_amount',None)
-        agent_payment.agent_tds_amount = request.POST.get('agent_tds_amount',None)
-        agent_payment.updated_by = request.user
+        if int(request.user.department_id) != 2:
+            agent_payment.agent_od_comm = request.POST.get('agent_od_comm',None)
+            agent_payment.agent_tp_comm = request.POST.get('agent_tp_comm',None)
+            agent_payment.agent_net_comm = request.POST.get('agent_net_comm',None)
+            agent_payment.agent_incentive_amount = request.POST.get('agent_incentive_amount',None)
+            agent_payment.agent_tds = request.POST.get('agent_tds',None)
+            agent_payment.agent_od_amount = request.POST.get('agent_od_amount',None)
+            agent_payment.agent_net_amount = request.POST.get('agent_net_amount',None)
+            agent_payment.agent_tp_amount = request.POST.get('agent_tp_amount',None)
+            agent_payment.agent_total_comm_amount = request.POST.get('agent_total_comm_amount',None)
+            agent_payment.agent_net_payable_amount = request.POST.get('agent_net_payable_amount',None)
+            agent_payment.agent_tds_amount = request.POST.get('agent_tds_amount',None)
+            agent_payment.updated_by = request.user
+        
         agent_payment.save()
-        
-    
-        
-        policy.bqp_id = request.POST.get('bqp',None)
-        policy.pos_name = request.POST.get('pos_name',None)
-        policy.referral_by = request.POST.get('referral_by',None)
-        policy.save()
-        messages.success(request, "Policy Agent Payment Updated successfully!")
+        if int(request.user.department_id) != 2:
+            policy.bqp_id = request.POST.get('bqp',None)
+            policy.pos_name = request.POST.get('pos_name',None)
+            policy.referral_by = request.POST.get('referral_by',None)
+            policy.save()
+            
+        if int(request.user.department_id) == 2:
+            messages.success(request, "Policy Agent Details Updated successfully!")
+            return redirect('policy-data')
 
+        messages.success(request, "Policy Agent Payment Updated successfully!")
         return redirect('edit-insurer-payment-info', policy_no=quote(policy.policy_number))
 
     pdf_path = get_pdf_path(request, policy_data.filepath)
