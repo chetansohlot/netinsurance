@@ -71,7 +71,10 @@ def parse_date(date_str):
         
 
 def edit_policy(request, policy_id):
-
+    if not request.user.is_authenticated and request.user.is_active != 1:
+        messages.error(request,'Please Login First')
+        return redirect('login')
+    
     if request.method == 'POST':
         policy_id = request.POST.get('policy_id')
         policy_number = request.POST.get('policy_number')
@@ -95,6 +98,7 @@ def edit_policy(request, policy_id):
 
         # Insured Details
         policy.insurer_name = request.POST.get('owner_name')
+        policy.insured_name = request.POST.get('holder_name')
         policy.insured_mobile = request.POST.get('insured_mobile')
         policy.insured_email = request.POST.get('insured_email')
         policy.insured_address = request.POST.get('insured_address')
@@ -127,7 +131,8 @@ def edit_policy(request, policy_id):
 
         policy.save()
         messages.success(request, "Policy Updated successfully!")
-        if int(request.user.department_id) == 2:
+        
+        if request.user.department_id and int(request.user.department_id) == 2:
             return redirect('edit-agent-payment-info',policy_no=quote(policy.policy_number, safe=''))
         else:
             return redirect('edit-policy-vehicle-details', policy_no=quote(policy.policy_number, safe=''))
@@ -316,7 +321,9 @@ def edit_agent_payment_info(request, policy_no):
         agent_payment.agent_payment_date = request.POST.get('agent_payment_date',None)
         agent_payment.agent_amount = request.POST.get('agent_amount',None)
         agent_payment.agent_remarks = request.POST.get('agent_remarks',None)
-        if int(request.user.department_id) != 2:
+        if request.user.department_id and int(request.user.department_id) == 2:
+            pass
+        else:
             agent_payment.agent_od_comm = request.POST.get('agent_od_comm',None)
             agent_payment.agent_tp_comm = request.POST.get('agent_tp_comm',None)
             agent_payment.agent_net_comm = request.POST.get('agent_net_comm',None)
@@ -331,13 +338,13 @@ def edit_agent_payment_info(request, policy_no):
             agent_payment.updated_by = request.user
         
         agent_payment.save()
-        if int(request.user.department_id) != 2:
-            policy.bqp_id = request.POST.get('bqp',None)
-            policy.pos_name = request.POST.get('pos_name',None)
-            policy.referral_by = request.POST.get('referral_by',None)
-            policy.save()
+       
+        policy.bqp_id = request.POST.get('bqp',None)
+        policy.pos_name = request.POST.get('pos_name',None)
+        policy.referral_by = request.POST.get('referral_by',None)
+        policy.save()
             
-        if int(request.user.department_id) == 2:
+        if request.user.department_id and int(request.user.department_id) == 2:
             messages.success(request, "Policy Agent Details Updated successfully!")
             return redirect('policy-data')
 
