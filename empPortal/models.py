@@ -343,6 +343,7 @@ class PolicyInfo(models.Model):
 
     # Insured Details
     insurer_name = models.CharField(max_length=255, null=True, blank=True)
+    insured_name = models.CharField(max_length=255, null=True, blank=True)
     insured_mobile = models.CharField(max_length=15, null=True, blank=True)
     insured_email = models.CharField(max_length=255, null=True, blank=True)
     insured_address = models.TextField(null=True, blank=True)

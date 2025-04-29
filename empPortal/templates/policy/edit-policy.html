@@ -122,7 +122,7 @@
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl" for="holder_name">Insured Name</label>
-                                      <input type="text" class="form-field" name="holder_name" id="holder_name" placeholder="Insured Name" value="{{ policy.holder_name|default:policy_data.holder_name }}">
+                                      <input type="text" class="form-field" name="holder_name" id="holder_name" placeholder="Insured Name" value="{{ policy.insured_name|default:policy_data.holder_name }}">
                                     </div>
                                   </div>
                             
