@@ -469,6 +469,7 @@ class FranchisePayment(models.Model):
         return f"Franchise Payment #{self.id}"
 
 class PolicyUploadDoc(models.Model):
+    policy = models.ForeignKey(PolicyDocument, on_delete=models.CASCADE, related_name='policy_upload_doc_info')
     policy_number = models.CharField(max_length=100)
     re_other_endorsement = models.FileField(upload_to='policy_doc/', null=True, blank=True)
     previous_policy = models.FileField(upload_to='policy_doc/', null=True, blank=True)
