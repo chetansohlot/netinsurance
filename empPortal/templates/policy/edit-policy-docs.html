@@ -51,9 +51,7 @@
               <div class="col-sm-12">  
                 <div class="card box-shadow-none p-3">
                   <div class="card-body px-0 pb-0 pt-0">
-                    <form autocomplete="off" id="myForm" name="updatePolicy"
-                    action="{% url 'edit-policy-docs' policy_data.policy_number %}" 
-                    method="post" enctype="multipart/form-data">
+                    <form autocomplete="off" id="myForm" name="updatePolicy" action="{% url 'edit-policy-docs' policy_data.id %}"  method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                       
                         <input type="hidden" class="form-field" name="policy_id" id="policy_id" value="{{ policy_data.id }}">
@@ -219,7 +217,7 @@
 
                             <div class="d-flex justify-content-end mt-4">
         
-                              <a href="{% url 'edit-agent-payment-info' policy_no=policy_data.policy_number|urlencode %}" class="dashboard-addbtn">
+                              <a href="{% url 'edit-agent-payment-info' policy_id=policy_data.id|urlencode %}" class="dashboard-addbtn">
                                 Save and Continue
                               </a>
                             </div>  

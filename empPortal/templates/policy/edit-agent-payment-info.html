@@ -36,7 +36,7 @@
                     {% if request.user.department_id == "2" %}
                       <a href="{% url 'edit-policy' id=policy_data.id %}" class="breadcrump-addbtn mx-1">Back</a>
                     {% else %}
-                      <a href="{% url 'edit-policy-docs' policy_data.policy_number %}" class="breadcrump-addbtn mx-1">Back</a>
+                      <a href="{% url 'edit-policy-docs' policy_data.id %}" class="breadcrump-addbtn mx-1">Back</a>
                     {% endif %}
                     <a href="{% url 'policy-data' %}" class="breadcrump-addbtn mx-1">Exit</a>
 
@@ -56,7 +56,7 @@
                 <div class="card box-shadow-none p-3">
                   <div class="card-body px-0 pb-0 pt-0">
 
-                    <form autocomplete="off" id="myAgentPaymentForm" name="updatePolicy" action="{% url 'edit-agent-payment-info' policy_data.policy_number %}" method="post">
+                    <form autocomplete="off" id="myAgentPaymentForm" name="updatePolicy" action="{% url 'edit-agent-payment-info' policy_data.id %}" method="post">
                         {% csrf_token %}
                       
                         <input type="hidden" class="form-field" name="policy_id" id="policy_id" value="{{ policy_data.id }}">
