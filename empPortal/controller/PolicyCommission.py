@@ -74,13 +74,14 @@ from empPortal.model import Referral
 def agent_commission(request):
     if not request.user.is_authenticated:
         return redirect('login')
+    print("helldfdfo 234")
 
     user_id = request.user.id
     role_id = Users.objects.filter(id=user_id).values_list('role_id', flat=True).first()
 
     filters_q = Q(status=6) & Q(policy_number__isnull=False) & ~Q(policy_number='')
 
-    if role_id != 1 and str(request.user.department_id) != "5":
+    if role_id != 1 and str(request.user.department_id) != "5" and str(request.user.department_id) != "3":
         filters_q &= Q(rm_id=user_id)
 
     branch_name = request.GET.get('branch_name', '').strip()
@@ -106,6 +107,7 @@ def agent_commission(request):
     ) | Q(
         policy_agent_info__agent_tds__isnull=True
     )
+    print("hello 23sfdfdf4")
 
     base_qs = PolicyDocument.objects.filter(filters_q).exclude(exclude_q).order_by('-id')
 
@@ -162,7 +164,7 @@ def agent_commission(request):
         filtered = []  # no filter, empty
 
     # Additional count filter by role and department if needed
-    if role_id != 1 and str(request.user.department_id) != "5":
+    if role_id != 1 and str(request.user.department_id) != "5" and str(request.user.department_id) != "3":
         policy_count = PolicyDocument.objects.filter(status=6, rm_id=user_id).count()
     else:
         policy_count = PolicyDocument.objects.filter(status=6).count()
@@ -176,7 +178,7 @@ def agent_commission(request):
     paginator = Paginator(filtered, per_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-
+    print("hello 234")
     return render(request, 'policy-commission/agent-commission.html', {
         "page_obj": page_obj,
         "policy_count": policy_count,

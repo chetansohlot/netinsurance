@@ -878,7 +878,7 @@ def policyData(request):
     role_id = Users.objects.filter(id=user_id).values_list('role_id', flat=True).first()
 
     filters_q = Q(status=6) & Q(policy_number__isnull=False) & ~Q(policy_number='')
-    if role_id != 1 and request.user.department_id != "5":
+    if role_id != 1 and request.user.department_id != "5" and request.user.department_id != "3":
         filters_q &= Q(rm_id=user_id)
         
     base_qs = PolicyDocument.objects.filter(filters_q).order_by('-id').prefetch_related(
