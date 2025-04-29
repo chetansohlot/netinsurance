@@ -80,45 +80,33 @@ def agent_commission(request):
 
     filters_q = Q(status=6) & Q(policy_number__isnull=False) & ~Q(policy_number='')
 
-    if role_id != 1 and str(request.user.department_id) != "5" and str(request.user.department_id) != "3":
+    if role_id != 1 and str(request.user.department_id) not in ["3", "5"]:
         filters_q &= Q(rm_id=user_id)
 
+    # Handle dropdown filters
     branch_name = request.GET.get('branch_name', '').strip()
     referred_by = request.GET.get('referred_by', '').strip()
-
     branch = Branch.objects.filter(branch_name__iexact=branch_name).first()
     referral = Referral.objects.filter(name__iexact=referred_by).first()
 
     if branch:
         filters_q &= Q(policy_info__branch_name=str(branch.id))
-
     if referral:
         filters_q &= Q(policy_agent_info__referral_id=str(referral.id))
-            
-    exclude_q = Q(
-        policy_agent_info__agent_od_comm__isnull=True
-    ) | Q(
-        policy_agent_info__agent_net_comm__isnull=True
-    ) | Q(
-        policy_agent_info__agent_tp_comm__isnull=True
-    ) | Q(
-        policy_agent_info__agent_incentive_amount__isnull=True
-    ) | Q(
-        policy_agent_info__agent_tds__isnull=True
-    )
 
-    base_qs = PolicyDocument.objects.filter(filters_q).exclude(exclude_q).order_by('-id')
+    # Exclude already processed
+    exclude_q = Q(policy_agent_info__agent_od_comm__isnull=False) | \
+                Q(policy_agent_info__agent_net_comm__isnull=False) | \
+                Q(policy_agent_info__agent_tp_comm__isnull=False) | \
+                Q(policy_agent_info__agent_incentive_amount__isnull=False) | \
+                Q(policy_agent_info__agent_tds__isnull=False) | \
+                Q(policy_agent_info__isnull=False)
 
-    base_qs = base_qs.only(
-        'id', 'policy_number', 'vehicle_number', 'holder_name', 
-        'insurance_provider', 'extracted_text', 'vehicle_type'
-    )
+    base_qs = PolicyDocument.objects.filter(filters_q).exclude(exclude_q)
 
-    # Applying filters
+    # Applying search filters
     filters = {
         'policy_number': request.GET.get('policy_number', '').strip().lower(),
-        'branch_name': request.GET.get('branch_name', '').strip().lower(),
-        'referred_by': request.GET.get('referred_by', '').strip().lower(),
         'vehicle_number': request.GET.get('vehicle_number', '').strip().lower(),
         'engine_number': request.GET.get('engine_number', '').strip().lower(),
         'chassis_number': request.GET.get('chassis_number', '').strip().lower(),
@@ -135,51 +123,98 @@ def agent_commission(request):
         'gvw_from': request.GET.get('gvw_from', '').strip(),
     }
 
-    any_filter_applied = any(value for key, value in filters.items() if key not in ['start_date', 'end_date', 'manufacturing_year_from', 'manufacturing_year_to', 'gvw_from'])
-
     filtered = []
 
-    if any_filter_applied:
-        for obj in base_qs:
-            data = obj.extracted_text or {}
-            if not isinstance(data, dict):
-                try:
-                    data = json.loads(data)
-                except (json.JSONDecodeError, TypeError):
-                    continue
-
-            if not data:
+    for obj in base_qs.only(
+        'id', 'policy_number', 'vehicle_number', 'holder_name',
+        'insurance_provider', 'extracted_text', 'vehicle_type'
+    ).order_by('-id'):
+        data = obj.extracted_text or {}
+        if not isinstance(data, dict):
+            try:
+                data = json.loads(data)
+            except (json.JSONDecodeError, TypeError):
                 continue
 
-            match = True
+        if not data:
+            continue
 
-            # Add filter conditions here as before
+        match = True
+        # Apply individual field-level match
+        for key, val in filters.items():
+            if val:
+                if key == 'policy_number' and val not in (obj.policy_number or '').lower():
+                    match = False
+                    break
+                elif key == 'vehicle_number' and val not in (obj.vehicle_number or '').lower():
+                    match = False
+                    break
+                elif key == 'vehicle_type' and val != (obj.vehicle_type or '').lower():
+                    match = False
+                    break
+                elif key == 'policy_holder_name' and val not in (obj.holder_name or '').lower():
+                    match = False
+                    break
+                elif key == 'insurance_provider' and val not in (obj.insurance_provider or '').lower():
+                    match = False
+                    break
+                elif key == 'insurance_company' and val not in data.get('insurance_company', '').lower():
+                    match = False
+                    break
+                elif key == 'mobile_number' and val not in data.get('mobile_number', '').lower():
+                    match = False
+                    break
+                elif key == 'engine_number' and val not in data.get('engine_number', '').lower():
+                    match = False
+                    break
+                elif key == 'chassis_number' and val not in data.get('chassis_number', '').lower():
+                    match = False
+                    break
+                elif key == 'fuel_type' and val not in data.get('fuel_type', '').lower():
+                    match = False
+                    break
+                elif key == 'gvw_from':
+                    try:
+                        if int(data.get('gvw', '0')) < int(val):
+                            match = False
+                            break
+                    except:
+                        match = False
+                        break
+                elif key == 'manufacturing_year_from':
+                    try:
+                        if int(data.get('manufacturing_year', '0')) < int(val):
+                            match = False
+                            break
+                    except:
+                        match = False
+                        break
+                elif key == 'manufacturing_year_to':
+                    try:
+                        if int(data.get('manufacturing_year', '0')) > int(val):
+                            match = False
+                            break
+                    except:
+                        match = False
+                        break
+                elif key == 'start_date' and data.get('start_date') and val:
+                    if data.get('start_date') < val:
+                        match = False
+                        break
+                elif key == 'end_date' and data.get('end_date') and val:
+                    if data.get('end_date') > val:
+                        match = False
+                        break
 
-            if match:
-                obj.json_data = data
-                filtered.append(obj)
+        if match:
+            obj.json_data = data
+            filtered.append(obj)
+
+    # Count for display
+    if role_id != 1 and str(request.user.department_id) not in ["3", "5"]:
+        policy_count = PolicyDocument.objects.filter(status=6, rm_id=user_id).exclude(exclude_q).count()
     else:
-        filtered = []  # no filter, empty
-
-
-   
-    exclude_count_q = Q(
-        policy_agent_info__agent_od_comm__isnull=True
-    ) | Q(
-        policy_agent_info__agent_net_comm__isnull=True
-    ) | Q(
-        policy_agent_info__agent_tp_comm__isnull=True
-    ) | Q(
-        policy_agent_info__agent_incentive_amount__isnull=True
-    ) | Q(
-        policy_agent_info__agent_tds__isnull=True
-    )
-
-    # Additional count filter by role and department if needed
-    if role_id != 1 and str(request.user.department_id) != "5" and str(request.user.department_id) != "3":
-        policy_count = PolicyDocument.objects.filter(status=6, rm_id=user_id).exclude(exclude_count_q).count()
-    else:
-        policy_count = PolicyDocument.objects.filter(status=6).exclude(exclude_count_q).count()
+        policy_count = PolicyDocument.objects.filter(status=6).exclude(exclude_q).count()
 
     per_page = request.GET.get('per_page', 10)
     try:
@@ -190,6 +225,7 @@ def agent_commission(request):
     paginator = Paginator(filtered, per_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+
     return render(request, 'policy-commission/agent-commission.html', {
         "page_obj": page_obj,
         "policy_count": policy_count,
