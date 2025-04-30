@@ -70,15 +70,14 @@
               {% endif %}
             </td>
             {% endif %}
-
-            
-            
               
             <td>
               <div class="dropdown">
                 <img src="{% static 'dist/img/svg/menu-dot-vr.svg' %}" alt="" class="table-doticon" data-toggle="dropdown" aria-expanded="false">
                 <ul class="dropdown-menu table-dropdown-menu">
                   <li><a class="dropdown-item" href="{% url 'member-view' user_id=user.id %}">View member</a></li>
+                  <li><a class="dropdown-item" href="{% url 'download-training-certificate' user_id=user.id %}">Download Training Certificate</a></li>
+                  <li><a class="dropdown-item" href="{% url 'download-certificate' user_id=user.id %}">Download Certificate</a></li>
                 </ul>
               </div>
             </td>

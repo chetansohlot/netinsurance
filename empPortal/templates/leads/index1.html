@@ -372,10 +372,6 @@
           <div class="form-group d-flex">
             <button type="submit" class="wrap-btn w-100">Apply</button>
             <a href="{% url 'leads-mgt' %}" class="wrap-btn w-100 bg-danger ml-2 text-center">Reset</a>
-            <!--<button type="submit" name="export" value="1" class="wrap-btn w-100 ml-2 bg-success text-white">Export</button>-->
-            <form method="get" action="{% url 'lead_mgt_export' %}">
-              <button type="submit" name="export" value="1" class="wrap-btn w-100 ml-2 bg-success text-white">Export</button>
-          </form>
           </div>
         </div>
       </div>

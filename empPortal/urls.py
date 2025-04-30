@@ -115,13 +115,13 @@ urlpatterns = [
     path('start-exam', exams.start_exam, name='start_exam'),
     path('exam/MCQs', exams.members_exam_mcq, name='members_exam_mcq'),
     path('exam/submit', exams.submit_exam, name='submit-exam'),
-    
     path('members/activated', members.members_activated, name='members_activated'),
     path('members/rejected', members.members_rejected, name='members_rejected'),
     path('members/inactive', members.members_inactive, name='members_inactive'), ## members_inactive ##
 
-
     path('member/member-view/<str:user_id>',members.memberView, name='member-view'),
+    path('member/download-training-certificate/<str:user_id>',members.posTrainingCertificate, name='download-training-certificate'),
+    path('member/download-certificate/<str:user_id>',members.posCertificate, name='download-certificate'),
     path('member/activate-user/<str:user_id>',members.activateUser, name='activate-user'),
     path('member/update-partner-status/<str:user_id>',members.updatePartnerStatus, name='update-partner-status'),
     path('member/login-activate-user/<str:user_id>',members.loginActivateUser, name='login-activate-user'),
@@ -139,6 +139,10 @@ urlpatterns = [
     path('lead-mgt/term-lead', leads.termlead, name='term-lead'),
     path('lead-mgt/lead-view/<int:lead_id>/', leads.viewlead, name='lead-view'),
     path('bulk-upload/', leads.bulk_upload_leads, name='bulk-upload-leads'),
+    path('fetch-policy-details/', leads.fetch_policy_details, name='fetch-policy-details'),
+    path('lead-mgt/export/', leads.export_leads_to_excel, name='lead_mgt_export'),
+
+
     
 
     # REFERRAL 

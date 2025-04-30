@@ -52,13 +52,6 @@ from datetime import datetime, timedelta
 from django.db.models import F, Value, CharField
 from django.db.models.functions import Concat, Coalesce
 from ..models import PolicyInfo
-from ..models import Users, Roles,PolicyDocument
-from django.views.decorators.csrf import csrf_exempt
-from openpyxl.utils import get_column_letter
-import openpyxl
-from io import BytesIO
-from django.http import HttpResponse
-from openpyxl import Workbook
 app = FastAPI()
 
 def dictfetchall(cursor):
@@ -137,8 +130,6 @@ def index(request):
 
     #today = datetime.today().date()
     #after_30_days = today + timedelta(days=30)
-    allowed_roles = Roles.objects.filter(roleDepartment=1)
-
     # Apply filters
     if lead_id:
         leads = leads.filter(lead_id__icontains=lead_id)
@@ -155,7 +146,7 @@ def index(request):
     if agent_name:
         leads = leads.filter(agent_name=agent_name)
     if policy_number:
-        leads = leads.filter(registration_number__icontains=policy_number)
+        leads = leads.filter(policy_number__icontains=policy_number)
     if start_date:
         leads = leads.filter(risk_start_date__gte=start_date)
     if end_date:
@@ -188,11 +179,8 @@ def index(request):
     
    
     # Get unique dropdown values
-    #sales_managers = Users.objects.filter(role_id=3).values('first_name','first_name', 'last_name').distinct()
-    sales_managers = Users.objects.filter(
-        role_id=3,
-        role__in=allowed_roles
-        ).values('first_name', 'last_name').distinct() 
+    sales_managers = Users.objects.filter(role_id=3).values('first_name','first_name', 'last_name').distinct()
+      
     agents = Users.objects.filter(role_id=4).values_list('user_name', flat=True)
     insurance_companies = Leads.objects.values_list('insurance_company', flat=True).distinct().exclude(insurance_company__isnull=True).exclude(insurance_company__exact='')
     policy_types = Leads.objects.values_list('policy_type', flat=True).distinct().exclude(policy_type__isnull=True).exclude(policy_type__exact='')
@@ -210,10 +198,6 @@ def index(request):
         leads = leads.order_by('-updated_at')
     else:
         leads = leads.order_by('-created_at')  # Default sort
-
-    # After filtering leads
-    if request.GET.get('export') == '1':
-        return export_leads_to_excel(leads)
 
     # Count
     total_leads = leads.count()
@@ -243,86 +227,9 @@ def index(request):
         'insurance_companies': insurance_companies,
         'policy_types': policy_types,
         'vehicle_types': vehicle_types,
-        'leads': leads,
     })
 
-def export_leads_to_excel(leads_queryset):
-    wb = Workbook()
-    ws = wb.active
-    ws.title = "Leads"
-
-    # Step 1: Check if any lead has a policy
-    has_policy_data = False
-    for lead in leads_queryset:
-        policy = PolicyDocument.objects.filter(vehicle_number=lead.registration_number).order_by('-created_at').first()
-        if policy and policy.policy_number:
-            has_policy_data = True
-            break
-
-    # Step 2: Define headers dynamically
-    headers = [
-        'S.No', 'Lead ID', 'Name as per PAN', 'Email Address', 'Mobile Number',
-        'PAN Card Number', 'Vehicle Number'
-    ]
-    if has_policy_data:
-        headers += [
-            'Previous Policy Number', 'Policy Issue Date', 'Policy Expiry Date',
-            'Sum Insured', 'Net Insurance', 'Gross Insurance'
-        ]
-    headers += ['Created Date']
-
-    ws.append(headers)
-    ws.freeze_panes = 'A2'
-
-    # Step 3: Write rows
-    for index, lead in enumerate(leads_queryset, start=1):
-        previous_policy = PolicyDocument.objects.filter(vehicle_number=lead.registration_number).order_by('-created_at').first()
-
-        row = [
-            index,
-            lead.id,
-            lead.name_as_per_pan or '',
-            lead.email_address or '',
-            lead.mobile_number or '',
-            lead.pan_card_number or '',
-            lead.registration_number or '',
-          
-        ]
-
-        if has_policy_data:
-            row += [
-                previous_policy.policy_number if previous_policy else '',
-                previous_policy.policy_issue_date if previous_policy else '',
-                previous_policy.policy_expiry_date if previous_policy else '',
-                previous_policy.sum_insured if previous_policy else '',
-                previous_policy.policy_premium if previous_policy else '',
-                previous_policy.policy_total_premium if previous_policy else '',
-            ]
-
-        row += [
-            lead.created_at.strftime('%Y-%m-%d %H:%M:%S') if lead.created_at else '',
-            
-        ]
-            
-        ws.append(row)
-
-    # Step 4: Adjust column widths
-    for i, column_cells in enumerate(ws.columns, 1):
-        max_length = max(len(str(cell.value)) if cell.value else 0 for cell in column_cells)
-        column_letter = get_column_letter(i)
-        ws.column_dimensions[column_letter].width = max_length + 2
-
-    # Step 5: Return Excel response
-    file_stream = BytesIO()
-    wb.save(file_stream)
-    file_stream.seek(0)
-
-    response = HttpResponse(file_stream, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response['Content-Disposition'] = 'attachment; filename="filtered_leads.xlsx"'
-
-    return response
-
-
+    
 def viewlead(request, lead_id):
     if request.user.is_authenticated:
         leads = Leads.objects.all()
@@ -377,7 +284,7 @@ def healthLead(request):
         if agent_name:
             leads = leads.filter(agent_name=agent_name)
         if policy_number:
-            leads = leads.filter(registration_number__icontains=policy_number)
+            leads = leads.filter(policy_number__icontains=policy_number)
         if start_date:
             leads = leads.filter(risk_start_date__gte=start_date)
         if end_date:
@@ -416,10 +323,7 @@ def healthLead(request):
         insurance_companies = Leads.objects.values_list('insurance_company', flat=True).distinct().exclude(insurance_company__isnull=True).exclude(insurance_company__exact='')
         policy_types = Leads.objects.values_list('policy_type', flat=True).distinct().exclude(policy_type__isnull=True).exclude(policy_type__exact='')
         vehicle_types = Leads.objects.values_list('vehicle_type', flat=True).distinct().exclude(vehicle_type__isnull=True).exclude(vehicle_type__exact='')
-
-         # After filtering leads
-        if request.GET.get('export') == '1':
-            return export_leads_to_excel(leads)
+   
 
         return render(request, 'leads/health-lead.html',{
             'leads': leads,
@@ -433,7 +337,7 @@ def healthLead(request):
             'selected_agent': agent_name,
             'insurance_companies': insurance_companies,
             'policy_types': policy_types,
-            #'vehicle_types': vehicle_types,
+            'vehicle_types': vehicle_types,
             
         })  
     else:
@@ -485,7 +389,7 @@ def termlead(request):
         if agent_name:
             leads = leads.filter(agent_name=agent_name)
         if policy_number:
-            leads = leads.filter(registration_number__icontains=policy_number)
+            leads = leads.filter(policy_number__icontains=policy_number)
         if start_date:
             leads = leads.filter(risk_start_date__gte=start_date)
         if end_date:
@@ -544,7 +448,79 @@ def termlead(request):
     else:
         return redirect('login')
 
+from datetime import datetime
+
+
 def create_or_edit_lead(request, lead_id=None):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    customers = QuotationCustomer.objects.all()
+    source_leads = SourceMaster.objects.filter(status=True).order_by('source_name')
+    referrals = Referral.objects.all()
+    lead = None
+
+    if request.method == "GET":
+        return render(request, 'leads/create.html', {
+            'lead': lead,
+            'referrals': referrals,
+            'customers': customers
+        })
+
+    elif request.method == "POST":
+        # Step 1: Collect form inputs
+        mobile_number = request.POST.get("mobile_number", "").strip()
+        pan_card_number = request.POST.get("pan_card_number", "").strip()
+        registration_number = request.POST.get("registration_number", "").strip()
+        name_as_per_pan = request.POST.get("name_as_per_pan", "").strip()
+        email_address = request.POST.get("email_address", "").strip()
+
+        # ... other form fields you want to collect manually ...
+
+        # Step 2: Try to find matching policy
+        matching_policy = PolicyInfo.objects.filter(
+            Q(insured_mobile=mobile_number) |
+            Q(insured_pan=pan_card_number) |
+            Q(policy__registration_number=registration_number)
+        ).order_by('-created_at').first()
+
+        # Step 3: Prepare the lead instance
+        lead = Leads(
+            #lead_id=generate_unique_lead_id(),  # You can implement your logic for this
+            mobile_number=mobile_number,
+            pan_card_number=pan_card_number,
+            registration_number=registration_number,
+            email_address=email_address,
+            name_as_per_pan=name_as_per_pan,
+            # other manual fields...
+        )
+
+        # Step 4: If matching policy found, copy fields
+        if matching_policy:
+            lead.insurance_company = matching_policy.insurance_company
+            lead.policy_number = matching_policy.policy_number
+            lead.policy_date = matching_policy.policy_issue_date
+            lead.policy_type = matching_policy.policy_type
+            lead.make_and_model = matching_policy.policy.make_and_model if hasattr(matching_policy.policy, 'make_and_model') else None
+            lead.fuel_type = matching_policy.fuel_type
+            lead.manufacturing_year = matching_policy.policy.manufacturing_year if hasattr(matching_policy.policy, 'manufacturing_year') else None
+            lead.sum_insured = matching_policy.sum_insured
+            lead.od_premium = matching_policy.od_premium
+            lead.tp_premium = matching_policy.tp_premium
+            lead.net_premium = matching_policy.net_premium
+            lead.gross_premium = matching_policy.gross_premium
+            lead.agent_name = matching_policy.pos_name
+            lead.sales_manager = matching_policy.supervisor_name
+            # Add more as needed
+
+        # Step 5: Save the lead
+        lead.save()
+
+        # Step 6: Redirect or render success
+        messages.success(request, "Lead created successfully!")
+        return redirect("leads_list")  # Update this to your actual lead list URL
+
+"""def create_or_edit_lead(request, lead_id=None):
     if not request.user.is_authenticated:
         return redirect('login')
     
@@ -606,44 +582,9 @@ def create_or_edit_lead(request, lead_id=None):
 
         else:
            registration_number = ""
-
-        # Before creating Lead, try to fetch matching PolicyDocument
-        policy_document = None
-        if registration_number:
-                policy_document = PolicyDocument.objects.filter(vehicle_number=registration_number).first()
-
-                policy_start_date_str = policy_document.policy_start_date if policy_document else None
-                try:
-                    # Try parsing with both date and time
-                    if policy_start_date_str:
-                        policy_start_date_obj = datetime.strptime(policy_start_date_str, '%Y-%m-%d %H:%M:%S')
-                except ValueError:
-                    try:
-                        # If there's no time component, parse as date only
-                        if policy_start_date_str:
-                            policy_start_date_obj = datetime.strptime(policy_start_date_str, '%Y-%m-%d')
-                    except ValueError:
-                        policy_start_date_obj = None
-
-        # Default fields
-        insurance_company = None
-        policy_number = None
-        policy_type = None
-        vehicle_type_db = None
-        sum_insured = None
-        policy_date = None
-
-        # If matching policy found, extract details
-        if policy_document:
-            insurance_company = policy_document.insurance_provider
-            policy_number = policy_document.policy_number
-            policy_type = policy_document.policy_type
-            vehicle_type_db = policy_document.vehicle_type
-            sum_insured = policy_document.sum_insured
-            policy_date = policy_start_date_obj.strftime('%Y-%m-%d %H:%M:%S')
-           
-       
+        
         status = request.POST.get("status", "new").strip()
+        
         if lead:
             lead.mobile_number = mobile_number
             lead.email_address = email_address
@@ -663,11 +604,6 @@ def create_or_edit_lead(request, lead_id=None):
             lead.referral_by = referral_by
             lead.status = status
             lead.updated_at = now()
-            lead.insurance_company=insurance_company
-            lead.policy_number=policy_number
-            lead.policy_type=policy_type
-            lead.sum_insured=sum_insured
-            lead.risk_start_date=policy_date
             lead.save()
             messages.success(request, f"Lead updated successfully! Lead ID: {lead.lead_id}")
         else:
@@ -691,50 +627,11 @@ def create_or_edit_lead(request, lead_id=None):
                 status=status,
                 created_by=request.user.id,
                 created_at=now(),
-                updated_at=now(),
-                insurance_company=insurance_company,
-                policy_number=policy_number,
-                policy_type=policy_type,
-                sum_insured=sum_insured,
-                risk_start_date = policy_date
+                updated_at=now()
             )
             messages.success(request, f"Lead created successfully!")
 
-        return redirect("leads-mgt")
-
-from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
-from datetime import datetime
-
-@csrf_exempt
-def fetch_policy_details(request):
-    if request.method == "POST":
-        registration_number = request.POST.get("registration_number")
-        try:
-            policy_document = PolicyDocument.objects.filter(vehicle_number=registration_number).first()
-            
-            if policy_document:  #First check if found
-                policy_start_date_str = policy_document.policy_start_date
-                policy_start_date_obj = datetime.strptime(policy_start_date_str, '%Y-%m-%d %H:%M:%S') if policy_start_date_str else None
-
-                return JsonResponse({
-                    'success': True,
-                    'insurance_company': policy_document.insurance_provider,
-                    'policy_number': policy_document.policy_number,
-                    'policy_type': policy_document.policy_type,
-                    'vehicle_type': policy_document.vehicle_type,
-                    'sum_insured': policy_document.sum_insured,
-                    'policy_date': policy_start_date_obj.strftime('%Y-%m-%d %H:%M:%S') if policy_start_date_obj else "",
-                })
-            else:
-                # ✅ If no policy found
-                return JsonResponse({'success': False, 'message': 'Please fill in all details'})
-                
-        except Exception as e:
-            return JsonResponse({'success': False, 'message': str(e)})
-
-    return JsonResponse({'success': False, 'message': 'Invalid request'})
-
+        return redirect("leads-mgt")"""
 
 """def bulk_upload_leads(request):
     if request.method == 'POST':
