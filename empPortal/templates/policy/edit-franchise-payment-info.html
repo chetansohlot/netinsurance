@@ -125,79 +125,80 @@
                                   <div class="col-sm-6">
                                     <div class="form-group">
                                       <label class="form-lbl">Franchise OD Comm</label>
-                                      <input type="text" class="form-field" name="franchise_od_comm" value="{{ franchise_payment.franchise_od_comm|blank_if_none_or_text_none }}" placeholder="Franchise OD Comm">
+                                      <input type="text" class="form-field" name="franchise_od_comm" id="franchise_od_comm" value="{{ franchise_payment.franchise_od_comm|blank_if_none_or_text_none }}" placeholder="Franchise OD Comm">
+                                    </div>
+                                  </div>
+
+                                  <div class="col-sm-6">
+                                    <div class="form-group">
+                                      <label class="form-lbl">Franchise OD Amount</label>
+                                      <input type="text" class="form-field" name="franchise_od_amount" id="franchise_od_amount" value="{{ franchise_payment.franchise_od_amount|blank_if_none_or_text_none }}" placeholder="Franchise OD Amount">
                                     </div>
                                   </div>
                             
                                   <div class="col-sm-6">
                                     <div class="form-group">
                                       <label class="form-lbl">Franchise Net Comm</label>
-                                      <input type="text" class="form-field" name="franchise_net_comm" value="{{ franchise_payment.franchise_net_comm|blank_if_none_or_text_none }}" placeholder="Franchise Net Comm">
+                                      <input type="text" class="form-field" name="franchise_net_comm" id="franchise_net_comm" value="{{ franchise_payment.franchise_net_comm|blank_if_none_or_text_none }}" placeholder="Franchise Net Comm">
+                                    </div>
+                                  </div>
+                                  <div class="col-sm-6">
+                                    <div class="form-group">
+                                      <label class="form-lbl">Franchise Net Amount</label>
+                                      <input type="text" class="form-field" name="franchise_net_amount" id="franchise_net_amount" value="{{ franchise_payment.franchise_net_amount|blank_if_none_or_text_none }}" placeholder="Franchise Net Amount">
                                     </div>
                                   </div>
                             
                                   <div class="col-sm-6">
                                     <div class="form-group">
                                       <label class="form-lbl">Franchise TP Comm</label>
-                                      <input type="text" class="form-field" name="franchise_tp_comm" value="{{ franchise_payment.franchise_tp_comm|blank_if_none_or_text_none }}" placeholder="Franchise TP Comm">
-                                    </div>
-                                  </div>
-                            
-                                  <div class="col-sm-6">
-                                    <div class="form-group">
-                                      <label class="form-lbl">Franchise Incentive Amount</label>
-                                      <input type="text" class="form-field" name="franchise_incentive_amount" value="{{ franchise_payment.franchise_incentive_amount|blank_if_none_or_text_none }}" placeholder="Franchise Incentive Amount">
-                                    </div>
-                                  </div>
-                            
-                                  <div class="col-sm-6">
-                                    <div class="form-group">
-                                      <label class="form-lbl">Franchise TDS</label>
-                                      <input type="text" class="form-field" name="franchise_tds" value="{{ franchise_payment.franchise_tds|blank_if_none_or_text_none }}" placeholder="Franchise TDS">
-                                    </div>
-                                  </div>
-                            
-                                  <div class="col-sm-6">
-                                    <div class="form-group">
-                                      <label class="form-lbl">Franchise OD Amount</label>
-                                      <input type="text" class="form-field" name="franchise_od_amount" value="{{ franchise_payment.franchise_od_amount|blank_if_none_or_text_none }}" placeholder="Franchise OD Amount">
-                                    </div>
-                                  </div>
-                            
-                                  <div class="col-sm-6">
-                                    <div class="form-group">
-                                      <label class="form-lbl">Franchise Net Amount</label>
-                                      <input type="text" class="form-field" name="franchise_net_amount" value="{{ franchise_payment.franchise_net_amount|blank_if_none_or_text_none }}" placeholder="Franchise Net Amount">
+                                      <input type="text" class="form-field" name="franchise_tp_comm" id="franchise_tp_comm" value="{{ franchise_payment.franchise_tp_comm|blank_if_none_or_text_none }}" placeholder="Franchise TP Comm">
                                     </div>
                                   </div>
                             
                                   <div class="col-sm-6">
                                     <div class="form-group">
                                       <label class="form-lbl">Franchise TP Amount</label>
-                                      <input type="text" class="form-field" name="franchise_tp_amount" value="{{ franchise_payment.franchise_tp_amount|blank_if_none_or_text_none }}" placeholder="Franchise TP Amount">
+                                      <input type="text" class="form-field" name="franchise_tp_amount" id="franchise_tp_amount" value="{{ franchise_payment.franchise_tp_amount|blank_if_none_or_text_none }}" placeholder="Franchise TP Amount">
+                                    </div>
+                                  </div>
+                            
+                                  <div class="col-sm-6">
+                                    <div class="form-group">
+                                      <label class="form-lbl">Franchise Incentive Amount</label>
+                                      <input type="text" class="form-field" name="franchise_incentive_amount" id="franchise_incentive_amount" value="{{ franchise_payment.franchise_incentive_amount|blank_if_none_or_text_none }}" placeholder="Franchise Incentive Amount">
                                     </div>
                                   </div>
                             
                                   <div class="col-sm-6">
                                     <div class="form-group">
                                       <label class="form-lbl">Total Comm Amount</label>
-                                      <input type="text" class="form-field" name="franchise_total_comm_amount" value="{{ franchise_payment.franchise_total_comm_amount|blank_if_none_or_text_none }}" placeholder="Total Comm Amount">
+                                      <input type="text" class="form-field" name="franchise_total_comm_amount" id="franchise_total_comm_amount" value="{{ franchise_payment.franchise_total_comm_amount|blank_if_none_or_text_none }}" placeholder="Total Comm Amount">
                                     </div>
                                   </div>
                             
                                   <div class="col-sm-6">
                                     <div class="form-group">
-                                      <label class="form-lbl">Net Payable Amount</label>
-                                      <input type="text" class="form-field" name="franchise_net_payable_amount" value="{{ franchise_payment.franchise_net_payable_amount|blank_if_none_or_text_none }}" placeholder="Net Payable Amount">
+                                      <label class="form-lbl">Franchise TDS</label>
+                                      <input type="text" class="form-field" name="franchise_tds" id="franchise_tds" value="{{ franchise_payment.franchise_tds|blank_if_none_or_text_none }}" placeholder="Franchise TDS">
                                     </div>
                                   </div>
                             
                                   <div class="col-sm-6">
                                     <div class="form-group">
                                       <label class="form-lbl">TDS Amount</label>
-                                      <input type="text" class="form-field" name="franchise_tds_amount" value="{{ franchise_payment.franchise_tds_amount|blank_if_none_or_text_none }}" placeholder="TDS Amount">
+                                      <input type="text" class="form-field" name="franchise_tds_amount" id="franchise_tds_amount" value="{{ franchise_payment.franchise_tds_amount|blank_if_none_or_text_none }}" placeholder="TDS Amount">
                                     </div>
                                   </div>
+                                 
+                                  <div class="col-sm-6">
+                                    <div class="form-group">
+                                      <label class="form-lbl">Net Payable Amount</label>
+                                      <input type="text" class="form-field" name="franchise_net_payable_amount" id="franchise_net_payable_amount" value="{{ franchise_payment.franchise_net_payable_amount|blank_if_none_or_text_none }}" placeholder="Net Payable Amount">
+                                    </div>
+                                  </div>
+                            
+                                  
                                 </div>
                               </div>
                             </div>
@@ -236,6 +237,41 @@
       document.getElementById("myFranchisePaymentForm").addEventListener("submit", function() {
           document.getElementById("loader").style.display = "flex";
       });
+
+      $(document).ready(function(){
+        updateTotalCommissionAmount(); 
+        updateTDSAmount();
+      });
+
+      function updateTotalCommissionAmount(){
+        let od_amount = parseFloat($('#franchise_od_amount').val()) || 0;
+        let tp_amount = parseFloat($('#franchise_tp_amount').val()) || 0;
+        let net_amount = parseFloat($('#franchise_net_amount').val()) || 0;
+        let incentive_amount = parseFloat($('#franchise_incentive_amount').val()) || 0;
+    
+        let total_commission_amount = od_amount + tp_amount + net_amount + incentive_amount;
+        $('#franchise_total_comm_amount').val(total_commission_amount.toFixed(2));
+        updateTDSAmount();
+      }
+
+      function updateTDSAmount(){
+        franchise_tds = parseFloat($('#franchise_tds').val()) || 0;
+        franchise_total_comm_amount = parseFloat($('#franchise_total_comm_amount').val()) || 0;
+        franchise_tds_amount = parseFloat(franchise_total_comm_amount*franchise_tds/100) || 0;
+        net_payable_amt = parseFloat(franchise_total_comm_amount-franchise_tds_amount) || 0;
+
+        $('#franchise_tds_amount').val(franchise_tds_amount);
+        $('#franchise_net_payable_amount').val(net_payable_amt);
+      }
+
+      $('#franchise_od_amount, #franchise_tp_amount, #franchise_net_amount, #franchise_incentive_amount').on('input', function() {
+        updateTotalCommissionAmount(); 
+      });
+
+      $('#franchise_tds').on('input',function(){
+        updateTDSAmount();
+      });
+
     </script>
 </body>
 {% endblock %}
