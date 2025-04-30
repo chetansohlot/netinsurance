@@ -6,26 +6,89 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Training Certificate</title>
 	<!-- <link rel="stylesheet" type="text/css" href="css/certificate.css"> -->
+	
 	<style type="text/css">
-		.training-certificate-w {width: 1090px; margin:auto; background: url('./images/certificate-pattern.png') no-repeat; background-size: contain; padding:0 0px; height: 100vh;}
-		.training-certificate-table {width: 100%; margin: auto; display: table; padding:50px 60px;}
-		.training-certificate-number {font-size: 13px; color:#000;}
-		.training-certificate-hding {font-size:44px; font-weight: 700; text-transform: uppercase; text-align: center; display: block; margin:0px; padding-top:0px;}
-		.training-certificate-subhding {font-size:24px; font-weight: 400; text-transform: uppercase; text-align: center; display: block; margin: 0;}
-		.training-certificate-default-img {width: 80px; height: 80px; object-fit: contain; margin:5px auto 25px; display: block;}
-		.training-certificate-title {font-size:20px; font-weight: 400; text-transform: uppercase; text-align: center; display: block; margin: 0;}
-		.pt-0 {padding-top:0px !important;}
-		.training-certificate-name {font-size:28px; font-weight: 700; text-transform: uppercase; text-align: center; display: block; margin:0px;}
-		.training-certificate-prgh {font-size:14px; text-align: center; display: block; line-height: 1.6; margin:0px; padding-top: 0px;}
-		.training-certificate-date {font-size:14px; ;}
+		* { box-sizing: border-box; margin: 0; padding: 0; }
+		.training-certificate-w {
+			width: 794px;
+			margin: auto;
+			background-size: contain;
+			padding: 0;
+		}
+		.training-certificate-table {width: 100%; margin: auto; display: table; padding: 50px 60px;}
+		.training-certificate-number {font-size: 13px; color: #000;}
+		.training-certificate-hding {
+			font-size: 44px;
+			font-weight: 700;
+			text-transform: uppercase;
+			text-align: center;
+			display: block;
+			margin: 0;
+			padding-top: 0;
+		}
+		.training-certificate-subhding {
+			font-size: 24px;
+			font-weight: 400;
+			text-transform: uppercase;
+			text-align: center;
+			display: block;
+			margin: 0;
+		}
+		.training-certificate-default-img {
+			width: 80px;
+			height: 80px;
+			object-fit: contain;
+			margin: 5px auto 25px;
+			display: block;
+		}
+		.training-certificate-title {
+			font-size: 20px;
+			font-weight: 400;
+			text-transform: uppercase;
+			text-align: center;
+			display: block;
+			margin: 0;
+		}
+		.pt-0 {padding-top: 0px !important;}
+		.training-certificate-name {
+			font-size: 28px;
+			font-weight: 700;
+			text-transform: uppercase;
+			text-align: center;
+			display: block;
+			margin: 0;
+		}
+		.training-certificate-prgh {
+			font-size: 14px;
+			text-align: center;
+			display: block;
+			line-height: 1.6;
+			margin: 0;
+			padding-top: 0;
+		}
+		.training-certificate-date {font-size: 14px;}
 		.text-right {display: block; text-align: right;}
-		.training-certificate-signature {height: 80px; object-fit: contain; margin:auto; display: block;}
-		.training-certificate-addresh {font-size:13px; text-align: center; display: block; padding:0px; margin:0px;}
-		.training-certificate-logo {width:120px;}
+		.training-certificate-signature {
+			height: 80px;
+			object-fit: contain;
+			margin: auto;
+			display: block;
+		}
+		.training-certificate-addresh {
+			font-size: 13px;
+			text-align: center;
+			display: block;
+			padding: 0;
+			margin: 0;
+		}
+		.training-certificate-logo {width: 120px;}
 	</style>
+	
 </head>
 <body>
 	<div class="training-certificate-w">
+		<img src="{{ certificate_pattern }}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;">
+		<div style="position: relative; z-index: 1;">
 		<table class="training-certificate-table">
 			<tbody>
 				<tr>
@@ -74,5 +137,6 @@
 			</tfoot>
 		</table>
 	</div>
+</div>
 </body>
 </html>
