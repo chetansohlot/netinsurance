@@ -6,7 +6,7 @@
   {% include 'head.html' %}
   {% load static %}
   <script src="{% static 'dist/js/jquery.min.js' %}"></script>
-  <script src="{% static 'dist/js/custom.js' %}"></script>
+  <script src="{% static 'dist/js/custom.js' %}?v={{ cache_buster }}"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 
 
