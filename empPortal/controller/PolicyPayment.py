@@ -5,7 +5,7 @@ from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib import messages
 from django.template import loader
 from ..models import Commission,Users, PolicyUploadDoc,Branch,PolicyInfo,PolicyDocument, DocumentUpload, FranchisePayment, InsurerPaymentDetails, PolicyVehicleInfo, AgentPaymentDetails, UploadedExcel, UploadedZip
-from ..models import BulkPolicyLog,ExtractedFile, BqpMaster
+from ..models import BulkPolicyLog,ExtractedFile, BqpMaster, InsurerBulkUploadPolicyLog
 from empPortal.model import Referral
 from empPortal.model import CommissionUpdateLog
 from django.db.models import Q
@@ -77,12 +77,47 @@ from empPortal.model import Referral
 
 logger = logging.getLogger(__name__)
 
+
+# def get_campaign_log(request):
+#     # Retrieve all policy logs ordered by creation time (newest first)
+#     logs = InsurerBulkUpload.objects.all().order_by('-uploaded_at')
+
+#     return render(request, 'policy-payment/campaign-log-index.html', {'uploads': logs})
+
+def ajax_get_campaigns(request):
+    query = request.GET.get("q", "")
+    campaigns = (
+        InsurerBulkUpload.objects
+        .filter(campaign_name__icontains=query)
+        .values("campaign_name")
+        .distinct()
+        .order_by("campaign_name")[:20]
+    )
+    data = [{"name": c["campaign_name"]} for c in campaigns]
+    return JsonResponse(data, safe=False)
+
+
+def get_campaign_log(request):
+    q = request.GET.get("q", "")
+    uploads = InsurerBulkUpload.objects.prefetch_related('logs').order_by('-uploaded_at')
+    if q:
+        uploads = uploads.filter(campaign_name__icontains=q)
+    return render(request, 'policy-payment/campaign-log-index.html', {'uploads': uploads})
+
+
+def view_payment_update_log(request):
+    # Retrieve all policy logs ordered by creation time (newest first)
+    logs = InsurerBulkUpload.objects.all().order_by('-uploaded_at')
+
+    return render(request, 'policy-payment/view-payment-log-index.html', {'logs': logs})
+
 def insurer_payment(request):
     if not request.user.is_authenticated:
         return redirect('login')
 
     if request.method == "POST" and request.FILES.get("excel_file"):
         excel_file = request.FILES["excel_file"]
+        campaign_name = request.POST.get("campaign_name", "").strip()
 
         if not excel_file.name.lower().endswith((".xlsx", ".xls")):
             messages.error(request, "Only Excel files (.xlsx, .xls) are allowed!")
@@ -92,6 +127,7 @@ def insurer_payment(request):
             file=excel_file,
             file_name=excel_file.name,
             file_url=excel_file.name,
+            campaign_name=campaign_name,
             created_by=request.user,
         )
 
@@ -133,6 +169,13 @@ def process_insurer_bulk_excel(file_id, user):
 
                 if not policy_no:
                     logger.warning(f"Row {idx}: Missing policy number.")
+                    # Log failure for this row
+                    InsurerBulkUploadPolicyLog.objects.create(
+                        upload=instance,
+                        policy_number=policy_no,
+                        status='failed',
+                        message="Missing policy number."
+                    )
                     error += 1
                     continue
 
@@ -155,6 +198,13 @@ def process_insurer_bulk_excel(file_id, user):
 
                 if not policy:
                     logger.warning(f"Row {idx}: Policy not found for policy number: {policy_no}")
+                    # Log failure for this row
+                    InsurerBulkUploadPolicyLog.objects.create(
+                        upload=instance,
+                        policy_number=policy_no,
+                        status='failed',
+                        message="Policy not found in the database."
+                    )
                     error += 1
                     continue
 
@@ -180,10 +230,25 @@ def process_insurer_bulk_excel(file_id, user):
                     payment.save()
                     logger.debug(f"Row {idx}: Updated fields saved")
 
+                # Log success for this policy
+                InsurerBulkUploadPolicyLog.objects.create(
+                    upload=instance,
+                    policy_number=policy_no,
+                    status='success',
+                    message=f"Receive Amount: {receive_amount}, Balance Amount: {balance_amount}"
+                )
+
                 success += 1
 
             except Exception as e:
                 logger.error(f"Row {idx}: Exception occurred - {e}")
+                # Log failure for this row
+                InsurerBulkUploadPolicyLog.objects.create(
+                    upload=instance,
+                    policy_number=policy_no,
+                    status='failed',
+                    message=str(e)
+                )
                 error += 1
 
         # Update upload status

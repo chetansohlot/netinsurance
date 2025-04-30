@@ -218,6 +218,9 @@ urlpatterns = [
 
     # POLICY-PAYMENT 
     path('policy-payment/insurer-payment/', PolicyPayment.insurer_payment, name='insurer-payment'),
+    path('policy-payment/get-campaign-log/', PolicyPayment.get_campaign_log, name='get-campaign-log'),
+    path('policy-payment/view-payment-update-log/', PolicyPayment.view_payment_update_log, name='view-payment-update-log'),
+    path("ajax/get-campaigns/", PolicyPayment.ajax_get_campaigns, name="ajax-get-campaigns"),
     # POLICY-PAYMENT 
     
 
