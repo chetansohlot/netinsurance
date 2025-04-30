@@ -363,11 +363,10 @@ def posCertificate(request, user_id):
 
     context = {
         "customer": customer,
-        "logo_url": request.build_absolute_uri(static('dist/img/logo2.png')),
-        "default_image_pos": request.build_absolute_uri(static('dist/img/default_image_pos.jpg')),
-        "signature_pos": request.build_absolute_uri(static('dist/img/signature_pos.webp')),
+        "logo_url": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/logo2.png'),
+        "default_image_pos": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/default-image-pos.jpg'),
+        "signature_pos": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/signature-pos.webp'),
     }
-
     html_content = render_to_string("members/download-certificate.html", context)
 
     options = {
