@@ -330,6 +330,7 @@ def posTrainingCertificate(request, user_id):
     context = {
         "customer": customer,
         "logo_url": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/logo2.png'),
+        "certificate_pattern": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/certificate-pattern.png'),
         "default_image_pos": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/default-image-pos.jpg'),
         "signature_pos": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/signature-pos.webp'),
     }
