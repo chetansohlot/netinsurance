@@ -165,98 +165,105 @@
                                       </div>
                                     </div>
 
+                                    {% if request.user.department_id != "2" %}
                                     <!-- Commissions -->
-                                    <div class="col-sm-6">
-                                      <div class="form-group">
-                                        <label class="form-lbl">Insurer OD Comm (in %)</label>
-                                        <input type="text" class="form-field percentage" name="insurer_od_comm" id="insurer_od_comm" placeholder="OD Commission (%)"
-                                              value="{{ insurer_payment.insurer_od_comm|default:policy_data.insurer_od_commission }}">
+                                      <div class="col-sm-6">
+                                        <div class="form-group">
+                                          <label class="form-lbl">Insurer OD Comm (in %)</label>
+                                          <input type="text" class="form-field percentage" name="insurer_od_comm" id="insurer_od_comm" placeholder="OD Commission (%)"
+                                                value="{{ insurer_payment.insurer_od_comm|default:policy_data.insurer_od_commission }}">
+                                        </div>
                                       </div>
-                                    </div>
+                                      
+                                      <input type="hidden" class="form-field number" id="policy_od_amount" value="{{policy.od_premium|default:0}}">
+                                      <div class="col-sm-6">
+                                        <div class="form-group">
+                                          <label class="form-lbl">Insurer OD Amount</label>
+                                          <input type="text" class="form-field number" name="insurer_od_amount" id="insurer_od_amount" placeholder="OD Amount"
+                                                value="{{ insurer_payment.insurer_od_amount|blank_if_none_or_text_none }}" readonly >
+                                        </div>
+                                      </div>
 
-                                    <div class="col-sm-6">
-                                      <div class="form-group">
-                                        <label class="form-lbl">Insurer OD Amount</label>
-                                        <input type="text" class="form-field number" name="insurer_od_amount" id="insurer_od_amount" placeholder="OD Amount"
-                                              value="{{ insurer_payment.insurer_od_amount|blank_if_none_or_text_none }}">
-                                      </div>
-                                    </div>
 
+                                      <div class="col-sm-6">
+                                        <div class="form-group">
+                                          <label class="form-lbl">Insurer TP Comm (in %)</label>
+                                          <input type="text" class="form-field percentage" name="insurer_tp_comm" id="insurer_tp_comm" placeholder="TP Commission (%)"
+                                                value="{{ insurer_payment.insurer_tp_comm|default:policy_data.insurer_tp_commission }}">
+                                        </div>
+                                      </div>
 
-                                    <div class="col-sm-6">
-                                      <div class="form-group">
-                                        <label class="form-lbl">Insurer TP Comm (in %)</label>
-                                        <input type="text" class="form-field percentage" name="insurer_tp_comm" id="insurer_tp_comm" placeholder="TP Commission (%)"
-                                              value="{{ insurer_payment.insurer_tp_comm|default:policy_data.insurer_tp_commission }}">
+                                      <input type="hidden" class="form-field number" id="policy_tp_amount" value="{{policy.tp_premium|default:0}}" >
+                                      <div class="col-sm-6">
+                                        <div class="form-group">
+                                          <label class="form-lbl">Insurer TP Amount</label>
+                                          <input type="text" class="form-field number" name="insurer_tp_amount" id="insurer_tp_amount" placeholder="TP Amount"
+                                                value="{{ insurer_payment.insurer_tp_amount|blank_if_none_or_text_none }}" readonly>
+                                        </div>
                                       </div>
-                                    </div>
-                                    
-                                    <div class="col-sm-6">
-                                      <div class="form-group">
-                                        <label class="form-lbl">Insurer TP Amount</label>
-                                        <input type="text" class="form-field number" name="insurer_tp_amount" id="insurer_tp_amount" placeholder="TP Amount"
-                                              value="{{ insurer_payment.insurer_tp_amount|blank_if_none_or_text_none }}">
-                                      </div>
-                                    </div>
 
-                                    <div class="col-sm-6">
-                                      <div class="form-group">
-                                        <label class="form-lbl">Insurer Net Comm (in %)</label>
-                                        <input type="text" class="form-field percentage" name="insurer_net_comm" id="insurer_net_comm" placeholder="Net Commission (%)"
-                                              value="{{ insurer_payment.insurer_net_comm|default:policy_data.insurer_net_commission }}">
+                                      <div class="col-sm-6">
+                                        <div class="form-group">
+                                          <label class="form-lbl">Insurer Net Comm (in %)</label>
+                                          <input type="text" class="form-field percentage" name="insurer_net_comm" id="insurer_net_comm" placeholder="Net Commission (%)"
+                                                value="{{ insurer_payment.insurer_net_comm|default:policy_data.insurer_net_commission }}">
+                                        </div>
                                       </div>
-                                    </div>
 
-                                    <div class="col-sm-6">
-                                      <div class="form-group">
-                                        <label class="form-lbl">Insurer Net Amount</label>
-                                        <input type="text" class="form-field number" name="insurer_net_amount" id="insurer_net_amount" placeholder="Net Amount"
-                                              value="{{ insurer_payment.insurer_net_amount|blank_if_none_or_text_none }}">
+                                      <input type="hidden" class="form-field number" id="policy_net_amount" value="{{policy.net_premium|default:0}}">
+                                      <div class="col-sm-6">
+                                        <div class="form-group">
+                                          <label class="form-lbl">Insurer Net Amount</label>
+                                          <input type="text" class="form-field number" name="insurer_net_amount" id="insurer_net_amount" placeholder="Net Amount"
+                                                value="{{ insurer_payment.insurer_net_amount|blank_if_none_or_text_none }}" readonly>
+                                        </div>
                                       </div>
-                                    </div>
 
-                                    <div class="col-sm-6">
-                                      <div class="form-group">
-                                        <label class="form-lbl">Insurer Incentive Amount</label>
-                                        <input type="text" class="form-field number" name="insurer_incentive_amount" id="insurer_incentive_amount" placeholder="Incentive Amount"
-                                              value="{{ insurer_payment.insurer_incentive_amount|blank_if_none_or_text_none }}">
+                                      <div class="col-sm-6">
+                                        <div class="form-group">
+                                          <label class="form-lbl">Insurer Incentive Amount</label>
+                                          <input type="text" class="form-field number" name="insurer_incentive_amount" id="insurer_incentive_amount" placeholder="Incentive Amount"
+                                                value="{{ insurer_payment.insurer_incentive_amount|blank_if_none_or_text_none }}">
+                                        </div>
                                       </div>
-                                    </div>
 
-                                    <div class="col-sm-6">
-                                      <div class="form-group">
-                                        <label class="form-lbl">Total Commission Amount</label>
-                                        <input type="text" class="form-field number" name="insurer_total_comm_amount" id="insurer_total_comm_amount" placeholder="Total Commission"
-                                              value="{{ insurer_payment.insurer_total_comm_amount|blank_if_none_or_text_none }}">
+                                      <div class="col-sm-6">
+                                        <div class="form-group">
+                                          <label class="form-lbl">Total Commission Amount</label>
+                                          <input type="text" class="form-field number" name="insurer_total_comm_amount" id="insurer_total_comm_amount" placeholder="Total Commission"
+                                                value="{{ insurer_payment.insurer_total_comm_amount|blank_if_none_or_text_none }}">
+                                        </div>
                                       </div>
-                                    </div>
 
-                                    <div class="col-sm-6">
-                                      <div class="form-group">
-                                        <label class="form-lbl">Insurer TDS (in %) </label>
-                                        <input type="text" class="form-field percentage" name="insurer_tds" id="insurer_tds" placeholder="TDS (%)"
-                                              value="{{ insurer_payment.insurer_tds|blank_if_none_or_text_none }}">
+                                      <div class="col-sm-6">
+                                        <div class="form-group">
+                                          <label class="form-lbl">Insurer TDS (in %) </label>
+                                          <input type="text" class="form-field percentage" name="insurer_tds" id="insurer_tds" placeholder="TDS (%)"
+                                                value="{{ insurer_payment.insurer_tds|blank_if_none_or_text_none }}">
+                                        </div>
                                       </div>
-                                    </div>
-                                    <div class="col-sm-6">
-                                      <div class="form-group">
-                                        <label class="form-lbl">TDS Amount</label>
-                                        <input type="text" class="form-field number" name="insurer_tds_amount" id="insurer_tds_amount" placeholder="TDS Amount"
-                                              value="{{ insurer_payment.insurer_tds_amount|blank_if_none_or_text_none }}">
+                                      <div class="col-sm-6">
+                                        <div class="form-group">
+                                          <label class="form-lbl">TDS Amount</label>
+                                          <input type="text" class="form-field number" name="insurer_tds_amount" id="insurer_tds_amount" placeholder="TDS Amount"
+                                                value="{{ insurer_payment.insurer_tds_amount|blank_if_none_or_text_none }}">
+                                        </div>
                                       </div>
-                                    </div>
 
-                                    <div class="col-sm-6">
-                                      <div class="form-group">
-                                        <label class="form-lbl">Net Payable Amount</label>
-                                        <input type="text" class="form-field number" name="insurer_net_payable_amount" id="insurer_net_payable_amount" placeholder="Net Payable"
-                                              value="{{ insurer_payment.insurer_net_payable_amount|blank_if_none_or_text_none }}">
+                                      <div class="col-sm-6">
+                                        <div class="form-group">
+                                          <label class="form-lbl">Net Payable Amount</label>
+                                          <input type="text" class="form-field number" name="insurer_net_payable_amount" id="insurer_net_payable_amount" placeholder="Net Payable"
+                                                value="{{ insurer_payment.insurer_net_payable_amount|blank_if_none_or_text_none }}">
+                                        </div>
                                       </div>
-                                    </div>
+                                      {% endif %}
                                   </div>
                                 </div>
-                                <h2 class="form-bg-title">Payment Receivables</h2>
-                                <div class="form-padding">
+                                {% if request.user.department_id != "2" %}
+
+                                  <h2 class="form-bg-title">Payment Receivables</h2>
+                                  <div class="form-padding">
                                   <div class="row">
                                     <div class="col-sm-12">
                                       
@@ -264,7 +271,7 @@
                                     <div class="col-sm-6">
                                       <div class="form-group">
                                         <label class="form-lbl">Total Commission</label>
-                                        <input type="text" class="form-field number" name="insurer_total_commission" placeholder="Total Commission"
+                                        <input type="text" class="form-field number" name="insurer_total_commission" id="insurer_total_commission" placeholder="Total Commission"
                                               value="{{ insurer_payment.insurer_total_commission|blank_if_none_or_text_none }}">
                                       </div>
                                     </div>
@@ -285,7 +292,9 @@
                                       </div>
                                     </div>
                                   </div>
-                                </div>
+                                  </div>
+
+                                {% endif %}
                               </div>
 
                             <div class="d-flex justify-content-end mt-4">
@@ -293,9 +302,6 @@
                             </div>  
                           </div>
                         </div>
-                        
-                        
-                        
                     </form>
                     <div id="loader" class="form-loader" style="display: none;">
                       <div>
@@ -318,6 +324,10 @@
     <script>
 
       $(document).ready(function(){
+        calculateAmts('#policy_od_amount','#insurer_od_comm','#insurer_od_amount')
+        calculateAmts('#policy_tp_amount','#insurer_tp_comm','#insurer_tp_amount')
+        calculateAmts('#policy_net_amount','#insurer_net_comm','#insurer_net_amount')
+        
         updateTotalCommissionAmount(); 
         updateTDSAmount();
 
@@ -338,17 +348,96 @@
           insurer_tds_amount = parseFloat(insurer_comm_amt*insurer_tds/100) || 0;
           net_payable_amt = parseFloat(insurer_comm_amt-insurer_tds_amount) || 0;
   
-          $('#insurer_tds_amount').val(insurer_tds_amount);
-          $('#insurer_net_payable_amount').val(net_payable_amt);
+          $('#insurer_tds_amount').val(insurer_tds_amount.toFixed(2));
+          $('#insurer_net_payable_amount').val(net_payable_amt.toFixed(2));
+          $('#insurer_net_payable_amount').val(net_payable_amt.toFixed(2));
+          $('#insurer_total_commission').val(net_payable_amt.toFixed(2));
+        }
+
+        function calculateAmts(policy_amt,comm_percent,comm_amt){
+          let policy_amount = $(policy_amt).val()||0
+          agent_comm = $(comm_percent).val()||0
+          agent_amt = parseFloat(policy_amount*agent_comm/100)||0
+          $(comm_amt).val(agent_amt.toFixed(2))
         }
   
+        $('#insurer_od_comm').on('input',function(){
+          let val = $(this).val();
+          let isValid = true;
+          if (val.includes('.')) {
+              let parts = val.split('.');
+              if (parts[1].length > 2 ||parts[0].length > 2) {
+                  isValid = false;
+              }
+          }else{
+            if (val.length > 2) {
+              isValid = false;
+            }
+          }
+          if (isValid) {
+            calculateAmts('#policy_od_amount','#insurer_od_comm','#insurer_od_amount')
+            updateTotalCommissionAmount(); 
+          }
+        })
+  
+        $('#insurer_tp_comm').on('input',function(){
+          let val = $(this).val();
+          let isValid = true;
+          if (val.includes('.')) {
+              let parts = val.split('.');
+              if (parts[1].length > 2 ||parts[0].length > 2) {
+                  isValid = false;
+              }
+            }else{
+              if (val.length > 2) {
+                isValid = false;
+              }
+          }
+          if (isValid) {
+            calculateAmts('#policy_tp_amount','#insurer_tp_comm','#insurer_tp_amount')
+            updateTotalCommissionAmount(); 
+          }
+        })
+  
+        $('#insurer_net_comm').on('input',function(){
+          let val = $(this).val();
+          let isValid = true;
+          if (val.includes('.')) {
+              let parts = val.split('.');
+              if (parts[1].length > 2 ||parts[0].length > 2) {
+                  isValid = false;
+              }
+            }else{
+              if (val.length > 2) {
+                isValid = false;
+              }
+          }
+          if (isValid) {
+            calculateAmts('#policy_net_amount','#insurer_net_comm','#insurer_net_amount')
+            updateTotalCommissionAmount(); 
+          }
+        })
+
         $('#insurer_od_amount, #insurer_tp_amount, #insurer_net_amount, #insurer_incentive_amount').on('input', function() {
-          console.log('d');
           updateTotalCommissionAmount(); 
         });
   
         $('#insurer_tds').on('input',function(){
-          updateTDSAmount();
+          let val = $(this).val();
+          let isValid = true;
+          if (val.includes('.')) {
+              let parts = val.split('.');
+              if (parts[1].length > 2 ||parts[0].length > 2) {
+                  isValid = false;
+              }
+            }else{
+              if (val.length > 2) {
+                isValid = false;
+              }
+          }
+          if (isValid) {
+            updateTDSAmount();
+          }
         });
       });
 

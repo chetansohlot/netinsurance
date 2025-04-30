@@ -1423,6 +1423,25 @@ class PartnerUploadExcel(models.Model):
     class Meta:
         db_table = 'partner_upload_excels'
         
+
+class InsurerBulkUpload(models.Model):
+    campaign_name = models.CharField(max_length=255)
+    file = models.FileField(upload_to="insurer_excels/")
+    file_name = models.CharField(max_length=255, default="")
+    file_url = models.CharField(max_length=200, default="")
+    total_rows = models.IntegerField(default=0)
+    error_rows = models.IntegerField(default=0)
+    success_rows = models.IntegerField(default=0)
+    valid_rows = models.IntegerField(default=0)
+    invalid_rows = models.IntegerField(default=0)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    is_processed = models.BooleanField(default=False)
+    error = models.TextField(default="")
+    created_by = models.ForeignKey(Users, on_delete=models.SET_NULL, null=True)
+
+    class Meta:
+        db_table = 'insurer_bulk_uploads'
+
 class LeadUploadExcel(models.Model):
     file = models.FileField(upload_to="lead_excels/")
     file_name = models.CharField(max_length=255, default='')
@@ -1447,3 +1466,21 @@ class LeadUploadExcel(models.Model):
     class Meta:
         db_table = 'lead_upload_excels'
     
+
+    
+class InsurerBulkUploadPolicyLog(models.Model):
+    STATUS_CHOICES = [
+        ('success', 'Success'),
+        ('failed', 'Failed'),
+    ]
+    upload = models.ForeignKey('InsurerBulkUpload', on_delete=models.CASCADE, related_name="logs")
+    policy_number = models.CharField(max_length=100)
+    status = models.CharField(max_length=7, choices=STATUS_CHOICES)
+    message = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.policy_number} - {self.status}"
+
+    class Meta:
+        db_table = 'insurer_bulk_upload_policy_log'

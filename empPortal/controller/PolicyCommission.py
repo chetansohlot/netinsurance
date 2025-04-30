@@ -573,7 +573,7 @@ def insurer_commission(request):
         return redirect('login')
 
     user_id = request.user.id
-    role_id = Users.objects.filter(id=user_id).values_list('role_id', flat=True).first()
+    role_id = request.user.role_id
 
     filters_q = Q(status=6) & Q(policy_number__isnull=False) & ~Q(policy_number='')
 
