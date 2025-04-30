@@ -1423,6 +1423,24 @@ class PartnerUploadExcel(models.Model):
     class Meta:
         db_table = 'partner_upload_excels'
         
+
+class InsurerBulkUpload(models.Model):
+    file = models.FileField(upload_to="insurer_excels/")
+    file_name = models.CharField(max_length=255, default="")
+    file_url = models.CharField(max_length=200, default="")
+    total_rows = models.IntegerField(default=0)
+    error_rows = models.IntegerField(default=0)
+    success_rows = models.IntegerField(default=0)
+    valid_rows = models.IntegerField(default=0)
+    invalid_rows = models.IntegerField(default=0)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    is_processed = models.BooleanField(default=False)
+    error = models.TextField(default="")
+    created_by = models.ForeignKey(Users, on_delete=models.SET_NULL, null=True)
+
+    class Meta:
+        db_table = 'insurer_bulk_uploads'
+
 class LeadUploadExcel(models.Model):
     file = models.FileField(upload_to="lead_excels/")
     file_name = models.CharField(max_length=255, default='')
