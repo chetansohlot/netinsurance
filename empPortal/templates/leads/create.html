@@ -3,7 +3,7 @@
 {% load static %}
 
 {% block title %}
-    Create Lead
+{% if lead %}Edit Lead{% else %}Add New Lead{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -22,12 +22,12 @@
             <div class="row py-2">
               <div class="col-sm-6">
                 <div class="d-flex align-items-center">
-                  <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Create Lead</a>
+                  <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">{% if lead %}Edit Lead{% else %}Add New Lead{% endif %}</a>
                 </div>
                 <ul class="breadcrump">
                   <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
                   <li> <a href="#">Lead</a> <i class="fas fa-chevron-right"></i></li>
-                  <li>Add Lead</li>
+                  <li>{% if lead %}Edit Lead{% else %}Add Lead{% endif %}</li>
                 </ul>
               </div>
             </div>
@@ -156,39 +156,50 @@
                           </div>-->
                           <div class="form-group col-md-4" id="registration_number_div" style="display: none;">
                             <label class="form-lbl" for="registration_number">Vehicle No</label>
-                            <input type="text" class="form-field" name="registration_number" id="registration_number_input"
-                                   placeholder="Enter Vehicle Number" onblur="fetchPolicyDetails()">
+                            <div class="input-group">
+                                <input type="text" class="form-field form-control" name="registration_number" id="registration_number_input"
+                                       value="{{ lead.registration_number|default:'' }}" placeholder="Enter Vehicle Number">
+                                
+                                {% if not lead.id %}
+                                <!-- Show only in Add mode -->
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-primary" onclick="fetchPolicyDetails()">Fetch</button>
+                                </div>
+                                {% endif %}
+                            </div>
                         </div>
+                        
 <!-- Add fields to auto-fill data -->
 <div class="form-group col-md-4">
   <label class="form-lbl" for="insurance_company">Insurance Company</label>
-  <input type="text" class="form-field" name="insurance_company" id="insurance_company" disabled>
+  <input type="text" class="form-field" name="insurance_company" id="insurance_company" placeholder="Enter Insurance Company" disabled>
 </div>
 
 <div class="form-group col-md-4">
   <label class="form-lbl" for="policy_number">Policy Number</label>
-  <input type="text" class="form-field" name="policy_number" id="policy_number" disabled>
+  <input type="text" class="form-field" name="policy_number" id="policy_number" placeholder="Enter Policy Number" disabled>
 </div>
 
 <div class="form-group col-md-4">
   <label class="form-lbl" for="policy_type">Policy Type</label>
-  <input type="text" class="form-field" name="policy_type" id="policy_type" disabled>
+  <input type="text" class="form-field" name="policy_type" id="policy_type" placeholder="Enter Policy Type" disabled>
 </div>
 
 <div class="form-group col-md-4">
   <label class="form-lbl" for="vehicle_type">Vehicle Type</label>
-  <input type="text" class="form-field" name="vehicle_type" id="vehicle_type" disabled>
+  <input type="text" class="form-field" name="vehicle_type" id="vehicle_type" placeholder="Enter Vehicle Type" disabled>
 </div>
 
 <div class="form-group col-md-4">
   <label class="form-lbl" for="sum_insured">Sum Insured</label>
-  <input type="text" class="form-field" name="sum_insured" id="sum_insured" disabled>
+  <input type="text" class="form-field" name="sum_insured" id="sum_insured" placeholder="Enter Sum Insured" disabled>
 </div>
 
 <div class="form-group col-md-4">
   <label class="form-lbl" for="policy_date">Policy Start Date</label>
-  <input type="text" class="form-field" name="policy_date" id="policy_date" disabled>
+  <input type="text" class="form-field" name="policy_date" id="policy_date" placeholder="Enter Policy Start Date" disabled>
 </div>
+
 
                             <!-- <div class="form-group col-md-4">
                               <label class="form-lbl" for="status">Status</label>
@@ -344,14 +355,15 @@
                       // Show all fields for the found policy
                       showAllFields();
                   } else {
+                    clearFormFields();
                       // Enable manual entry fields and show only the required fields
                       enableManualEntryFields();
                       hideUnnecessaryFields();
                       // Show sweet alert here
                       Swal.fire({
                           icon: 'error',
-                          title: 'Policy not found',
-                          text: response.message || 'No matching policy found for the given registration number.',
+                          title: 'Not Registered',
+                          text: response.message || 'No matching registration number fill all details.',
                           timer: 2000,              // Auto-close after 2 seconds
                           showConfirmButton: false, 
                     });
@@ -404,6 +416,28 @@
           $("#sum_insured").closest('.form-group').show();
           $("#policy_date").closest('.form-group').hide();
       }
-      </script>   
+
+      function clearFormFields() {
+        $("#insurance_company").val("");
+        $("#policy_number").val("");
+        $("#policy_type").val("");
+        $("#vehicle_type").val("");
+        $("#sum_insured").val("");
+        $("#policy_date").val("");
+    }
+    
+  </script> 
+  <script>
+    $(document).ready(function () {
+        const registrationNumber = $("#registration_number_input").val();
+        const isEditMode = "{{ lead.id|default:'' }}" !== "";  // Adjust based on how you're passing `lead`
+  
+        if (isEditMode && registrationNumber !== "") {
+            fetchPolicyDetails();  // Auto-fetch in edit mode
+        }
+    });
+  </script>
+  
+  
 </body>
 {% endblock %}

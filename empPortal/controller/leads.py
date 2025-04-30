@@ -157,9 +157,9 @@ def index(request):
     if policy_number:
         leads = leads.filter(registration_number__icontains=policy_number)
     if start_date:
-        leads = leads.filter(risk_start_date__gte=start_date)
+        leads = leads.filter(created_at__gte=start_date)
     if end_date:
-        leads = leads.filter(risk_start_date__lte=end_date)
+        leads = leads.filter(created_at__lte=end_date)
     if insurance_company:
         leads = leads.filter(insurance_company=insurance_company)
     if policy_type:
@@ -555,8 +555,8 @@ def create_or_edit_lead(request, lead_id=None):
     lead = None
     referrals = Referral.objects.all()
 
-    #if lead_id:
-        #lead = get_object_or_404(Leads, id=lead_id)
+    if lead_id:
+        lead = get_object_or_404(Leads, id=lead_id)
     
     
     if request.method == "GET":

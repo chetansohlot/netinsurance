@@ -8,7 +8,7 @@
             <input type="checkbox" id="checkall" class="table-chk">
             <label for="checkall"></label>
           </th>
-          <th>Lead Info</th>
+          <th>Lead id</th>
           <th>Contact Details</th>
           <th>Name (as per PAN)</th>
           <th>PAN Card Number</th>
@@ -16,6 +16,11 @@
           <th>Location</th>
           <th>Status</th>
           <th>Lead Type</th>
+          <th>Sales Manager</th>
+          <th>Agent Name</th>
+          <th>Vehicle Number</th>
+          <!--<th>Insurance Company</th>
+          <th>Vehicle Type</th>-->
           <th width="50"></th>
         </tr>
       </thead>
@@ -48,6 +53,11 @@
               {% endif %}
             </td>
             <td>{{ lead.lead_type }}</td>
+            <td>{{lead.sales_manager }}</td>
+            <td>{{ lead.agent_name }}</td>
+            <td>{{ lead.registration_number }}</td>
+           <!-- <td>{{lead.insurance_company }}</td>
+            <td>{{ lead.vehicle_type }}</td>-->
             <td>
               <div class="dropdown">
                 <img src="{% static 'dist/img/svg/menu-dot-vr.svg' %}" alt="" class="table-doticon" data-toggle="dropdown" aria-expanded="false">
