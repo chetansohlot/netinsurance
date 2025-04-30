@@ -212,7 +212,7 @@
             <option value="">Select Policy Type</option>
           </select>
         </div> -->
-        <!-- <div class="col-sm-6 col-md-2">
+        <div class="col-sm-6 col-md-2">
           <select class="form-field" name="vehicle_type">
             <option value="">Select Vehicle Type</option>
             {% for vehicle in vehicle_types %}
@@ -220,7 +220,7 @@
             {% endfor %}
           </select>
           
-        </div> -->
+        </div>
         <div class="col-sm-6 col-md-2">
           <select class="form-field" name="upcoming_renewals">
             <option value="">Select Upcoming Renewals</option>
@@ -408,20 +408,7 @@
     
     {% include 'footer-script.html' %}
     
-    <script>
-      function toggleMotorType() {
-        const leadType = document.getElementById('lead_type').value;
-        const motorTypeContainer = document.getElementById('motor_type_container');
-        if (leadType === 'MOTOR') {
-          motorTypeContainer.style.display = 'block';
-        } else {
-          motorTypeContainer.style.display = 'none';
-        }
-      }
     
-      // Trigger on page load if MOTOR is preselected
-      window.onload = toggleMotorType;
-    </script>
     
     
     </body>
