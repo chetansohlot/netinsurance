@@ -325,7 +325,7 @@ def posTrainingCertificate(request, user_id):
 
     customer = get_object_or_404(Users, id=user_id)
 
-
+    pprint(customer)
 
     context = {
         "customer": customer,
