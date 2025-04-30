@@ -208,7 +208,9 @@ class Leads(models.Model):
     tp_premium = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     net_premium = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     gross_premium = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    risk_start_date = models.DateField(null=True, blank=True)
+    # risk_start_date = models.DateField(null=True, blank=True)
+    risk_start_date = models.CharField(max_length=255)
+
 
     class Meta:
         db_table = 'leads'  # This defines the database table name

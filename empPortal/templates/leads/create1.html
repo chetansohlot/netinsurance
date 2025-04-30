@@ -146,51 +146,17 @@
                             </select>
                         </div>
                         
-                        <!--<div class="form-group col-md-4" id="registration_number" style="display: none;">
+                        <div class="form-group col-md-4" id="registration_number" style="display: none;">
                             <label class="form-lbl" for="registration_number">Vehicle No</label>
                             <input type="text" class="form-field" name="registration_number" id="registration_number" value="{{ lead.registration_number }}" placeholder="Enter Vehicle Number">
 
                             <!-- ✅ Vehicle Type -->
-                            <!--<label class="form-lbl" for="registration_number">Vehicle Type</label>
-                            <input type="text" name="vehicle_type" class="form-control" placeholder="Enter Vehicle Type">                                                         
-                          </div>-->
-                          <div class="form-group col-md-4" id="registration_number_div" style="display: none;">
-                            <label class="form-lbl" for="registration_number">Vehicle No</label>
-                            <input type="text" class="form-field" name="registration_number" id="registration_number_input"
-                                   placeholder="Enter Vehicle Number" onblur="fetchPolicyDetails()">
-                        </div>
-<!-- Add fields to auto-fill data -->
-<div class="form-group col-md-4">
-  <label class="form-lbl" for="insurance_company">Insurance Company</label>
-  <input type="text" class="form-field" name="insurance_company" id="insurance_company" disabled>
-</div>
+                            <label class="form-lbl" for="registration_number">Vehicle Type</label>
+                            <input type="text" name="vehicle_type" class="form-control" placeholder="Enter Vehicle Type">
+                          </div>
 
-<div class="form-group col-md-4">
-  <label class="form-lbl" for="policy_number">Policy Number</label>
-  <input type="text" class="form-field" name="policy_number" id="policy_number" disabled>
-</div>
 
-<div class="form-group col-md-4">
-  <label class="form-lbl" for="policy_type">Policy Type</label>
-  <input type="text" class="form-field" name="policy_type" id="policy_type" disabled>
-</div>
-
-<div class="form-group col-md-4">
-  <label class="form-lbl" for="vehicle_type">Vehicle Type</label>
-  <input type="text" class="form-field" name="vehicle_type" id="vehicle_type" disabled>
-</div>
-
-<div class="form-group col-md-4">
-  <label class="form-lbl" for="sum_insured">Sum Insured</label>
-  <input type="text" class="form-field" name="sum_insured" id="sum_insured" disabled>
-</div>
-
-<div class="form-group col-md-4">
-  <label class="form-lbl" for="policy_date">Policy Start Date</label>
-  <input type="text" class="form-field" name="policy_date" id="policy_date" disabled>
-</div>
-
-                            <!-- <div class="form-group col-md-4">
+                          <!-- <div class="form-group col-md-4">
                               <label class="form-lbl" for="status">Status</label>
                               <select class="form-field" name="status" id="status">
                                   <option value="new" {% if lead.status == "new" %}selected{% endif %}>New</option>
@@ -246,6 +212,9 @@
                         </button>
                       </div>  
                     </form>
+
+
+
                     
                   </div>
                   <div id="loader" class="form-loader" style="display: none;">
@@ -267,21 +236,16 @@
     {% include "footer-script.html" %}
     <script>
       function handleLeadTypeChange() {
-        const leadType = document.getElementById('lead_type').value;
-        const registrationDiv = document.getElementById('registration_number_div');
-        if (leadType === 'MOTOR') {
-            registrationDiv.style.display = 'block';
-        } else {
-            registrationDiv.style.display = 'none';
-            document.getElementById('registration_number_input').value = '';
-            document.getElementById('insurance_company').value = '';
-            document.getElementById('policy_number').value = '';
-            document.getElementById('policy_type').value = '';
-            document.getElementById('vehicle_type').value = '';
-            document.getElementById('sum_insured').value = '';
-            document.getElementById('policy_date').value = '';
-        }
+          const leadType = document.getElementById("lead_type").value;
+          const vehicleField = document.getElementById("registration_number");
+  
+          if (leadType === "MOTOR") {
+              vehicleField.style.display = "block";
+          } else {
+              vehicleField.style.display = "none";
+          }
       }
+  
       // Call it on page load to ensure correct initial state
       window.onload = handleLeadTypeChange;
   </script>
@@ -293,8 +257,6 @@
       document.addEventListener("DOMContentLoaded", function () {
         const leadTypeSelect = document.getElementById("lead_type");
         const vehicleFields = document.getElementById("vehicle_fields");
-        handleLeadTypeChange();
-      
 
         function toggleVehicleFields() {
             if (leadTypeSelect.value === "MOTOR") {
@@ -311,99 +273,5 @@
         leadTypeSelect.addEventListener("change", toggleVehicleFields);
     });
     </script>
-    
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <script>
-      function fetchPolicyDetails() {
-          var registrationNumber = $("#registration_number_input").val();
-          if (registrationNumber.trim() === "") {
-              return; 
-          }
-      
-          $.ajax({
-              url: "{% url 'fetch-policy-details' %}", 
-              type: "POST",
-              data: {
-                  'registration_number': registrationNumber,
-                  'csrfmiddlewaretoken': '{{ csrf_token }}'
-              },
-              success: function(response) {
-                  if (response.success) {
-                      // Auto-fill the form with policy details
-                      $("#insurance_company").val(response.insurance_company || "");
-                      $("#policy_number").val(response.policy_number || "");
-                      $("#policy_type").val(response.policy_type || "");
-                      $("#vehicle_type").val(response.vehicle_type || "");
-                      $("#sum_insured").val(response.sum_insured || "");
-                      $("#policy_date").val(response.policy_date || "");
-      
-                      // Disable the fields after auto-filling the data
-                      disableFormFields();
-      
-                      // Show all fields for the found policy
-                      showAllFields();
-                  } else {
-                      // Enable manual entry fields and show only the required fields
-                      enableManualEntryFields();
-                      hideUnnecessaryFields();
-                      // Show sweet alert here
-                      Swal.fire({
-                          icon: 'error',
-                          title: 'Policy not found',
-                          text: response.message || 'No matching policy found for the given registration number.',
-                          timer: 2000,              // Auto-close after 2 seconds
-                          showConfirmButton: false, 
-                    });
-                  }
-              },
-              error: function(xhr, status, error) {
-                  alert("Something went wrong. Please try again.");
-              }
-          });
-      }
-      
-      // Disable all fields after auto-fill
-      function disableFormFields() {
-          $("#insurance_company").prop("disabled", true);
-          $("#policy_number").prop("disabled", true);
-          $("#policy_type").prop("disabled", true);
-          $("#vehicle_type").prop("disabled", true);
-          $("#sum_insured").prop("disabled", true);
-          $("#policy_date").prop("disabled", true);
-      }
-      
-      // Enable all fields for manual entry
-      function enableManualEntryFields() {
-          $("#insurance_company").prop("disabled", false);
-          $("#policy_number").prop("disabled", false);
-          $("#policy_type").prop("disabled", false);
-          $("#vehicle_type").prop("disabled", false);
-          $("#sum_insured").prop("disabled", false);
-          $("#policy_date").prop("disabled", false);
-      }
-      
-      // Show all fields when the policy is found
-      function showAllFields() {
-          $("#insurance_company").closest('.form-group').show();
-          $("#policy_number").closest('.form-group').show();
-          $("#policy_type").closest('.form-group').show();
-          $("#vehicle_type").closest('.form-group').show();
-          $("#sum_insured").closest('.form-group').show();
-          $("#policy_date").closest('.form-group').show();
-      }
-      
-      // Hide unnecessary fields when the policy is not found
-      function hideUnnecessaryFields() {
-
-          // Hide fields that are not needed for manual entry (e.g., "Policy Number")
-          $("#insurance_company").closest('.form-group').show();
-          $("#policy_number").closest('.form-group').hide();  // This can be hidden if not required in manual entry
-          $("#policy_type").closest('.form-group').show();
-          $("#vehicle_type").closest('.form-group').show();
-          $("#sum_insured").closest('.form-group').show();
-          $("#policy_date").closest('.form-group').hide();
-      }
-      </script>   
 </body>
 {% endblock %}

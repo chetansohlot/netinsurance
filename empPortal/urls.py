@@ -139,6 +139,10 @@ urlpatterns = [
     path('lead-mgt/term-lead', leads.termlead, name='term-lead'),
     path('lead-mgt/lead-view/<int:lead_id>/', leads.viewlead, name='lead-view'),
     path('bulk-upload/', leads.bulk_upload_leads, name='bulk-upload-leads'),
+    path('fetch-policy-details/', leads.fetch_policy_details, name='fetch-policy-details'),
+    path('lead-mgt/export/', leads.export_leads_to_excel, name='lead_mgt_export'),
+
+
     
 
     # REFERRAL 

@@ -1,7 +1,7 @@
 {% extends 'master.html' %}
 
 {% block title %}
-    Term Lead Mgt.
+    Health Lead Mgt.
 {% endblock %}
   
 {% block content %}
@@ -20,10 +20,10 @@
             <div class="container-fluid ">
               <div class="row pt-2 pb-2">
                 <div class="col-sm-6">
-                  <h1 class="admin-title m-0 pt-2">Term Lead Mgt.</h1>
+                  <h1 class="admin-title m-0 pt-2">Health Lead Mgt.</h1>
                   <ul class="breadcrump">
                     <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
-                    <li>Term Lead Mgt.</li>
+                    <li>Health Lead Mgt.</li>
                   </ul>
                 </div>
                 <div class="col-sm-6">
@@ -119,8 +119,10 @@
                 <div class="col-sm-12 col-md-12">  
                     <div class="card box-shadow-none">
                       <div class="card-body px-0 pb-0">
+                        <!-- <div class="row">
+                          <div class="col-md-6">-->
 
-                        <!-- Filter Start -->
+                            <!-- Filter Start -->
 <div class="card mb-4">
   <div class="card-body pb-0">
     <form method="get">
@@ -212,7 +214,7 @@
             <option value="">Select Policy Type</option>
           </select>
         </div> -->
-        <!-- <div class="col-sm-6 col-md-2">
+        <div class="col-sm-6 col-md-2">
           <select class="form-field" name="vehicle_type">
             <option value="">Select Vehicle Type</option>
             {% for vehicle in vehicle_types %}
@@ -220,7 +222,7 @@
             {% endfor %}
           </select>
           
-        </div> -->
+        </div>
         <div class="col-sm-6 col-md-2">
           <select class="form-field" name="upcoming_renewals">
             <option value="">Select Upcoming Renewals</option>
@@ -266,9 +268,7 @@
 </div>
 <!-- Filter End -->    
 
-                        <!--<div class="row">
-                          <div class="col-md-6">
-                            <div class="table-search-area">
+                            <!--<div class="table-search-area">
                               <form>
                                 <select class="table-select-field">
                                   <option value="">Lead ID</option>
@@ -277,16 +277,16 @@
                                   <option value="">Email ID</option>
                                   <option value="">Membership ID</option>
                                 </select>
-                                <input type="text" name="" class="table-search-field" placeholder="Search">
+                                <!--<input type="text" name="" class="table-search-field" placeholder="Search">
                                 <button type="submit" class="table-search-btn">
                                   <img src="{% static 'dist/img/svg/search-icon.svg' %}" alt="">
                                 </button>-->
                               </form>
                             </div>
                           </div>
-                          <!--<div class="col-md-6">
+                          <div class="col-md-6">
                             <div class=" d-flex justify-content-end">
-                              <div class="dropdown">
+                              <!--<div class="dropdown">
                                 <div class="shorting-select"  data-toggle="dropdown" aria-expanded="false">
                                   <img src="{% static 'dist/img/svg/shorting-icon.svg' %}" alt="">
                                   <span>Short</span>
@@ -303,9 +303,9 @@
                                       <button type="submit" class="dashboard-addbtn w-100">Apply</button>
                                     </div>   
                                   </ul>
-                                </form>
+                                </form>-->
                               </div>  
-                              <div class="shorting-select" data-toggle="modal" data-target="#modal-filter">
+                              <!--<div class="shorting-select" data-toggle="modal" data-target="#modal-filter">
                                 <img src="{% static 'dist/img/svg/filter-icon.svg' %}" alt="">
                                 <span>Filter</span>
                                 <img src="{% static 'dist/img/svg/down-arrow-icon.svg' %}" alt="" class="change-arrow">
@@ -314,7 +314,7 @@
                           </div>
                         </div>
 
-                        {% include "components/leads/lead-list-tab.html" with term_active="true" %}
+                        {% include "components/leads/lead-list-tab.html" with health_active="true" %}
 
                         {% include "components/leads/lead-list.html" %}
                       </div>
@@ -408,20 +408,7 @@
     
     {% include 'footer-script.html' %}
     
-    <script>
-      function toggleMotorType() {
-        const leadType = document.getElementById('lead_type').value;
-        const motorTypeContainer = document.getElementById('motor_type_container');
-        if (leadType === 'MOTOR') {
-          motorTypeContainer.style.display = 'block';
-        } else {
-          motorTypeContainer.style.display = 'none';
-        }
-      }
     
-      // Trigger on page load if MOTOR is preselected
-      window.onload = toggleMotorType;
-    </script>
     
     
     </body>
