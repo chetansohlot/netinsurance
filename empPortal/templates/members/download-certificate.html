@@ -39,7 +39,7 @@
 			<tr>
 				<td>
 					<p class="gi-letter-prgh">
-						<strong>RAJENDER KUMAR</strong><br>
+						<strong>{{ customer.full_name }}</strong><br>
 						Address: <strong>S/O SAKTU SINGH,618F/2,SHANKAR GALI,PANDAV ROAD,VISHWAS <br>
 						NAGAR,SHAHDARA,EAST DELHI-110032</strong> <br><br>
 
@@ -50,8 +50,8 @@
 						This is to confirm that you have successfully completed the prescribed training and have also passed the examination specified for Point of Sales examination conducted by <strong>Elevate Insurance Pvt Ltd</strong> under the Guidelines on Point of Sales Person for Non-life and Health Insurers. <br><br>
 
 						Aadhar No: <strong>XXXX XXXX 6128</strong><br>
-						PAN No: <strong>AAUPG 7794 F</strong><br>
-						PoSP Id: <strong>OPP103356</strong><br><br>
+						PAN No: <strong>{{ customer.pan_no }}</strong><br>
+						PoSP Id: <strong>{{ customer.user_gen_id }}</strong><br><br>
 
 						This letter authorizes you to act as Point of Sales Person for <strong>Elevate Insurance Pvt Ltd</strong> to market products categorized and identified under the POS Guidelines.<br><br>
 
@@ -63,7 +63,7 @@
 					<img src="{{ signature_pos }}" alt="" class="gi-letter-signature">
 					<p class="gi-letter-prgh">
 						<strong>
-							(Rajesh Pathak)<br>
+							(Subhash Bishnoi)<br>
 							Principal Officer
 						</strong>	
 					</p>

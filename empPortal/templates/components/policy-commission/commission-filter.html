@@ -76,7 +76,17 @@
   <!-- Fuel Type -->
   <div class="col-sm-6 col-md-2">
       <div class="form-group">
-      <input class="form-field" name="fuel_type" type="text" placeholder="Fuel Type" value="{{ filters.fuel_type }}">
+        
+        {% with filters.fuel_type as selected_fuel %}
+        <select class="form-field" name="fuel_type" id="fuel_type">
+          <option value="">Select</option>
+          <option value="Petrol" {% if selected_fuel == 'Petrol' %}selected{% endif %}>Petrol</option>
+          <option value="Diesel" {% if selected_fuel == 'Diesel' %}selected{% endif %}>Diesel</option>
+          <option value="Cng" {% if selected_fuel == 'Cng' %}selected{% endif %}>Cng</option>
+          <option value="Be-Fuel" {% if selected_fuel == 'Be-Fuel' %}selected{% endif %}>Be-Fuel</option>
+          
+        </select>
+        {% endwith %}
       </div>
   </div>
 
