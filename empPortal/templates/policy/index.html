@@ -155,64 +155,7 @@ Policy Data
                       <div class="card-body pb-0">
                         <form method="get">
                           <div class="row align-items-center">
-                            
-                            <!-- Policy Number -->
-                            <div class="col-6 col-md-2">
-                              <div class="form-group">
-                                <input class="form-field" name="policy_number" type="text" placeholder="Policy Number" value="{{filters.policy_number }}">
-                              </div>
-                            </div>
-
-                                    <!-- Vehicle Number -->
-                            <div class="col-6 col-md-2">
-                              <div class="form-group">
-                                <input class="form-field" name="vehicle_number" type="text" placeholder="Vehicle Number" value="{{ filters.vehicle_number }}">
-                              </div>
-                            </div> 
-                            
-                            <!-- Engine Number -->
-                            <div class="col-sm-6 col-md-2">
-                              <div class="form-group">
-                                <input class="form-field" name="engine_number" type="text" placeholder="Engine Number" value="{{ filters.engine_number }}">
-                              </div>
-                            </div>
-
-                            <!-- Chassis Number -->
-                            <div class="col-sm-6 col-md-2">
-                              <div class="form-group">
-                                <input class="form-field" name="chassis_number" type="text" placeholder="Chassis Number" value="{{ filters.chassis_number }}">
-                              </div>
-                            </div>
-
-                            <!-- Vehicle Type -->
-                            <div class="col-sm-6 col-md-2">
-                              <div class="form-group">
-                                <input class="form-field" name="vehicle_type" type="text" placeholder="Vehicle Type" value="{{ filters.vehicle_type }}">
-                              </div>
-                            </div>
-
-                            <!-- Customer Name -->
-                            <div class="col-sm-6 col-md-2">
-                              <div class="form-group">
-                                <input class="form-field" name="policy_holder_name" type="text" placeholder="Customer Name" value="{{filters.policy_holder_name }}">
-                              </div>
-                            </div>
-
-                            <!-- Mobile Number -->
-                            <!-- <div class="col-sm-6 col-md-2">
-                              <div class="form-group">
-                                <input class="form-field" name="mobile_number" type="text" placeholder="Mobile Number" value="">
-                              </div>
-                            </div> -->
-
-                            <!-- Insurance Provider -->
-                            <div class="col-sm-6 col-md-2">
-                              <div class="form-group">
-                                <input class="form-field" name="insurance_provider" type="text" placeholder="Insurance Provider" value="{{ filters.insurance_provider }}">
-                              </div>
-                            </div>
-
-                            <!-- Buttons -->
+                            {% include "components/policy-commission/commission-filter.html" %}
                             <div class="col-sm-6 col-md-2">
                               <div class="form-group d-flex">
                                 <button type="submit" class="wrap-btn w-100 mr-2">Apply</button>

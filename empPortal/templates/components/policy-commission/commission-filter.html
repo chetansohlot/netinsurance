@@ -127,7 +127,7 @@
   <div class="form-group">
     <select name="bqp" class="form-field" id="bqp">
       <option value="">Select BQP</option>
-      {% for bqp in bqps %}
+      {% for bqp in bqpList %}
         <option value="{{bqp.id}}" {% if bqp.id == filters.bqp %}selected{% endif %}>{{bqp.bqp_name}}</option>
       {% endfor %}
     </select>
