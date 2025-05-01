@@ -46,65 +46,24 @@
                         <div class="row">
                             <button type="button" class="mobile-filter-close">×</button>
                             <div class="col-sm-12">
-                                <form action=" " method="get">
-                                    <input type="hidden" name="_token" value="A2fV8nxKXXE5tj11gwhB8wlsa7Q6oj2rS8WfPOGo">
-                                    <div class="row">
-                                        <input type="hidden" name="filter_is_on" value="filter_on">
-                                        <div class="col-sm-2 form-group">
-                                                <input type="text" placeholder="Insurer Name" name="insurer_name" class="form-field" value="{{ request.GET.insurer_name }}">
-                                        </div>
-                                        
-                                        <div class="col-sm-2 form-group">
-                                                <input type="text" placeholder="Policy No" name="policy_no" class="form-field" value="{{ request.GET.policy_no }}">
-                                        </div>
-
-                                        <div class="col-sm-2 form-group">
-                                                <input type="text" placeholder="Service Provider" name="service_provider" class="form-field" value="{{ request.GET.service_provider }}">
-                                        </div>
-
-                                        <div class="col-sm-2 form-group">
-                                                <input type="text" placeholder="Insurance Company" name="insurance_company" class="form-field" value="{{ request.GET.insurance_company }}">
-                                        </div>
-
-                                        <div class="col-sm-2 form-group">
-                                                <input type="text" placeholder="Policy Type" name="policy_type" class="form-field" value="{{ request.GET.policy_type }}">
-                                        </div>
-
-                                        <div class="col-sm-2 form-group">
-                                                <input type="text" placeholder="Vehicle Type" name="vehicle_type" class="form-field" value="{{ request.GET.vehicle_type }}">
-                                        </div>
-
-                                        <div class="col-sm-2 form-group">
-                                                <input type="text" placeholder="Referral Name" name="referral_name" class="form-field" value="{{ request.GET.referral_name }}">
-                                        </div>
-
-                                        <div class="col-sm-2 form-group">
-                                                <input type="text" placeholder="Vehicle Registration Number" name="vehicle_reg_no" class="form-field" value="{{ request.GET.vehicle_reg_no }}">
-                                        </div>
-
-                                        <div class="col-sm-2 form-group">
-                                                <input type="text" placeholder="Policy Start Date" name="policy_start_date" class="form-field" value="{{ request.GET.policy_start_date }}">
-                                        </div>
-
-                                        <div class="col-sm-2 form-group">
-                                                <input type="text" placeholder="Policy End Date" name="policy_end_date" class="form-field" value="{{ request.GET.policy_end_date }}">
-                                        </div>
-
-                                        <div class="col-sm-auto">
-                                            <div class="row">
-                                                <div class="col-auto">
-                                                    <input type="submit" name="submit_filter" class="filter-search-btn" value="Apply">
-                                                </div>
-                                                <div class="col-auto">
-                                                    <a href="{% url 'commission-report' %}" class="filter-search-btn bg-dark">Clear</a>
-                                                </div>
-                                                <div class="col-auto">
-                                                    <a href="{% url 'export-commission-report' %}" class="breadcrump-addbtn bg-warning mx-1">Export</a>
+                                <form method="get">
+                                    <div class="row align-items-center">
+                                      {% include "components/policy-commission/commission-filter.html" %}
+          
+          
+                                            <!-- Buttons -->
+                                            <div class="col-sm-6 col-md-2">
+                                                <div class="form-group d-flex">
+                                                <button type="submit" class="wrap-btn w-100 mr-2">Apply</button>
+                                                <a href="{% url 'pending-insurer-commission-report' %}" class="wrap-btn w-100 bg-danger text-white text-center">Reset</a>
                                                 </div>
                                             </div>
-                                        </div>
+                                      
+                                        </div>  
+                                      </div>
+                                      <!--filter ends-->
                                     </div>
-                                </form>
+                                  </form>
                             </div>
                         </div>
                     </div>
@@ -336,15 +295,9 @@
             </div>
         </div>
     </div>
-</div>
-            <!-- /.content-wrapper -->
-
-            <!-- Main Footer -->
+            </div>
             {% include 'footer.html' %}
-
         </div>
-        <!-- ./wrapper -->
-
         {% include 'footer-script.html' %}
     </body>
 {% endblock %}
