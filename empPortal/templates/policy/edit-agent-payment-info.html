@@ -75,21 +75,21 @@
                               <div class="col-sm-6 col-md-4 col-lg-3">
                                 <div class="form-group">
                                   <label class="form-lbl" for="policy_issue_date">Policy Issue Date</label>
-                                  <input type="text" class="form-field" name="policy_issue_date" id="policy_issue_date" placeholder="Policy Issue Date" value="{{ policy_data.policy_issue_date }}" readonly>
+                                  <input type="text" class="form-field" name="policy_issue_date" id="policy_issue_date" placeholder="Policy Issue Date" value="{{ policy.policy_issue_date|default:policy_data.policy_issue_date }}" readonly>
                                 </div>
                               </div>
                         
                               <div class="col-sm-6 col-md-4 col-lg-3">
                                 <div class="form-group">
                                   <label class="form-lbl" for="policy_start_date">Policy Start Date</label>
-                                  <input type="text" class="form-field" name="policy_start_date" id="policy_start_date" placeholder="Policy Start Date" value="{{ policy_data.policy_start_date }}" readonly>
+                                  <input type="text" class="form-field" name="policy_start_date" id="policy_start_date" placeholder="Policy Start Date" value="{{ policy.policy_start_date|default:policy_data.policy_start_date }}" readonly>
                                 </div>
                               </div>
                         
                               <div class="col-sm-6 col-md-4 col-lg-3">
                                 <div class="form-group">
                                   <label class="form-lbl" for="policy_expiry_date">Policy Expiry Date</label>
-                                  <input type="text" class="form-field" name="policy_expiry_date" id="policy_expiry_date" placeholder="Policy Expiry Date" value="{{ policy_data.policy_expiry_date }}" readonly>
+                                  <input type="text" class="form-field" name="policy_expiry_date" id="policy_expiry_date" placeholder="Policy Expiry Date" value="{{ policy.policy_expiry_date|default:policy_data.policy_expiry_date }}" readonly>
                                 </div>
                               </div>
                         

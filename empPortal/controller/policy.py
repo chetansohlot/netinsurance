@@ -233,8 +233,10 @@ def edit_policy_docs(request, policy_id):
         return redirect('login')
     
     policy_id = unquote(policy_id)
+    policy = PolicyInfo.objects.filter(policy_id=policy_id).first()
+    
     policy_data = PolicyDocument.objects.filter(id=policy_id).first()
-
+    
     try:
         doc_data = PolicyUploadDoc.objects.filter(policy_id=policy_id).first()
     except PolicyUploadDoc.DoesNotExist:
@@ -262,6 +264,7 @@ def edit_policy_docs(request, policy_id):
     pdf_path = get_pdf_path(request, policy_data.filepath if policy_data else None)
 
     return render(request, 'policy/edit-policy-docs.html', {
+        'policy': policy,
         'policy_data': policy_data,
         'pdf_path': pdf_path,
         'doc_data': doc_data

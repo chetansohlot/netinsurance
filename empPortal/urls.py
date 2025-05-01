@@ -199,7 +199,9 @@ urlpatterns = [
     path('report/f-business-report/', export.franchisees_business_report, name='franchisees-business-report'),
     path('report/i-business-report/', export.insurer_business_report, name='insurer-business-report'),
     
-    path('report/v1/commission-report/', reports.commission_report, name='commission-report'),    
+    path('report/v1/commission-report/', reports.commission_report, name='commission-report'),  
+    path('report/pending-insurer-commission-report/', reports.pending_insurer_commission_report, name='pending-insurer-commission-report'),
+      
     # REPORTS 
     
     # EXPORT
