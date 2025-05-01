@@ -75,53 +75,34 @@ def agent_commission(request):
     if not request.user.is_authenticated:
         return redirect('login')
 
-    user_id = request.user.id
-    role_id = Users.objects.filter(id=user_id).values_list('role_id', flat=True).first()
-
+    user = request.user
     filters_q = Q(status=6) & Q(policy_number__isnull=False) & ~Q(policy_number='')
 
-    if role_id != 1 and str(request.user.department_id) not in ["3", "5"]:
-        filters_q &= Q(rm_id=user_id)
+    if user.role_id != 1 and str(user.department_id) not in ["3", "5"]:
+        filters_q &= Q(rm_id=user.id)
 
-    branch_name = request.GET.get('branch_name', '').strip()
-    referred_by = request.GET.get('referred_by', '').strip()
-    branch = Branch.objects.filter(branch_name__iexact=branch_name).first()
-    referral = Referral.objects.filter(name__iexact=referred_by).first()
+    branch_id, referral_id = get_branch_referral_ids(
+        request.GET.get('branch_name', ''),
+        request.GET.get('referred_by', '')
+    )
+    if branch_id:
+        filters_q &= Q(policy_info__branch_name=str(branch_id))
+    if referral_id:
+        filters_q &= Q(policy_agent_info__referral_id=str(referral_id))
 
-    if branch:
-        filters_q &= Q(policy_info__branch_name=str(branch.id))
-    if referral:
-        filters_q &= Q(policy_agent_info__referral_id=str(referral.id))
-
-    exclude_q = Q(policy_agent_info__agent_od_comm__isnull=False) | \
-                Q(policy_agent_info__agent_net_comm__isnull=False) | \
-                Q(policy_agent_info__agent_tp_comm__isnull=False) | \
-                Q(policy_agent_info__agent_incentive_amount__isnull=False) | \
-                Q(policy_agent_info__agent_tds__isnull=False) | \
-                Q(policy_agent_info__isnull=False)
+    exclude_q = Q(policy_agent_info__isnull=False) | Q(policy_agent_info__agent_od_comm__isnull=False) | \
+                Q(policy_agent_info__agent_net_comm__isnull=False) | Q(policy_agent_info__agent_tp_comm__isnull=False) | \
+                Q(policy_agent_info__agent_incentive_amount__isnull=False) | Q(policy_agent_info__agent_tds__isnull=False)
 
     base_qs = PolicyDocument.objects.filter(filters_q).exclude(exclude_q)
-
-    filters_dict = {
-        key: request.GET.get(key, '').strip()
-        for key in [
-            'policy_number', 'vehicle_number', 'engine_number', 'chassis_number',
-            'vehicle_type', 'policy_holder_name', 'mobile_number',
-            'insurance_provider', 'insurance_company', 'start_date',
-            'end_date', 'manufacturing_year_from', 'manufacturing_year_to',
-            'fuel_type', 'gvw_from'
-        ]
-    }
-
+    filters_dict = get_common_filters(request)
     filtered = apply_policy_filters(base_qs, filters_dict)
 
-    policy_count = PolicyDocument.objects.filter(filters_q).exclude(exclude_q).count()
-    policy_total_count = PolicyDocument.objects.filter(status=6).count()
+    base_count_qs = PolicyDocument.objects.filter(filters_q)
+    policy_count = base_count_qs.exclude(exclude_q).count()
+    policy_total_count = base_count_qs.count()
 
-    per_page = int(request.GET.get('per_page', 10) or 10)
-    paginator = Paginator(filtered, per_page)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    page_obj, per_page = paginate_queryset(filtered, request)
 
     return render(request, 'policy-commission/agent-commission.html', {
         "page_obj": page_obj,
@@ -132,6 +113,7 @@ def agent_commission(request):
         'filtered_policy_ids': [obj.id for obj in filtered],
         'filtered_count': len(filtered),
     })
+
 
 
 def update_agent_commission(request):
@@ -192,65 +174,36 @@ def franchisees_commission(request):
         return redirect('login')
 
     user = request.user
-    role_id = user.role_id
-    is_rm_limited = role_id != 1 and str(user.department_id) not in ["3", "5"]
-
-    # Base filters
     base_q = Q(status=6) & Q(policy_number__isnull=False) & ~Q(policy_number='')
 
-    if is_rm_limited:
+    if user.role_id != 1 and str(user.department_id) not in ["3", "5"]:
         base_q &= Q(rm_id=user.id)
 
-    # Branch and referral filters
-    branch_name = request.GET.get('branch_name', '').strip()
-    referred_by = request.GET.get('referred_by', '').strip()
+    branch_id, referral_id = get_branch_referral_ids(
+        request.GET.get('branch_name', ''),
+        request.GET.get('referred_by', '')
+    )
+    if branch_id:
+        base_q &= Q(policy_info__branch_name=str(branch_id))
+    if referral_id:
+        base_q &= Q(policy_agent_info__referral_id=str(referral_id))
 
-    if branch_name:
-        branch = Branch.objects.filter(branch_name__iexact=branch_name).first()
-        if branch:
-            base_q &= Q(policy_info__branch_name=str(branch.id))
-
-    if referred_by:
-        referral = Referral.objects.filter(name__iexact=referred_by).first()
-        if referral:
-            base_q &= Q(policy_agent_info__referral_id=str(referral.id))
-
-    # Exclude if any commission is already filled
     exclude_q = Q(policy_franchise_info__isnull=False) | Q(policy_franchise_info__franchise_od_comm__isnull=False) | \
                 Q(policy_franchise_info__franchise_net_comm__isnull=False) | Q(policy_franchise_info__franchise_tp_comm__isnull=False) | \
                 Q(policy_franchise_info__franchise_incentive_amount__isnull=False) | Q(policy_franchise_info__franchise_tds__isnull=False)
 
-    # Fetch base queryset
     base_queryset = PolicyDocument.objects.filter(base_q).exclude(exclude_q)
-
-    # Collect filter values from GET
-    filter_keys = [
-        'policy_number', 'vehicle_number', 'engine_number', 'chassis_number',
-        'vehicle_type', 'policy_holder_name', 'mobile_number', 'insurance_provider',
-        'insurance_company', 'start_date', 'end_date', 'manufacturing_year_from',
-        'manufacturing_year_to', 'fuel_type', 'gvw_from'
-    ]
-    filters = {key: request.GET.get(key, '') for key in filter_keys}
-
-    # Apply filtering using utility
+    filters = get_common_filters(request)
     filtered_policies = apply_policy_filters(base_queryset, filters)
 
-    # Counts
-    base_filter = Q(status=6)
-    if is_rm_limited:
-        base_filter &= Q(rm_id=user.id)
+    total_base_q = Q(status=6)
+    if user.role_id != 1 and str(user.department_id) not in ["3", "5"]:
+        total_base_q &= Q(rm_id=user.id)
 
-    policy_total_count = PolicyDocument.objects.filter(base_filter).count()
-    policy_count = PolicyDocument.objects.filter(base_filter).exclude(exclude_q).count()
+    policy_total_count = PolicyDocument.objects.filter(total_base_q).count()
+    policy_count = PolicyDocument.objects.filter(total_base_q).exclude(exclude_q).count()
 
-    per_page = request.GET.get('per_page', 10)
-    try:
-        per_page = int(per_page)
-    except ValueError:
-        per_page = 10
-
-    paginator = Paginator(filtered_policies, per_page)
-    page_obj = paginator.get_page(request.GET.get('page'))
+    page_obj, per_page = paginate_queryset(filtered_policies, request)
 
     return render(request, 'policy-commission/franchisees-commission.html', {
         "page_obj": page_obj,
@@ -261,6 +214,7 @@ def franchisees_commission(request):
         "filtered_policy_ids": [obj.id for obj in filtered_policies],
         "filtered_count": len(filtered_policies),
     })
+
 
 
 
@@ -337,91 +291,52 @@ def update_franchise_commission(request):
     return redirect('franchisees-commission')
 
 
-
 def insurer_commission(request):
     if not request.user.is_authenticated:
         return redirect('login')
 
-    user_id = request.user.id
-    role_id = request.user.role_id
-
+    user = request.user
     filters_q = Q(status=6) & Q(policy_number__isnull=False) & ~Q(policy_number='')
 
-    # Restrict by RM if not admin or department 3/5
-    if role_id != 1 and str(request.user.department_id) not in ["3", "5"]:
-        filters_q &= Q(rm_id=user_id)
+    if user.role_id != 1 and str(user.department_id) not in ["3", "5"]:
+        filters_q &= Q(rm_id=user.id)
 
-    # Branch and Referral filtering
-    branch_name = request.GET.get('branch_name', '').strip()
-    referred_by = request.GET.get('referred_by', '').strip()
-    branch = Branch.objects.filter(branch_name__iexact=branch_name).first()
-    referral = Referral.objects.filter(name__iexact=referred_by).first()
+    branch_id, referral_id = get_branch_referral_ids(
+        request.GET.get('branch_name', ''),
+        request.GET.get('referred_by', '')
+    )
+    if branch_id:
+        filters_q &= Q(policy_info__branch_name=str(branch_id))
+    if referral_id:
+        filters_q &= Q(policy_agent_info__referral_id=str(referral_id))
 
-    if branch:
-        filters_q &= Q(policy_info__branch_name=str(branch.id))
-    if referral:
-        filters_q &= Q(policy_agent_info__referral_id=str(referral.id))
-
-    # Exclude policies that already have insurer commission values
-    exclude_q = Q(policy_insurer_info__insurer_od_comm__isnull=False) | \
-                Q(policy_insurer_info__insurer_net_comm__isnull=False) | \
-                Q(policy_insurer_info__insurer_tp_comm__isnull=False) | \
-                Q(policy_insurer_info__insurer_incentive_amount__isnull=False) | \
-                Q(policy_insurer_info__insurer_tds__isnull=False) | \
-                Q(policy_insurer_info__isnull=False)
+    exclude_q = Q(policy_insurer_info__isnull=False) | Q(policy_insurer_info__insurer_od_comm__isnull=False) | \
+                Q(policy_insurer_info__insurer_net_comm__isnull=False) | Q(policy_insurer_info__insurer_tp_comm__isnull=False) | \
+                Q(policy_insurer_info__insurer_incentive_amount__isnull=False) | Q(policy_insurer_info__insurer_tds__isnull=False)
 
     base_qs = PolicyDocument.objects.filter(filters_q).exclude(exclude_q)
-
-    # Extract filters from GET request
-    filters = {
-        'policy_number': request.GET.get('policy_number', ''),
-        'vehicle_number': request.GET.get('vehicle_number', ''),
-        'engine_number': request.GET.get('engine_number', ''),
-        'chassis_number': request.GET.get('chassis_number', ''),
-        'vehicle_type': request.GET.get('vehicle_type', ''),
-        'policy_holder_name': request.GET.get('policy_holder_name', ''),
-        'mobile_number': request.GET.get('mobile_number', ''),
-        'insurance_provider': request.GET.get('insurance_provider', ''),
-        'insurance_company': request.GET.get('insurance_company', ''),
-        'start_date': request.GET.get('start_date', ''),
-        'end_date': request.GET.get('end_date', ''),
-        'manufacturing_year_from': request.GET.get('manufacturing_year_from', ''),
-        'manufacturing_year_to': request.GET.get('manufacturing_year_to', ''),
-        'fuel_type': request.GET.get('fuel_type', ''),
-        'gvw_from': request.GET.get('gvw_from', ''),
-    }
-
-    # Apply filtering using reusable functions
+    filters = get_common_filters(request)
     filtered = apply_policy_filters(base_qs, filters)
 
-    # Counts
-    if role_id != 1 and str(request.user.department_id) not in ["3", "5"]:
-        policy_count = PolicyDocument.objects.filter(status=6, rm_id=user_id).exclude(exclude_q).count()
-        policy_total_count = PolicyDocument.objects.filter(status=6, rm_id=user_id).count()
-    else:
-        policy_count = PolicyDocument.objects.filter(status=6).exclude(exclude_q).count()
-        policy_total_count = PolicyDocument.objects.filter(status=6).count()
+    base_q = Q(status=6)
+    if user.role_id != 1 and str(user.department_id) not in ["3", "5"]:
+        base_q &= Q(rm_id=user.id)
 
-    # Pagination
-    per_page = request.GET.get('per_page', 10)
-    try:
-        per_page = int(per_page)
-    except ValueError:
-        per_page = 10
+    policy_total_count = PolicyDocument.objects.filter(base_q).count()
+    policy_count = PolicyDocument.objects.filter(base_q).exclude(exclude_q).count()
 
-    paginator = Paginator(filtered, per_page)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    page_obj, per_page = paginate_queryset(filtered, request)
 
     return render(request, 'policy-commission/insurer-commission.html', {
         "page_obj": page_obj,
         "policy_count": policy_count,
         "policy_total_count": policy_total_count,
         "per_page": per_page,
-        'filters': {k: request.GET.get(k, '') for k in filters},
+        'filters': filters,
         'filtered_policy_ids': [obj.id for obj in filtered],
         'filtered_count': len(filtered),
     })
+
 
 
 
@@ -584,3 +499,28 @@ def apply_policy_filters(queryset, filters):
             final_list.append(obj)
 
     return final_list
+
+def get_branch_referral_ids(branch_name, referred_by):
+    branch_id = Branch.objects.filter(branch_name__iexact=branch_name).values_list('id', flat=True).first()
+    referral_id = Referral.objects.filter(name__iexact=referred_by).values_list('id', flat=True).first()
+    return branch_id, referral_id
+
+def get_common_filters(request):
+    return {
+        key: request.GET.get(key, '').strip() for key in [
+            'policy_number', 'vehicle_number', 'engine_number', 'chassis_number',
+            'vehicle_type', 'policy_holder_name', 'mobile_number',
+            'insurance_provider', 'insurance_company', 'start_date',
+            'end_date', 'manufacturing_year_from', 'manufacturing_year_to',
+            'fuel_type', 'gvw_from'
+        ]
+    }
+
+def paginate_queryset(queryset, request, per_page_default=10):
+    per_page = request.GET.get('per_page', per_page_default)
+    try:
+        per_page = int(per_page)
+    except ValueError:
+        per_page = per_page_default
+    paginator = Paginator(queryset, per_page)
+    return paginator.get_page(request.GET.get('page')), per_page
