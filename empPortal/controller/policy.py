@@ -15,6 +15,7 @@ from django.core.files.storage import FileSystemStorage
 from django.core.paginator import Paginator
 from django.db.models import Q
 
+from empPortal.model import Partner
 
 import re,openpyxl
 from django.db import IntegrityError
@@ -983,9 +984,18 @@ def policyData(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
+    branches = Branch.objects.all().order_by('branch_name')
+    referrals = Referral.objects.all().order_by('name')
+    bqpList = BqpMaster.objects.all().order_by('bqp_fname')
+    partners = Partner.objects.all().order_by('name')
+
     return render(request, 'policy/index.html', {
         "page_obj": page_obj,
         "policy_count": policy_count,
+        "branches": branches,
+        "referrals": referrals,
+        "bqpList": bqpList,
+        "partners": partners,
         "per_page": per_page,
         'filters': {k: request.GET.get(k,'') for k in filters}
     })
