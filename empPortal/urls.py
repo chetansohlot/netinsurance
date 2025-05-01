@@ -2,7 +2,7 @@ from django.urls import path, include
 from . import views,export
 from . import views
 from . import authenticationView
-from .controller import commissions, profile,policy, Referral, globalController, helpAndSupport, Employee, leads, sellMotor, sellHealth, sellTerm, Franchises, Department, Branches, members, customers, quoteManagement, healthQuoteManagement, homeManagement, exams,SourceMaster,BQP
+from .controller import commissions, profile,policy,Dashboard, Referral, globalController, helpAndSupport, Employee, leads, sellMotor, sellHealth, sellTerm, Franchises, Department, Branches, members, customers, quoteManagement, healthQuoteManagement, homeManagement, exams,SourceMaster,BQP
 from .controller import reports, PolicyCommission, PolicyPayment
 from django.conf import settings
 from django.conf.urls.static import static
@@ -59,7 +59,7 @@ urlpatterns = [
     
     path('user-and-roles/', views.userAndRoles, name='user-and-roles'),
     path('', homeManagement.index, name='home-index'),
-    path('dashboard/', views.dashboard, name='dashboard'),
+    path('dashboard/', Dashboard.dashboard, name='dashboard'),
 
 
     path('franchise-management/', Franchises.index, name='franchise-management'),
