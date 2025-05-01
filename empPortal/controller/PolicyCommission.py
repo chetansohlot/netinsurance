@@ -106,10 +106,10 @@ def agent_commission(request):
     policy_total_count = base_count_qs.count()
 
     page_obj, per_page = paginate_queryset(filtered, request)
-    branches = Branch.objects.all().order_by('-created_at')
-    referrals = Referral.objects.all()
-    bqpList = BqpMaster.objects.all().order_by('-created_at')
-    partners = Partner.objects.all().order_by('-created_at')
+    branches = Branch.objects.all().order_by('branch_name')
+    referrals = Referral.objects.all().order_by('name')
+    bqpList = BqpMaster.objects.all().order_by('bqp_fname')
+    partners = Partner.objects.all().order_by('name')
 
     return render(request, 'policy-commission/agent-commission.html', {
         "page_obj": page_obj,
@@ -216,10 +216,10 @@ def franchisees_commission(request):
 
     page_obj, per_page = paginate_queryset(filtered_policies, request)
 
-    branches = Branch.objects.all().order_by('-created_at')
-    referrals = Referral.objects.all()
-    bqpList = BqpMaster.objects.all().order_by('-created_at')
-    partners = Partner.objects.all().order_by('-created_at')
+    branches = Branch.objects.all().order_by('branch_name')
+    referrals = Referral.objects.all().order_by('name')
+    bqpList = BqpMaster.objects.all().order_by('bqp_fname')
+    partners = Partner.objects.all().order_by('name')
 
     return render(request, 'policy-commission/franchisees-commission.html', {
         "page_obj": page_obj,
@@ -347,10 +347,10 @@ def insurer_commission(request):
 
     page_obj, per_page = paginate_queryset(filtered, request)
 
-    branches = Branch.objects.all().order_by('-created_at')
-    referrals = Referral.objects.all()
-    bqpList = BqpMaster.objects.all().order_by('-created_at')
-    partners = Partner.objects.all().order_by('-created_at')
+    branches = Branch.objects.all().order_by('branch_name')
+    referrals = Referral.objects.all().order_by('name')
+    bqpList = BqpMaster.objects.all().order_by('bqp_fname')
+    partners = Partner.objects.all().order_by('name')
 
     return render(request, 'policy-commission/insurer-commission.html', {
         "page_obj": page_obj,
