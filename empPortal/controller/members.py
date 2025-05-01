@@ -325,12 +325,11 @@ def posTrainingCertificate(request, user_id):
 
     customer = get_object_or_404(Users, id=user_id)
 
-    pprint(customer)
+
 
     context = {
         "customer": customer,
         "logo_url": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/logo2.png'),
-        "certificate_pattern": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/certificate-pattern.png'),
         "default_image_pos": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/default-image-pos.jpg'),
         "signature_pos": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/signature-pos.webp'),
     }
@@ -1299,12 +1298,33 @@ def updatePartnerStatus(request, user_id):
         except ValueError:
             messages.error(request, "Invalid status selected.")
             return redirect('member-view', user_id=user_id)
+        
+     # Fetch user documents for approval check
+        docs = DocumentUpload.objects.filter(user_id=user_id).first() 
+
+        
+        # Check if documents are approved before activating
+        if partner_status == 4:  # Activated status
+            if not docs or not all([
+                docs.aadhaar_card_front_status == 'Approved',
+                docs.aadhaar_card_back_status == 'Approved',
+                docs.upload_pan_status == 'Approved',
+                docs.upload_cheque_status == 'Approved',
+                docs.tenth_marksheet_status == 'Approved'
+            ]):
+                messages.error(request, "User cannot be activated. Please ensure all required documents are approved.")
+                return redirect('member-view', user_id=user_id)   
 
         update_successful = update_partner_by_user_id(
             user_id=user_id,
             update_fields={"partner_status": partner_status},
             request=request
         )
+
+        #  If they just moved into “Activated” (4), go through your full activateUser flow
+        if partner_status == 4:
+        # activateUser will do its own messages.success / messages.error
+           return activateUser(request, user_id)
 
         if update_successful:
             messages.success(request, "Partner status updated successfully.")

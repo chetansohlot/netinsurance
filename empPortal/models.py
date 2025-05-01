@@ -6,6 +6,8 @@ from django.utils.timezone import now
 from django.utils.timezone import localtime
 from empPortal.model import Referral
 from empPortal.model import Partner
+from datetime import timedelta
+from django.utils import timezone
 
 from django.conf import settings
 
@@ -697,7 +699,14 @@ class Users(AbstractBaseUser):
         try:
             return ExamResult.objects.filter(status='passed').get(user_id=self.id)
         except ExamResult.DoesNotExist:
-            return None    
+            return None 
+
+    @property
+    def can_download_certificates(self):
+        exam_result = self.examRes
+        if exam_result and exam_result.created_at:
+           return timezone.now() >= exam_result.created_at + timedelta(days=5)
+        return False  
 
 class Franchises(models.Model):
     name = models.CharField(max_length=255, verbose_name="Franchise Name")
