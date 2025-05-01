@@ -1686,6 +1686,9 @@ def add_partner(request):
         )
         user.save()
 
+        
+        sync_user_to_partner(user.id, request) 
+
         messages.success(request, "Partner added successfully!")
         return redirect('members')  # Redirect to a desired page
 
