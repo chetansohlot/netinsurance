@@ -101,7 +101,7 @@ def members(request):
         for user in users:
             if not Partner.objects.filter(user_id=user.id).exists():
                 sync_user_to_partner(user.id, request)
-                
+
         if global_search:
             users = users.annotate(
                 search_full_name=Concat('first_name', Value(' '), 'last_name')
@@ -1694,7 +1694,7 @@ def add_partner(request):
         user.save()
 
         
-        sync_user_to_partner(user.id, request) 
+        # sync_user_to_partner(user.id, request) 
 
         messages.success(request, "Partner added successfully!")
         return redirect('members')  # Redirect to a desired page
