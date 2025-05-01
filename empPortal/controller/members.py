@@ -1235,8 +1235,8 @@ def activateUser(request, user_id):
             # Update user activation status in the database
             with connection.cursor() as cursor:
                 cursor.execute(
-                    "UPDATE users SET activation_status = %s WHERE id = %s",
-                    ['1', user_id]
+                    "UPDATE users SET  user_active = %s, activation_status = %s WHERE id = %s",
+                    ['1','1', user_id]
                 )
 
             user = get_object_or_404(Users, id=user_id)
@@ -1331,7 +1331,21 @@ def updatePartnerStatus(request, user_id):
         #  If they just moved into “Activated” (4), go through your full activateUser flow
         if partner_status == 4:
         # activateUser will do its own messages.success / messages.error
-           return activateUser(request, user_id)
+            activate_response = activateUser(request, user_id)
+            if activate_response:
+                return activate_response
+            
+            
+            # Then, run the login activation process
+            login_activate_response = loginActivateUser(request, user_id)
+            if login_activate_response:
+                return login_activate_response 
+            
+         # If Inactive
+        if partner_status == 5:
+            deactivate_response = deactivateUser(request, user_id)
+            if deactivate_response:
+                return deactivate_response    
 
         if update_successful:
             messages.success(request, "Partner status updated successfully.")
