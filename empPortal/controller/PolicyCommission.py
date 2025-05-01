@@ -103,6 +103,9 @@ def agent_commission(request):
     policy_total_count = base_count_qs.count()
 
     page_obj, per_page = paginate_queryset(filtered, request)
+    branches = Branch.objects.all().order_by('-created_at')
+    referrals = Referral.objects.all()
+    bqpList = BqpMaster.objects.all().order_by('-created_at')
 
     return render(request, 'policy-commission/agent-commission.html', {
         "page_obj": page_obj,
@@ -110,6 +113,9 @@ def agent_commission(request):
         "policy_total_count": policy_total_count,
         "per_page": per_page,
         'filters': filters_dict,
+        'branches': branches,
+        'referrals': referrals,
+        'bqpList': bqpList,
         'filtered_policy_ids': [obj.id for obj in filtered],
         'filtered_count': len(filtered),
     })
@@ -205,11 +211,18 @@ def franchisees_commission(request):
 
     page_obj, per_page = paginate_queryset(filtered_policies, request)
 
+    branches = Branch.objects.all().order_by('-created_at')
+    referrals = Referral.objects.all()
+    bqpList = BqpMaster.objects.all().order_by('-created_at')
+
     return render(request, 'policy-commission/franchisees-commission.html', {
         "page_obj": page_obj,
         "policy_count": policy_count,
         "policy_total_count": policy_total_count,
         "per_page": per_page,
+        "branches": branches,
+        "referrals": referrals,
+        "bqpList": bqpList,
         "filters": filters,
         "filtered_policy_ids": [obj.id for obj in filtered_policies],
         "filtered_count": len(filtered_policies),
@@ -327,11 +340,18 @@ def insurer_commission(request):
 
     page_obj, per_page = paginate_queryset(filtered, request)
 
+    branches = Branch.objects.all().order_by('-created_at')
+    referrals = Referral.objects.all()
+    bqpList = BqpMaster.objects.all().order_by('-created_at')
+
     return render(request, 'policy-commission/insurer-commission.html', {
         "page_obj": page_obj,
         "policy_count": policy_count,
         "policy_total_count": policy_total_count,
         "per_page": per_page,
+        "branches": branches,
+        "referrals": referrals,
+        "bqpList": bqpList,
         'filters': filters,
         'filtered_policy_ids': [obj.id for obj in filtered],
         'filtered_count': len(filtered),
