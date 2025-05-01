@@ -24,7 +24,7 @@
                     <!-- <h1 class="admin-title m-0 py-2">View Member </h1> -->
                     <!-- <a href="#"><img src="{% static 'dist/img/svg/back_ic.svg' %}" alt="" class="mt-2 pl-3"></a> -->
                   </div>
-                  <form id="activate-form" name="activate-form" method="post" action="{% url 'activate-user' user_id=user_details.id %}" style="display: none;">
+                  <!-- <form id="activate-form" name="activate-form" method="post" action="{% url 'activate-user' user_id=user_details.id %}" style="display: none;">
                     {% csrf_token %}
                   </form>
 
@@ -62,7 +62,7 @@
                       </div>  
                     </div>
                   {% endif %}
-                  
+                   -->
                     
       <!-- STATUS DROPDOWN -->
       <div class="col">
@@ -79,7 +79,6 @@
                 <option value="4" {% if partner_status == '4' %}selected{% endif %}>Activated</option>
                 <option value="5" {% if partner_status == '5' %}selected{% endif %}>Inactive</option>
                 <option value="6" {% if partner_status == '6' %}selected{% endif %}>Rejected</option>
-                <option value="7" {% if partner_status == '7' %}selected{% endif %}>Deactivated</option>
 
               </select>
               <div class="input-group-append">
@@ -1255,7 +1254,7 @@
         <!-- /.content-wrapper -->
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-        <script>
+        <!-- <script>
             function showRejectNote(note) {
                 Swal.fire({
                     icon: 'error',
@@ -1331,7 +1330,59 @@
                 }
               });
             });
-          </script>
+          </script> -->
+
+<script>
+    document.getElementById('change-partner-status').addEventListener('click', function () {
+      const selectedStatus = document.querySelector('select[name="partner_status"]').value;
+  
+      if (!selectedStatus) {
+        Swal.fire('Please select a status before updating.');
+        return;
+      }
+  
+      // Handle "Activated"
+      if (selectedStatus === '4') {
+        Swal.fire({
+          title: 'Are you sure?',
+          text: "You are about to activate this partner.",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, activate',
+          cancelButtonText: 'Cancel'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            {% if user_details.activation_status != '1' %}
+              document.getElementById('activate-form').submit();
+            {% elif user_details.activation_status == '1' and user_details.user_active == 0 %}
+              document.getElementById('login-activate-form').submit();
+            {% endif %}
+          }
+        });
+  
+      // Handle "Inactive"
+      } else if (selectedStatus === '5') {
+        Swal.fire({
+          title: 'Are you sure?',
+          text: "You are about to inactivate this partner.",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, deactivate',
+          cancelButtonText: 'Cancel'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            {% if user_details.activation_status == '1' and user_details.user_active == 1 %}
+              document.getElementById('deactivate-form').submit();
+            {% endif %}
+          }
+        });
+  
+      } else {
+        Swal.fire('Only "Activated" or "Inactive" can be changed from here.');
+      }
+    });
+  </script>
+  
           
             <script>
               document.addEventListener("DOMContentLoaded", function() {
