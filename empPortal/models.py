@@ -1,3 +1,4 @@
+from sre_parse import State
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
@@ -6,7 +7,6 @@ from django.utils.timezone import now
 from django.utils.timezone import localtime
 from empPortal.model import Referral
 from empPortal.model import Partner
-
 from django.conf import settings
 
 class Roles(models.Model):
