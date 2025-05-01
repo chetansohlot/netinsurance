@@ -128,7 +128,7 @@
     <select name="bqp" class="form-field" id="bqp">
       <option value="">Select BQP</option>
       {% for bqp in bqps %}
-        <option value="{{bqp.id}}" {% if policy.bqp_id == filters.bqp %}selected{% endif %}>{{bqp.bqp_name}}</option>
+        <option value="{{bqp.id}}" {% if bqp.id == filters.bqp %}selected{% endif %}>{{bqp.bqp_name}}</option>
       {% endfor %}
     </select>
   </div>
@@ -137,7 +137,12 @@
 
 <div class="col-sm-6 col-md-2">
     <div class="form-group">
-        <input class="form-field" name="pos_name" type="text" placeholder="POS Name" value="{{ filters.pos_name }}">
+        <select name="pos_name" id="pos_name" class="form-field" data-value="{{ filters.pos_name|default:None }}">
+          <option value="">Select POS Name</option>
+          {% for partner in partners %}
+            <option value="{{partner.id}}" {% if partner.id == filters.pos_name %}selected{% endif %}>{{partner.name}}</option>
+          {% endfor %}
+        </select>
     </div>
 </div>
 <div class="col-sm-6 col-md-2">

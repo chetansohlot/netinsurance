@@ -56,6 +56,7 @@ app = FastAPI()
 # views.py
 from ..utils import send_sms_post
 from datetime import datetime
+from empPortal.model import Partner
 
 def parse_date(date_str):
     try:
@@ -81,10 +82,12 @@ def agent_commission(request):
     if user.role_id != 1 and str(user.department_id) not in ["3", "5"]:
         filters_q &= Q(rm_id=user.id)
 
-    branch_id, referral_id = get_branch_referral_ids(
-        request.GET.get('branch_name', ''),
-        request.GET.get('referred_by', '')
-    )
+    # branch_id, referral_id = get_branch_referral_ids(
+    #     request.GET.get('branch_name', ''),
+    #     request.GET.get('referred_by', '')
+    # )
+    branch_id   = request.GET.get('branch_name', '')
+    referral_id = request.GET.get('referred_by', '')
     if branch_id:
         filters_q &= Q(policy_info__branch_name=str(branch_id))
     if referral_id:
@@ -106,6 +109,7 @@ def agent_commission(request):
     branches = Branch.objects.all().order_by('-created_at')
     referrals = Referral.objects.all()
     bqpList = BqpMaster.objects.all().order_by('-created_at')
+    partners = Partner.objects.all().order_by('-created_at')
 
     return render(request, 'policy-commission/agent-commission.html', {
         "page_obj": page_obj,
@@ -116,6 +120,7 @@ def agent_commission(request):
         'branches': branches,
         'referrals': referrals,
         'bqpList': bqpList,
+        'partners': partners,
         'filtered_policy_ids': [obj.id for obj in filtered],
         'filtered_count': len(filtered),
     })
@@ -214,6 +219,7 @@ def franchisees_commission(request):
     branches = Branch.objects.all().order_by('-created_at')
     referrals = Referral.objects.all()
     bqpList = BqpMaster.objects.all().order_by('-created_at')
+    partners = Partner.objects.all().order_by('-created_at')
 
     return render(request, 'policy-commission/franchisees-commission.html', {
         "page_obj": page_obj,
@@ -223,7 +229,8 @@ def franchisees_commission(request):
         "branches": branches,
         "referrals": referrals,
         "bqpList": bqpList,
-        "filters": filters,
+        "bqpList": bqpList,
+        "partners": partners,
         "filtered_policy_ids": [obj.id for obj in filtered_policies],
         "filtered_count": len(filtered_policies),
     })
@@ -343,6 +350,7 @@ def insurer_commission(request):
     branches = Branch.objects.all().order_by('-created_at')
     referrals = Referral.objects.all()
     bqpList = BqpMaster.objects.all().order_by('-created_at')
+    partners = Partner.objects.all().order_by('-created_at')
 
     return render(request, 'policy-commission/insurer-commission.html', {
         "page_obj": page_obj,
@@ -353,6 +361,7 @@ def insurer_commission(request):
         "referrals": referrals,
         "bqpList": bqpList,
         'filters': filters,
+        'partners': partners,
         'filtered_policy_ids': [obj.id for obj in filtered],
         'filtered_count': len(filtered),
     })
@@ -528,11 +537,11 @@ def get_branch_referral_ids(branch_name, referred_by):
 def get_common_filters(request):
     return {
         key: request.GET.get(key, '').strip() for key in [
-            'policy_number', 'vehicle_number', 'engine_number', 'chassis_number',
+            'policy_number', 'policy_type', 'vehicle_number', 'engine_number', 'chassis_number',
             'vehicle_type', 'policy_holder_name', 'mobile_number',
             'insurance_provider', 'insurance_company', 'start_date',
             'end_date', 'manufacturing_year_from', 'manufacturing_year_to',
-            'fuel_type', 'gvw_from'
+            'fuel_type', 'gvw_from', 'gvw_to', 'branch_name', 'referred_by', 'pos_name', 'bqp'
         ]
     }
 
