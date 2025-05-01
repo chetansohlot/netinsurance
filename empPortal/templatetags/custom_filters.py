@@ -1,6 +1,7 @@
 from django import template
 from datetime import datetime
 import re
+from ..models import Commission, ExamResult,Users, DocumentUpload, Branch,BqpMaster
 
 register = template.Library()
 
@@ -100,3 +101,10 @@ def subtract(value, arg):
         return float(value) - float(arg)
     except (ValueError, TypeError):
         return 0
+    
+@register.simple_tag
+def get_user_details(user_id):
+    try:
+        return Users.objects.get(id=user_id)
+    except Users.DoesNotExist:
+        return None

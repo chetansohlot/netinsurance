@@ -1,6 +1,6 @@
 {% extends 'master.html' %}
 {% load static %}
-
+{% load custom_filters %}
 {% block title %}Campaign-wise Policy Logs{% endblock %}
 
 {% block content %}
@@ -45,7 +45,13 @@
             <div class="card-header bg-light">
               <strong>Campaign:</strong> {{ upload.campaign_name }} |
               <strong>Uploaded At:</strong> {{ upload.uploaded_at|date:"d M Y H:i" }} |
-              <strong>Uploaded By:</strong> {{ upload.created_by.get_full_name }}
+              {% get_user_details upload.created_by_id as user_details %}
+              <strong>Uploaded By:</strong> 
+              {% if user_details %}
+                {{ user_details.first_name }} {{ user_details.last_name }} <br>
+              {% else %}
+                User not found
+              {% endif %}
             </div>
             <div class="card-body table-responsive p-0">
               <table class="table table-bordered mb-0">
