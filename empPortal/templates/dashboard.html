@@ -107,7 +107,7 @@
                                 <tr>
                                     <td>{{ provider.insurance_provider|default:"N/A" }}</td>
                                     <td>{{ provider.policies_sold }}</td>
-                                    <td>₹{{ provider.policy_income|floatformat:2 }}</td>
+                                    <td>₹{{ provider.policy_income|floatformat:2|default:"0" }}</td>
                                     <td>₹0</td>
                                     <td>₹0</td>
                                 </tr>
