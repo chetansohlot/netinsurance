@@ -924,8 +924,8 @@ def policyData(request):
         filters_q &= Q(policy_agent_info__referral_id=str(referral_id))
 
     base_qs = PolicyDocument.objects.filter(filters_q)
-    filters_dict = get_common_filters(request)
-    filtered = apply_policy_filters(base_qs, filters_dict)
+    filters = get_common_filters(request)
+    filtered = apply_policy_filters(base_qs, filters)
 
     # filtered = []
     # for obj in base_qs:
