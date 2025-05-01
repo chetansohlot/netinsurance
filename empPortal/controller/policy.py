@@ -927,46 +927,46 @@ def policyData(request):
     filters_dict = get_common_filters(request)
     filtered = apply_policy_filters(base_qs, filters_dict)
 
-    filtered = []
-    for obj in base_qs:
-        raw = obj.extracted_text
-        data = {}
+    # filtered = []
+    # for obj in base_qs:
+    #     raw = obj.extracted_text
+    #     data = {}
         
-        if isinstance(raw, str):
-            try:
-                data = json.loads(raw)
-            except json.JSONDecodeError:
-                continue
-        elif isinstance(raw, dict):
-            data = raw
+    #     if isinstance(raw, str):
+    #         try:
+    #             data = json.loads(raw)
+    #         except json.JSONDecodeError:
+    #             continue
+    #     elif isinstance(raw, dict):
+    #         data = raw
     
-        if not data:
-            continue
+    #     if not data:
+    #         continue
 
-        if filters['policy_number'] and filters['policy_number'] not in data.get('policy_number', '').lower():
-            continue
-        if filters['vehicle_number'] and filters['vehicle_number'] not in data.get('vehicle_number', '').lower():
-            continue
-        if filters['engine_number'] and filters['engine_number'] not in get_nested(data, ['vehicle_details', 'engine_number']).lower():
-            continue
-        if filters['chassis_number'] and filters['chassis_number'] not in get_nested(data, ['vehicle_details', 'chassis_number']).lower():
-            continue
-        if filters['vehicle_type'] and filters['vehicle_type'] not in get_nested(data, ['vehicle_details', 'vehicle_type']).lower():
-            continue
-        if filters['policy_holder_name'] and filters['policy_holder_name'] not in data.get('insured_name', '').lower():
-            continue
-        if filters['mobile_number'] and filters['mobile_number'] not in data.get('contact_information', {}).get('phone_number', '').lower():
-            continue
-        if filters['insurance_provider'] and filters['insurance_provider'] not in data.get('insurance_company', '').lower():
-            continue   
+    #     if filters['policy_number'] and filters['policy_number'] not in data.get('policy_number', '').lower():
+    #         continue
+    #     if filters['vehicle_number'] and filters['vehicle_number'] not in data.get('vehicle_number', '').lower():
+    #         continue
+    #     if filters['engine_number'] and filters['engine_number'] not in get_nested(data, ['vehicle_details', 'engine_number']).lower():
+    #         continue
+    #     if filters['chassis_number'] and filters['chassis_number'] not in get_nested(data, ['vehicle_details', 'chassis_number']).lower():
+    #         continue
+    #     if filters['vehicle_type'] and filters['vehicle_type'] not in get_nested(data, ['vehicle_details', 'vehicle_type']).lower():
+    #         continue
+    #     if filters['policy_holder_name'] and filters['policy_holder_name'] not in data.get('insured_name', '').lower():
+    #         continue
+    #     if filters['mobile_number'] and filters['mobile_number'] not in data.get('contact_information', {}).get('phone_number', '').lower():
+    #         continue
+    #     if filters['insurance_provider'] and filters['insurance_provider'] not in data.get('insurance_company', '').lower():
+    #         continue   
 
-        obj.json_data = data    # attach parsed dict for the template
-        obj.policy_infos = obj.policy_info.first()
-        obj.policy_vehicle_infos = obj.policy_vehicle_info.first()
-        obj.policy_agent_infos = obj.policy_agent_info.first()
-        obj.policy_franchise_infos = obj.policy_franchise_info.first()
-        obj.policy_insurer_infos = obj.policy_insurer_info.first()
-        filtered.append(obj)
+    #     obj.json_data = data    # attach parsed dict for the template
+    #     obj.policy_infos = obj.policy_info.first()
+    #     obj.policy_vehicle_infos = obj.policy_vehicle_info.first()
+    #     obj.policy_agent_infos = obj.policy_agent_info.first()
+    #     obj.policy_franchise_infos = obj.policy_franchise_info.first()
+    #     obj.policy_insurer_infos = obj.policy_insurer_info.first()
+    #     filtered.append(obj)
 
     if role_id != 1 and request.user.department_id != "5" and request.user.department_id != "3" and request.user.department_id != "2":
         policy_count = PolicyDocument.objects.filter(status=6, rm_id=user_id).count()
