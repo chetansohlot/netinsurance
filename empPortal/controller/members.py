@@ -97,7 +97,11 @@ def members(request):
         # Base QuerySet
         users = Users.objects.filter(role_id__in=role_ids)
 
-        
+                
+        for user in users:
+            if not Partner.objects.filter(user_id=user.id).exists():
+                sync_user_to_partner(user.id, request)
+
         if global_search:
             users = users.annotate(
                 search_full_name=Concat('first_name', Value(' '), 'last_name')
@@ -325,12 +329,11 @@ def posTrainingCertificate(request, user_id):
 
     customer = get_object_or_404(Users, id=user_id)
 
-    pprint(customer)
+
 
     context = {
         "customer": customer,
         "logo_url": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/logo2.png'),
-        "certificate_pattern": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/certificate-pattern.png'),
         "default_image_pos": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/default-image-pos.jpg'),
         "signature_pos": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/signature-pos.webp'),
     }
@@ -1049,6 +1052,10 @@ def memberView(request, user_id):
         user_details  = Users.objects.get(id=user_id)
         bank_details  = BankDetails.objects.filter(user_id=user_id).first()
         partner_info  = Partner.objects.filter(user_id=user_id).first()
+        if not partner_info: 
+            sync_user_to_partner(user_id, request)
+            partner_info  = Partner.objects.filter(user_id=user_id).first()
+
         # bqp_details = BqpMaster.objects.filter(id=user_details.bqp_id).first()
         bqp_details  = BqpMaster.objects.all()
 
@@ -1058,7 +1065,6 @@ def memberView(request, user_id):
 
 
         # if in partner table user_id not exist only then hit this 
-        sync_user_to_partner(user_id, request)  # Sync user data to Partner model
 
         docs = DocumentUpload.objects.filter(user_id=user_id).first()
         # Fetch commissions for the specific member
@@ -1229,8 +1235,8 @@ def activateUser(request, user_id):
             # Update user activation status in the database
             with connection.cursor() as cursor:
                 cursor.execute(
-                    "UPDATE users SET activation_status = %s WHERE id = %s",
-                    ['1', user_id]
+                    "UPDATE users SET  user_active = %s, activation_status = %s WHERE id = %s",
+                    ['1','1', user_id]
                 )
 
             user = get_object_or_404(Users, id=user_id)
@@ -1299,12 +1305,47 @@ def updatePartnerStatus(request, user_id):
         except ValueError:
             messages.error(request, "Invalid status selected.")
             return redirect('member-view', user_id=user_id)
+        
+     # Fetch user documents for approval check
+        docs = DocumentUpload.objects.filter(user_id=user_id).first() 
+
+        
+        # Check if documents are approved before activating
+        if partner_status == 4:  # Activated status
+            if not docs or not all([
+                docs.aadhaar_card_front_status == 'Approved',
+                docs.aadhaar_card_back_status == 'Approved',
+                docs.upload_pan_status == 'Approved',
+                docs.upload_cheque_status == 'Approved',
+                docs.tenth_marksheet_status == 'Approved'
+            ]):
+                messages.error(request, "User cannot be activated. Please ensure all required documents are approved.")
+                return redirect('member-view', user_id=user_id)   
 
         update_successful = update_partner_by_user_id(
             user_id=user_id,
             update_fields={"partner_status": partner_status},
             request=request
         )
+
+        #  If they just moved into “Activated” (4), go through your full activateUser flow
+        if partner_status == 4:
+        # activateUser will do its own messages.success / messages.error
+            activate_response = activateUser(request, user_id)
+            if activate_response:
+                return activate_response
+            
+            
+            # Then, run the login activation process
+            login_activate_response = loginActivateUser(request, user_id)
+            if login_activate_response:
+                return login_activate_response 
+            
+         # If Inactive
+        if partner_status == 5:
+            deactivate_response = deactivateUser(request, user_id)
+            if deactivate_response:
+                return deactivate_response    
 
         if update_successful:
             messages.success(request, "Partner status updated successfully.")
@@ -1665,6 +1706,9 @@ def add_partner(request):
             is_active=1
         )
         user.save()
+
+        
+        # sync_user_to_partner(user.id, request) 
 
         messages.success(request, "Partner added successfully!")
         return redirect('members')  # Redirect to a desired page

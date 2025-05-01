@@ -15,6 +15,7 @@ from django.core.files.storage import FileSystemStorage
 from django.core.paginator import Paginator
 from django.db.models import Q
 
+from empPortal.model import Partner
 
 import re,openpyxl
 from django.db import IntegrityError
@@ -233,8 +234,10 @@ def edit_policy_docs(request, policy_id):
         return redirect('login')
     
     policy_id = unquote(policy_id)
+    policy = PolicyInfo.objects.filter(policy_id=policy_id).first()
+    
     policy_data = PolicyDocument.objects.filter(id=policy_id).first()
-
+    
     try:
         doc_data = PolicyUploadDoc.objects.filter(policy_id=policy_id).first()
     except PolicyUploadDoc.DoesNotExist:
@@ -262,6 +265,7 @@ def edit_policy_docs(request, policy_id):
     pdf_path = get_pdf_path(request, policy_data.filepath if policy_data else None)
 
     return render(request, 'policy/edit-policy-docs.html', {
+        'policy': policy,
         'policy_data': policy_data,
         'pdf_path': pdf_path,
         'doc_data': doc_data
@@ -905,41 +909,64 @@ def policyData(request):
         'insurance_provider': request.GET.get('insurance_provider', '').strip().lower(), # maps to "Insurance Provider"
     }
 
-    filtered = []
-    for obj in base_qs:
-        raw = obj.extracted_text
-        data = {}
-        
-        if isinstance(raw, str):
-            try:
-                data = json.loads(raw)
-            except json.JSONDecodeError:
-                continue
-        elif isinstance(raw, dict):
-            data = raw
+    user = request.user
+    filters_q = Q(status=6) & Q(policy_number__isnull=False) & ~Q(policy_number='')
+
+    if user.role_id != 1 and str(user.department_id) not in ["3", "5"]:
+        filters_q &= Q(rm_id=user.id)
+
+    branch_id   = request.GET.get('branch_name', '')
+    referral_id = request.GET.get('referred_by', '')
     
-        if not data:
-            continue
+    if branch_id:
+        filters_q &= Q(policy_info__branch_name=str(branch_id))
+    if referral_id:
+        filters_q &= Q(policy_agent_info__referral_id=str(referral_id))
 
-        if filters['policy_number'] and filters['policy_number'] not in data.get('policy_number', '').lower():
-            continue
-        if filters['vehicle_number'] and filters['vehicle_number'] not in data.get('vehicle_number', '').lower():
-            continue
-        if filters['engine_number'] and filters['engine_number'] not in get_nested(data, ['vehicle_details', 'engine_number']).lower():
-            continue
-        if filters['chassis_number'] and filters['chassis_number'] not in get_nested(data, ['vehicle_details', 'chassis_number']).lower():
-            continue
-        if filters['vehicle_type'] and filters['vehicle_type'] not in get_nested(data, ['vehicle_details', 'vehicle_type']).lower():
-            continue
-        if filters['policy_holder_name'] and filters['policy_holder_name'] not in data.get('insured_name', '').lower():
-            continue
-        if filters['mobile_number'] and filters['mobile_number'] not in data.get('contact_information', {}).get('phone_number', '').lower():
-            continue
-        if filters['insurance_provider'] and filters['insurance_provider'] not in data.get('insurance_company', '').lower():
-            continue   
+    base_qs = PolicyDocument.objects.filter(filters_q)
+    filters = get_common_filters(request)
+    filtered = apply_policy_filters(base_qs, filters)
 
-        obj.json_data = data    # attach parsed dict for the template
-        filtered.append(obj)
+    # filtered = []
+    # for obj in base_qs:
+    #     raw = obj.extracted_text
+    #     data = {}
+        
+    #     if isinstance(raw, str):
+    #         try:
+    #             data = json.loads(raw)
+    #         except json.JSONDecodeError:
+    #             continue
+    #     elif isinstance(raw, dict):
+    #         data = raw
+    
+    #     if not data:
+    #         continue
+
+    #     if filters['policy_number'] and filters['policy_number'] not in data.get('policy_number', '').lower():
+    #         continue
+    #     if filters['vehicle_number'] and filters['vehicle_number'] not in data.get('vehicle_number', '').lower():
+    #         continue
+    #     if filters['engine_number'] and filters['engine_number'] not in get_nested(data, ['vehicle_details', 'engine_number']).lower():
+    #         continue
+    #     if filters['chassis_number'] and filters['chassis_number'] not in get_nested(data, ['vehicle_details', 'chassis_number']).lower():
+    #         continue
+    #     if filters['vehicle_type'] and filters['vehicle_type'] not in get_nested(data, ['vehicle_details', 'vehicle_type']).lower():
+    #         continue
+    #     if filters['policy_holder_name'] and filters['policy_holder_name'] not in data.get('insured_name', '').lower():
+    #         continue
+    #     if filters['mobile_number'] and filters['mobile_number'] not in data.get('contact_information', {}).get('phone_number', '').lower():
+    #         continue
+    #     if filters['insurance_provider'] and filters['insurance_provider'] not in data.get('insurance_company', '').lower():
+    #         continue   
+
+    #     obj.json_data = data    # attach parsed dict for the template
+    #     obj.policy_infos = obj.policy_info.first()
+    #     obj.policy_vehicle_infos = obj.policy_vehicle_info.first()
+    #     obj.policy_agent_infos = obj.policy_agent_info.first()
+    #     obj.policy_franchise_infos = obj.policy_franchise_info.first()
+    #     obj.policy_insurer_infos = obj.policy_insurer_info.first()
+    #     filtered.append(obj)
 
     if role_id != 1 and request.user.department_id != "5" and request.user.department_id != "3" and request.user.department_id != "2":
         policy_count = PolicyDocument.objects.filter(status=6, rm_id=user_id).count()
@@ -957,9 +984,18 @@ def policyData(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
+    branches = Branch.objects.all().order_by('branch_name')
+    referrals = Referral.objects.all().order_by('name')
+    bqpList = BqpMaster.objects.all().order_by('bqp_fname')
+    partners = Partner.objects.all().order_by('name')
+
     return render(request, 'policy/index.html', {
         "page_obj": page_obj,
         "policy_count": policy_count,
+        "branches": branches,
+        "referrals": referrals,
+        "bqpList": bqpList,
+        "partners": partners,
         "per_page": per_page,
         'filters': {k: request.GET.get(k,'') for k in filters}
     })
@@ -993,3 +1029,92 @@ def viewSinglePolicyLog(request):
         "status_counts":status_counts
     })
     
+    
+def get_filter_conditions(filters):
+    """
+    Generate Q object conditions and post-filter lambdas for fields stored in extracted_text JSON.
+    """
+    db_filters = Q()
+    json_filters = []
+
+    for key, val in filters.items():
+        if not val:
+            continue
+        val = val.strip().lower()
+
+        if key in ['policy_number', 'vehicle_number', 'vehicle_type',
+                   'policy_holder_name', 'insurance_provider']:
+            field_map = {
+                'policy_number': 'policy_number__icontains',
+                'vehicle_number': 'vehicle_number__icontains',
+                'vehicle_type': 'vehicle_type__iexact',
+                'policy_holder_name': 'holder_name__icontains',
+                'insurance_provider': 'insurance_provider__icontains',
+            }
+            db_filters &= Q(**{field_map[key]: val})
+
+        elif key in ['insurance_company', 'mobile_number', 'engine_number', 'chassis_number', 'fuel_type']:
+            json_filters.append(lambda data, k=key, v=val: v in data.get(k, '').lower())
+
+        elif key == 'gvw_from':
+            try:
+                val = int(val)
+                json_filters.append(lambda data, v=val: int(data.get('gvw', '0')) >= v)
+            except ValueError:
+                continue
+
+        elif key in ['manufacturing_year_from', 'manufacturing_year_to']:
+            try:
+                year = int(val)
+                if key.endswith('from'):
+                    json_filters.append(lambda data, y=year: int(data.get('manufacturing_year', '0')) >= y)
+                else:
+                    json_filters.append(lambda data, y=year: int(data.get('manufacturing_year', '0')) <= y)
+            except ValueError:
+                continue
+
+        elif key == 'start_date':
+            try:
+                dt = datetime.strptime(val, '%Y-%m-%d').date()
+                db_filters &= Q(created_at__date__gte=dt)
+            except ValueError:
+                continue
+
+        elif key == 'end_date':
+            try:
+                dt = datetime.strptime(val, '%Y-%m-%d').date()
+                db_filters &= Q(created_at__date__lte=dt)
+            except ValueError:
+                continue
+
+    return db_filters, json_filters
+
+
+def apply_policy_filters(queryset, filters):
+    db_q, json_conditions = get_filter_conditions(filters)
+    filtered_qs = queryset.filter(db_q)
+
+    final_list = []
+    for obj in filtered_qs:
+        try:
+            data = obj.extracted_text if isinstance(obj.extracted_text, dict) else json.loads(obj.extracted_text or '{}')
+        except Exception:
+            continue
+
+        if all(cond(data) for cond in json_conditions):
+            obj.json_data = data
+            final_list.append(obj)
+
+    return final_list
+
+
+def get_common_filters(request):
+    return {
+        key: request.GET.get(key, '').strip() for key in [
+            'policy_number', 'policy_type', 'vehicle_number', 'engine_number', 'chassis_number',
+            'vehicle_type', 'policy_holder_name', 'mobile_number',
+            'insurance_provider', 'insurance_company', 'start_date',
+            'end_date', 'manufacturing_year_from', 'manufacturing_year_to',
+            'fuel_type', 'gvw_from', 'gvw_to', 'branch_name', 'referred_by', 'pos_name', 'bqp'
+        ]
+    }

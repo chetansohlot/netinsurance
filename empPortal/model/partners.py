@@ -11,6 +11,11 @@ class Partner(models.Model):
         ('6', 'Rejected'),
     ]
 
+    INTRAINING_STATUS_CHOICES = [
+        ('0','Not Started'),
+        ('1','Completed'),
+    ]
+
     user_id = models.IntegerField(null=True, blank=True)
     pan_no = models.CharField(max_length=20, blank=True, null=True)
     aadhaar_no = models.CharField(max_length=20, blank=True, null=True)
@@ -27,6 +32,13 @@ class Partner(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     active = models.BooleanField(default=True)
+    intraining_status =models.CharField(
+        max_length=1,
+        choices=INTRAINING_STATUS_CHOICES,
+        default='0',
+        blank=True,
+        null=True
+        ) ## for intraining status
 
     class Meta:
         db_table = 'partners'

@@ -24,7 +24,7 @@
                     <!-- <h1 class="admin-title m-0 py-2">View Member </h1> -->
                     <!-- <a href="#"><img src="{% static 'dist/img/svg/back_ic.svg' %}" alt="" class="mt-2 pl-3"></a> -->
                   </div>
-                  <form id="activate-form" name="activate-form" method="post" action="{% url 'activate-user' user_id=user_details.id %}" style="display: none;">
+                  <!-- <form id="activate-form" name="activate-form" method="post" action="{% url 'activate-user' user_id=user_details.id %}" style="display: none;">
                     {% csrf_token %}
                   </form>
 
@@ -62,7 +62,7 @@
                       </div>  
                     </div>
                   {% endif %}
-                  
+                   -->
                     
       <!-- STATUS DROPDOWN -->
       <div class="col">
@@ -79,6 +79,7 @@
                 <option value="4" {% if partner_status == '4' %}selected{% endif %}>Activated</option>
                 <option value="5" {% if partner_status == '5' %}selected{% endif %}>Inactive</option>
                 <option value="6" {% if partner_status == '6' %}selected{% endif %}>Rejected</option>
+
               </select>
               <div class="input-group-append">
                 <button class="dashboard-btn-outline bg-primary border-primary ml-2" id="change-partner-status" type="button">Update</button>
@@ -173,13 +174,94 @@
                                         <span class="list">Communication Address</span>
                                         <span class="list-output">{{ user_details.address }}</span>
                                     </li>
-                                    <li>
+                                    <!-- <li>
                                         <img src="{% static 'dist/img/svg/certificate2.svg' %}" alt="">
                                         <span class="list">Download Certificate</span>
                                         <span class="list-output">
                                             N/A
                                         </span>
+                                    </li> -->
+
+                                    <!-- <li>
+                                        <img src="{% static 'dist/img/svg/certificate2.svg' %}" alt="">
+                                        <span class="list">Download Certificate</span>
+                                        <span class="list-output">
+                                          {% if user_details.exam_attempt > 0 %}
+                                            {% if user_details.examRes and user_details.examRes.status %}
+                                              <a href="{% url 'download-certificate' user_id=user_details.id %}">Exam Certificate</a> |
+                                              <a href="{% url 'download-training-certificate' user_id=user_details.id %}">Training Certificate</a>
+                                            {% else %}
+                                              N/A
+                                            {% endif %}
+                                          {% else %}
+                                            N/A
+                                          {% endif %}
+                                        </span>
+                                      </li> -->
+                                      <!-- <li>
+                                        <img src="{% static 'dist/img/svg/certificate2.svg' %}" alt="">
+                                        <span class="list">Download Certificate</span>
+                                        <span class="list-output">
+                                            {% if user_details.exam_attempt > 0 and user_details.examRes %}
+                                                {% if user_details.examRes.status == 'passed' %}
+                                                    {% if user_details.partner.partner_status == '2' %}
+                                                        <a href="{% url 'download-training-certificate' user_id=user_details.id %}"><i class="fa fa-download"></i>Training Certificate</a>
+                                                    {% elif user_details.partner.partner_status == '3' %}
+                                                        <a href="{% url 'download-certificate' user_id=user_details.id %}"><i class="fa fa-download"></i>Exam Certificate</a> |
+                                                        <a href="{% url 'download-training-certificate' user_id=user_details.id %}"><i class="fa fa-download"></i>Training Certificate</a>
+                                                    {% else %}
+                                                        N/A
+                                                    {% endif %}
+                                                {% else %}
+                                                    N/A
+                                                {% endif %}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </span>
+                                    </li> -->
+
+                                    <li>
+                                        <img src="{% static 'dist/img/svg/certificate2.svg' %}" alt="">
+                                        <span class="list">Download Certificate</span>
+                                        <span class="list-output">
+                                            {% if user_details.exam_attempt > 0 and user_details.examRes %}
+                                                {% if user_details.examRes.status == 'passed' %}
+                                                    {% if user_details.can_download_certificates %}
+                                                        {% if user_details.partner.partner_status == '2' %}
+                                                            <a href="{% url 'download-training-certificate' user_id=user_details.id %}">
+                                                                <i class="fa fa-download"></i>Training Certificate
+                                                            </a>
+                                                        {% elif user_details.partner.partner_status == '3' %}
+                                                            <a href="{% url 'download-certificate' user_id=user_details.id %}">
+                                                                <i class="fa fa-download"></i>Exam Certificate
+                                                            </a> |
+                                                            <a href="{% url 'download-training-certificate' user_id=user_details.id %}">
+                                                                <i class="fa fa-download"></i>Training Certificate
+                                                            </a>
+                                                        {% else %}
+                                                            N/A
+                                                        {% endif %}
+                                                    {% else %}
+                                                        Available after 5 days
+                                                    {% endif %}
+                                                {% else %}
+                                                    N/A
+                                                {% endif %}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </span>
                                     </li>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+
+                                      
                                     <li>
                                         <img src="{% static 'dist/img/svg/user-status.svg' %}" alt="">
                                         <span class="list">User Status</span>
@@ -204,19 +286,25 @@
                                         </div>
                                     </li>
                                     
-                                  
-
                                     <li>
                                         <img src="{% static 'dist/img/svg/exam.svg' %}" alt="Exam Icon">
                                         <span class="list">Exam Score & Status</span>
                                         <span class="list-output">
-                                            Attempted: {{ user_details.examRes.percentage|default:"0" }} |
-                                            Passed:
-                                            {% if user_details.exam_attempt > 0 %}
-                                                {% if user_details.examRes.status %}
-                                                   Yes
-                                                {% elif user_details.examRes.status %}
-                                                    No
+                                            {% if user_details.partner and user_details.partner.partner_status == '3' %}
+                                                Attempted: {{ user_details.examRes.percentage|default:"0" }} |
+                                                Passed:
+                                                {% if user_details.exam_attempt > 0 %}
+                                                    {% if user_details.examRes %}
+                                                        {% if user_details.examRes.status == 'passed' %}
+                                                            Yes
+                                                        {% elif user_details.examRes.status == 'failed' %}
+                                                            No
+                                                        {% else %}
+                                                            N/A
+                                                        {% endif %}
+                                                    {% else %}
+                                                        N/A
+                                                    {% endif %}
                                                 {% else %}
                                                     N/A
                                                 {% endif %}
@@ -225,8 +313,11 @@
                                             {% endif %}
                                         </span>
                                     </li>
+                                    
+                                    
+                                    
 
-                                    <li>
+                                    <!-- <li>
                                         <img src="{% static 'dist/img/svg/training-status.svg' %}" alt="">
                                         <span class="list">Training Status</span>
                                         <span class="list-output">
@@ -243,21 +334,62 @@
                                             {% endif %}
                                           </span>
                                           
+                                    </li> -->
+                                    <li>
+                                        <img src="{% static 'dist/img/svg/training-status.svg' %}" alt="">
+                                        <span class="list">Training Status</span>
+                                        <span class="list-output">
+                                            {% if user_details.partner %}
+                                                {% if user_details.partner.partner_status == '2' or user_details.partner.partner_status == '3' %}
+                                                    
+                                                    {% if user_details.examRes %}
+                                                        {% if user_details.examRes.status|lower == 'in_exam' %}
+                                                            <span class="text-primary">In Exam</span>
+                                                        {% elif user_details.examRes.status|lower == 'passed' %}
+                                                            <span class="text-success">Completed</span>
+                                                        {% elif user_details.examRes.status|lower == 'failed' %}
+                                                            <span class="text-danger">Failed</span>
+                                                        {% else %}
+                                                            <span class="text-muted">N/A</span>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        {% if user_details.partner.intraining_status == '0' %}
+                                                            <span class="text-primary">Not Started</span>
+                                                        {% elif user_details.partner.intraining_status == '1' %}
+                                                            <span class="text-warning">Training Completed</span>
+                                                        {% else %}
+                                                            <span class="text-muted">N/A</span>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                    
+                                                {% else %}
+                                                    <span class="text-muted">N/A</span>
+                                                {% endif %}
+                                            {% else %}
+                                                <span class="text-muted">N/A</span>
+                                            {% endif %}
+                                        </span>
                                     </li>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
                                     <li>
                                         <img src="{% static 'dist/img/svg/training-completed.svg' %}" alt="">
-                                        <span class="list">Training Completed</span>
+                                        <span class="list">Training Completed Date</span>
                                         <span class="list-output">
                                             N/A
                                         </span>
                                     </li>
-                                    <li>
+                                    <!-- <li>
                                         <img src="{% static 'dist/img/svg/timer.svg' %}" alt="">
                                         <span class="list">Training Time Counter</span>
                                         <span class="list-output">
                                             N/A
                                         </span>
-                                    </li>
+                                    </li> -->
                                 </ul>
                                 <!-- Edit Button -->
                             </div>
@@ -1122,7 +1254,7 @@
         <!-- /.content-wrapper -->
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-        <script>
+        <!-- <script>
             function showRejectNote(note) {
                 Swal.fire({
                     icon: 'error',
@@ -1198,7 +1330,59 @@
                 }
               });
             });
-          </script>
+          </script> -->
+
+<script>
+    document.getElementById('change-partner-status').addEventListener('click', function () {
+      const selectedStatus = document.querySelector('select[name="partner_status"]').value;
+  
+      if (!selectedStatus) {
+        Swal.fire('Please select a status before updating.');
+        return;
+      }
+  
+      // Handle "Activated"
+      if (selectedStatus === '4') {
+        Swal.fire({
+          title: 'Are you sure?',
+          text: "You are about to activate this partner.",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, activate',
+          cancelButtonText: 'Cancel'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            {% if user_details.activation_status != '1' %}
+              document.getElementById('activate-form').submit();
+            {% elif user_details.activation_status == '1' and user_details.user_active == 0 %}
+              document.getElementById('login-activate-form').submit();
+            {% endif %}
+          }
+        });
+  
+      // Handle "Inactive"
+      } else if (selectedStatus === '5') {
+        Swal.fire({
+          title: 'Are you sure?',
+          text: "You are about to inactivate this partner.",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, deactivate',
+          cancelButtonText: 'Cancel'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            {% if user_details.activation_status == '1' and user_details.user_active == 1 %}
+              document.getElementById('deactivate-form').submit();
+            {% endif %}
+          }
+        });
+  
+      } else {
+        Swal.fire('Only "Activated" or "Inactive" can be changed from here.');
+      }
+    });
+  </script>
+  
           
             <script>
               document.addEventListener("DOMContentLoaded", function() {
