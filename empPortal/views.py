@@ -40,27 +40,6 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
-
-def dashboard(request):
-    if request.user.is_authenticated:
-        user = request.user
-
-        if request.user.role_id != 1 and str(request.user.department_id) not in ["3", "5","2"]:
-            policy_qs   = PolicyDocument.objects.filter(status=6, rm_id=request.user.id)
-        else:
-            policy_qs = PolicyDocument.objects.filter(status=6)
-
-        policy_count = policy_qs.count()
-        total_revenue = policy_qs.aggregate(Sum('policy_premium'))['policy_premium__sum'] or 0
-
-        return render(request, 'dashboard.html', {
-            'user': user,
-            'policy_count': policy_count,
-            'total_revenue': total_revenue,
-        })
-    else:
-        return redirect('login')
-
 def billings(request):
     if request.user.is_authenticated:
         return render(request,'billings.html')
