@@ -10,6 +10,8 @@
 {% url 'franchisees-commission' as franchise_commission %}
 {% url 'insurer-commission' as insurer_commission %}
 
+{% url 'pending-insurer-commission-report' as pending_insurer_commission_url %}
+{% url 'pending-agent-commission-report' as pending_agent_commission_url %}
 
 {% if request.user.role_id|stringformat:"s" not in "1,4" and request.user.department_id|stringformat:"s" == "3" %}
 
@@ -133,11 +135,25 @@
                       <p>Insurer Business </p>
                   </a>
               </li>
+              <li class="nav-item">
+                <a href="{{ pending_agent_commission_url }}" class="nav-link sidebar-menutext {% if request.path == pending_agent_commission_url %} active {% endif %}">
+                  <svg class="sidbarmenu-svg">
+                    <use xlink:href="#commission-icon" />
+                  </svg>
+                  <p>Pending Agent. Comm. Report </p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ pending_insurer_commission_url }}" class="nav-link sidebar-menutext {% if request.path == pending_insurer_commission_url %} active {% endif %}">
+                  <svg class="sidbarmenu-svg">
+                    <use xlink:href="#commission-icon" />
+                  </svg>
+                  <p>Pending Ins. Comm. Report </p>
+                </a>
+              </li>
               
               </ul>
-              
             </li>
-            
         </ul>
       </nav>
     </div>
