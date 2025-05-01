@@ -65,5 +65,18 @@
         $('.change-arrow').attr('src', 'dist/img/svg/down-arrow-icon.svg'); // Change back to down arrow
     });
 
+    $(document).ready(function() {
+        // Show mobile filter
+        $(".mobile-filter-show-icon").click(function() {
+            $(".mobile-filter").toggle();
+            // add class on body for scrollbar hide 
+            //$("body").addClass("open-filter");
+        })
+        // Close mobile filter
+        $('.mobile-filter-close').click(function() {
+            $(".mobile-filter").hide();
+            $("body").removeClass("open-filter");
+        })
+    })
   
 </script>
