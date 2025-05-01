@@ -97,7 +97,11 @@ def members(request):
         # Base QuerySet
         users = Users.objects.filter(role_id__in=role_ids)
 
-        
+                
+        for user in users:
+            if not Partner.objects.filter(user_id=user.id).exists():
+                sync_user_to_partner(user.id, request)
+                
         if global_search:
             users = users.annotate(
                 search_full_name=Concat('first_name', Value(' '), 'last_name')
@@ -1048,6 +1052,10 @@ def memberView(request, user_id):
         user_details  = Users.objects.get(id=user_id)
         bank_details  = BankDetails.objects.filter(user_id=user_id).first()
         partner_info  = Partner.objects.filter(user_id=user_id).first()
+        if not partner_info: 
+            sync_user_to_partner(user_id, request)
+            partner_info  = Partner.objects.filter(user_id=user_id).first()
+
         # bqp_details = BqpMaster.objects.filter(id=user_details.bqp_id).first()
         bqp_details  = BqpMaster.objects.all()
 
@@ -1057,7 +1065,6 @@ def memberView(request, user_id):
 
 
         # if in partner table user_id not exist only then hit this 
-        sync_user_to_partner(user_id, request)  # Sync user data to Partner model
 
         docs = DocumentUpload.objects.filter(user_id=user_id).first()
         # Fetch commissions for the specific member
