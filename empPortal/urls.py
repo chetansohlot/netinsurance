@@ -202,7 +202,7 @@ urlpatterns = [
     path('report/v1/commission-report/', reports.commission_report, name='commission-report'),  
     path('report/pending-insurer-commission-report/', reports.pending_insurer_commission_report, name='pending-insurer-commission-report'),
     path('report/pending-agent-commission-report/', reports.pending_agent_commission_report, name='pending-agent-commission-report'),
-      
+    
     # REPORTS 
     
     # EXPORT

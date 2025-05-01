@@ -300,7 +300,7 @@ Policy Data
                               <td>
                                 <div class="d-flex align-items-start">
                                   <div>
-                                    <span class="d-block">{{ data.insurance_provider }}</span>
+                                    <span class="d-block">{{ data.policy_infos.insurance_company|default:data.insurance_provider }}</span>
                                     <span class="text-info d-inline-block"><strong>Policy No.:</strong> {{ data.policy_number|default:"-" }}</span>
                                   </div>  
                                   <a href="{% url 'edit-policy' id=data.id %}" class="tooltip-sec ml-2 text-danger" data-title="Edit Policy">
@@ -312,52 +312,75 @@ Policy Data
                               <td>
                                 <div class="d-flex align-items-start">
                                   <div>
-                                    <span class="d-block">{{ data.holder_name }}</span>
-                                    <span class="d-block "><strong>Reg. No.</strong> {{ data.vehicle_number }}</span>
+                                    <span class="d-block">{{ data.policy_infos.insured_name|default:data.holder_name }}</span>
+                                    <span class="d-block "><strong>Reg. No.</strong> {{ data.policy_vehicle_infos.registration_number|default:data.vehicle_number }}</span>
                                   </div>  
                                 </div>  
-                              <td>{{ data.policy_type|default:"-" }}</td>
+                                <td>{{data.policy_infos.policy_type|default_if_none:data.policy_type|default:"-" }}</td>
                               <td>
-                                <span class="circle-icon"><i class="far fa-circle"></i></span><strong>Issue:</strong> {{ data.issue_date|default:"-" }} <br>
-                                <span class="circle-icon"><i class="far fa-circle"></i></span><strong>Start:</strong> {{ data.start_date|default:"-" }}<br>
-                                <span class="circle-icon"><i class="far fa-circle"></i></span><strong>Expiry:</strong> {{ data.expiry_date|default:"-" }}
-                                
-
+                                <span class="circle-icon"><i class="far fa-circle"></i></span><strong>Issue:</strong> {{ data.policy_infos.issue_date|default_if_none:data.issue_date|default:"-" }} <br>
+                                <span class="circle-icon"><i class="far fa-circle"></i></span><strong>Start:</strong> {{ data.policy_infos.start_date|default_if_none:data.start_date|default:"-" }}<br>
+                                <span class="circle-icon"><i class="far fa-circle"></i></span><strong>Expiry:</strong> {{ data.policy_infos.end_date|default_if_none:data.expiry_date|default:"-" }}
                               </td>
-                              <!-- <td>{{ data.start_date|default:"-" }}</td>
-                              <td>{{ data.expiry_date|default:"-" }}</td> -->
                               <td>
                                 <span class="circle-icon"><i class="far fa-circle"></i></span>
                                 <strong>Net:</strong>
                                 <i class="fa-solid fa-indian-rupee-sign"></i>
-                                {{ data.policy_premium|default_if_none:0|floatformat:2 }} <br>
-
+                                {% if data.policyinfos.net_premium and data.policyinfos.net_premium != 0 %}
+                                  {{ data.policyinfos.net_premium|floatformat:2 }}
+                                {% else %}
+                                  {{data.policy_premium|default:0|floatformat:2}}
+                                {% endif %}
+                                <br>
                                 <span class="circle-icon"><i class="far fa-circle"></i></span>
                                 <strong>Gross:</strong>
                                 <i class="fa-solid fa-indian-rupee-sign"></i>
-                                {{ data.policy_total_premium|default_if_none:0|floatformat:2 }} <br>
-
+                                {% if data.policyinfos.gross_premium and data.policyinfos.gross_premium != 0 %}
+                                  {{ data.policyinfos.gross_premium|floatformat:2 }}
+                                {% else %}
+                                  {{data.policy_total_premium|default:0|floatformat:2}}
+                                {% endif %}
+                                <br>
                                 <span class="circle-icon"><i class="far fa-circle"></i></span>
                                 <strong>OD:</strong>
                                 <i class="fa-solid fa-indian-rupee-sign"></i>
-                                {{ data.od_premium|default_if_none:0|floatformat:2 }} <br>
+                                {% if data.policyinfos.od_premium and data.policyinfos.od_premium != 0 %}
+                                  {{ data.policyinfos.od_premium|floatformat:2 }}
+                                {% else %}
+                                  {{data.od_premium|default:0|floatformat:2}}
+                                {% endif %}
+                                <br>
 
                                 <span class="circle-icon"><i class="far fa-circle"></i></span>
                                 <strong>TP:</strong>
                                 <i class="fa-solid fa-indian-rupee-sign"></i>
-                                {{ data.tp_premium|default_if_none:0|floatformat:2 }}
+                                {% if data.policyinfos.tp_premium and data.policyinfos.tp_premium != 0 %}
+                                  {{ data.policyinfos.tp_premium|floatformat:2 }}
+                                {% else %}
+                                  {{data.tp_premium|default:0|floatformat:2}}
+                                {% endif %}
+                                <br>
                               </td>
-                              <!-- <td>{{ data.policy_total_premium }}</td>
-                              <td>{{ data.od_premium }}</td>
-                              <td>{{ data.tp_premium }}</td> -->
-                              <td>{{ data.gst }}</td>
+                              <td>
+                                {% if data.policyinfos.gst_premium and data.policyinfos.gst_premium != 0 %}
+                                  {{ data.policyinfos.gst_premium|floatformat:2 }}
+                                {% else %}
+                                  {{data.gst|default:0|floatformat:2}}
+                                {% endif %}
+                              </td>
                               <td>{{ data.rm_name }}</td>
                               <td>{{ data.payment_status|default:"Not Paid" }}</td>
-                              <td>{{ data.vehicle_type|default:"-" }}</td>
-                              <td>{{ data.vehicle_make|default:"-" }} / {{ data.vehicle_model|default:"-" }} </td>
-                              <td>{{ data.vehicle_gross_weight|default:"-" }}</td>
-                              <td>{{ data.sum_insured|default:"-" }}</td>
-                              <td>{{ data.vehicle_manuf_date|default:"-" }}</td>
+                              <td>
+                                  {% if data.policy_vehicle_infos.vehicle_type %}
+                                    {{ data.policy_vehicle_infos.vehicle_type }}
+                                  {% else %}
+                                    {{data.vehicle_type|default:"-"}}
+                                  {% endif %}
+                              </td>
+                              <td>{{ data.policy_vehicle_infos.vehicle_make|default_if_none:data.vehicle_make|default:"-" }} / {{ data.policy_vehicle_infos.vehicle_model|default_if_none:data.vehicle_model|default:"-" }} </td>
+                              <td>{{ data.policy_vehicle_infos.gvw|default_if_none:data.vehicle_gross_weight|default:"-" }}</td>
+                              <td>{{ data.policy_infos.sum_insured|default_if_none:data.sum_insured|default:"-" }}</td>
+                              <td>{{ data.policy_vehicle_infos.manufacture_year|default_if_none:data.vehicle_manuf_date|default:"-" }}</td>
                               <td>
                                 <strong>Agent Commission:</strong>
                                 {% if data.agent_payment_details.id != None %}
@@ -366,7 +389,6 @@ Policy Data
                                    <i class="fa fa-times text-danger"></i>
                                 {% endif %}
                                 <br>
-
                                 <strong>Insurer Commission:</strong>
                                 {% if data.insurer_payment_details.id != None %}
                                    <i class="fa fa-check text-success"></i>
@@ -374,7 +396,6 @@ Policy Data
                                    <i class="fa fa-times text-danger"></i>
                                 {% endif %}
                                 <br>
-
                                 <strong>Franchise Commission:</strong>
                                 {% if data.franchise_payment_details.id != None %}
                                    <i class="fa fa-check text-success"></i>

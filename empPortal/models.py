@@ -400,6 +400,27 @@ class PolicyInfo(models.Model):
             return issue_date.strftime("%b-%Y")  # e.g., May-2023
         except ValueError:
             return None
+        
+    @property
+    def issue_date(self):
+        try:
+            return datetime.strptime(self.policy_issue_date, "%Y-%m-%d %H:%M:%S").strftime("%d-%m-%Y")
+        except (ValueError, TypeError):
+            return None
+        
+    @property
+    def start_date(self):
+        try:
+            return datetime.strptime(self.policy_start_date, "%Y-%m-%d %H:%M:%S").strftime("%d-%m-%Y")
+        except (ValueError, TypeError):
+            return None
+        
+    @property
+    def end_date(self):
+        try:
+            return datetime.strptime(self.policy_expiry_date, "%Y-%m-%d %H:%M:%S").strftime("%d-%m-%Y")
+        except (ValueError, TypeError):
+            return None
 
 class AgentPaymentDetails(models.Model):
     policy = models.ForeignKey(PolicyDocument, on_delete=models.CASCADE, related_name='policy_agent_info')

@@ -942,6 +942,11 @@ def policyData(request):
             continue   
 
         obj.json_data = data    # attach parsed dict for the template
+        obj.policy_infos = obj.policy_info.first()
+        obj.policy_vehicle_infos = obj.policy_vehicle_info.first()
+        obj.policy_agent_infos = obj.policy_agent_info.first()
+        obj.policy_franchise_infos = obj.policy_franchise_info.first()
+        obj.policy_insurer_infos = obj.policy_insurer_info.first()
         filtered.append(obj)
 
     if role_id != 1 and request.user.department_id != "5" and request.user.department_id != "3" and request.user.department_id != "2":
