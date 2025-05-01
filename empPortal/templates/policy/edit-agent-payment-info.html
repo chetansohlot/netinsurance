@@ -223,42 +223,45 @@
                                     <div class="col-sm-6">
                                       <div class="form-group">
                                         <label class="form-lbl">Agent OD Comm (in %)</label>
-                                        <input type="text" class="form-field percentage" name="agent_od_comm" placeholder="Agent OD Comm" value="{{ agent_payment.agent_od_comm|default:policy_data.od_percent }}">
+                                        <input type="text" class="form-field percentage" name="agent_od_comm" id="agent_od_comm" placeholder="Agent OD Comm" value="{{ agent_payment.agent_od_comm|default:policy_data.od_percent }}">
                                       </div>
                                     </div>
-                            
+
+                                    <input type="hidden" class="form-field number" id="policy_od_amount" value="{{policy.od_premium|default:0}}">
                                     <div class="col-sm-6">
                                       <div class="form-group">
                                         <label class="form-lbl">Agent OD Comm Amount</label>
-                                        <input type="text" class="form-field number" name="agent_od_amount" id="agent_od_amount" placeholder="Agent OD Amount" value="{{ agent_payment.agent_od_amount }}">
+                                        <input type="text" class="form-field number" name="agent_od_amount" id="agent_od_amount" placeholder="Agent OD Amount" value="{{ agent_payment.agent_od_amount }}" readonly>
                                       </div>
                                     </div>
 
                                     <div class="col-sm-6">
                                       <div class="form-group">
                                         <label class="form-lbl">Agent TP Comm  (in %)</label>
-                                        <input type="text" class="form-field percentage" name="agent_tp_comm" placeholder="Agent TP Comm" value="{{ agent_payment.agent_tp_comm|default:policy_data.tp_percent }}">
+                                        <input type="text" class="form-field percentage" name="agent_tp_comm" id="agent_tp_comm" placeholder="Agent TP Comm" value="{{ agent_payment.agent_tp_comm|default:policy_data.tp_percent }}">
                                       </div>
                                     </div>
-
+                                    
+                                    <input type="hidden" class="form-field number" id="policy_tp_amount" value="{{policy.tp_premium|default:0}}" >
                                     <div class="col-sm-6">
                                       <div class="form-group">
                                         <label class="form-lbl">Agent TP Comm Amount</label>
-                                        <input type="text" class="form-field number" name="agent_tp_amount" id="agent_tp_amount" placeholder="Agent TP Amount" value="{{ agent_payment.agent_tp_amount }}">
+                                        <input type="text" class="form-field number" name="agent_tp_amount" id="agent_tp_amount" placeholder="Agent TP Amount" value="{{ agent_payment.agent_tp_amount }}" readonly>
                                       </div>
                                     </div>
 
                                     <div class="col-sm-6">
                                       <div class="form-group">
                                         <label class="form-lbl">Agent Net Comm (in %)</label>
-                                        <input type="text" class="form-field percentage" name="agent_net_comm" placeholder="Agent Net Comm" value="{{ agent_payment.agent_net_comm|default:policy_data.net_percent }}">
+                                        <input type="text" class="form-field percentage" name="agent_net_comm" id="agent_net_comm" placeholder="Agent Net Comm" value="{{ agent_payment.agent_net_comm|default:policy_data.net_percent }}">
                                       </div>
                                     </div>
 
+                                    <input type="hidden" class="form-field number" id="policy_net_amount" value="{{policy.net_premium|default:0}}">
                                     <div class="col-sm-6">
                                       <div class="form-group">
                                         <label class="form-lbl">Agent Net Comm Amount</label>
-                                        <input type="text" class="form-field number" name="agent_net_amount" id="agent_net_amount" placeholder="Agent Net Amount" value="{{ agent_payment.agent_net_amount }}">
+                                        <input type="text" class="form-field number" name="agent_net_amount" id="agent_net_amount" placeholder="Agent Net Amount" value="{{ agent_payment.agent_net_amount }}" readonly>
                                       </div>
                                     </div>
 
@@ -331,6 +334,10 @@
       });
 
       $(document).ready(function(){
+       
+        calculateAmts('#policy_od_amount','#agent_od_comm','#agent_od_amount')
+        calculateAmts('#policy_tp_amount','#agent_tp_comm','#agent_tp_amount')
+        calculateAmts('#policy_net_amount','#agent_net_comm','#agent_net_amount')
         updateTotalCommissionAmount(); 
         updateTDSAmount();
         fetchPosUsers($('#bqp').val())
@@ -352,18 +359,97 @@
         agent_tds_amount = parseFloat(agent_comm_amt*agent_tds/100) || 0;
         net_payable_amt = parseFloat(agent_comm_amt-agent_tds_amount) || 0;
 
-        $('#agent_tds_amount').val(agent_tds_amount);
-        $('#agent_net_payable_amount').val(net_payable_amt);
+        $('#agent_tds_amount').val(agent_tds_amount.toFixed(2));
+        $('#agent_net_payable_amount').val(net_payable_amt.toFixed(2));
       }
+
+      function calculateAmts(policy_amt,comm_percent,comm_amt){
+        let policy_amount = $(policy_amt).val()||0
+        agent_comm = $(comm_percent).val()||0
+        agent_amt = parseFloat(policy_amount*agent_comm/100)||0
+        $(comm_amt).val(agent_amt.toFixed(2))
+      }
+
+      $('#agent_od_comm').on('input',function(){
+        let val = $(this).val();
+        let isValid = true;
+        if (val.includes('.')) {
+            let parts = val.split('.');
+            if (parts[1].length > 2 ||parts[0].length > 2) {
+                isValid = false;
+            }
+        }else{
+          if (val.length > 2) {
+            isValid = false;
+          }
+        }
+        if (isValid) {
+          calculateAmts('#policy_od_amount','#agent_od_comm','#agent_od_amount')
+          updateTotalCommissionAmount(); 
+        }
+      })
+
+      $('#agent_tp_comm').on('input',function(){
+        let val = $(this).val();
+        let isValid = true;
+        if (val.includes('.')) {
+            let parts = val.split('.');
+            if (parts[1].length > 2 ||parts[0].length > 2) {
+                isValid = false;
+            }
+          }else{
+            if (val.length > 2) {
+              isValid = false;
+            }
+        }
+        if (isValid) {
+          calculateAmts('#policy_tp_amount','#agent_tp_comm','#agent_tp_amount')
+          updateTotalCommissionAmount(); 
+        }
+      })
+
+      $('#agent_net_comm').on('input',function(){
+        let val = $(this).val();
+        let isValid = true;
+        if (val.includes('.')) {
+            let parts = val.split('.');
+            if (parts[1].length > 2 ||parts[0].length > 2) {
+                isValid = false;
+            }
+          }else{
+            if (val.length > 2) {
+              isValid = false;
+            }
+        }
+        if (isValid) {
+          calculateAmts('#policy_net_amount','#agent_net_comm','#agent_net_amount')
+          updateTotalCommissionAmount(); 
+        }
+      })
 
       $('#agent_od_amount, #agent_tp_amount, #agent_net_amount, #agent_incentive_amount').on('input', function() {
         updateTotalCommissionAmount(); 
       });
 
       $('#agent_tds').on('input',function(){
-        updateTDSAmount();
+        let val = $(this).val();
+        let isValid = true;
+        if (val.includes('.')) {
+            let parts = val.split('.');
+            if (parts[1].length > 2 ||parts[0].length > 2) {
+                isValid = false;
+            }
+        }else{
+          if (val.length > 2) {
+            isValid = false;
+          }
+        }
+        if (isValid) {
+          updateTDSAmount();
+        }
       });
 
+      
       function fetchPosUsers(bqp_id){
         let pos_name_value = $('#pos_name').attr('data-value')||'';
         $.ajax({
