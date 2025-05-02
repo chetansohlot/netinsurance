@@ -59,6 +59,7 @@ import openpyxl
 from io import BytesIO
 from django.http import HttpResponse
 from openpyxl import Workbook
+from ..model import State, City
 app = FastAPI()
 
 def dictfetchall(cursor):
@@ -557,13 +558,18 @@ def create_or_edit_lead(request, lead_id=None):
 
     if lead_id:
         lead = get_object_or_404(Leads, id=lead_id)
+    else:
+        lead = None  
+    
+    states = State.objects.all()
     
     
     if request.method == "GET":
         return render(request, 'leads/create.html', {
             'lead': lead,
             'referrals': referrals,
-            'customers': customers
+            'customers': customers,
+            'states': states,
         })
 
 
@@ -588,8 +594,10 @@ def create_or_edit_lead(request, lead_id=None):
                 messages.error(request, "Invalid date format for Date of Birth. Please use YYYY-MM-DD.")
                 return redirect(request.path)
 
-        state = request.POST.get("state", "").strip()
-        city = request.POST.get("city", "").strip()
+        #state = request.POST.get("state", "").strip()
+        #city = request.POST.get("city", "").strip()
+        state_name = request.POST.get('state')
+        city_name = request.POST.get('city')
         pincode = request.POST.get("pincode", "").strip()
         address = request.POST.get("address", "").strip()
         lead_source = request.POST.get("lead_source", "").strip()
@@ -651,8 +659,8 @@ def create_or_edit_lead(request, lead_id=None):
             lead.name_as_per_pan = name_as_per_pan
             lead.pan_card_number = pan_card_number
             lead.date_of_birth = date_of_birth
-            lead.state = state
-            lead.city = city
+            lead.state = state_name
+            lead.city = city_name
             lead.pincode = pincode
             lead.address = address
             lead.lead_description = lead_description
@@ -678,8 +686,8 @@ def create_or_edit_lead(request, lead_id=None):
                 name_as_per_pan=name_as_per_pan,
                 pan_card_number=pan_card_number,
                 date_of_birth=date_of_birth,
-                state=state,
-                city=city,
+                state=state_name,
+                city=city_name,
                 pincode=pincode,
                 address=address,
                 lead_description=lead_description,
@@ -697,6 +705,7 @@ def create_or_edit_lead(request, lead_id=None):
                 policy_type=policy_type,
                 sum_insured=sum_insured,
                 risk_start_date = policy_date
+                
             )
             messages.success(request, f"Lead created successfully!")
 
@@ -735,6 +744,14 @@ def fetch_policy_details(request):
 
     return JsonResponse({'success': False, 'message': 'Invalid request'})
 
+def get_cities(request):
+    state_name = request.GET.get('state_id')
+    try:
+        state = State.objects.get(name=state_name)
+        cities = City.objects.filter(state=state).values('city')
+        return JsonResponse(list(cities), safe=False)
+    except State.DoesNotExist:
+        return JsonResponse([], safe=False)
 
 """def bulk_upload_leads(request):
     if request.method == 'POST':

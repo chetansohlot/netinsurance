@@ -1,3 +1,4 @@
+from sre_parse import State
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
@@ -718,7 +719,9 @@ class Users(AbstractBaseUser):
     @property
     def examRes(self):
         try:
-            return ExamResult.objects.filter(status='passed').get(user_id=self.id)
+            return ExamResult.objects.filter(
+                status__in=['passed','failed'],user_id=self.id
+                ).order_by('-id').first()
         except ExamResult.DoesNotExist:
             return None 
 
