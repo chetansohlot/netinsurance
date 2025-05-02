@@ -1,3 +1,4 @@
+from sre_parse import State
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
@@ -399,6 +400,27 @@ class PolicyInfo(models.Model):
             issue_date = datetime.strptime(self.policy_issue_date.strip(), "%Y-%m-%d %H:%M:%S")
             return issue_date.strftime("%b-%Y")  # e.g., May-2023
         except ValueError:
+            return None
+        
+    @property
+    def issue_date(self):
+        try:
+            return datetime.strptime(self.policy_issue_date, "%Y-%m-%d %H:%M:%S").strftime("%d-%m-%Y")
+        except (ValueError, TypeError):
+            return None
+        
+    @property
+    def start_date(self):
+        try:
+            return datetime.strptime(self.policy_start_date, "%Y-%m-%d %H:%M:%S").strftime("%d-%m-%Y")
+        except (ValueError, TypeError):
+            return None
+        
+    @property
+    def end_date(self):
+        try:
+            return datetime.strptime(self.policy_expiry_date, "%Y-%m-%d %H:%M:%S").strftime("%d-%m-%Y")
+        except (ValueError, TypeError):
             return None
 
 class AgentPaymentDetails(models.Model):

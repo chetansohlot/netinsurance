@@ -2,7 +2,7 @@ from django.urls import path, include
 from . import views,export
 from . import views
 from . import authenticationView
-from .controller import commissions, profile,policy, Referral, globalController, helpAndSupport, Employee, leads, sellMotor, sellHealth, sellTerm, Franchises, Department, Branches, members, customers, quoteManagement, healthQuoteManagement, homeManagement, exams,SourceMaster,BQP
+from .controller import commissions, profile,policy,Dashboard, Referral, globalController, helpAndSupport, Employee, leads, sellMotor, sellHealth, sellTerm, Franchises, Department, Branches, members, customers, quoteManagement, healthQuoteManagement, homeManagement, exams,SourceMaster,BQP
 from .controller import reports, PolicyCommission, PolicyPayment
 from django.conf import settings
 from django.conf.urls.static import static
@@ -59,7 +59,7 @@ urlpatterns = [
     
     path('user-and-roles/', views.userAndRoles, name='user-and-roles'),
     path('', homeManagement.index, name='home-index'),
-    path('dashboard/', views.dashboard, name='dashboard'),
+    path('dashboard/', Dashboard.dashboard, name='dashboard'),
 
 
     path('franchise-management/', Franchises.index, name='franchise-management'),
@@ -141,6 +141,7 @@ urlpatterns = [
     path('bulk-upload/', leads.bulk_upload_leads, name='bulk-upload-leads'),
     path('fetch-policy-details/', leads.fetch_policy_details, name='fetch-policy-details'),
     path('lead-mgt/export/', leads.export_leads_to_excel, name='lead_mgt_export'),
+    path('get-cities/', leads.get_cities, name='get_cities'),
 
 
     
@@ -199,7 +200,10 @@ urlpatterns = [
     path('report/f-business-report/', export.franchisees_business_report, name='franchisees-business-report'),
     path('report/i-business-report/', export.insurer_business_report, name='insurer-business-report'),
     
-    path('report/v1/commission-report/', reports.commission_report, name='commission-report'),    
+    path('report/v1/commission-report/', reports.commission_report, name='commission-report'),  
+    path('report/pending-insurer-commission-report/', reports.pending_insurer_commission_report, name='pending-insurer-commission-report'),
+    path('report/pending-agent-commission-report/', reports.pending_agent_commission_report, name='pending-agent-commission-report'),
+    
     # REPORTS 
     
     # EXPORT

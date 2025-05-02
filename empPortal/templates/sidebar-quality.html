@@ -1,5 +1,6 @@
 {% load static %}
 {% url 'commission-report' as commission_url %}
+{% url 'pending-insurer-commission-report' as pending_commission_url %}
 {% url 'sales-manager-business-report' as sm_business_url %}
 {% url 'agent-business-report' as agent_business_url %}
 {% url 'franchisees-business-report' as franchise_business_url %}
@@ -106,6 +107,14 @@
                       <use xlink:href="#commission-icon" />
                     </svg>
                     <p>Comm. Report </p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="{{ pending_commission_url }}" class="nav-link sidebar-menutext {% if request.path == pending_commission_url %} active {% endif %}">
+                    <svg class="sidbarmenu-svg">
+                      <use xlink:href="#commission-icon" />
+                    </svg>
+                    <p>Pending Ins. Comm. Report </p>
                   </a>
                 </li>
               </ul>
