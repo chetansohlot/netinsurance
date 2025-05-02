@@ -367,8 +367,6 @@
     </script>
     
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    You said:
     <script>
          function fetchPolicyDetails() {
              var registrationNumber = $("#registration_number_input").val();
@@ -384,46 +382,48 @@
                      'csrfmiddlewaretoken': '{{ csrf_token }}'
                  },
                  success: function(response) {
-                     if (response.success) {
-                         // Auto-fill the form with policy details
-                         $("#insurance_company").val(response.insurance_company || "");
-                         $("#policy_number").val(response.policy_number || "");
-                         $("#policy_type").val(response.policy_type || "");
-                         $("#vehicle_type").val(response.vehicle_type || "");
-                         $("#sum_insured").val(response.sum_insured || "");
-                         $("#policy_date").val(response.policy_date || "");
-         
-                         // Disable the fields after auto-filling the data
-                         disableFormFields();
-         
-                         // Show all fields for the found policy
-                         showAllFields();
-   
-                       const isEditMode = "{{ lead.id|default:'' }}" !== "";
-   
-                     // Only disable fields in Add mode
-                     if (!isEditMode) {
-                       disableFormFields();
-                     } else {
-                       // In Edit mode, ensure fields are enabled
-                       enableManualEntryFields();
-                     }
-   
-                     } else {
-                       clearFormFields();
-                         // Enable manual entry fields and show only the required fields
-                         enableManualEntryFields();
-                         hideUnnecessaryFields();
-                         // Show sweet alert here
-                         Swal.fire({
-                             icon: 'error',
-                             title: 'Not Registered',
-                             text: response.message || 'No matching registration number fill all details.',
-                             timer: 2000,              // Auto-close after 2 seconds
-                             showConfirmButton: false, 
-                       });
-                     }
-                 },
+                  if (response.success) {
+                      // Auto-fill the form with policy details
+                      $("#insurance_company").val(response.insurance_company || "");
+                      $("#policy_number").val(response.policy_number || "");
+                      $("#policy_type").val(response.policy_type || "");
+                      $("#vehicle_type").val(response.vehicle_type || "");
+                      $("#sum_insured").val(response.sum_insured || "");
+                      $("#policy_date").val(response.policy_date || "");
+      
+                      // Disable the fields after auto-filling the data
+                      disableFormFields();
+      
+                      // Show all fields for the found policy
+                      showAllFields();
+
+                    const isEditMode = "{{ lead.id|default:'' }}" !== "";
+
+                  // Only disable fields in Add mode
+                  if (!isEditMode) {
+                    disableFormFields();
+                  } else {
+                    // In Edit mode, ensure fields are enabled
+                    enableManualEntryFields();
+                  }
+
+                  } else {
+                    clearFormFields();
+                      // Enable manual entry fields and show only the required fields
+                      enableManualEntryFields();
+                      hideUnnecessaryFields();
+                      // Show sweet alert here
+                    //if (!isEditMode) {
+                      Swal.fire({
+                          icon: 'error',
+                          title: 'Not Registered',
+                          text: response.message || 'No matching registration number fill all details.',
+                          timer: 2000,              // Auto-close after 2 seconds
+                          showConfirmButton: false, 
+                    });
+                  }
+                //}
+              },
                  error: function(xhr, status, error) {
                      alert("Something went wrong. Please try again.");
                  }
