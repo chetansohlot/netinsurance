@@ -697,7 +697,9 @@ class Users(AbstractBaseUser):
     @property
     def examRes(self):
         try:
-            return ExamResult.objects.filter(status='passed').get(user_id=self.id)
+            return ExamResult.objects.filter(
+                status__in=['passed','failed'],user_id=self.id
+                ).order_by('-id').first()
         except ExamResult.DoesNotExist:
             return None 
 
