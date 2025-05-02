@@ -19,6 +19,7 @@ import requests
 from fastapi import FastAPI, File, UploadFile
 import fitz
 import openai
+from datetime import datetime, timedelta
 import time
 import json
 from django.http import JsonResponse
@@ -497,15 +498,15 @@ def get_filter_conditions(filters):
 
         elif key == 'start_date':
             try:
-                dt = datetime.strptime(val, '%Y-%m-%d').date()
-                db_filters &= Q(created_at__date__gte=dt)
+                dt = datetime.strptime(val, '%Y-%m-%d')  # No .date() here
+                db_filters &= Q(created_at__gte=dt)
             except ValueError:
                 continue
 
         elif key == 'end_date':
             try:
-                dt = datetime.strptime(val, '%Y-%m-%d').date()
-                db_filters &= Q(created_at__date__lte=dt)
+                dt = datetime.strptime(val, '%Y-%m-%d') + timedelta(days=1)  # Include full end date
+                db_filters &= Q(created_at__lt=dt)
             except ValueError:
                 continue
 
