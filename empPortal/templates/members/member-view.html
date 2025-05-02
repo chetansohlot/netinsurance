@@ -285,37 +285,30 @@
                                             {% endif %}
                                         </div>
                                     </li>
-                                    
                                     <li>
                                         <img src="{% static 'dist/img/svg/exam.svg' %}" alt="Exam Icon">
                                         <span class="list">Exam Score & Status</span>
                                         <span class="list-output">
                                             {% if user_details.partner and user_details.partner.partner_status == '3' %}
-                                                Attempted: {{ user_details.examRes.percentage|default:"0" }} |
-                                                Passed:
-                                                {% if user_details.exam_attempt > 0 %}
-                                                    {% if user_details.examRes %}
-                                                        {% if user_details.examRes.status == 'passed' %}
-                                                            Yes
-                                                        {% elif user_details.examRes.status == 'failed' %}
-                                                            No
-                                                        {% else %}
-                                                            N/A
-                                                        {% endif %}
+                                                {% if user_details.exam_attempt|default:0 > 0 and user_details.examRes %}
+                                                    Score: {{ user_details.examRes.percentage|default:"0" }} % |
+                                                    Passed: 
+                                                    {% if user_details.examRes.status == "passed" %}
+                                                        <span style="color: green; font-weight: bold;">Yes</span>
+                                                    {% elif user_details.examRes.status == "failed" %}
+                                                        <span style="color: red; font-weight: bold;">No</span>
                                                     {% else %}
-                                                        N/A
+                                                        <span style="color: gray;">N/A</span>
                                                     {% endif %}
                                                 {% else %}
-                                                    N/A
+                                                    <span style="color: gray;">Not Attempted</span>
                                                 {% endif %}
                                             {% else %}
-                                                N/A
+                                                <span style="color: gray;">N/A</span>
                                             {% endif %}
                                         </span>
                                     </li>
-                                    
-                                    
-                                    
+                                     
 
                                     <!-- <li>
                                         <img src="{% static 'dist/img/svg/training-status.svg' %}" alt="">
@@ -335,7 +328,7 @@
                                           </span>
                                           
                                     </li> -->
-                                    <li>
+                                    <!-- <li>
                                         <img src="{% static 'dist/img/svg/training-status.svg' %}" alt="">
                                         <span class="list">Training Status</span>
                                         <span class="list-output">
@@ -348,13 +341,13 @@
                                                         {% elif user_details.examRes.status|lower == 'passed' %}
                                                             <span class="text-success">Completed</span>
                                                         {% elif user_details.examRes.status|lower == 'failed' %}
-                                                            <span class="text-danger">Failed</span>
+                                                            <span class="text-danger">Not Cleared</span>
                                                         {% else %}
-                                                            <span class="text-muted">N/A</span>
+                                                            <span class="text-muted">Not Started</span>
                                                         {% endif %}
                                                     {% else %}
                                                         {% if user_details.partner.intraining_status == '0' %}
-                                                            <span class="text-primary">Not Started</span>
+                                                            <span class="text-muted">Not Started</span>
                                                         {% elif user_details.partner.intraining_status == '1' %}
                                                             <span class="text-warning">Training Completed</span>
                                                         {% else %}
@@ -362,6 +355,46 @@
                                                         {% endif %}
                                                     {% endif %}
                                                     
+                                                {% else %}
+                                                    <span class="text-muted">N/A</span>
+                                                {% endif %}
+                                            {% else %}
+                                                <span class="text-muted">N/A</span>
+                                            {% endif %}
+                                        </span>
+                                    </li>
+                                     -->
+                                     <li>
+                                        <img src="{% static 'dist/img/svg/training-status.svg' %}" alt="">
+                                        <span class="list">Training Status</span>
+                                        <span class="list-output">
+                                            {% if user_details.partner %}
+                                                {% if user_details.partner.partner_status == '0' or user_details.partner.partner_status == '1' %}
+                                                    {% if user_details.partner.intraining_status == '0' %}
+                                                        <span class="text-muted">Not Started (Eligible)</span>
+                                                    {% else %}
+                                                        <span class="text-muted">N/A</span>
+                                                    {% endif %}
+                                                {% elif user_details.partner.partner_status == '2' or user_details.partner.partner_status == '3' %}
+                                                    {% if user_details.examRes %}
+                                                        {% if user_details.examRes.status|lower == 'in_exam' %}
+                                                            <span class="text-primary">In Exam</span>
+                                                        {% elif user_details.examRes.status|lower == 'passed' %}
+                                                            <span class="text-success">Completed</span>
+                                                        {% elif user_details.examRes.status|lower == 'failed' %}
+                                                            <span class="text-danger">Not Cleared</span>
+                                                        {% else %}
+                                                            <span class="text-muted">Not Started</span>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        {% if user_details.partner.intraining_status == '0' %}
+                                                            <span class="text-muted">Not Started</span>
+                                                        {% elif user_details.partner.intraining_status == '1' %}
+                                                            <span class="text-warning">Training Completed</span>
+                                                        {% else %}
+                                                            <span class="text-muted">N/A</span>
+                                                        {% endif %}
+                                                    {% endif %}
                                                 {% else %}
                                                     <span class="text-muted">N/A</span>
                                                 {% endif %}
