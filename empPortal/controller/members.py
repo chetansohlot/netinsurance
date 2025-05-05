@@ -76,36 +76,64 @@ def partnerCounters():
     )
     return counters
 
+from django.utils.timezone import now
+
 def update_partner_status():
     users = Users.objects.all()
 
     for user in users:
-        # Get the latest document upload for the user (you can modify this logic if needed)
-        try:
-            doc = DocumentUpload.objects.filter(user_id=user.id).latest('uploaded_at')
-        except DocumentUpload.DoesNotExist:
-            continue  # Skip if user has not uploaded any document
+        docs = DocumentUpload.objects.filter(user_id=user.id)
 
-        # Check if all required document statuses are "Approved"
-        all_approved = (
-            doc.aadhaar_card_front_status == "Approved" and
-            doc.aadhaar_card_back_status == "Approved" and
-            doc.upload_pan_status == "Approved" and
-            doc.upload_cheque_status == "Approved" and
-            doc.tenth_marksheet_status == "Approved"
+        if not docs.exists():
+            Partner.objects.filter(user_id=user.id).update(doc_status='0', partner_status='1')
+            continue
+
+        all_approved = all(
+            doc.aadhaar_card_front_status == 'Approved' and
+            doc.aadhaar_card_back_status == 'Approved' and
+            doc.upload_pan_status == 'Approved' and
+            doc.upload_cheque_status == 'Approved' and
+            doc.tenth_marksheet_status == 'Approved'
+            for doc in docs
         )
 
-        if all_approved:
-            # Check if the user attempted the exam
-            exam_result = ExamResult.objects.filter(user_id=user.id).first()
+        any_pending = any(
+            doc.aadhaar_card_front_status == 'Pending' or
+            doc.aadhaar_card_back_status == 'Pending' or
+            doc.upload_pan_status == 'Pending' or
+            doc.upload_cheque_status == 'Pending' or
+            doc.tenth_marksheet_status == 'Pending'
+            for doc in docs
+        )
 
+        # Set doc_status only if documents exist
+        if all_approved:
+            doc_status = '3'
+        elif any_pending:
+            doc_status = '2'
+        else:
+            doc_status = '1'
+
+        # Update doc_status in Partner
+        Partner.objects.filter(user_id=user.id).update(doc_status=doc_status)
+
+        # Handle partner_status
+        if all_approved:
+            exam_result = ExamResult.objects.filter(user_id=user.id).first()
             if exam_result:
-                if exam_result.status.lower() == "passed":
-                    Partner.objects.filter(user_id=user.id).update(partner_status='4')  # Passed
+                if exam_result.status.lower() == 'passed':
+                    partner_status = '4'  # Exam passed
                 else:
-                    Partner.objects.filter(user_id=user.id).update(partner_status='3')  # Attempted, not passed
+                    partner_status = '3'  # Exam attempted but not passed
             else:
-                Partner.objects.filter(user_id=user.id).update(partner_status='2')  # Docs approved, exam not attempted
+                partner_status = '2'  # Exam not attempted
+        elif any_pending:
+            partner_status = '1'
+        else:
+            partner_status = '1'
+
+        Partner.objects.filter(user_id=user.id).update(partner_status=partner_status)
+
 
 
 def members(request):
