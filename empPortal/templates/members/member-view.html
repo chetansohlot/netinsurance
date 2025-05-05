@@ -63,6 +63,11 @@
                     </div>
                   {% endif %}
                    -->
+                   <div class="col-md-6 d-flex justify-content-end align-items-center">
+                    <!-- View Partner Button -->
+                    <a href="{% url 'members' %}" class="breadcrump-addbtn mx-1">View Partner</a>
+                  </div>
+
                     
       <!-- STATUS DROPDOWN -->
       <div class="col">
@@ -285,6 +290,27 @@
                                             {% endif %}
                                         </div>
                                     </li>
+
+                                    {% if user_details.partner.partner_status == '1' %}
+    <li>
+        <img src="{% static 'dist/img/svg/user-status.svg' %}" alt="">
+        <span class="list">Doc Status</span>
+        <div class="list-output">
+            {% if user_details.partner.doc_status|stringformat:"s" == '1' %}
+                <span class="badge bg-secondary">Doc Uploaded</span>
+            {% elif user_details.partner.doc_status|stringformat:"s" == '2' %}
+                <span class="badge bg-info text-dark">In-Pending</span>
+            {% elif user_details.partner.doc_status|stringformat:"s" == '3' %}
+                <span class="badge bg-success">Verified</span>
+            {% else %}
+                <span class="badge bg-warning text-dark">Unknown Status</span>
+            {% endif %}
+        </div>
+    </li>
+{% endif %}
+
+
+
                                     <li>
                                         <img src="{% static 'dist/img/svg/exam.svg' %}" alt="Exam Icon">
                                         <span class="list">Exam Score & Status</span>
