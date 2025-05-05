@@ -206,7 +206,7 @@ def storeAllocation(request):
     return redirect('member-view', user_id=user_id)
 
 def storeOrUpdateBankDetails(request):
-    if request.method == "POST":
+    if request.method == "POST" and request.user.id:
         user_id = request.user.id  # Get the logged-in user's ID
         account_number = request.POST.get('account_number')
 
@@ -234,6 +234,8 @@ def storeOrUpdateBankDetails(request):
         except IntegrityError:
             messages.error(request, "An error occurred while saving your bank details. Please try again.")
         
+        return redirect('my-account')
+    else: 
         return redirect('my-account')
 
     # If not a POST request, redirect to my-account
