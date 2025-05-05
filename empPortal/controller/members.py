@@ -85,7 +85,7 @@ def update_partner_status():
         docs = DocumentUpload.objects.filter(user_id=user.id)
 
         if not docs.exists():
-            Partner.objects.filter(user_id=user.id).update(doc_status='0', partner_status='1')
+            Partner.objects.filter(user_id=user.id).update(doc_status='0', partner_status='0')
             continue
 
         all_approved = all(
