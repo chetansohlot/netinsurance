@@ -45,6 +45,20 @@
             <div class="card-header bg-light">
               <strong>Campaign:</strong> {{ upload.campaign_name }} |
               <strong>Uploaded At:</strong> {{ upload.uploaded_at|date:"d M Y H:i" }} |
+              <strong>Total Rows:</strong> {{ upload.total_rows|default:"-" }} |
+              <strong>Success:</strong> {{ upload.success_rows|default:"0" }} |
+              <strong>Failed:</strong> {{ upload.error_rows|default:"0" }} |
+              <strong>File Size:</strong> 
+              {% if upload.file %}
+                {{ upload.file.size|filesizeformat }}
+              {% else %}
+                -
+              {% endif %} |
+              <strong>Download:</strong>
+              {% if upload.file %}
+                <a href="{{ upload.file.url }}" target="_blank" class="btn btn-sm btn-outline-secondary">Download</a>
+              {% endif %}
+               |
               {% get_user_details upload.created_by_id as user_details %}
               <strong>Uploaded By:</strong> 
               {% if user_details %}

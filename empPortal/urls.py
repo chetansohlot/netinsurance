@@ -3,7 +3,7 @@ from . import views,export
 from . import views
 from . import authenticationView
 from .controller import commissions, profile,policy,Dashboard, Referral, globalController, helpAndSupport, Employee, leads, sellMotor, sellHealth, sellTerm, Franchises, Department, Branches, members, customers, quoteManagement, healthQuoteManagement, homeManagement, exams,SourceMaster,BQP
-from .controller import reports, PolicyCommission, PolicyPayment
+from .controller import reports, PolicyCommission, PolicyPayment, insurance
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import re_path
@@ -144,7 +144,11 @@ urlpatterns = [
     path('get-cities/', leads.get_cities, name='get_cities'),
 
 
-    
+    #Insurance
+    path('insurance/', insurance.insurance_list, name='insurance_index'),
+    path('create-insurance/', insurance.insurance_create, name='create_insurance'),
+    path('insurance/edit/<int:insurance_id>/', insurance.insurance_edit, name='insurance_edit'),
+    path('toggle-insurance-status/<int:insurance_id>/', insurance.toggle_insurance_status, name='insurance-toggle-status'),  #Anjali
 
     # REFERRAL 
     path('referral-management/bulk-upload/', Referral.refBulkUpload, name='referral-bulk-upload'),

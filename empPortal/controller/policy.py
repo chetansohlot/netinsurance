@@ -7,6 +7,7 @@ from django.template import loader
 from ..models import Commission,Users, PolicyUploadDoc,Branch,PolicyInfo,PolicyDocument, DocumentUpload, FranchisePayment, InsurerPaymentDetails, PolicyVehicleInfo, AgentPaymentDetails, UploadedExcel, UploadedZip
 from ..models import BulkPolicyLog,ExtractedFile, BqpMaster, SingleUploadFile
 from empPortal.model import Referral
+from datetime import datetime, timedelta
 
 from empPortal.model import BankDetails
 from ..forms import DocumentUploadForm
@@ -1075,15 +1076,15 @@ def get_filter_conditions(filters):
 
         elif key == 'start_date':
             try:
-                dt = datetime.strptime(val, '%Y-%m-%d').date()
-                db_filters &= Q(created_at__date__gte=dt)
+                dt = datetime.strptime(val, '%Y-%m-%d')  # No .date() here
+                db_filters &= Q(created_at__gte=dt)
             except ValueError:
                 continue
 
         elif key == 'end_date':
             try:
-                dt = datetime.strptime(val, '%Y-%m-%d').date()
-                db_filters &= Q(created_at__date__lte=dt)
+                dt = datetime.strptime(val, '%Y-%m-%d') + timedelta(days=1)  # Include full end date
+                db_filters &= Q(created_at__lt=dt)
             except ValueError:
                 continue
 
