@@ -371,7 +371,7 @@
                                             {% if user_details.partner %}
                                                 {% if user_details.partner.partner_status == '0' or user_details.partner.partner_status == '1' %}
                                                     {% if user_details.partner.intraining_status == '0' %}
-                                                        <span class="text-muted">Not Started (Eligible)</span>
+                                                        <span class="text-muted">(Eligible)</span>
                                                     {% else %}
                                                         <span class="text-muted">N/A</span>
                                                     {% endif %}
@@ -387,9 +387,9 @@
                                                             <span class="text-muted">Not Started</span>
                                                         {% endif %}
                                                     {% else %}
-                                                        {% if user_details.partner.intraining_status == '0' %}
-                                                            <span class="text-muted">Not Started</span>
-                                                        {% elif user_details.partner.intraining_status == '1' %}
+                                                        {% if user_details.partner.intraining_status == '1' %}
+                                                            <span class="text-muted">In <Training></Training></span>
+                                                        {% elif user_details.partner.intraining_status == '2' %}
                                                             <span class="text-warning">Training Completed</span>
                                                         {% else %}
                                                             <span class="text-muted">N/A</span>
@@ -413,7 +413,11 @@
                                         <img src="{% static 'dist/img/svg/training-completed.svg' %}" alt="">
                                         <span class="list">Training Completed Date</span>
                                         <span class="list-output">
-                                            N/A
+                                            {% if user_details.partner.exam_start_date %}
+                                                {{ user_details.partner.exam_start_date|date:"Y-m-d" }}
+                                            {% else %}
+                                              N/Aa
+                                            {% endif %}
                                         </span>
                                     </li>
                                     <!-- <li>
@@ -725,6 +729,8 @@
                                                 {% csrf_token %}
                                                 <input type="hidden" name="agent_member_id" value="{{ user_details.id }}">
                                                 <!-- ← NEW BQP Dropdown -->
+                                                <div class="form-group">
+                                                    <label for="bqp">BQP</label>
                                                 <select id="bqp" name="bqp" class="form-control">
                                                     <option value="">Select BQP</option>
                                                     {% if bqp_details %}
@@ -737,6 +743,7 @@
                                                         <option disabled>No BQPs available</option>
                                                     {% endif %}
                                                 </select>
+                                                </div>
                                                 <div class="form-group">
                                                     <label for="branch">Branch</label>
                                                     <select id="branch" name="branch" class="form-control">

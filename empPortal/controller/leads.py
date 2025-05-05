@@ -217,7 +217,8 @@ def index(request):
         return export_leads_to_excel(leads)
 
     # Count
-    total_leads = leads.count()
+    all_leads = Leads.objects.all()
+    total_leads = all_leads.count()  
     motor_leads = Leads.objects.filter(lead_type='MOTOR').count()
     health_leads = Leads.objects.filter(lead_type='HEALTH').count()
     term_leads = Leads.objects.filter(lead_type='TERM').count()
@@ -337,7 +338,8 @@ def healthLead(request):
 
         leads = Leads.objects.all()
         # Count
-        total_leads = leads.count()
+        all_leads = Leads.objects.all()
+        total_leads = all_leads.count()  
         motor_leads = Leads.objects.filter(lead_type='MOTOR').count()
         health_leads = Leads.objects.filter(lead_type='HEALTH').count()
         term_leads = Leads.objects.filter(lead_type='TERM').count()
@@ -445,7 +447,8 @@ def termlead(request):
 
         leads = Leads.objects.all()
         # Count
-        total_leads = leads.count()
+        all_leads = Leads.objects.all()
+        total_leads = all_leads.count()  
         motor_leads = Leads.objects.filter(lead_type='MOTOR').count()
         health_leads = Leads.objects.filter(lead_type='HEALTH').count()
         term_leads = Leads.objects.filter(lead_type='TERM').count()
@@ -606,7 +609,10 @@ def create_or_edit_lead(request, lead_id=None):
             referral_by = ''
         lead_description = request.POST.get("lead_description", "").strip()
         # lead_type = request.POST.get("lead_type", "MOTOR").strip()
-        lead_type = request.POST.get("lead_type", "MOTOR").strip()
+        lead_type = request.POST.get("lead_type", "").strip()
+        #motor_leads = Leads.objects.filter(lead_type='MOTOR', created_by=request.user).order_by('-id')
+        #health_leads = Leads.objects.filter(lead_type='HEALTH', created_by=request.user).order_by('-id')
+        #term_leads = Leads.objects.filter(lead_type='TERM', created_by=request.user).order_by('-id')
 
         if lead_type == "MOTOR":
             registration_number = request.POST.get("registration_number", "").strip()

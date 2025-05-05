@@ -7,5 +7,6 @@ from .partners import Partner
 from .CommissionUpdateLog import CommissionUpdateLog
 from .StateCity import State
 from .StateCity import City
+from .insurance import Insurance
 
 
