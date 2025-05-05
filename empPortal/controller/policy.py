@@ -1001,6 +1001,32 @@ def policyData(request):
         'filters': {k: request.GET.get(k,'') for k in filters}
     })
 
+from django.db import IntegrityError
+
+def deletePolicy(request, id):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    policy = get_object_or_404(PolicyDocument, id=id)
+
+    try:
+        # Delete all ExtractedFile entries related to this policy
+        ExtractedFile.objects.filter(policy=policy).delete()
+        
+        # Delete all SingleUploadFile entries related to this policy
+        SingleUploadFile.objects.filter(policy=policy).delete()
+
+        # Delete the policy itself
+        policy.delete()
+
+        messages.success(request, "Policy and related files deleted successfully.")
+    except IntegrityError as e:
+        messages.error(request, f"Failed to delete policy due to a database integrity issue: {str(e)}")
+    except Exception as e:
+        messages.error(request, f"Failed to delete policy: {str(e)}")
+
+    return redirect('policy-data')  # Change this if your view name is different
+
 def viewSinglePolicyLog(request):
     if not request.user.is_authenticated and request.user.is_active != 1:
         messages.error(request,'Please Login First')
