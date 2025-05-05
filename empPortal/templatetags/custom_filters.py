@@ -2,7 +2,7 @@ from django import template
 from datetime import datetime
 import re
 from ..models import Commission, ExamResult,Users, DocumentUpload, Branch,BqpMaster
-
+from datetime import timedelta
 register = template.Library()
 
 @register.filter
@@ -108,3 +108,11 @@ def get_user_details(user_id):
         return Users.objects.get(id=user_id)
     except Users.DoesNotExist:
         return None
+    
+    
+@register.filter
+def add_days(value, days):
+    try:
+        return value + timedelta(days=int(days))
+    except:
+        return value

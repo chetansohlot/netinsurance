@@ -1,6 +1,8 @@
 
 <!DOCTYPE html>
 <html>
+	{% load custom_filters %}
+
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -31,7 +33,7 @@
 			<tr>
 				<td>
 					<div class="text-right">
-						<p class="gi-letter-date">Date: <strong>17/12/2024</strong></p>
+						<p class="gi-letter-date">Date: <strong>{{ customer.created_at|add_days:12|date:"d/m/Y" }}</strong></p>
 						<img src="{{ default_image_pos }}" alt="" class="gi-letter-default-img">
 					</div>
 				</td>
