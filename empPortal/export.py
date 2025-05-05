@@ -965,7 +965,7 @@ def export_commission_data_v1(request):
             policy.insurance_provider or "-",
             policy.policy_type or "-",
             policy.policy_number or "-",
-            policy_info.insured_name or "-",
+            policy_info.insured_name if policy_info and policy_info.insured_name else "-",
             policy.vehicle_type or "-",
             f"{policy.vehicle_make}/{policy.vehicle_model}" if policy.vehicle_make and policy.vehicle_model else "-",
             policy.vehicle_gross_weight or "-",
