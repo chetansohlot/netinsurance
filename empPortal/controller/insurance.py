@@ -10,9 +10,8 @@ def insurance_list(request):
     insurance_qs = Insurance.objects.all().order_by('-created_at')
 
     total_count = insurance_qs.count()
-    active_count = insurance_qs.filter(active='1').count()  # '1' means active
-    inactive_count = insurance_qs.filter(active='0').count()  # '0' means inactive
-
+    active_count = insurance_qs.filter(active='Active').count()    # updated value
+    inactive_count = insurance_qs.filter(active='Inactive').count()  # updated value
     return render(request, 'insurance/insurance_index.html',
                   {
                       'insurance_qs': insurance_qs,
@@ -25,7 +24,7 @@ def insurance_list(request):
 def insurance_create(request):
     if request.method == 'POST':
         insurance_company = request.POST.get('insurance_company')
-        active = request.POST.get('active', '1')  # Default to active if no value provided
+        active = request.POST.get('active', 'Active') 
 
         # Save to the database
         Insurance.objects.create(
@@ -41,7 +40,7 @@ def insurance_edit(request, insurance_id):
     insurance = get_object_or_404(Insurance, id=insurance_id)
     if request.method == 'POST':
         insurance.insurance_company = request.POST.get('insurance_company')
-        #insurance.active = request.POST.get('active', '1')  # Default to active if no value provided
+        insurance.active = request.POST.get('active', 'Active') 
         messages.success(request, 'Insurance updated successfully.')
         insurance.save()
 
@@ -49,16 +48,15 @@ def insurance_edit(request, insurance_id):
 
     return render(request, 'insurance/insurance_create.html', {'insurance': insurance})
 
-#Anjali
 def toggle_insurance_status(request, insurance_id):
     insurance = get_object_or_404(Insurance, id=insurance_id)
 
-    if insurance.active == '1':
-        insurance.active = '0'
+    if insurance.active == 'Active':
+        insurance.active = 'Inactive'
         messages.info(request, 'Insurance deactivated successfully.')
     else:
-        insurance.active = '1'
+        insurance.active = 'Active'
         messages.success(request, 'Insurance activated successfully.')
 
     insurance.save()
-    return redirect('insurance_index')  # Update with your actual list page name
+    return redirect('insurance_index')
