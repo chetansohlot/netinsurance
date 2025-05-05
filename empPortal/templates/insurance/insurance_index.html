@@ -1,6 +1,6 @@
 {% extends 'master.html' %}
 
-{% block title %}Insurance{% endblock %}
+{% block title %}Insurance Company{% endblock %}
 
 {% block content %}
 {% load static %}
@@ -16,16 +16,16 @@
           <div class="row pt-2 pb-2">
             <div class="col-sm-6">
               <div class="d-flex align-items-center">
-                <h1 class="admin-title m-0 pt-2">Insurance</h1>
+                <h1 class="admin-title m-0 pt-2">Insurance Company</h1>
               </div>
               <ul class="breadcrump">
                 <li><a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
-                <li>Insurance</li>
+                <li>Insurance Company</li>
               </ul>
             </div>
             <div class="col-sm-6">
               <div class="d-flex justify-content-end">
-                <a href="{% url 'create_insurance' %}" class="breadcrump-addbtn"><i class="fas fa-plus"></i> Add Insurance</a>
+                <a href="{% url 'create_insurance' %}" class="breadcrump-addbtn"><i class="fas fa-plus"></i> Add Insurance Company</a>
               </div>
             </div>
           </div>
@@ -36,7 +36,7 @@
                   <div class="card-body">
                     <div class="row">
                       <div class="col">
-                        <p class="card-text">Total Insurances</p>
+                        <p class="card-text">Total Insurances Company</p>
                         <h5 class="card-title card-number">{{ total_count }}</h5>
                       </div>
                     </div>
@@ -50,7 +50,7 @@
                   <div class="card-body">
                     <div class="row">
                       <div class="col">
-                        <p class="card-text">Active Insurances</p>
+                        <p class="card-text">Active Insurances Company</p>
                         <h5 class="card-title card-number">{{ active_count }}</h5>
                       </div>
                     </div>
@@ -64,7 +64,7 @@
                   <div class="card-body">
                     <div class="row">
                       <div class="col">
-                        <p class="card-text">Inactive Insurances</p>
+                        <p class="card-text">Inactive Insurances Company</p>
                         <h5 class="card-title card-number">{{ inactive_count }}</h5>
                       </div>
                     </div>
@@ -106,7 +106,7 @@
                     <label for="checkall"></label>
                   </th>
                   <th>Insurance ID</th>
-                  <th>Insurance Name</th>
+                  <th>Insurance Company</th>
                   <th>Status</th>
                   <th>Created At</th>
                   <th>Updated At</th>
@@ -129,7 +129,7 @@
                   <td>{{ insurance.insurance_company }}</td>
                 
                     <td>
-                      {% if insurance.active == '1' %}
+                      {% if insurance.active == 'Active' %}
                         <span class="badge badge-success">Active</span>
                       {% else %}
                         <span class="badge badge-danger">Inactive</span>
@@ -141,28 +141,27 @@
                   <td>
                     <a href="{% url 'insurance_edit' insurance.id %}" class="btn btn-xs btn-warning"><i class="fas fa-edit"></i></a>
                     
-                    {% if insurance.active == '1' %}
-                    <!-- Deactivate Button (Trash icon) -->
+                    {% if insurance.active == 'Active' %}
                     <a href="{% url 'insurance-toggle-status' insurance.id %}"
                        class="btn btn-xs btn-danger toggle-status mx-1"
-                       data-active="0">
+                       data-active="Inactive">
                         <i class="fas fa-trash"></i>
                     </a>
-                {% else %}
-                    <!-- Activate Button (Check Circle icon) -->
+                  {% else %}
                     <a href="{% url 'insurance-toggle-status' insurance.id %}"
                        class="btn btn-xs btn-primary toggle-status mx-1"
-                       data-active="1">
+                       data-active="Active">
                         <i class="fas fa-check-circle"></i>
                     </a>
-                {% endif %}
+                  {% endif %}
+                  
                    
 
                   </td>
                 </tr>
                 {% empty %}
                 <tr>
-                  <td colspan="7" class="text-center">No Insurance found.</td>
+                  <td colspan="7" class="text-center">No Insurance Company found.</td>
                 </tr>
                 {% endfor %}
               </tbody>

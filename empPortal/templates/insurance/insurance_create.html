@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-Insurance - {% if insurance %}Edit Insurance{% else %}Create Insurance{% endif %}
+Insurance Company- {% if insurance %}Edit Insurance Company{% else %}Create Insurance Company{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -21,13 +21,13 @@ Insurance - {% if insurance %}Edit Insurance{% else %}Create Insurance{% endif %
                         <div class="col-sm-6">
                             <div class="d-flex align-items-center">
                                 <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">
-                                    {% if insurance %}Edit Insurance{% else %}Create Insurance{% endif %}
+                                    {% if insurance %}Edit Insurance Company{% else %}Create Insurance Company{% endif %}
                                 </a>
                             </div>
                             <ul class="breadcrump">
                                 <li><a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
                                 <li><a href="#">Insurance</a> <i class="fas fa-chevron-right"></i></li>
-                                <li>{% if insurance %}Edit Insurance{% else %}Create Insurance{% endif %}</li>
+                                <li>{% if insurance %}Edit Insurance Company{% else %}Create Insurance Company{% endif %}</li>
                             </ul>
                         </div>
                         <div class="col-sm-6">
@@ -66,7 +66,7 @@ Insurance - {% if insurance %}Edit Insurance{% else %}Create Insurance{% endif %
                                         <!-- Submit Button -->
                                         <div class="d-flex justify-content-end">
                                             <button type="submit" class="form-submit-btn">
-                                                {% if insurance %}Update Insurance{% else %}Save Insurance{% endif %}
+                                                {% if insurance %}Update Insurance Company{% else %}Save Insurance Company{% endif %}
                                             </button>
                                         </div>
                                     </form>
