@@ -35,6 +35,12 @@ class Partner(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     active = models.BooleanField(default=True)
+    doc_status = models.CharField(
+        max_length=10,
+        default='0',
+        blank=True,
+        null=True
+    )
     intraining_status =models.CharField(
         max_length=1,
         choices=INTRAINING_STATUS_CHOICES,

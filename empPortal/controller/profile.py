@@ -33,7 +33,7 @@ from pprint import pprint
 import pdfkit
 from django.templatetags.static import static  # ✅ Import static
 from django.template.loader import render_to_string
-from ..helpers import sync_user_to_partner
+from ..helpers import sync_user_to_partner, update_partner_by_user_id
 
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 
@@ -360,6 +360,7 @@ def update_document(request):
         else:
             new_image_url = None  # Handle case where file isn't uploaded
 
+        update_partner_by_user_id(request.user.id, {"partner_status": "1", "doc_status": '1'}, request=request)
 
         return JsonResponse({"message": f"{document_type.replace('_', ' ').title()} updated successfully!", "new_image_url": new_image_url})
     

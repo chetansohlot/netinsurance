@@ -1299,7 +1299,7 @@ def activateUser(request, user_id):
 
     # Redirect to the member view page
 
-    update_partner_by_user_id(25, {"partner_status": "4", "active": False}, request=request)
+    
     return redirect('member-view', user_id=user_id)
 
 
@@ -1564,6 +1564,7 @@ def update_doc_status(request):
             return JsonResponse({"error": "Invalid status"}, status=400)
 
         document = get_object_or_404(DocumentUpload, id=doc_id)
+        user_id = document.user_id
         status_field = f"{doc_type}_status"
         updated_at_field = f"{doc_type}_updated_at"
         reject_note_field = f"{doc_type}_reject_note"
@@ -1580,12 +1581,80 @@ def update_doc_status(request):
 
         document.save()
 
+        docs = DocumentUpload.objects.filter(user_id=user_id)
+        if docs.exists():
+            all_approved = all(doc.aadhaar_card_front_status == 'Approved' and
+                               doc.aadhaar_card_back_status == 'Approved' and
+                               doc.upload_pan_status == 'Approved' and
+                               doc.upload_cheque_status == 'Approved' and
+                               doc.tenth_marksheet_status == 'Approved' for doc in docs)
+            any_pending = any(doc.aadhaar_card_front_status == 'Pending' or
+                              doc.aadhaar_card_back_status == 'Pending' or
+                              doc.upload_pan_status == 'Pending' or
+                              doc.upload_cheque_status == 'Pending' or
+                              doc.tenth_marksheet_status == 'Pending' for doc in docs)
+            if all_approved:
+                doc_status = '3'  # All documents approved
+            elif any_pending:
+                doc_status = '2'  # At least one document pending
+            else:
+                doc_status = '1'  # Some documents rejected or other statuses
+            # Update partner status based on document statuses
+            update_partner_by_user_id(user_id, {"doc_status": doc_status}, request=request)
+
+            if all_approved: 
+                send_training_mail(request,user_id)
         if document.user_id:
             updateUserStatus(doc_id, document.user_id)
         return JsonResponse({"success": True, "message": f"Status updated to {status}!"})
 
     return JsonResponse({"error": "Invalid request method"}, status=405)
 
+
+def send_training_mail(request, user_id):
+    # Ensure the user is authenticated
+    if not request.user.is_authenticated:
+        return
+
+    try:
+        # Fetch the user based on user_id
+        user = get_object_or_404(Users, id=user_id)
+        user_email = user.email
+
+        # Path to the training PDF
+        training_pdf_path = os.path.join(settings.MEDIA_ROOT, 'training/Training_Material_Elevate_Insurance_V1.0.pdf')
+        training_material_url = request.build_absolute_uri(settings.MEDIA_URL + 'training/Training_Material_Elevate_Insurance_V1.0.pdf')
+
+        # Render email HTML template
+        email_body = render_to_string('members/training-email.html', {
+            'user': user,
+            "logo_url": request.build_absolute_uri(static('dist/img/logo2.png')),
+            "support_email": "support@elevateinsurance.in",
+            "terms_conditions_url": "https://pos.elevateinsurance.in/empPortal/media/terms/Terms_And_Conditions.pdf",
+            "company_website": "https://pos.elevateinsurance.in/",
+            "training_material_url": training_material_url,
+            "support_number": "+918887779999",
+        })
+
+        # Prepare and send training email
+        subject = 'Training Material for Your Account'
+        from_email = settings.DEFAULT_FROM_EMAIL
+        recipient_list = [user_email]
+
+        email = EmailMessage(subject, email_body, from_email, recipient_list)
+        email.content_subtype = "html"  # Set content type to HTML
+
+        # Attach file if it exists
+        if os.path.exists(training_pdf_path):
+            email.attach_file(training_pdf_path)
+        else:
+            logger.error(f"Training PDF not found: {training_pdf_path}")
+
+        email.send()
+        logger.info(f"Training email sent to {user_email} successfully.")
+
+    except Exception as e:
+        logger.error(f"Error sending training email to user {user_id}: {e}")
 
 def updateUserStatus(doc_id, user_id):
     document = get_object_or_404(DocumentUpload, id=doc_id)
