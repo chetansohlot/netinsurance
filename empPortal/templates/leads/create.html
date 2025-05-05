@@ -203,12 +203,12 @@
                                 <input type="text" class="form-field form-control" name="registration_number" id="registration_number_input"
                                        value="{{ lead.registration_number|default:'' }}" placeholder="Enter Vehicle Number">
                                 
-                                {% if not lead.id %}
+                                
                                 <!-- Show only in Add mode -->
                                 <div class="input-group-append">
                                     <button type="button" class="btn btn-primary" onclick="fetchPolicyDetails()">Fetch</button>
                                 </div>
-                                {% endif %}
+                               
                             </div>
                         </div>
                         
@@ -413,16 +413,9 @@
                       enableManualEntryFields();
                       hideUnnecessaryFields();
                       // Show sweet alert here
-                    //if (!isEditMode) {
-                      Swal.fire({
-                          icon: 'error',
-                          title: 'Not Registered',
-                          text: response.message || 'No matching registration number fill all details.',
-                          timer: 2000,              // Auto-close after 2 seconds
-                          showConfirmButton: false, 
-                    });
+                      
                   }
-                //}
+                
               },
                  error: function(xhr, status, error) {
                      alert("Something went wrong. Please try again.");
@@ -493,7 +486,7 @@
     });
   </script>
   
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  
   <script>
   $('#state').change(function () {
     var stateName = $(this).val();  // changed to state name
@@ -519,7 +512,6 @@
 </script>
 
 
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
     function loadCities(stateName, selectedCity = null) {
         $('#city').html('<option value="">Loading cities...</option>');
