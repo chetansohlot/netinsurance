@@ -315,6 +315,8 @@ def upload_documents(request):
     # If there are validation errors, return them
     if errors:
         return JsonResponse({"errors": errors}, status=400)
+    
+    update_partner_by_user_id(user_id, {"partner_status": "1", "doc_status": '1'}, request=request)
 
     # Save only if there are updates
     if files_uploaded:
@@ -360,7 +362,7 @@ def update_document(request):
         else:
             new_image_url = None  # Handle case where file isn't uploaded
 
-        update_partner_by_user_id(request.user.id, {"partner_status": "1", "doc_status": '1'}, request=request)
+        update_partner_by_user_id(user_id, {"partner_status": "1", "doc_status": '1'}, request=request)
 
         return JsonResponse({"message": f"{document_type.replace('_', ' ').title()} updated successfully!", "new_image_url": new_image_url})
     
