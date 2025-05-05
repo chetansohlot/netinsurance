@@ -1056,6 +1056,13 @@ def memberView(request, user_id):
             sync_user_to_partner(user_id, request)
             partner_info  = Partner.objects.filter(user_id=user_id).first()
 
+        # 2) Advance through training/exam windows
+        #    - Activated→In‑Training
+        #    - In‑Training→In‑Exam after 5 days
+        #    - In‑Exam→Activated after 7 more days
+        # if partner_info:
+        #    partner_info.start_training_and_exam()
+
         # bqp_details = BqpMaster.objects.filter(id=user_details.bqp_id).first()
         bqp_details  = BqpMaster.objects.all()
 
