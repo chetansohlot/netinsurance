@@ -1,5 +1,5 @@
 {% with request.GET.urlencode as query_string %}
-    {% with query_string|cut:'page={{ page_obj.number }}'|cut:'&page={{ page_obj.number }}'|cut:'per_page={{ per_page }}'|cut:'&per_page={{ per_page }}' as preserved_filters %}
+    {% with query_string|cut:'page='|cut:'&page='|cut:'per_page='|cut:'&per_page=' as preserved_filters %}
         <div class="bottom-fix-pagination">
             <div class="d-flex justify-content-between align-items-center">
                 <ul class="pagination">
