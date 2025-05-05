@@ -237,7 +237,7 @@
                                                             <a href="{% url 'download-training-certificate' user_id=user_details.id %}">
                                                                 <i class="fa fa-download"></i>Training Certificate
                                                             </a>
-                                                        {% elif user_details.partner.partner_status == '3' %}
+                                                        {% elif user_details.partner.partner_status == '3' or user_details.partner.partner_status == '4' %}
                                                             <a href="{% url 'download-certificate' user_id=user_details.id %}">
                                                                 <i class="fa fa-download"></i>Exam Certificate
                                                             </a> |
