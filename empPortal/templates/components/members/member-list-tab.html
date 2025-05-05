@@ -3,7 +3,7 @@
         <a class="nav-link {% if members_all %}active{% endif %}" href="{% url 'members' %}">All Partner</a>
     </li>
     <li class="nav-item text-bold">
-        <a class="nav-link {% if requested %}active{% endif %}" href="{% url 'members_requested' %}">Requested</a>
+        <a class="nav-link {% if requested %}active{% endif %}" href="{% url 'members_requested' %}">Registered Partner</a>
     </li>
     <li class="nav-item text-bold">
         <a class="nav-link {% if inprocess %}active{% endif %}" href="{% url 'members_inprocess' %}">Document Info</a> <!--Replaces In Process with Document Info-->
@@ -21,6 +21,6 @@
         <a class="nav-link {% if rejected %}active{% endif %}" href="{% url 'members_rejected' %}">Rejected</a> <!--Replaces In Rejected with InActive-->
     </li>
     <li class="nav-item text-bold">
-        <a class="nav-link {% if inactive %}active{% endif %}" href="{% url 'members_inactive' %}">Inactive</a> <!--Replaces In Rejected with InActive-->
+        <a class="nav-link {% if inactive %}active{% endif %}" href="{% url 'members_inactive' %}">InActive</a> <!--Replaces In Rejected with InActive-->
     </li>
 </ul>
