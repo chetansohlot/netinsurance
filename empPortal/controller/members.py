@@ -76,10 +76,42 @@ def partnerCounters():
     )
     return counters
 
+def update_partner_status():
+    users = Users.objects.all()
+
+    for user in users:
+        # Get the latest document upload for the user (you can modify this logic if needed)
+        try:
+            doc = DocumentUpload.objects.filter(user_id=user.id).latest('uploaded_at')
+        except DocumentUpload.DoesNotExist:
+            continue  # Skip if user has not uploaded any document
+
+        # Check if all required document statuses are "Approved"
+        all_approved = (
+            doc.aadhaar_card_front_status == "Approved" and
+            doc.aadhaar_card_back_status == "Approved" and
+            doc.upload_pan_status == "Approved" and
+            doc.upload_cheque_status == "Approved" and
+            doc.tenth_marksheet_status == "Approved"
+        )
+
+        if all_approved:
+            # Check if the user attempted the exam
+            exam_result = ExamResult.objects.filter(user_id=user.id).first()
+
+            if exam_result:
+                if exam_result.status.lower() == "passed":
+                    Partner.objects.filter(user_id=user.id).update(partner_status='4')  # Passed
+                else:
+                    Partner.objects.filter(user_id=user.id).update(partner_status='3')  # Attempted, not passed
+            else:
+                Partner.objects.filter(user_id=user.id).update(partner_status='2')  # Docs approved, exam not attempted
+
+
 def members(request):
     if not request.user.is_authenticated:
         return redirect('login')
-
+    update_partner_status()
     if request.user.role_id == 1:
         role_ids = [4]  # Filter for specific roles
 
