@@ -409,7 +409,10 @@ def members_inprocess(request):
         # Base QuerySet
         # users = Users.objects.filter(role_id__in=role_ids, activation_status=4)
 
-        partners = Partner.objects.filter(partner_status='1')
+                
+        partners = Partner.objects.filter(
+            Q(partner_status='1') | Q(doc_status__gte=1)
+        )
         partner_ids = partners.values_list('user_id', flat=True)  # Get user IDs
 
         users = Users.objects.filter(id__in=partner_ids)
@@ -1603,7 +1606,7 @@ def update_doc_status(request):
             update_partner_by_user_id(user_id, {"doc_status": doc_status}, request=request)
 
             if all_approved: 
-                # update_partner_by_user_id(user_id, {"partner_status": "2"}, request=request)
+                update_partner_by_user_id(user_id, {"partner_status": "2"}, request=request)
                 send_training_mail(request,user_id)
         if document.user_id:
             updateUserStatus(doc_id, document.user_id)
