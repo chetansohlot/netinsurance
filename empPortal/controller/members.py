@@ -66,8 +66,8 @@ from django.db.models import Sum
 
 def partnerCounters():
     partners = Partner.objects.annotate(
-        doc_upload_count=Count('documentupload', filter=Q(partner_status='1', doc_status=1)),
-        pending_doc_count=Count('documentupload', filter=Q(partner_status='1', doc_status=2))
+        doc_upload_count=Count('id', filter=Q(partner_status='1', doc_status=1)),
+        pending_doc_count=Count('id', filter=Q(partner_status='1', doc_status=2))
     )
 
     counters = partners.aggregate(
