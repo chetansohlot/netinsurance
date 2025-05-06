@@ -490,10 +490,11 @@ def posCertificate(request, user_id):
 
     customer = get_object_or_404(Users, id=user_id)
 
-
+    passed_date = customer.examRes.created_at
 
     context = {
         "customer": customer,
+        "passed_date": passed_date,
         "logo_url": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/logo2.png'),
         "default_image_pos": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/default-image-pos.jpg'),
         "signature_pos": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/signature-pos.webp'),
