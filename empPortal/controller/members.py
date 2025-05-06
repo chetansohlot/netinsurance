@@ -1383,6 +1383,9 @@ def memberView(request, user_id):
         user_details  = Users.objects.get(id=user_id)
         bank_details  = BankDetails.objects.filter(user_id=user_id).first()
         partner_info  = Partner.objects.filter(user_id=user_id).first()
+    
+        update_exam_eligible_status()
+
         if not partner_info: 
             sync_user_to_partner(user_id, request)
             partner_info  = Partner.objects.filter(user_id=user_id).first()

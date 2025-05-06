@@ -140,7 +140,7 @@
                                         </span>
                                     </li>
                                     {% if user.role_id == 4 %}
-                                        {% if user.activation_status == "1" %}
+                                        {% if user.partner.partner_status == "3" or user.partner.partner_status == 3 %}
                                             {% if user.exam_eligibility == 1 %}
                                                 {% if user.exam_attempt < 3 %}
                                                     {% if user.exam_pass == 0 %}
