@@ -24,8 +24,8 @@ class Partner(models.Model):
     aadhaar_no = models.CharField(max_length=20, blank=True, null=True)
     email = models.EmailField(max_length=100, blank=True, null=True)
     phone = models.CharField(max_length=15, blank=True, null=True)
-    training_started_at = models.DateTimeField(blank=True, null=True)
-    exam_completed_at = models.DateTimeField(blank=True, null=True)
+    training_started_at = models.CharField(max_length=50, blank=True, null=True)
+    exam_completed_at = models.CharField(max_length=50, blank=True, null=True)
     name = models.CharField(max_length=100)
     partner_status = models.CharField(
         max_length=1,  # since it's a single-digit string
