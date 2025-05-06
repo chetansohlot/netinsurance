@@ -50,7 +50,7 @@
 
 						This is to confirm that you have successfully completed the prescribed training and have also passed the examination specified for Point of Sales examination conducted by <strong>Elevate Insurance Pvt Ltd</strong> under the Guidelines on Point of Sales Person for Non-life and Health Insurers. <br><br>
 
-						Aadhar No: <strong>XXXX XXXX 6128</strong><br>
+						Aadhar No: <strong>{{ docs.aadhaar_number|mask_aadhaar }}</strong><br>
 						PAN No: <strong>{{ customer.pan_no }}</strong><br>
 						PoSP Id: <strong>{{ customer.user_gen_id }}</strong><br><br>
 

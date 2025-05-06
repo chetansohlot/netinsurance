@@ -119,6 +119,18 @@ def add_days(value, days):
         return value
     
     
+@register.filter
+def mask_aadhaar(value):
+    """
+    Mask Aadhaar number to format XXXX XXXX 1234
+    """
+    try:
+        digits = ''.join(filter(str.isdigit, str(value)))
+        if len(digits) == 12:
+            return f"XXXX XXXX {digits[-4:]}"
+    except Exception as e:
+        print("mask_aadhaar error:", e)
+    return "-"
 
 @register.filter
 def add_t_days(value, days):
