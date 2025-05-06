@@ -129,3 +129,15 @@ def add_t_days(value, days):
     except Exception as e:
         print("add_t_days error:", e)
     return value
+
+@register.filter
+def add_days_str(value, days):
+    from datetime import datetime, timedelta
+    from django.utils.timezone import make_aware
+
+    try:
+        dt = datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
+        aware_dt = make_aware(dt)
+        return aware_dt + timedelta(days=int(days))
+    except Exception:
+        return value

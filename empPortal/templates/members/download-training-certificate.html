@@ -111,7 +111,7 @@
 							<strong>[Aadhaar No. XXXX XXXX 6128 | PAN No: {{ customer.pan_no }} ] </strong><br>
 							has successfully completed the prescribed training on 
 							 {% if partner.training_started_at %}
-								{{ partner.training_started_at|add_days:5|date:"d/M/Y" }}
+								{{ partner.training_started_at|add_days_str:5|date:"d/M/Y" }}
 							{% else %} 
 								{{ customer.created_at|add_days:5|date:"d/M/Y" }}
 							 {% endif %} 
