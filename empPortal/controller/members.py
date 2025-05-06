@@ -62,18 +62,27 @@ def dictfetchall(cursor):
     columns = [col[0] for col in cursor.description]
     return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
+from django.db.models import Sum
 
 def partnerCounters():
-    counters = Partner.objects.aggregate(
-        total=Count('id'),
-        requested=Count('id', filter=models.Q(partner_status='0')),
-        document_verification=Count('id', filter=models.Q(partner_status='1')),
-        in_training=Count('id', filter=models.Q(partner_status='2')),
-        in_exam=Count('id', filter=models.Q(partner_status='3')),
-        activated=Count('id', filter=models.Q(partner_status='4')),
-        inactive=Count('id', filter=models.Q(partner_status='5')),
-        rejected=Count('id', filter=models.Q(partner_status='6')),
+    partners = Partner.objects.annotate(
+        doc_upload_count=Count('documentupload', filter=Q(partner_status='1', doc_status=1)),
+        pending_doc_count=Count('documentupload', filter=Q(partner_status='1', doc_status=2))
     )
+
+    counters = partners.aggregate(
+        total=Count('id'),
+        requested=Count('id', filter=Q(partner_status='0')),
+        document_verification=Count('id', filter=Q(partner_status='1')),
+        in_training=Count('id', filter=Q(partner_status='2')),
+        in_exam=Count('id', filter=Q(partner_status='3')),
+        activated=Count('id', filter=Q(partner_status='4')),
+        inactive=Count('id', filter=Q(partner_status='5')),
+        rejected=Count('id', filter=Q(partner_status='6')),
+        doc_upload=Sum('doc_upload_count'),
+        pending_docs=Sum('pending_doc_count')
+    )
+
     return counters
 
 from django.utils.timezone import now
@@ -139,7 +148,7 @@ def update_partner_status():
 def members(request):
     if not request.user.is_authenticated:
         return redirect('login')
-    update_partner_status()
+    # update_partner_status()
     if request.user.role_id == 1:
         role_ids = [4]  # Filter for specific roles
 
@@ -574,7 +583,7 @@ def members_document_upload(request):
 
                 
         partners = Partner.objects.filter(
-            Q(partner_status='1') | Q(doc_status__gte=1)
+            Q(partner_status='1') | Q(doc_status=1)
         )
         partner_ids = partners.values_list('user_id', flat=True)  # Get user IDs
 
@@ -677,7 +686,7 @@ def members_document_inpending(request):
 
                 
         partners = Partner.objects.filter(
-            Q(partner_status='1') | Q(doc_status__gte=1)
+            Q(partner_status='1') | Q(doc_status=2)
         )
         partner_ids = partners.values_list('user_id', flat=True)  # Get user IDs
 
@@ -1872,7 +1881,7 @@ def update_doc_status(request):
             update_partner_by_user_id(user_id, {"doc_status": doc_status}, request=request)
 
             if all_approved: 
-                update_partner_by_user_id(user_id, {"partner_status": "2"}, request=request)
+                update_partner_by_user_id(user_id, {"partner_status": "2", "training_started_at": now()}, request=request)
                 send_training_mail(request,user_id)
         if document.user_id:
             updateUserStatus(doc_id, document.user_id)
