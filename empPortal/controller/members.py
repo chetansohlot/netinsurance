@@ -1942,12 +1942,11 @@ def update_doc_status(request):
             update_partner_by_user_id(user_id, {"doc_status": doc_status}, request=request)
 
             if all_approved: 
-                
                 update_partner_by_user_id(
                     user_id,
                     {
                         "partner_status": "2",
-                        "training_started_at": localtime().replace(tzinfo=None),  # strips timezone
+                        "training_started_at": localtime().replace(microsecond=0, tzinfo=None),
                     },
                     request=request
                 )
