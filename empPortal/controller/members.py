@@ -6,6 +6,9 @@ from django.contrib import messages
 from django.template import loader
 from ..models import Commission, ExamResult,Users, DocumentUpload, Branch,BqpMaster
 from empPortal.model import BankDetails
+from django.utils.timezone import localtime
+from datetime import datetime
+
 from ..forms import DocumentUploadForm
 from django.core.mail import send_mail
 from django.core.mail import EmailMessage
@@ -1939,7 +1942,15 @@ def update_doc_status(request):
             update_partner_by_user_id(user_id, {"doc_status": doc_status}, request=request)
 
             if all_approved: 
-                update_partner_by_user_id(user_id, {"partner_status": "2", "training_started_at": now()}, request=request)
+                
+                update_partner_by_user_id(
+                    user_id,
+                    {
+                        "partner_status": "2",
+                        "training_started_at": localtime().replace(tzinfo=None),  # strips timezone
+                    },
+                    request=request
+                )
                 send_training_mail(request,user_id)
         if document.user_id:
             updateUserStatus(doc_id, document.user_id)
