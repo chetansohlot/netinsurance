@@ -1319,7 +1319,17 @@
           </div>
         <!-- /.content-wrapper -->
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+  
+        <script>
+            function showRejectNote(note) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Rejected Reason',
+                    text: note || 'No reason provided',  // Show message if note is empty
+                    confirmButtonColor: '#d33'
+                });
+            }
+            </script>
         <!-- <script>
             function showRejectNote(note) {
                 Swal.fire({
