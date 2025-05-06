@@ -111,9 +111,9 @@
 							<strong>[Aadhaar No. XXXX XXXX 6128 | PAN No: {{ customer.pan_no }} ] </strong><br>
 							has successfully completed the prescribed training on 
 							{% comment %} {% if customer.partner.training_started_at %}
-								{{ customer.partner.training_started_at|add_days:5|date:"d/m/Y" }}
+								{{ customer.partner.training_started_at|add_days:5|date:"d/M/Y" }}
 							{% else %} {% endcomment %}
-								{{ customer.created_at|add_days:5|date:"d/m/Y" }}
+								{{ customer.created_at|add_days:5|date:"d/M/Y" }}
 							{% comment %} {% endif %} {% endcomment %}
 							specified for Point of Sales Person examination conducted by Elevate Insurance Pvt Ltd under the Guidelines of IRDAI (Ref No. IRDA/LIFE/CIR/MISC/215/12/2019 dated 02.12.2019 Ver-01)
 						</p>
