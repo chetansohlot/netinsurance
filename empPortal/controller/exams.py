@@ -32,6 +32,7 @@ from pprint import pprint
 
 from ..models import Commission,Users, DocumentUpload, Branch, Exam, Question, Option, ExamResult, UserAnswer
 from ..forms import DocumentUploadForm
+from ..helpers import sync_user_to_partner, update_partner_by_user_id
 
 logger = logging.getLogger(__name__)
 
@@ -147,6 +148,8 @@ def submit_exam(request):
             total_questions = exam.exam_question_count
             percentage = (correct_answers / total_questions) * 100 if total_questions > 0 else 0
             status = "passed" if percentage >= exam.exam_eligibility else "failed"
+            if status == "passed":
+                update_partner_by_user_id(request.user.id, {"partner_status": "4", "exam_completed_at": now()}, request=request)
 
             exam_result_id = request.session.get('exam_result_id')
             if(exam_result_id):
