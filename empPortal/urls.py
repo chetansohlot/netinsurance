@@ -120,7 +120,7 @@ urlpatterns = [
     path('members/activated', members.members_activated, name='members_activated'),
     path('members/rejected', members.members_rejected, name='members_rejected'),
     path('members/inactive', members.members_inactive, name='members_inactive'), ## members_inactive ##
-
+    path('member/delete-member/<str:user_id>',members.deleteMember, name='delete-member'),
     path('member/member-view/<str:user_id>',members.memberView, name='member-view'),
     path('member/download-training-certificate/<str:user_id>',members.posTrainingCertificate, name='download-training-certificate'),
     path('member/download-certificate/<str:user_id>',members.posCertificate, name='download-certificate'),

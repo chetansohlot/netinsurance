@@ -1890,6 +1890,16 @@ def update_doc_status(request):
     return JsonResponse({"error": "Invalid request method"}, status=405)
 
 
+
+def deleteMember(request, user_id):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    update_partner_by_user_id(user_id, {"active": 0}, request=request)
+
+    return redirect(request.META.get('HTTP_REFERER', 'members'))
+
+
 def send_training_mail(request, user_id):
     # Ensure the user is authenticated
     if not request.user.is_authenticated:

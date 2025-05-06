@@ -107,10 +107,13 @@
                       {% if inexam %}
                        <li><a class="dropdown-item" href="{% url 'download-certificate' user_id=user.id %}">Download Certificate</a></li>
                        <li><a class="dropdown-item" href="{% url 'download-training-certificate' user_id=user.id %}">Download Training Certificate</a></li>
+                       <li>
+                          <a href="{% url 'delete-member' user_id=user.id %}" class="deleteMemberBtn dropdown-item" data-title="Delete Policy">
+                            Delete
+                          </a>
+                        </li>
                       {% endif %}
                     {% endif %}  
-                
-
                 </ul>
               </div>
             </td>
@@ -124,3 +127,30 @@
     </table>
   </div>
   
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const deleteButtons = document.querySelectorAll('.deleteMemberBtn');
+
+    deleteButtons.forEach(function (button) {
+      button.addEventListener('click', function (event) {
+        event.preventDefault();
+
+        Swal.fire({
+          title: 'Are you sure?',
+          text: "You won't be able to revert this!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, delete it!',
+          cancelButtonText: 'Cancel',
+          reverseButtons: true
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = button.href;
+          }
+        });
+      });
+    });
+  });
+</script>
