@@ -232,7 +232,6 @@
                                         <span class="list-output">
                                             {% if user_details.exam_attempt > 0 and user_details.examRes %}
                                                 {% if user_details.examRes.status == 'passed' %}
-                                                    {% if user_details.can_download_certificates %}
                                                         {% if user_details.partner.partner_status == '2' %}
                                                             <a href="{% url 'download-training-certificate' user_id=user_details.id %}">
                                                                 <i class="fa fa-download"></i>Training Certificate
@@ -247,9 +246,6 @@
                                                         {% else %}
                                                             N/A
                                                         {% endif %}
-                                                    {% else %}
-                                                        Available after 5 days
-                                                    {% endif %}
                                                 {% else %}
                                                     N/A
                                                 {% endif %}
@@ -315,7 +311,7 @@
                                         <img src="{% static 'dist/img/svg/exam.svg' %}" alt="Exam Icon">
                                         <span class="list">Exam Score & Status</span>
                                         <span class="list-output">
-                                            {% if user_details.partner and user_details.partner.partner_status == '3' %}
+                                            {% if user_details.partner and user_details.partner.partner_status == '4' %}
                                                 {% if user_details.exam_attempt|default:0 > 0 and user_details.examRes %}
                                                     Score: {{ user_details.examRes.percentage|default:"0" }} % |
                                                     Passed: 
