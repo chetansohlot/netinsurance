@@ -65,7 +65,7 @@ def dictfetchall(cursor):
 from django.db.models import Sum
 
 def partnerCounters():
-    partners = Partner.objects.annotate(
+    partners = Partner.objects.filter(active__ne=0).annotate(
         doc_upload_count=Count('id', filter=Q(partner_status='1', doc_status=1)),
         pending_doc_count=Count('id', filter=Q(partner_status='1', doc_status=2))
     )
