@@ -9,7 +9,7 @@
             <input type="checkbox" name="" id="checkall" class="table-chk">
             <label for="checkall"></label>
           </th>
-          <th>Name / Employee ID</th>
+          <th>Name / Pan No</th>
           <th>Contact Details</th>
           <!-- <th>Role</th> -->
           <th>Member Status</th>
@@ -32,7 +32,7 @@
             </td>
             <td>
               <a href="{% url 'member-view' user_id=user.id %}" class="trlink">{{ user.full_name }} 
-                <span class="text-gray d-block small">{{ user.user_gen_id }}</span>
+                <span class="text-gray d-block small">{{ user.pan_no }}</span>
               </a>
             </td>
             <td>
