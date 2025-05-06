@@ -119,11 +119,13 @@ def add_days(value, days):
         return value
     
     
+
 @register.filter
 def add_t_days(value, days):
     try:
+        days = int(days)
         if isinstance(value, (datetime, date)):
-            return value + timedelta(days=int(days))
-    except (ValueError, TypeError):
-        pass
+            return value + timedelta(days=days)
+    except Exception as e:
+        print("add_t_days error:", e)
     return value
