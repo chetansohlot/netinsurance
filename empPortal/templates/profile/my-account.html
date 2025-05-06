@@ -52,15 +52,25 @@
                                 <img src="{% static 'dist/img/svg/profile-avatar-male.svg' %}" alt="" class="card-profile-img">
                                 <h3 class="profile-username text-center">{{ user_details.first_name }} {{ user_details.last_name }}</h3>
                                 
-                                <div class="d-flex justify-content-end mt-2">
-                                    {% if user_details.role_id != 1 %}
-                                        {% if user_details.activation_status == '1' %}
-                                            <p class="text-success">Active</p>
-                                        {% else %}
-                                            <p class="text-danger">Inactive</p>
-                                        {% endif %}
-                                    {% endif %}
-                                </div>
+                                <div class="d-flex justify-content-center mt-2">
+                                    {% if user_details.partner.partner_status == '0' %}
+                                    <span class="text-warning">Requested</span>
+                                {% elif user_details.partner.partner_status == '1' %}
+                                    <span class="text-info">Document Verification</span>
+                                {% elif user_details.partner.partner_status == '2' %}
+                                    <span class="text-primary">In Training</span>
+                                {% elif user_details.partner.partner_status == '3' %}
+                                    <span class="text-secondary">In Exam</span>
+                                {% elif user_details.partner.partner_status == '4' %}
+                                    <span class="text-success">Activated</span>
+                                {% elif user_details.partner.partner_status == '5' %}
+                                    <span class="text-danger">Inactive</span>
+                                {% elif user_details.partner.partner_status == '6' %}
+                                    <span class="text-danger">Rejected</span>
+                                {% else %}
+                                    <span class="text-muted">Unknown Status</span>
+                                {% endif %}
+                                </div>  
                     
                                 <div class="profile-info-divider"></div>
                     
@@ -149,17 +159,25 @@
                                     <li>
                                         <img src="{% static 'dist/img/svg/user-status.svg' %}" alt="">
                                         <span class="list">User Status</span>
-                                        <span class="list-output">
-                                            {% if user_details.activation_status == "1" %}
-                                                <span class="badge badge-success">Activated</span>
-                                            {% elif user_details.activation_status == "2" %}
-                                                <span class="badge badge-warning">In-Training</span>
-                                            {% elif user_details.activation_status == "3" %}
-                                                <span class="badge badge-info">In-Exam</span>
+                                        <div class="list-output">
+                                            {% if user_details.partner.partner_status == '0' %}
+                                                <span class="text-warning">Requested</span>
+                                            {% elif user_details.partner.partner_status == '1' %}
+                                                <span class="text-info">Document Verification</span>
+                                            {% elif user_details.partner.partner_status == '2' %}
+                                                <span class="text-primary">In Training</span>
+                                            {% elif user_details.partner.partner_status == '3' %}
+                                                <span class="text-secondary">In Exam</span>
+                                            {% elif user_details.partner.partner_status == '4' %}
+                                                <span class="text-success">Activated</span>
+                                            {% elif user_details.partner.partner_status == '5' %}
+                                                <span class="text-danger">Inactive</span>
+                                            {% elif user_details.partner.partner_status == '6' %}
+                                                <span class="text-danger">Rejected</span>
                                             {% else %}
-                                                <span class="badge badge-secondary">Requested</span>
+                                                <span class="text-muted">Unknown Status</span>
                                             {% endif %}
-                                        </span>
+                                        </div>
                                     </li>
                                     {% if user.role_id == 4 %}
                                         {% if user.partner.partner_status == "3" or user.partner.partner_status == 3 %}
