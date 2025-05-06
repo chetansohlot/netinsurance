@@ -4,6 +4,7 @@ import re
 from ..models import Commission, ExamResult,Users, DocumentUpload, Branch,BqpMaster
 from datetime import timedelta
 register = template.Library()
+from datetime import datetime, date, timedelta
 
 @register.filter
 def fallback(primary, secondary):
@@ -121,7 +122,7 @@ def add_days(value, days):
 @register.filter
 def add_t_days(value, days):
     try:
-        if isinstance(value, (datetime.datetime, datetime.date)):
+        if isinstance(value, (datetime, date)):
             return value + timedelta(days=int(days))
     except (ValueError, TypeError):
         pass
