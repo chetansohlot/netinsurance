@@ -117,11 +117,33 @@
                                         <span class="list">Communication Address</span>
                                         <span class="list-output">{{ user_details.address }}</span>
                                     </li>
+                                    
                                     <li>
                                         <img src="{% static 'dist/img/svg/certificate2.svg' %}" alt="">
                                         <span class="list">Download Certificate</span>
                                         <span class="list-output">
-                                            N/A
+                                            {% if user_details.exam_attempt > 0 and user_details.examRes %}
+                                                {% if user_details.examRes.status == 'passed' %}
+                                                        {% if user_details.partner.partner_status == '2' %}
+                                                            <a href="{% url 'download-training-certificate' user_id=user_details.id %}">
+                                                                <i class="fa fa-download"></i>Training Certificate
+                                                            </a>
+                                                        {% elif user_details.partner.partner_status == '3' or user_details.partner.partner_status == '4' %}
+                                                            <a href="{% url 'download-certificate' user_id=user_details.id %}">
+                                                                <i class="fa fa-download"></i>Exam Certificate
+                                                            </a> |
+                                                            <a href="{% url 'download-training-certificate' user_id=user_details.id %}">
+                                                                <i class="fa fa-download"></i>Training Certificate
+                                                            </a>
+                                                        {% else %}
+                                                            N/A
+                                                        {% endif %}
+                                                {% else %}
+                                                    N/A
+                                                {% endif %}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
                                         </span>
                                     </li>
                                     <li>
@@ -156,45 +178,45 @@
                                                     {% endif %}
                                                 {% endif %}
                                             {% endif %}
-                                            <li>
-                                                <img src="{% static 'dist/img/svg/exam.svg' %}" alt="">
-                                                <span class="list">Exam Score & Status</span>
-                                                <span class="list-output">
-                                                    {% if exam_details %}
-                                                        {% if exam_details.exam_submitted == 2 %}
-                                                            {{ exam_details.percentage }}% - {{ exam_details.status|upper }}
-                                                        {% elif exam_details.exam_submitted == 1 %}
-                                                            {{ "In Exam"|upper }}
+                                        {% endif %}
+                                        
+                                        <li>
+                                            <img src="{% static 'dist/img/svg/exam.svg' %}" alt="Exam Icon">
+                                            <span class="list">Exam Score & Status</span>
+                                            <span class="list-output">
+                                                {% if user_details.partner and user_details.partner.partner_status == '4' %}
+                                                    {% if user_details.exam_attempt|default:0 > 0 and user_details.examRes %}
+                                                        Score: {{ user_details.examRes.percentage|default:"0" }} % |
+                                                        Passed: 
+                                                        {% if user_details.examRes.status == "passed" %}
+                                                            <span style="color: green; font-weight: bold;">Yes</span>
+                                                        {% elif user_details.examRes.status == "failed" %}
+                                                            <span style="color: red; font-weight: bold;">No</span>
                                                         {% else %}
-                                                            {{ "N/A"|upper }}
+                                                            <span style="color: gray;">N/A</span>
                                                         {% endif %}
                                                     {% else %}
-                                                        {{ "N/A"|upper }}
+                                                        <span style="color: gray;">Not Attempted</span>
                                                     {% endif %}
-                                                </span>
-                                            </li>
-                                            <li>
-                                                <img src="{% static 'dist/img/svg/training-status.svg' %}" alt="">
-                                                <span class="list">Training Status</span>
-                                                <span class="list-output">
-                                                    N/A
-                                                </span>
-                                            </li>
-                                            <li>
-                                                <img src="{% static 'dist/img/svg/training-completed.svg' %}" alt="">
-                                                <span class="list">Training Completed</span>
-                                                <span class="list-output">
-                                                    N/A
-                                                </span>
-                                            </li>
-                                            <li>
-                                                <img src="{% static 'dist/img/svg/timer.svg' %}" alt="">
-                                                <span class="list">Training Time Counter</span>
-                                                <span class="list-output">
-                                                    N/A
-                                                </span>
-                                            </li>
-                                        {% endif %}
+                                                {% else %}
+                                                    <span style="color: gray;">N/A</span>
+                                                {% endif %}
+                                            </span>
+                                        </li>
+                                        <li>
+                                            <img src="{% static 'dist/img/svg/training-status.svg' %}" alt="">
+                                            <span class="list">Training Status</span>
+                                            <span class="list-output">
+                                                N/A
+                                            </span>
+                                        </li>
+                                        <li>
+                                            <img src="{% static 'dist/img/svg/training-completed.svg' %}" alt="">
+                                            <span class="list">Training Completed</span>
+                                            <span class="list-output">
+                                                N/A
+                                            </span>
+                                        </li>
                                     {% endif %}
                                 </ul>
                             </div>
