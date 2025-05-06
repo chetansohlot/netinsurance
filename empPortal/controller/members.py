@@ -1668,6 +1668,8 @@ def updatePartnerStatus(request, user_id):
             update_fields={"partner_status": partner_status},
             request=request
         )
+        if partner_status == 3:
+            Users.objects.filter(id=user_id).update(exam_eligibility=1)
 
         #  If they just moved into “Activated” (4), go through your full activateUser flow
         if partner_status == 4:
