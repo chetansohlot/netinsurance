@@ -64,23 +64,28 @@ def dictfetchall(cursor):
 
 from django.db.models import Sum
 
+
+
+
 def partnerCounters():
-    partners = Partner.objects.filter(active__ne=0).annotate(
+    # 1) Filter out inactive partners up front
+    partners = Partner.objects.exclude(active=0).annotate(
         doc_upload_count=Count('id', filter=Q(partner_status='1', doc_status=1)),
-        pending_doc_count=Count('id', filter=Q(partner_status='1', doc_status=2))
+        pending_doc_count =Count('id', filter=Q(partner_status='1', doc_status=2)),
     )
 
+    # 2) Aggregate on that already-filtered queryset
     counters = partners.aggregate(
-        total=Count('id'),
-        requested=Count('id', filter=Q(partner_status='0')),
-        document_verification=Count('id', filter=Q(partner_status='1')),
-        in_training=Count('id', filter=Q(partner_status='2')),
-        in_exam=Count('id', filter=Q(partner_status='3')),
-        activated=Count('id', filter=Q(partner_status='4')),
-        inactive=Count('id', filter=Q(partner_status='5')),
-        rejected=Count('id', filter=Q(partner_status='6')),
-        doc_upload=Sum('doc_upload_count'),
-        pending_docs=Sum('pending_doc_count')
+        total                 = Count('id'),
+        requested             = Count('id', filter=Q(partner_status='0')),
+        document_verification = Count('id', filter=Q(partner_status='1')),
+        in_training           = Count('id', filter=Q(partner_status='2')),
+        in_exam               = Count('id', filter=Q(partner_status='3')),
+        activated             = Count('id', filter=Q(partner_status='4')),
+        inactive              = Count('id', filter=Q(partner_status='5')),
+        rejected              = Count('id', filter=Q(partner_status='6')),
+        doc_upload            = Sum('doc_upload_count'),
+        pending_docs          = Sum('pending_doc_count'),
     )
 
     return counters
@@ -124,7 +129,7 @@ def update_partner_status():
             doc_status = '1'
 
         # Update doc_status in Partner
-        Partner.objects.filter(user_id=user.id).update(doc_status=doc_status)
+        Partner.objects.filter(user_id=user.id).exclude(active=0).update(doc_status=doc_status)
 
         # Handle partner_status
         if all_approved:
@@ -186,7 +191,12 @@ def members(request):
         if search_field and search_query:
             filter_args = {f"{search_field}__icontains": search_query}
             users = users.filter(**filter_args)"""
-        users = Users.objects.filter(role_id__in=role_ids)
+        
+        partners = Partner.objects.exclude(active=0)  # Status '2' represents training
+        partner_ids = partners.values_list('user_id', flat=True)  # Get user IDs
+
+        # Base QuerySet: Users who are in training (partner_status='2')
+        users = Users.objects.filter(id__in=partner_ids)
 
         
 
@@ -809,7 +819,7 @@ def members_intraining(request):
             per_page = 10  # Default to 10 if invalid value is given
 
         # Get partners in training (assuming status '2' represents training)
-        partners = Partner.objects.filter(partner_status='2')  # Status '2' represents training
+        partners = Partner.objects.filter(partner_status='2').exclude(active=0)  # Status '2' represents training
         partner_ids = partners.values_list('user_id', flat=True)  # Get user IDs
 
         # Base QuerySet: Users who are in training (partner_status='2')
