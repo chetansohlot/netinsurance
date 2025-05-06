@@ -59,9 +59,25 @@
           <div class="card-body">
             <div class="row">
               <div class="col">
-                <p class="card-text">Document Verification</p>
+                <p class="card-text">Document Upload</p>
                 <h5 class="card-title card-number">
-                  {{ counters.document_verification }}</h5>
+                  {{ counters.doc_upload }}</h5>
+              </div>
+            </div>
+          </div>
+        </a> 
+        </div> 
+    </div>  
+    <div class="col-xs-6 col-sm-4 col-md-3">
+      <a href="#">
+        <div class="card counter-img-card counter-active-card">
+          <a href="{%url 'members_inprocess'%}">
+          <div class="card-body">
+            <div class="row">
+              <div class="col">
+                <p class="card-text">Document Inpending</p>
+                <h5 class="card-title card-number">
+                  {{ counters.pending_docs }}</h5>
               </div>
             </div>
           </div>
