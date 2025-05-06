@@ -453,10 +453,12 @@ def posTrainingCertificate(request, user_id):
     config = pdfkit.configuration(wkhtmltopdf=wkhtml_path)
 
     customer = get_object_or_404(Users, id=user_id)
+    partner = get_object_or_404(Partner, user_id=user_id)
 
 
 
     context = {
+        "partner": partner,
         "customer": customer,
         "logo_url": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/logo2.png'),
         "default_image_pos": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/default-image-pos.jpg'),
