@@ -148,12 +148,51 @@ def update_partner_status():
 
         Partner.objects.filter(user_id=user.id).update(partner_status=partner_status)
 
+from datetime import timedelta
+from django.utils import timezone
+from django.db import transaction
 
+def update_exam_eligible_status():
+    """
+    1) Find all Partners whose training started at least 5 days ago.
+    2) For the corresponding Users, if they are:
+         - activated (activation_status='1'),
+         - have NOT passed the exam,
+         - have made fewer than 3 attempts,
+         - and are not already marked eligible,
+       then set exam_eligibility = 1.
+    """
+    cutoff = timezone.now() - timedelta(days=5)
+
+    # Step 1: get all user_ids whose training started at or before cutoff
+    eligible_user_ids = (
+        Partner.objects
+               .filter(training_start_date__lte=cutoff)
+               .values_list('user_id', flat=True)
+               .distinct()
+    )
+
+    # Step 2: bulk‐update Users
+    with transaction.atomic():
+        qs = (
+            Users.objects
+                 .filter(
+                     id__in=eligible_user_ids,
+                     activation_status='1',
+                     exam_eligibility=0,
+                     exam_attempt__lt=3,
+                 )
+                 .exclude(exam_pass=1)
+        )
+        updated_count = qs.update(exam_eligibility=1)
+
+    return updated_count
 
 def members(request):
     if not request.user.is_authenticated:
         return redirect('login')
     # update_partner_status()
+    update_exam_eligible_status()
     if request.user.role_id == 1:
         role_ids = [4]  # Filter for specific roles
 
