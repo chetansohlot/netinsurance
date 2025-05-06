@@ -107,13 +107,13 @@
                       {% if inexam %}
                        <li><a class="dropdown-item" href="{% url 'download-certificate' user_id=user.id %}">Download Certificate</a></li>
                        <li><a class="dropdown-item" href="{% url 'download-training-certificate' user_id=user.id %}">Download Training Certificate</a></li>
-                       <li>
-                          <a href="{% url 'delete-member' user_id=user.id %}" class="deleteMemberBtn dropdown-item" data-title="Delete Policy">
-                            Delete
-                          </a>
-                        </li>
                       {% endif %}
                     {% endif %}  
+                    <li>
+                       <a href="{% url 'delete-member' user_id=user.id %}" class="deleteMemberBtn dropdown-item" data-title="Delete Policy">
+                         Delete
+                       </a>
+                     </li>
                 </ul>
               </div>
             </td>
