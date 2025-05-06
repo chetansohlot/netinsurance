@@ -8,6 +8,7 @@ import re
 import requests
 import time
 import zipfile
+from django.utils.timezone import localtime
 
 from django.conf import settings
 from django.contrib import messages
@@ -153,7 +154,8 @@ def submit_exam(request):
             percentage = (correct_answers / total_questions) * 100 if total_questions > 0 else 0
             status = "passed" if percentage >= exam.exam_eligibility else "failed"
             if status == "passed":
-                update_partner_by_user_id(request.user.id, {"partner_status": "4", "exam_completed_at": now()}, request=request)
+                completed_at = localtime().replace(microsecond=0, tzinfo=None)
+                update_partner_by_user_id(request.user.id, {"partner_status": "4", "exam_completed_at": completed_at}, request=request)
 
             exam_result_id = request.session.get('exam_result_id')
             if(exam_result_id):
