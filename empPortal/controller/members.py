@@ -583,7 +583,7 @@ def members_document_upload(request):
 
                 
         partners = Partner.objects.filter(
-            Q(partner_status='1') | Q(doc_status=1)
+            Q(doc_status='1') | Q(doc_status=1)
         )
         partner_ids = partners.values_list('user_id', flat=True)  # Get user IDs
 
@@ -686,7 +686,7 @@ def members_document_inpending(request):
 
                 
         partners = Partner.objects.filter(
-            Q(partner_status='1') | Q(doc_status=2)
+            Q(doc_status='2') | Q(doc_status=2)
         )
         partner_ids = partners.values_list('user_id', flat=True)  # Get user IDs
 
