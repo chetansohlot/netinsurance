@@ -152,29 +152,22 @@ from datetime import timedelta
 from django.utils import timezone
 from django.db import transaction
 
+
 def update_exam_eligible_status():
-    """
-    1) Find all Partners whose training started at least 5 days ago.
-    2) For the corresponding Users, if they are:
-         - activated (activation_status='1'),
-         - have NOT passed the exam,
-         - have made fewer than 3 attempts,
-         - and are not already marked eligible,
-       then set exam_eligibility = 1.
-    """
     cutoff = timezone.now() - timedelta(days=5)
 
-    # Step 1: get all user_ids whose training started at or before cutoff
-    eligible_user_ids = (
-        Partner.objects
-               .filter(training_start_date__lte=cutoff)
-               .values_list('user_id', flat=True)
-               .distinct()
+    # 1) Find all partner user_ids whose training_start_date is at least 5 days ago.
+    partners_qs = Partner.objects.filter(
+        partner_status='2',
+        training_start_date__lte=cutoff
     )
 
-    # Step 2: bulk‐update Users
+    eligible_user_ids = partners_qs.values_list('user_id', flat=True).distinct()
+
+
     with transaction.atomic():
-        qs = (
+        # 2) Update Users in bulk
+        users_qs = (
             Users.objects
                  .filter(
                      id__in=eligible_user_ids,
@@ -184,9 +177,20 @@ def update_exam_eligible_status():
                  )
                  .exclude(exam_pass=1)
         )
-        updated_count = qs.update(exam_eligibility=1)
+        updated_users = users_qs.update(exam_eligibility=1)
 
-    return updated_count
+        # 3) Update their Partners' status
+        # Only affects partners whose user_id was in eligible_user_ids
+        updated_partners = (
+            Partner.objects
+                   .filter(user_id__in=eligible_user_ids)
+                   .update(partner_status='3')
+        )
+
+    return {
+        'users_marked_eligible': updated_users,
+        'partners_activated':    updated_partners,
+    }
 
 def members(request):
     if not request.user.is_authenticated:
