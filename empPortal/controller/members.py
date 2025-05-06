@@ -1960,8 +1960,9 @@ def deleteMember(request, user_id):
 
 def send_training_mail(request, user_id):
     # Ensure the user is authenticated
+    
     if not request.user.is_authenticated:
-        return
+        return redirect('login')
 
     try:
         # Fetch the user based on user_id
@@ -2023,6 +2024,10 @@ def updateUserStatus(doc_id, user_id):
         user.save()
 
 def add_partner(request):
+    
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
     if request.method == 'POST':
         # Extract form data
         full_name = request.POST.get('full_name', '').strip()
