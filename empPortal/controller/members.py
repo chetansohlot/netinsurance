@@ -366,7 +366,7 @@ def members_requested(request):
             filter_args = {f"{search_field}__icontains": search_query}
             users = users.filter(**filter_args)"""
 
-        partners = Partner.objects.filter(partner_status='0')
+        partners = Partner.objects.filter(partner_status='0').exclude(active=0)
         partner_ids = partners.values_list('user_id', flat=True)  # Get user IDs
 
         users = Users.objects.filter(id__in=partner_ids)
