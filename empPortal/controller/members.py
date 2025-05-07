@@ -584,6 +584,7 @@ def posTrainingCertificate(request, user_id):
         "partner": partner,
         "customer": customer,
         "logo_url": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/logo2.png'),
+        "signature_elevate": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/elevate-signature.png'),
         "default_image_pos": profile_image_url,
         "signature_pos": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/signature-pos.webp'),
     }
@@ -632,6 +633,7 @@ def posCertificate(request, user_id):
         "passed_date": passed_date,
         "docs": docs,
         "logo_url": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/logo2.png'),
+        "signature_elevate": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/elevate-signature.png'),
         "profile_image_url": profile_image_url,  # Pass the real image path here
         "signature_pos": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/signature-pos.webp'),
     }
