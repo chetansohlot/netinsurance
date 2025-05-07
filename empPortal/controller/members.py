@@ -2086,6 +2086,7 @@ def deleteMember(request, user_id):
 
     update_partner_by_user_id(user_id, {"active": 0}, request=request)
 
+    messages.success(request, "Memeber Deleted successfully!")
     return redirect(request.META.get('HTTP_REFERER', 'members'))
 
     
