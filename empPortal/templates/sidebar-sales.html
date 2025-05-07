@@ -95,7 +95,7 @@
             </li>
           
           
-            {% comment %} <li class="nav-item {% if '/franchise-management/' in request.path or '/branch-management/' in request.path or '/user-and-roles/' in request.path %} menu-is-opening menu-open {% endif %}">
+            <li class="nav-item {% if '/franchise-management/' in request.path or '/branch-management/' in request.path or '/user-and-roles/' in request.path %} menu-is-opening menu-open {% endif %}">
               <a href="#" class="nav-link">
                   <svg class="sidbarmenu-svg">
                       <use xlink:href="#view-policy" />
@@ -104,34 +104,6 @@
               </a>
               <ul class="nav nav-treeview" {% if '/franchise-management/' in request.path or '/branch-management/' in request.path or '/referral-management/' in request.path or '/employee-management/' in request.path or '/department-management/' in request.path or '/user-and-roles/' in request.path or '/create-user/' in request.path or '/users/' in request.path %} style="display: block;" {% else %} style="display: none;" {% endif %}>
                   <li class="nav-item">
-                      <a href="{% url 'franchise-management' %}" class="nav-link {% if '/franchise-management/' in request.path %} active {% endif %}">
-                          <!-- <i class="nav-icon fa-solid fa-building"></i> -->
-                          <svg class="sidbarmenu-svg">
-                            <use xlink:href="#franchise-icon" />
-                          </svg>
-                          <p>Franchise/Entity</p>
-                      </a>
-                  </li>
-                   
-
-                  <li class="nav-item">
-                      <a href="{% url 'branch-management' %}" class="nav-link {% if '/branch-management/' in request.path %} active {% endif %}">
-                          <!-- <i class="nav-icon fa-solid fa-code-branch"></i> -->
-                          <svg class="sidbarmenu-svg">
-                            <use xlink:href="#branches-icon" />
-                          </svg>
-                          <p>Branch</p>
-                      </a>
-                  </li>
-                  <li class="nav-item">
-                      <a href="{% url 'department-management' %}" class="nav-link {% if '/department-management/' in request.path %} active {% endif %}">
-                        <svg class="sidbarmenu-svg">
-                          <use xlink:href="#department-icon" />
-                        </svg>
-                          <p>Department</p>
-                      </a>
-                  </li>
-                  <li class="nav-item">
                       <a href="{% url 'referral-management' %}" class="nav-link {% if '/referral-management/' in request.path %} active {% endif %}">
                         <svg class="sidbarmenu-svg">
                           <use xlink:href="#management-icon" />
@@ -139,25 +111,8 @@
                         <p>Referral Mgmt.</p>
                       </a>
                   </li>
-                  <li class="nav-item">
-                      <a href="{% url 'user-and-roles' %}" class="nav-link {% if '/user-and-roles/' in request.path or '/create-user/' in request.path or '/users/' in request.path %} active {% endif %}">
-                          <svg class="sidbarmenu-svg">
-                              <use xlink:href="#roles-icon" />
-                          </svg>
-                          <p>Roles</p>
-                      </a>
-                  </li>
-                  <li class="nav-item">
-                      <a href="{% url 'employee-management' %}" class="nav-link {% if '/employee-management/' in request.path %} active {% endif %}">
-                        <svg class="sidbarmenu-svg">
-                          <use xlink:href="#employees-icon" />
-                        </svg>
-                        <p>Employee</p>
-                      </a>
-                  </li>
-
               </ul>
-          </li> {% endcomment %}
+          </li> 
           
           
             <li class="nav-item {% if '/report/' in request.path %} menu-is-opening menu-open {% endif %}">
