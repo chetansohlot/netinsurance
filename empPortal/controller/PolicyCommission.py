@@ -380,46 +380,60 @@ def update_insurer_commission(request):
     if not policy_ids:
         return redirect('insurer-commission')
 
-    policies = PolicyDocument.objects.filter(id__in=policy_ids).only('id', 'policy_number')
+    # Get form data once
+    od_comm = request.POST.get('insurer_od_commission')
+    net_comm = request.POST.get('insurer_net_commission')
+    tp_comm = request.POST.get('insurer_tp_commission')
+    incentive = request.POST.get('insurer_incentive_amount')
+    tds = request.POST.get('insurer_tds')
 
-    # Create a dictionary mapping policy IDs to policy numbers
+    # Skip processing if all fields are empty
+    if not any([od_comm, net_comm, tp_comm, incentive, tds]):
+        messages.warning(request, "No commission fields provided.")
+        return redirect('insurer-commission')
+
+    policies = PolicyDocument.objects.filter(id__in=policy_ids).only('id', 'policy_number')
     policy_map = {policy.id: policy.policy_number for policy in policies}
 
     for policy_id in policy_ids:
         policy_number = policy_map.get(policy_id)
         if not policy_number:
-            continue  # Skip if policy not found
+            continue
 
-        # Get or create the InsurerPaymentDetails object for this policy
         obj, created = InsurerPaymentDetails.objects.get_or_create(
-            policy_id=policy_id, defaults={'policy_number': policy_number}
+            policy_id=policy_id, policy_number= policy_number
         )
 
         if not created:
-            obj.policy_number = policy_number  # Update if exists
+            obj.policy_number = policy_number
 
-        # Update fields from the form
-        obj.insurer_od_comm = request.POST.get('insurer_od_commission')
-        obj.insurer_net_comm = request.POST.get('insurer_net_commission')
-        obj.insurer_tp_comm = request.POST.get('insurer_tp_commission')
-        obj.insurer_incentive_amount = request.POST.get('insurer_incentive_amount')
-        obj.insurer_tds = request.POST.get('insurer_tds')
         obj.updated_by = request.user
 
-        # Calculate amounts based on commissions
+        if od_comm: obj.insurer_od_comm = od_comm
+        if net_comm: obj.insurer_net_comm = net_comm
+        if tp_comm: obj.insurer_tp_comm = tp_comm
+        if incentive: obj.insurer_incentive_amount = incentive
+        if tds: obj.insurer_tds = tds
+
         try:
-            obj.insurer_od_amount = str(float(obj.insurer_od_comm) if obj.insurer_od_comm else 0)
-            obj.insurer_net_amount = str(float(obj.insurer_net_comm) if obj.insurer_net_comm else 0)
-            obj.insurer_tp_amount = str(float(obj.insurer_tp_comm) if obj.insurer_tp_comm else 0)
-            obj.insurer_total_comm_amount = str(float(obj.insurer_od_amount) + float(obj.insurer_net_amount) + float(obj.insurer_tp_amount))
-            obj.insurer_net_payable_amount = str(float(obj.insurer_total_comm_amount) - (float(obj.insurer_tds) if obj.insurer_tds else 0))
-            obj.insurer_tds_amount = str(float(obj.insurer_tds) if obj.insurer_tds else 0)
+            if all([od_comm, net_comm, tp_comm, tds]):
+                od_amt = float(od_comm)
+                net_amt = float(net_comm)
+                tp_amt = float(tp_comm)
+                tds_amt = float(tds)
+
+                obj.insurer_od_amount = str(od_amt)
+                obj.insurer_net_amount = str(net_amt)
+                obj.insurer_tp_amount = str(tp_amt)
+                obj.insurer_total_comm_amount = str(od_amt + net_amt + tp_amt)
+                obj.insurer_net_payable_amount = str(od_amt + net_amt + tp_amt - tds_amt)
+                obj.insurer_tds_amount = str(tds_amt)
         except ValueError:
-            pass
+            messages.warning(request, f"Invalid commission values for policy {policy_number}. Skipped.")
+            continue
 
         obj.save()
 
-        
         log_commission_update(
             commission_type='insurer',
             policy_id=policy_id,
