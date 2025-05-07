@@ -572,12 +572,19 @@ def posTrainingCertificate(request, user_id):
     partner = get_object_or_404(Partner, user_id=user_id)
 
 
+    # Determine which image to use for the certificate
+    if customer.profile_image:
+        # Get the real file path of the profile image
+        profile_image_path = default_storage.path(customer.profile_image.name)
+        profile_image_url = profile_image_path if os.path.exists(profile_image_path) else os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/default-image-pos.jpg')
+    else:
+        profile_image_url = os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/default-image-pos.jpg')
 
     context = {
         "partner": partner,
         "customer": customer,
         "logo_url": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/logo2.png'),
-        "default_image_pos": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/default-image-pos.jpg'),
+        "default_image_pos": profile_image_url,
         "signature_pos": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/signature-pos.webp'),
     }
 
