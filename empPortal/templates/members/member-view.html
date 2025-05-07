@@ -104,7 +104,12 @@
                     <div class="col-md-4 px-0">
                         <div class="card member-detail-left-card">
                             <div class="card-body box-profile">
-                                <img src="{% static 'dist/img/svg/profile-avatar-male.svg' %}" alt="" class="card-profile-img">
+                                {% if user_details.profile_image %}
+                                    <img src="{{ user_details.profile_image.url }}" alt="Profile Image" class="card-profile-img">
+                                {% else %}
+                                    <img src="{% static 'dist/img/svg/profile-avatar-male.svg' %}" alt="Default Profile" class="card-profile-img">
+                                {% endif %}
+                                
                                 <h3 class="profile-username text-center">{{ user_details.first_name }} {{ user_details.last_name }}</h3>
                                 <div class="d-flex justify-content-center mt-2">
                                     {% if user_details.partner.partner_status == '0' %}
