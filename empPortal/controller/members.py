@@ -2088,6 +2088,39 @@ def deleteMember(request, user_id):
 
     return redirect(request.META.get('HTTP_REFERER', 'members'))
 
+    
+
+def requestForDoc(request, user_id):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    user = get_object_or_404(Users, id=user_id)
+    partner = get_object_or_404(Partner, user_id=user_id)
+    
+    try:
+        if user and user.email:
+            email_body = render_to_string('members/request-doc-email.html', {
+                'user': user,
+                "logo_url": request.build_absolute_uri(static('dist/img/logo2.png')),
+                "support_email": "support@elevateinsurance.in",
+                "company_website": "https://pos.elevateinsurance.in/",
+                "support_number": "+918887779999",
+            })
+
+            subject = 'Action Required: Please Upload Your Documents'
+            from_email = settings.DEFAULT_FROM_EMAIL
+            recipient_list = [user.email]
+
+            email = EmailMessage(subject, email_body, from_email, recipient_list)
+            email.content_subtype = "html"
+            email.send()
+
+    except Exception as e:
+        logger.error(f"Error requesting document for user {user_id}: {e}")
+    
+    messages.success(request, "Request sent successfully!")
+    return redirect(request.META.get('HTTP_REFERER', 'members'))
+
 
 def send_training_mail(request, user_id):
     # Ensure the user is authenticated

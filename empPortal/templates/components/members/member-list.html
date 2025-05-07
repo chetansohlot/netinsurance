@@ -118,10 +118,17 @@
                       {% endif %}
                     {% endif %}  
                     <li>
-                       <a href="{% url 'delete-member' user_id=user.id %}" class="deleteMemberBtn dropdown-item" data-title="Delete Policy">
-                         Delete
-                       </a>
+                  {% if docpendingupload %}
+                      <a href="{% url 'request-for-doc' user_id=user.id %}" class="request-for-doc dropdown-item" data-title="Request For Doc">
+                        Request For Document
+                      </a>
+                  {% endif %}
                      </li>
+                     <li>
+                        <a href="{% url 'delete-member' user_id=user.id %}" class="deleteMemberBtn dropdown-item" data-title="Delete Policy">
+                          Delete
+                        </a>
+                      </li>
                 </ul>
               </div>
             </td>
@@ -152,6 +159,32 @@
           showCancelButton: true,
           confirmButtonText: 'Yes, delete it!',
           cancelButtonText: 'Cancel',
+          reverseButtons: true
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = button.href;
+          }
+        });
+      });
+    });
+  });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const requestButtons = document.querySelectorAll('.request-for-doc');
+
+    requestButtons.forEach(function (button) {
+      button.addEventListener('click', function (event) {
+        event.preventDefault();
+
+        Swal.fire({
+          title: 'Request document for this user?',
+          text: "This will send a document request. Do you want to continue?",
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, request it!',
+          cancelButtonText: 'No, cancel',
           reverseButtons: true
         }).then((result) => {
           if (result.isConfirmed) {
