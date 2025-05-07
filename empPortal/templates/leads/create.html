@@ -343,6 +343,7 @@
       document.getElementById("myForm").addEventListener("submit", function() {
           document.getElementById("loader").style.display = "flex";
       });
+      
 
       document.addEventListener("DOMContentLoaded", function () {
         const leadTypeSelect = document.getElementById("lead_type");
@@ -355,6 +356,9 @@
                 vehicleFields.style.display = "block";
             } else {
                 vehicleFields.style.display = "none";
+
+                //document.getElementById('registration_number_input').value = '';
+                //clearFormFields();
             }
         }
 
@@ -362,8 +366,9 @@
         toggleVehicleFields();
 
         // Listen for changes
-        leadTypeSelect.addEventListener("change", toggleVehicleFields);
+       leadTypeSelect.addEventListener("change", toggleVehicleFields);
     });
+        
     </script>
     
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -478,7 +483,7 @@
   <script>
     $(document).ready(function () {
         const registrationNumber = $("#registration_number_input").val();
-        const isEditMode = "{{ lead.id|default:'' }}" !== "";  // Adjust based on how you're passing `lead`
+        const isEditMode = "{{ lead.id|default:'' }}" !== "";  // Adjust based on how you're passing lead
   
         if (isEditMode && registrationNumber !== "") {
             fetchPolicyDetails();  // Auto-fetch in edit mode
@@ -500,7 +505,7 @@
             success: function (data) {
                 var options = '<option value="">Select City</option>';
                 data.forEach(function(city) {
-                    options += `<option value="${city.city}">${city.city}</option>`;
+                    options += <option value="${city.city}">${city.city}</option>;
                 });
                 $('#city').html(options);
             }
@@ -525,9 +530,9 @@
                     let options = '<option value="">Select City</option>';
                     data.forEach(function(city) {
                         if (selectedCity && city.city === selectedCity) {
-                            options += `<option value="${city.city}" selected>${city.city}</option>`;
+                            options += <option value="${city.city}" selected>${city.city}</option>;
                         } else {
-                            options += `<option value="${city.city}">${city.city}</option>`;
+                            options += <option value="${city.city}">${city.city}</option>;
                         }
                     });
                     $('#city').html(options);

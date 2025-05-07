@@ -117,7 +117,7 @@ def index(request):
         leads = leads.filter(email_address__icontains=request.GET['email_address'])
     if 'mobile_number' in request.GET and request.GET['mobile_number']:
         leads = leads.filter(mobile_number__icontains=request.GET['mobile_number']) """
-
+    
     # Get filter inputs
     lead_id = request.GET.get('lead_id', '')
     name = request.GET.get('name_as_per_pan', '')
@@ -135,6 +135,15 @@ def index(request):
     upcoming_renewals = request.GET.get('upcoming_renewals', '')
     lead_type = request.GET.get('lead_type')
     motor_type = request.GET.get('motor_type')
+
+    # Collect filter inputs
+    filters_applied = any([
+        lead_id, name, pan, email, mobile,
+        sales_manager, agent_name, policy_number,
+        start_date, end_date, insurance_company,
+        policy_type, vehicle_type, upcoming_renewals,
+        lead_type, motor_type
+    ])
 
     #today = datetime.today().date()
     #after_30_days = today + timedelta(days=30)
@@ -213,9 +222,16 @@ def index(request):
         leads = leads.order_by('-created_at')  # Default sort
 
     # After filtering leads
+    #if request.GET.get('export') == '1':
+        #return export_leads_to_excel(leads)
+    # Handle Export
     if request.GET.get('export') == '1':
-        return export_leads_to_excel(leads)
-
+        if filters_applied:
+            return export_leads_to_excel(leads)
+        else:
+            messages.warning(request, "Please select at least one filter to export data.")
+            return redirect('leads-mgt')
+    
     # Count
     all_leads = Leads.objects.all()
     total_leads = all_leads.count()  
