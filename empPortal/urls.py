@@ -108,6 +108,7 @@ urlpatterns = [
 
     path('members/all-partner', members.members, name='members'),
     path('members/in-process', members.members_inprocess, name='members_inprocess'),
+    path('members/document-pending-upload', members.members_document_pending_upload, name='members_document_pending_upload'),
     path('members/document-upload', members.members_document_upload, name='members_document_upload'),
     path('members/document-in-pending', members.members_document_inpending, name='members_document_inpending'),
     path('members/member-requested', members.members_requested, name='members_requested'),
