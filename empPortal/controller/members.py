@@ -761,7 +761,7 @@ def members_document_upload(request):
                 
         partners = Partner.objects.filter(
             Q(doc_status='1') | Q(doc_status=1)
-        )
+        ).exclude(active=0)
         partner_ids = partners.values_list('user_id', flat=True)  # Get user IDs
 
         users = Users.objects.filter(id__in=partner_ids)
