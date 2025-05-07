@@ -86,13 +86,17 @@
 
             {% if inexam %}
             <td>
-              {% if user %}
-                <span class="badge badge-success">
-                  Score: {{ user.examRes.percentage|default:"Not Attempted" }}<br>
-                  Status: {{ user.examRes.status|default:"Not Attempted" }}
-                </span>
+              {% if user and user.examRes %}
+                {% if user.examRes.percentage and user.examRes.status %}
+                  <span class="badge badge-success">
+                    Score: {{ user.examRes.percentage }}<br>
+                    Status: {{ user.examRes.status }}
+                  </span>
+                {% else %}
+                  <span class="badge badge-warning">Not Attempted</span>
+                {% endif %}
               {% else %}
-                <span class="badge badge-secondary">N/A</span>
+                <span class="badge badge-secondary">Not Attempted</span>
               {% endif %}
             </td>
             {% endif %}

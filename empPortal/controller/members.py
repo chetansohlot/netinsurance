@@ -1108,7 +1108,7 @@ def members_inexam(request):
             per_page = 10  # Default to 10 if invalid value is given
 
         # Fetch users that are in the "in exam" stage (partner_status='3')
-        partners = Partner.objects.filter(Q(partner_status='3') | Q(partner_status='4'))
+        partners = Partner.objects.filter(Q(partner_status='3'))
         partner_ids = partners.values_list('user_id', flat=True)  # Get user IDs
 
         users = Users.objects.filter(id__in=partner_ids, role_id__in=role_ids)
