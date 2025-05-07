@@ -227,7 +227,7 @@ $(document).on('input', '.amount-number', function() {
 
     // Limit integer part to 2 digits
     if (parts[0].length > 4) {
-        sanitizedValue = parts[0].slice(0, 10) + (parts.length > 1 ? '.' + parts[1] : '');
+        sanitizedValue = parts[0].slice(0, 4) + (parts.length > 1 ? '.' + parts[1] : '');
     }
 
     // Limit decimal part to 2 digits
