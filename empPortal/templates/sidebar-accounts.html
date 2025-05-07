@@ -48,6 +48,14 @@
             </a>
           </li>
           
+          <li class="nav-item">
+            <a href="{% url 'members_requested' %}" class="nav-link {% if '/members/' in request.path or '/member/member-view/' in request.path %} active {% endif %}">
+                <svg class="sidbarmenu-svg">
+                    <use xlink:href="#members" />
+                </svg>
+                <p>Partners</p>
+            </a>
+          </li>
           {% comment %} ____ COMMISSION POLICY _____  {% endcomment %}
           
           <li class="nav-item {% if '/policy-commission/' in request.path %} menu-is-opening menu-open {% endif %}">
