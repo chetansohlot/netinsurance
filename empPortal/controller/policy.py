@@ -924,7 +924,7 @@ def policyData(request):
     if referral_id:
         filters_q &= Q(policy_agent_info__referral_id=str(referral_id))
 
-    base_qs = PolicyDocument.objects.filter(filters_q)
+    base_qs = PolicyDocument.objects.filter(filters_q).order_by('-id')
     filters = get_common_filters(request)
     filtered = apply_policy_filters(base_qs, filters)
 
