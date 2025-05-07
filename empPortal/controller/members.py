@@ -596,7 +596,10 @@ def posTrainingCertificate(request, user_id):
 
     return response
 
- 
+from django.core.files.storage import default_storage
+from django.conf import settings
+import os
+
 def posCertificate(request, user_id):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -611,7 +614,9 @@ def posCertificate(request, user_id):
 
     # Determine which image to use for the certificate
     if customer.profile_image:
-        profile_image_url = customer.profile_image.url
+        # Get the real file path of the profile image
+        profile_image_path = default_storage.path(customer.profile_image.name)
+        profile_image_url = profile_image_path if os.path.exists(profile_image_path) else os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/default-image-pos.jpg')
     else:
         profile_image_url = os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/default-image-pos.jpg')
 
@@ -620,10 +625,10 @@ def posCertificate(request, user_id):
         "passed_date": passed_date,
         "docs": docs,
         "logo_url": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/logo2.png'),
-        "profile_image_url": profile_image_url,  # Pass the appropriate image URL here
+        "profile_image_url": profile_image_url,  # Pass the real image path here
         "signature_pos": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/signature-pos.webp'),
     }
-    
+
     html_content = render_to_string("members/download-certificate.html", context)
 
     options = {
@@ -638,6 +643,7 @@ def posCertificate(request, user_id):
     response['Content-Disposition'] = f'attachment; filename="pos_certificate_20250{user_id}.pdf"'
 
     return response
+
 
 
 
