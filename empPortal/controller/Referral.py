@@ -51,8 +51,15 @@ def index(request):
     except ValueError:
         per_page = 10
 
-    referrals = Referral.objects.all()
-
+    # department_id = request.user.department_id
+    user_id = request.user.id
+    role_id = request.user.role_id
+    # if department_id == 1:
+    if role_id != 1:
+        referrals = Referral.objects.filter(sales=str(user_id))
+    else:
+        referrals = Referral.objects.all()
+        
     # Filtering
     # if search_field and search_query:
     #     filter_args = {f"{search_field}__icontains": search_query}

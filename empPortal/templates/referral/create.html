@@ -60,65 +60,6 @@ Create Referral
                           maxlength="255" value="{{ referral.name|default_if_none:'' }}">
                       </div>
 
-                      <!-- User Role -->
-                      <!-- <div class="form-group col-md-6 col-lg-4">
-                        <label class="form-lbl" for="user_role">User Role</label>
-                        <input type="text" class="form-field" name="user_role" id="user_role"
-                          placeholder="Enter User Role" value="{{ referral.user_role|default_if_none:'' }}">
-                      </div> -->
-
-                      <!-- Branch -->
-                      <div class="form-group col-md-6 col-lg-4">
-                        <label class="form-lbl" for="branch">Branch</label>
-                        <select class="form-field" name="branch" id="branch">
-                          <option value="">Select Branch</option>
-                          {% for branch in branchs %}
-                            <option value="{{branch.id}}" {% if branch.id|stringformat:"s" == referral.branch|stringformat:"s" %} selected {% endif %}>{{branch.branch_name}}</option>
-                          {% endfor %}
-                        </select>
-                      </div>
-
-                      <!-- Sales -->
-                      <div class="form-group col-md-6 col-lg-4">
-                        <label class="form-lbl" for="sales">Sales Manager</label>
-                        <select name="sales" id="sales" class="form-field">
-                          <option value="">Select Sales Manager</option>
-                          {% for sales_manager in sales_managers %}
-                          <option value="{{ sales_manager.id }}" {% if sales_manager.id|stringformat:"s" == referral.sales|stringformat:"s" %}selected{% endif %}>
-                            {{ sales_manager.full_name }}
-                          </option>
-                          {% endfor %}
-                        </select>
-                        <!-- <input type="text" class="form-field" name="sales" id="sales" placeholder="Enter Sales Manager Name"
-                          maxlength="50" value="{{ referral.sales|default_if_none:'' }}"> -->
-                      </div>
-
-                      <!-- Supervisor -->
-                      <div class="form-group col-md-6 col-lg-4">
-                        <label class="form-lbl" for="supervisor">Supervisor</label>
-                        <select name="supervisor" id="supervisor" class="form-field">
-                          <option value="">Select Supervisor</option>
-                          {% for supervisor in supervisors %}
-                            <option value="{{ supervisor.id }}" {% if supervisor.id|stringformat:"s" == referral.supervisor|stringformat:"s" %}selected{% endif %}>{{ supervisor.full_name }}</option>
-                          {% endfor %}
-                        </select>
-                        <!-- <input type="text" class="form-field" name="supervisor" id="supervisor" maxlength="50"
-                          placeholder="Enter Supervisor" value="{{ referral.supervisor|default_if_none:'' }}"> -->
-                      </div>
-
-                      <!-- Franchise -->
-                      <div class="form-group col-md-6 col-lg-4">
-                        <label class="form-lbl" for="franchise">Franchise</label>
-                        <select name="franchise" id="franchise" class="form-field">
-                          <option value="">Select Franchise</option>
-                          {% for franchise in franchises %}
-                            <option value="{{franchise.id}}" {% if franchise.id|stringformat:"s" == referral.franchise|stringformat:"s" %}selected{% endif %}>{{franchise.name}}</option>
-                          {% endfor %}
-                        </select>
-                        <!-- <input type="text" class="form-field" name="franchise" id="franchise" maxlength="50"
-                          placeholder="Enter Franchise" value="{{ referral.franchise|default_if_none:'' }}"> -->
-                      </div>
-
                       <!-- Mobile Number -->
                       <div class="form-group col-md-6 col-lg-4">
                         <label class="form-lbl" for="mobile">Mobile</label>
@@ -155,7 +96,7 @@ Create Referral
                           placeholder="Enter PAN Card Number" value="{{ referral.pan_card_number|default_if_none:'' }}"
                           maxlength="10" minlength="10">
                       </div>
-
+                      
                       <!-- Aadhar Number -->
                       <div class="form-group col-md-6 col-lg-4">
                         <label class="form-lbl" for="aadhar">Aadhar Number</label>
@@ -164,8 +105,8 @@ Create Referral
                           value="{{ referral.aadhar_no|default_if_none:'' }}">
                       </div>
 
-                      <!-- Pincode -->
-                      <div class="form-group col-md-6 col-lg-4">
+                       <!-- Pincode -->
+                       <div class="form-group col-md-6 col-lg-4">
                         <label class="form-lbl" for="pincode">Pincode</label>
                         <input type="text" class="form-field" name="pincode" id="pincode" placeholder="Enter Pincode"
                           value="{{ referral.pincode|default_if_none:'' }}" minlength="6" maxlength="6">
@@ -185,6 +126,79 @@ Create Referral
                         <input type="text" class="form-field" name="city" id="city" placeholder="Enter City"
                           value="{{ referral.city|default_if_none:'' }}">
                       </div>
+
+                      <!-- User Role -->
+                      <!-- <div class="form-group col-md-6 col-lg-4">
+                        <label class="form-lbl" for="user_role">User Role</label>
+                        <input type="text" class="form-field" name="user_role" id="user_role"
+                          placeholder="Enter User Role" value="{{ referral.user_role|default_if_none:'' }}">
+                      </div> -->
+
+                      <!-- Branch -->
+                      <div class="form-group col-md-6 col-lg-4">
+                        <label class="form-lbl" for="branch">Branch</label>
+                        <select class="form-field" name="branch" id="branch">
+                          <option value="">Select Branch</option>
+                          {% for branch in branchs %}
+                            <option value="{{branch.id}}" {% if branch.id|stringformat:"s" == referral.branch|stringformat:"s" %} selected {% endif %}>{{branch.branch_name}}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+
+                      <!-- Franchise -->
+                      <div class="form-group col-md-6 col-lg-4">
+                        <label class="form-lbl" for="franchise">Franchise</label>
+                        <select name="franchise" id="franchise" class="form-field">
+                          <option value="">Select Franchise</option>
+                          {% for franchise in franchises %}
+                            <option value="{{franchise.id}}" {% if franchise.id|stringformat:"s" == referral.franchise|stringformat:"s" %}selected{% endif %}>{{franchise.name}}</option>
+                          {% endfor %}
+                        </select>
+                        <!-- <input type="text" class="form-field" name="franchise" id="franchise" maxlength="50"
+                          placeholder="Enter Franchise" value="{{ referral.franchise|default_if_none:'' }}"> -->
+                      </div>
+
+                      {% if request.user.department_id != "1" %}
+                        <div class="form-group col-md-6 col-lg-4">
+                          <label class="form-lbl" for="sales">Sales Manager</label>
+                          <select name="sales" id="sales" class="form-field">
+                            <option value="">Select Sales Manager</option>
+                            {% for sales_manager in sales_managers %}
+                            <option value="{{ sales_manager.id }}" {% if sales_manager.id|stringformat:"s" == referral.sales|stringformat:"s" %}selected{% endif %}>
+                              {{ sales_manager.full_name }}
+                            </option>
+                            {% endfor %}
+                          </select>
+                          <!-- <input type="text" class="form-field" name="sales" id="sales" placeholder="Enter Sales Manager Name"
+                            maxlength="50" value="{{ referral.sales|default_if_none:'' }}"> -->
+                        </div>
+                      {% else %}
+                        <input type="hidden" name="sales" id="sales" value="{{ referral.sales|default_if_none:'' }}">
+                      {% endif %}
+                      <!-- Sales -->
+                     
+
+                      <!-- Supervisor -->
+                      <div class="form-group col-md-6 col-lg-4">
+                        <label class="form-lbl" for="supervisor">Supervisor</label>
+                        <select name="supervisor" id="supervisor" class="form-field">
+                          <option value="">Select Supervisor</option>
+                          {% for supervisor in supervisors %}
+                            <option value="{{ supervisor.id }}" {% if supervisor.id|stringformat:"s" == referral.supervisor|stringformat:"s" %}selected{% endif %}>{{ supervisor.full_name }}</option>
+                          {% endfor %}
+                        </select>
+                        <!-- <input type="text" class="form-field" name="supervisor" id="supervisor" maxlength="50"
+                          placeholder="Enter Supervisor" value="{{ referral.supervisor|default_if_none:'' }}"> -->
+                      </div>
+
+                     
+
+                     
+
+                      
+
+                     
+                     
 
                       <!-- Address -->
                       <div class="form-group col-md-12">
