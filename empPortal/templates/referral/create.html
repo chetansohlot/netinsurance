@@ -61,38 +61,62 @@ Create Referral
                       </div>
 
                       <!-- User Role -->
-                      <div class="form-group col-md-6 col-lg-4">
+                      <!-- <div class="form-group col-md-6 col-lg-4">
                         <label class="form-lbl" for="user_role">User Role</label>
                         <input type="text" class="form-field" name="user_role" id="user_role"
                           placeholder="Enter User Role" value="{{ referral.user_role|default_if_none:'' }}">
-                      </div>
+                      </div> -->
 
                       <!-- Branch -->
                       <div class="form-group col-md-6 col-lg-4">
                         <label class="form-lbl" for="branch">Branch</label>
-                        <input type="text" class="form-field" name="branch" id="branch" placeholder="Enter Branch"
-                          maxlength="50" value="{{ referral.branch|default_if_none:'' }}">
+                        <select class="form-field" name="branch" id="branch">
+                          <option value="">Select Branch</option>
+                          {% for branch in branchs %}
+                            <option value="{{branch.id}}" {% if branch.id|stringformat:"s" == referral.branch|stringformat:"s" %} selected {% endif %}>{{branch.branch_name}}</option>
+                          {% endfor %}
+                        </select>
                       </div>
 
                       <!-- Sales -->
                       <div class="form-group col-md-6 col-lg-4">
                         <label class="form-lbl" for="sales">Sales Manager</label>
-                        <input type="text" class="form-field" name="sales" id="sales" placeholder="Enter Sales Manager Name"
-                          maxlength="50" value="{{ referral.sales|default_if_none:'' }}">
+                        <select name="sales" id="sales" class="form-field">
+                          <option value="">Select Sales Manager</option>
+                          {% for sales_manager in sales_managers %}
+                          <option value="{{ sales_manager.id }}" {% if sales_manager.id|stringformat:"s" == referral.sales|stringformat:"s" %}selected{% endif %}>
+                            {{ sales_manager.full_name }}
+                          </option>
+                          {% endfor %}
+                        </select>
+                        <!-- <input type="text" class="form-field" name="sales" id="sales" placeholder="Enter Sales Manager Name"
+                          maxlength="50" value="{{ referral.sales|default_if_none:'' }}"> -->
                       </div>
 
                       <!-- Supervisor -->
                       <div class="form-group col-md-6 col-lg-4">
                         <label class="form-lbl" for="supervisor">Supervisor</label>
-                        <input type="text" class="form-field" name="supervisor" id="supervisor" maxlength="50"
-                          placeholder="Enter Supervisor" value="{{ referral.supervisor|default_if_none:'' }}">
+                        <select name="supervisor" id="supervisor" class="form-field">
+                          <option value="">Select Supervisor</option>
+                          {% for supervisor in supervisors %}
+                            <option value="{{ supervisor.id }}" {% if supervisor.id|stringformat:"s" == referral.supervisor|stringformat:"s" %}selected{% endif %}>{{ supervisor.full_name }}</option>
+                          {% endfor %}
+                        </select>
+                        <!-- <input type="text" class="form-field" name="supervisor" id="supervisor" maxlength="50"
+                          placeholder="Enter Supervisor" value="{{ referral.supervisor|default_if_none:'' }}"> -->
                       </div>
 
                       <!-- Franchise -->
                       <div class="form-group col-md-6 col-lg-4">
                         <label class="form-lbl" for="franchise">Franchise</label>
-                        <input type="text" class="form-field" name="franchise" id="franchise" maxlength="50"
-                          placeholder="Enter Franchise" value="{{ referral.franchise|default_if_none:'' }}">
+                        <select name="franchise" id="franchise" class="form-field">
+                          <option value="">Select Franchise</option>
+                          {% for franchise in franchises %}
+                            <option value="{{franchise.id}}" {% if franchise.id|stringformat:"s" == referral.franchise|stringformat:"s" %}selected{% endif %}>{{franchise.name}}</option>
+                          {% endfor %}
+                        </select>
+                        <!-- <input type="text" class="form-field" name="franchise" id="franchise" maxlength="50"
+                          placeholder="Enter Franchise" value="{{ referral.franchise|default_if_none:'' }}"> -->
                       </div>
 
                       <!-- Mobile Number -->
