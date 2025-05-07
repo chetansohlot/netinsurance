@@ -103,6 +103,7 @@ urlpatterns = [
     path("check-account-number/", profile.check_account_number, name="check-account-number"),
 
     path('update-user-details/', profile.update_user_details, name='update-user-details'),
+    path('update-profile-image/', profile.update_profile_image, name='update-profile-image'),
 
     path("update-doc-status/", members.update_doc_status, name="update-doc-status"),  
 

@@ -42,6 +42,41 @@ app = FastAPI()
 # views.py
 from django.http import JsonResponse
 from ..utils import send_sms_post
+from django.http import HttpResponseBadRequest
+
+
+
+
+def update_profile_image(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
+    if request.method == 'POST' and request.FILES.get('profile_image'):
+        uploaded_file = request.FILES['profile_image']
+        user = request.user  # Should be an instance of Users
+
+        try:
+            # Define the relative path where the image will be saved
+            filename = f"user_{user.id}_{uploaded_file.name}"
+            relative_path = os.path.join('uploads/profile_images/', filename)
+
+            # Save the file using relative path only
+            file_path = default_storage.save(relative_path, uploaded_file)
+
+            # Update user model with the file path
+            user.profile_image = file_path
+            user.save(update_fields=['profile_image'])
+
+            messages.success(request, 'Profile image updated successfully.')
+        except Exception as e:
+            messages.error(request, f"Error updating profile image: {str(e)}")
+
+        return redirect('my-account')
+    
+    messages.error(request, "Error updating profile image")
+    return redirect('my-account')
+
+
 
 
 

@@ -633,6 +633,7 @@ class Users(AbstractBaseUser):
     last_name = models.CharField(max_length=255)
     email = models.CharField(max_length=255, unique=True)
     email_otp = models.CharField(max_length=10, null=True, blank=True)
+    profile_image = models.FileField(upload_to='uploads/profile_images/', null=True, blank=True)  # Change to FileField
     email_verified = models.BooleanField(default=False)
     phone = models.BigIntegerField(null=True, blank=True)
     phone_otp = models.CharField(max_length=10, null=True, blank=True)
