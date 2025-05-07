@@ -111,7 +111,7 @@ def agent_commission(request):
     referrals = Referral.objects.all().order_by('name')
     bqpList = BqpMaster.objects.all().order_by('bqp_fname')
     partners = Partner.objects.all().order_by('name')
-
+    has_filters = any(value for value in filters_dict.values())
     return render(request, 'policy-commission/agent-commission.html', {
         "page_obj": page_obj,
         "policy_count": policy_count,
@@ -122,6 +122,7 @@ def agent_commission(request):
         'referrals': referrals,
         'bqpList': bqpList,
         'partners': partners,
+        'has_filters':has_filters,
         'filtered_policy_ids': [obj.id for obj in filtered],
         'filtered_count': len(filtered),
     })
@@ -132,27 +133,19 @@ def update_agent_commission(request):
     if not request.user.is_authenticated:
         return redirect('login')
 
-    policy_ids_str = request.POST.get('policy_ids', '')
-    policy_ids = [int(id.strip()) for id in policy_ids_str.split(',') if id.strip().isdigit()]
+    udpating_policy_ids = request.POST.get('udpating_policy_ids', '')
+        
+    if not udpating_policy_ids:
+        messages.error(request,'Select Atleast One Policy')
+        return redirect(request.META.get('HTTP_REFERER', '/'))
 
-    if not policy_ids:
-        return redirect('agent-commission')
+    updatingPolicyList = udpating_policy_ids.split(",") if udpating_policy_ids else []
 
-    policies = PolicyDocument.objects.filter(id__in=policy_ids).only('id', 'policy_number')
-
-    policy_map = {policy.id: policy.policy_number for policy in policies}
-
-    for policy_id in policy_ids:
-        policy_number = policy_map.get(policy_id)
-        if not policy_number:
-            continue  # Skip if policy not found
-
-        obj, created = AgentPaymentDetails.objects.get_or_create(policy_id=policy_id, defaults={'policy_number': policy_number})
-
-        if not created:
-            # If already exists, also update the policy_number (in case it was missing before)
-            obj.policy_number = policy_number
-
+    for policy_id in updatingPolicyList:
+        policy = PolicyDocument.objects.filter(id=policy_id).last()
+        policy_no = policy.policy_number
+        obj, created = AgentPaymentDetails.objects.get_or_create(policy_id=policy_id,policy_number=policy_no)
+        
         obj.agent_od_comm = request.POST.get('agent_od_commission')
         obj.agent_net_comm = request.POST.get('agent_net_commission')
         obj.agent_tp_comm = request.POST.get('agent_tp_commission')
@@ -160,13 +153,11 @@ def update_agent_commission(request):
         obj.agent_tds = request.POST.get('agent_tds')
         obj.updated_by = request.user
         obj.save()
-
         
-        # Log the update
         log_commission_update(
             commission_type='agent',
             policy_id=policy_id,
-            policy_number=policy_number,
+            policy_number=policy_no,
             updated_by_id=request.user.id,
             updated_from='agent-commission',
             data={
@@ -178,7 +169,7 @@ def update_agent_commission(request):
             }
         )
         messages.success(request, "Agent Commission Updated successfully!")
-
+        
     return redirect('agent-commission')
 
 def franchisees_commission(request):
