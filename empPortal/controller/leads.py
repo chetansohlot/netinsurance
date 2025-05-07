@@ -36,7 +36,7 @@ from django.template.loader import render_to_string
 from pprint import pprint 
 from django.core.paginator import Paginator
 from django.db.models import Q
-from empPortal.model import Referral
+from empPortal.model import Referral, Partner
 
 import pandas as pd
 from django.core.files.storage import default_storage
@@ -589,6 +589,7 @@ def create_or_edit_lead(request, lead_id=None):
 
     lead = None
     referrals = Referral.objects.all()
+    partners = Partner.objects.filter(active=True)
 
     if lead_id:
         lead = get_object_or_404(Leads, id=lead_id)
@@ -604,6 +605,7 @@ def create_or_edit_lead(request, lead_id=None):
             'referrals': referrals,
             'customers': customers,
             'states': states,
+            'partners':partners
         })
 
 
@@ -636,8 +638,11 @@ def create_or_edit_lead(request, lead_id=None):
         address = request.POST.get("address", "").strip()
         lead_source = request.POST.get("lead_source", "").strip()
         referral_by = request.POST.get("referral_by", "").strip()
+        partner_id = request.POST.get("partner_id", "").strip()
         if lead_source != 'referral_partner':
             referral_by = ''
+        if lead_source != 'pos_partner':
+            partner_id = None
         lead_description = request.POST.get("lead_description", "").strip()
         # lead_type = request.POST.get("lead_type", "MOTOR").strip()
         lead_type = request.POST.get("lead_type", "").strip()
@@ -706,6 +711,7 @@ def create_or_edit_lead(request, lead_id=None):
             lead.vehicle_type = vehicle_type
             lead.lead_source = lead_source
             lead.referral_by = referral_by
+            lead.partner_id = partner_id
             lead.status = status
             lead.updated_at = now()
             lead.insurance_company=insurance_company
@@ -741,7 +747,8 @@ def create_or_edit_lead(request, lead_id=None):
                 policy_number=policy_number,
                 policy_type=policy_type,
                 sum_insured=sum_insured,
-                risk_start_date = policy_date
+                risk_start_date = policy_date,
+                partner_id = partner_id
                 
             )
             messages.success(request, f"Lead created successfully!")

@@ -273,13 +273,28 @@
                                 {% endfor %}
                             </select>
                         </div>
+
+                        <div class="form-group col-md-4" id="pos_partner_div" style="{% if lead.lead_source != 'pos_partner' %}display: none;{% endif %}">
+                            <label class="form-lbl" for="partner_id">Partner</label>
+                            <select class="form-field" name="partner_id" id="partner_id">
+                                <option value="">Select Partner</option>
+                                {% for partner in partners %}
+                                <option value="{{ partner.id }}" {% if lead and lead.partner_id|stringformat:"s" == partner.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ partner.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
                         
                         <script>
                         function toggleReferralBy() {
                             var leadSource = document.getElementById("lead_source").value;
                             var referralDiv = document.getElementById("referral_by_div");
+                            var posPartnerDiv = document.getElementById("pos_partner_div");
                             if (leadSource === "referral_partner") {
                                 referralDiv.style.display = "block";
+                            }else if (leadSource === "pos_partner") {
+                                posPartnerDiv.style.display = "block";
                             } else {
                                 referralDiv.style.display = "none";
                             }
