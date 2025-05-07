@@ -124,11 +124,13 @@
                       </a>
                   {% endif %}
                      </li>
-                     <li>
+                      {% if request.user.role_id == 1 %}
+                      <li>
                         <a href="{% url 'delete-member' user_id=user.id %}" class="deleteMemberBtn dropdown-item" data-title="Delete Policy">
                           Delete
                         </a>
                       </li>
+                      {% endif %}
                 </ul>
               </div>
             </td>

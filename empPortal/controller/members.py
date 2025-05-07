@@ -200,7 +200,10 @@ def members(request):
         return redirect('login')
     # update_partner_status()
     update_exam_eligible_status()
-    if request.user.role_id == 1:
+    
+    user = request.user
+
+    if user.role_id == 1 or str(user.department_id) in ["3"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -331,7 +334,9 @@ def members_requested(request):
     if not request.user.is_authenticated:
         return redirect('login')
 
-    if request.user.role_id == 1:
+    user = request.user
+
+    if user.role_id == 1 or str(user.department_id) in ["3"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -448,7 +453,9 @@ def members_document_pending_upload(request):
     if not request.user.is_authenticated:
         return redirect('login')
 
-    if request.user.role_id == 1:
+    user = request.user
+
+    if user.role_id == 1 or str(user.department_id) in ["3"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -660,7 +667,9 @@ def members_inprocess(request):
     if not request.user.is_authenticated:
         return redirect('login')
 
-    if request.user.role_id == 1:
+    user = request.user
+
+    if user.role_id == 1 or str(user.department_id) in ["3"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -763,7 +772,10 @@ def members_document_upload(request):
     if not request.user.is_authenticated:
         return redirect('login')
 
-    if request.user.role_id == 1:
+    
+    user = request.user
+
+    if user.role_id == 1 or str(user.department_id) in ["3"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -866,7 +878,10 @@ def members_document_inpending(request):
     if not request.user.is_authenticated:
         return redirect('login')
 
-    if request.user.role_id == 1:
+    
+    user = request.user
+
+    if user.role_id == 1 or str(user.department_id) in ["3"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -967,7 +982,7 @@ def members_document_inpending(request):
     
 # def members_intraining(request):
 #     if request.user.is_authenticated:
-#         if request.user.role_id == 1:
+#     
 #             # Define the list of role IDs to filter
 #             # role_ids = [2, 3, 4]
 #             role_ids = [4]
@@ -993,7 +1008,10 @@ def members_intraining(request):
     if not request.user.is_authenticated:
         return redirect('login')
 
-    if request.user.role_id == 1:
+    
+    user = request.user
+
+    if user.role_id == 1 or str(user.department_id) in ["3"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -1088,7 +1106,7 @@ def members_intraining(request):
     
 # def members_inexam(request):
 #     if request.user.is_authenticated:
-#         if request.user.role_id == 1:
+#   
 #             # Define the list of role IDs to filter
 #             # role_ids = [2, 3, 4]
 #             role_ids = [4]
@@ -1113,7 +1131,10 @@ def members_inexam(request):
     if not request.user.is_authenticated:
         return redirect('login')
 
-    if request.user.role_id == 1:  # Admin role ID
+    
+    user = request.user
+
+    if user.role_id == 1 or str(user.department_id) in ["3"]:  # Admin role ID
         # Define role IDs for the user filter
         role_ids = [4]
         
@@ -1217,7 +1238,7 @@ def members_inexam(request):
     
 # def members_activated(request):
 #     if request.user.is_authenticated:
-#         if request.user.role_id == 1:
+#       
 #             # Define the list of role IDs to filter
 #             # role_ids = [2, 3, 4]
 #             role_ids = [4]
@@ -1233,7 +1254,10 @@ def members_activated(request):
     if not request.user.is_authenticated:
         return redirect('login')
 
-    if request.user.role_id == 1:
+    
+    user = request.user
+
+    if user.role_id == 1 or str(user.department_id) in ["3"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -1333,8 +1357,10 @@ def members_activated(request):
 def members_rejected(request):
     if not request.user.is_authenticated:
         return redirect('login')
+    
+    user = request.user
 
-    if request.user.role_id == 1:
+    if user.role_id == 1 or str(user.department_id) in ["3"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -1436,7 +1462,10 @@ def members_inactive(request):
     if not request.user.is_authenticated:
         return redirect('login')
 
-    if request.user.role_id == 1:
+    
+    user = request.user
+
+    if user.role_id == 1 or str(user.department_id) in ["3"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
