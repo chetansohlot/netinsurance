@@ -401,7 +401,7 @@ def update_insurer_commission(request):
             continue
 
         obj, created = InsurerPaymentDetails.objects.get_or_create(
-            policy_id=policy_id, policy_number= policy_number
+            policy_id=policy_id, defaults={'policy_number': policy_number}
         )
 
         if not created:
