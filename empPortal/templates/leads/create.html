@@ -267,9 +267,9 @@
                             <select class="form-field" name="referral_by" id="referral_by">
                                 <option value="">Select Referral</option>
                                 {% for referral in referrals %}
-                                <option value="{{ referral.id }}" {% if lead and lead.referral_by|stringformat:"s" == referral.id|stringformat:"s" %}selected{% endif %}>
-                                    {{ referral.name }} - {{ referral.referral_code }}
-                                </option>
+                                  <option value="{{ referral.id }}" {% if lead and lead.referral_by|stringformat:"s" == referral.id|stringformat:"s" %}selected{% endif %}>
+                                      {{ referral.name }} - {{ referral.referral_code }}
+                                  </option>
                                 {% endfor %}
                             </select>
                         </div>
