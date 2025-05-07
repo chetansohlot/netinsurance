@@ -293,9 +293,12 @@
                             var posPartnerDiv = document.getElementById("pos_partner_div");
                             if (leadSource === "referral_partner") {
                                 referralDiv.style.display = "block";
+                                posPartnerDiv.style.display = "none";
                             }else if (leadSource === "pos_partner") {
                                 posPartnerDiv.style.display = "block";
+                                referralDiv.style.display = "none";
                             } else {
+                                posPartnerDiv.style.display = "none";
                                 referralDiv.style.display = "none";
                             }
                         }
