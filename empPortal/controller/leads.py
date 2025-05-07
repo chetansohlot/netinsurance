@@ -239,6 +239,21 @@ def index(request):
     health_leads = Leads.objects.filter(lead_type='HEALTH').count()
     term_leads = Leads.objects.filter(lead_type='TERM').count()
 
+    # Base queryset
+    if request.user.role_id != 1:
+        leads = Leads.objects.filter(created_by=request.user.id)
+        all_leads = Leads.objects.filter(created_by=request.user.id)
+        total_leads = all_leads.filter(created_by=request.user.id).count()  
+        motor_leads = Leads.objects.filter(created_by=request.user.id,lead_type='MOTOR').count()
+        health_leads = Leads.objects.filter(created_by=request.user.id,lead_type='HEALTH').count()
+        term_leads = Leads.objects.filter(created_by=request.user.id,lead_type='TERM').count()
+    else:
+        all_leads = Leads.objects.all()
+        total_leads = all_leads.count()  
+        motor_leads = Leads.objects.filter(lead_type='MOTOR').count()
+        health_leads = Leads.objects.filter(lead_type='HEALTH').count()
+        term_leads = Leads.objects.filter(lead_type='TERM').count()
+
     # Pagination
     paginator = Paginator(leads, per_page)
     page_number = request.GET.get('page')
