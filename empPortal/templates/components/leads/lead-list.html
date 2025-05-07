@@ -1,4 +1,6 @@
 {% load static %}
+  <!-- Bootstrap Icons CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
 <div class="tab-content" id="nav-tabContent">
   <div class="table-responsive">
@@ -10,20 +12,13 @@
             <input type="checkbox" id="checkall" class="table-chk">
             <label for="checkall"></label>
           </th>
-          <th>Lead id</th>
-          <th>Contact Details</th>
-          <th>Name (as per PAN)</th>
-          <th>PAN Card Number</th>
-          <th>Date of Birth</th>
-          <th>Location</th>
+          <th>Lead Info</th>
+          <th>Customer Info</th>
+          <th>Project Name</th>
+          <th>Policy Info</th>
           <th>Status</th>
-          <th>Lead Type</th>
-          <th>Sales Manager</th>
-          <th>Agent Name</th>
-          <th>Vehicle Number</th>
-          <th>Insurance Company</th>
-          <th>Vehicle Type</th>
-          <th width="50"></th>
+          <th>Allocated</th>
+          <th>Action</th>
         </tr>
       </thead>
       <tbody>
@@ -33,41 +28,51 @@
               <input type="checkbox" id="check{{ lead.id }}" class="table-chk">
               <label for="check{{ lead.id }}"></label>
             </td>
-            <td>{{ lead.lead_id }}</td>
-            <td>
-              {{ lead.mobile_number }} 
-              <span class="text-gray d-block small">{{ lead.email_address }}</span>
-            </td>
-            <td>{{ lead.name_as_per_pan }}</td>
-            <td>{{ lead.pan_card_number|default:"N/A" }}</td>
-            <td>{{ lead.date_of_birth|date:"d M Y"|default:"N/A" }}</td>
-            <td>
-              {{ lead.city }}, {{ lead.state }}
-              <span class="text-gray d-block small">{{ lead.pincode }}</span>
-            </td>
-            <td>
-              {% if lead.status == 'new' %}
-                <p class="text-primary">New</p>
-              {% elif lead.status == 'active' %}
-                <p class="text-success">Active</p>
-              {% else %}
-                <p class="text-danger">{{ lead.status }}</p>
-              {% endif %}
-            </td>
-            <td>{{ lead.lead_type }}</td>
-            <td>{{lead.sales_manager }}</td>
-            <td>{{ lead.agent_name }}</td>
-            <td>{{ lead.registration_number }}</td>
-           <td>{{lead.insurance_company }}</td>
-            <td>{{ lead.vehicle_type }}</td>
-            <td>
-              <div class="dropdown">
-                <img src="{% static 'dist/img/svg/menu-dot-vr.svg' %}" alt="" class="table-doticon" data-toggle="dropdown" aria-expanded="false">
-                <ul class="dropdown-menu table-dropdown-menu">
-                  <li><a class="dropdown-item" href="{% url 'leads-mgt-edit' lead_id=lead.id %}">Edit Lead</a></li>
-                </ul>
-              </div>
-            </td>
+            
+              <!-- Lead ID + Date -->
+          <td>
+            <span class="badge bg-secondary">{{ lead.lead_id }}</span><br>
+            <small class="text-muted">
+              {{ lead.created_at|date:"d M Y h:i A" }}
+            </small>
+          </td>
+             <!-- Customer Info -->
+          <td>
+            <strong>Name:</strong> {{ lead.name_as_per_pan }}<br>
+            <strong>Mobile:</strong> {{ lead.mobile_number }}<br>
+            <strong>Email:</strong> {{ lead.email_address }}<br>
+          </td>
+            <!-- Project Name -->
+          <td class="text-center">
+            {{ lead.project_name|default:"-" }}
+          </td>
+          <td>
+            <strong>Type:</strong> {{ lead.lead_type|default:"-" }}<br>
+            <strong>Company:</strong> {{ lead.insurance_company|default:"-" }}
+          </td>
+            <!-- Status -->
+          <td class="text-center">
+            <span class="badge bg-light text-dark">
+              {{ lead.status|default:"-" }}
+            </span>
+          </td>
+
+             <!-- Allocation -->
+          <td class="text-center">
+            {{ lead.sales_manager|default:"Un-Allocated" }}
+          </td>
+          <!--Action-->
+          <td> 
+            <a href="#" class="btn btn-sm btn-info" title="View">
+              <i class="bi bi-eye"></i>
+            </a>
+            <a href="#" class="btn btn-sm btn-success" title="Assign">
+              <i class="bi bi-person-plus"></i>
+            </a>
+            <a href="{% url 'leads-mgt-edit' lead_id=lead.id %}" class="btn btn-sm btn-warning" title="Edit">
+              <i class="bi bi-pencil-square"></i>
+            </a>
+          </td>
           </tr>
         {% empty %}
           <tr>
