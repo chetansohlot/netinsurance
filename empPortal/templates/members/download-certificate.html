@@ -25,7 +25,7 @@
 		<thead>
 			<tr>
 				<td>
-					<img src="images/logo.png" alt="" class="gi-letter-logo">
+					<img src="{{ logo_url }}" alt="" class="gi-letter-logo">
 				</td>
 			</tr>
 		</thead>
@@ -34,14 +34,14 @@
 				<td>
 					<div class="text-right">
 						<p class="gi-letter-date">Date: <strong>{{ passed_date|date:"d/M/Y" }}</strong></p>
-						<img src="{{ default_image_pos }}" alt="" class="gi-letter-default-img">
+						<img src="{{ profile_image_url }}" alt="" class="gi-letter-default-img">
 					</div>
 				</td>
 			</tr>
 			<tr>
 				<td>
 					<p class="gi-letter-prgh">
-						<strong>{{ customer.full_name }}</strong><br>
+						<strong>{{ customer.full_name|upper }}</strong><br>
 						Address: <strong>{{ customer.address }}</strong> <br><br>
 
 						Subject: <strong>Point of Sales Person (PoSP) Appointment Letter</strong><br><br>

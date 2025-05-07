@@ -106,7 +106,7 @@
 						<h2 class="training-certificate-subhding">Training Certificate</h2>
 						<img src="{{ default_image_pos }}" alt="" class="training-certificate-default-img">
 						<h3 class="training-certificate-title">THIS IS TO CERTIFY THAT MR./MS.</h3>
-						<h1 class="training-certificate-name">{{ customer.full_name }}</h1>
+						<h1 class="training-certificate-name">{{ customer.full_name|upper }}</h1>
 						<p class="training-certificate-prgh"> 
 							<strong>[Aadhaar No. XXXX XXXX 6128 | PAN No: {{ customer.pan_no }} ] </strong><br>
 							has successfully completed the prescribed training on 

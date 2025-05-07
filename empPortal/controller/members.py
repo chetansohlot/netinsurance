@@ -609,14 +609,21 @@ def posCertificate(request, user_id):
 
     passed_date = customer.examRes.created_at
 
+    # Determine which image to use for the certificate
+    if customer.profile_image:
+        profile_image_url = customer.profile_image.url
+    else:
+        profile_image_url = os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/default-image-pos.jpg')
+
     context = {
         "customer": customer,
         "passed_date": passed_date,
         "docs": docs,
         "logo_url": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/logo2.png'),
-        "default_image_pos": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/default-image-pos.jpg'),
+        "profile_image_url": profile_image_url,  # Pass the appropriate image URL here
         "signature_pos": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/signature-pos.webp'),
     }
+    
     html_content = render_to_string("members/download-certificate.html", context)
 
     options = {
