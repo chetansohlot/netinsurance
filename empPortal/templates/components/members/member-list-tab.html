@@ -1,7 +1,7 @@
 <ul class="nav nav-pills profile-tab">
-    <li class="nav-item text-bold">
+    {% comment %} <li class="nav-item text-bold">
         <a class="nav-link {% if members_all %}active{% endif %}" href="{% url 'members' %}">All Partner</a>
-    </li>
+    </li> {% endcomment %}
     <li class="nav-item text-bold">
         <a class="nav-link {% if requested %}active{% endif %}" href="{% url 'members_requested' %}">Registered Partner</a>
     </li>
