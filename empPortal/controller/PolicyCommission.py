@@ -144,13 +144,41 @@ def update_agent_commission(request):
     for policy_id in updatingPolicyList:
         policy = PolicyDocument.objects.filter(id=policy_id).last()
         policy_no = policy.policy_number
-        obj, created = AgentPaymentDetails.objects.get_or_create(policy_id=policy_id,policy_number=policy_no)
+        policy_info = PolicyInfo.objects.filter(policy_id=policy_id,policy_number=policy_no).last()
+        if not policy_info:
+            continue
         
-        obj.agent_od_comm = request.POST.get('agent_od_commission')
-        obj.agent_net_comm = request.POST.get('agent_net_commission')
-        obj.agent_tp_comm = request.POST.get('agent_tp_commission')
-        obj.agent_incentive_amount = request.POST.get('agent_incentive_amount')
-        obj.agent_tds = request.POST.get('agent_tds')
+        od_commission = float(request.POST.get('agent_od_commission', 0) or 0)
+        tp_commission = float(request.POST.get('agent_tp_commission', 0) or 0)
+        net_commission = float(request.POST.get('agent_net_commission', 0) or 0)
+        incentive_amount = float(request.POST.get('agent_incentive_amount', 0) or 0)
+        tds_commission = float(request.POST.get('agent_tds', 0) or 0)
+
+        od_premium = float(policy_info.od_premium or 0)
+        tp_premium = float(policy_info.tp_premium or 0)
+        net_premium = float(policy_info.net_premium or 0)
+
+        od_amount = round((od_premium * od_commission) / 100, 2)
+        tp_amount = round((tp_premium * tp_commission) / 100, 2)
+        net_amount = round((net_premium * net_commission) / 100, 2)
+
+        total_comm_amount = round(od_amount + tp_amount + net_amount + incentive_amount, 2)
+        tds_amount = round((total_comm_amount * tds_commission) / 100, 2)
+        net_payable_amount = round(total_comm_amount - tds_amount, 2)
+
+        
+        obj, created = AgentPaymentDetails.objects.get_or_create(policy_id=policy_id,policy_number=policy_no)
+        obj.agent_od_comm = od_commission
+        obj.agent_net_comm = net_commission
+        obj.agent_tp_comm = tp_commission
+        obj.agent_incentive_amount = incentive_amount
+        obj.agent_tds = tds_commission
+        obj.agent_od_amount = od_amount
+        obj.agent_net_amount = net_amount
+        obj.agent_tp_amount = tp_amount
+        obj.agent_total_comm_amount = total_comm_amount
+        obj.agent_net_payable_amount = net_payable_amount
+        obj.agent_tds_amount = tds_amount
         obj.updated_by = request.user
         obj.save()
         
@@ -168,8 +196,8 @@ def update_agent_commission(request):
                 'agent_tds': obj.agent_tds,
             }
         )
-        messages.success(request, "Agent Commission Updated successfully!")
         
+    messages.success(request, "Agent Commission Updated successfully!")
     return redirect('agent-commission')
 
 def franchisees_commission(request):
