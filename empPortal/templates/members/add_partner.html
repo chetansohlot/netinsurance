@@ -63,7 +63,7 @@
                     <div class="col-md-6 col-lg-4">
                       <div class="form-group">
                         <label for="email" class="form-lbl">Email <span class="text-danger">*</span></label>
-                        <input type="email" name="email" id="email" class="form-field shadow-sm rounded-2" placeholder="Email ID" value="{{ email|default:'' }}">
+                        <input type="text" name="email" id="email" class="form-field shadow-sm rounded-2" placeholder="Email ID" value="{{ email|default:'' }}">
                           {% if errors.email %}
                         <small class="text-danger">{{ errors.email }}</small>
                         {% endif %}

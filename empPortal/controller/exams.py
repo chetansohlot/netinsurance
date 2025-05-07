@@ -8,6 +8,7 @@ import re
 import requests
 import time
 import zipfile
+from django.utils.timezone import localtime
 
 from django.conf import settings
 from django.contrib import messages
@@ -32,6 +33,7 @@ from pprint import pprint
 
 from ..models import Commission,Users, DocumentUpload, Branch, Exam, Question, Option, ExamResult, UserAnswer
 from ..forms import DocumentUploadForm
+from ..helpers import sync_user_to_partner, update_partner_by_user_id
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +47,7 @@ def members_exam(request):
         # Fetch user and bank details for the logged-in user
         user_details = Users.objects.get(id=request.user.id)  # Fetching the user's details
         if request.user.role_id == 4:
-            if request.user.activation_status == "1":
+            if request.user.partner.partner_status == "3" or request.user.partner.partner_status == 3:
                 if request.user.exam_eligibility == 1:
                     if request.user.exam_attempt <= 3:
                         if request.user.exam_pass == 0:
@@ -70,7 +72,7 @@ def members_exam_mcq(request):
         # Fetch user and bank details for the logged-in user
         user_details = Users.objects.get(id=request.user.id)  # Fetching the user's details
         if request.user.role_id == 4:
-            if request.user.activation_status == "1":
+            if request.user.partner.partner_status == "3" or request.user.partner.partner_status == 3:
                 if request.user.exam_eligibility == 1:
                     if request.user.exam_attempt <= 3:
                         if request.user.exam_pass == 0:
@@ -91,7 +93,11 @@ def members_exam_mcq(request):
 def start_exam(request):
     if request.user.is_authenticated:
         user_details = Users.objects.get(id=request.user.id)
-        if request.user.role_id == 4 and request.user.activation_status == "1" and request.user.exam_eligibility == 1:
+        if (
+            request.user.role_id == 4
+            and request.user.partner.partner_status == '3'
+            and request.user.exam_eligibility == 1
+        ):
             if request.user.exam_attempt <= 3 and request.user.exam_pass == 0:
                 user_details.exam_attempt += 1
                 user_details.save(update_fields=['exam_attempt'])
@@ -147,6 +153,9 @@ def submit_exam(request):
             total_questions = exam.exam_question_count
             percentage = (correct_answers / total_questions) * 100 if total_questions > 0 else 0
             status = "passed" if percentage >= exam.exam_eligibility else "failed"
+            if status == "passed":
+                completed_at = localtime().replace(microsecond=0, tzinfo=None)
+                update_partner_by_user_id(request.user.id, {"partner_status": "4", "exam_completed_at": completed_at}, request=request)
 
             exam_result_id = request.session.get('exam_result_id')
             if(exam_result_id):

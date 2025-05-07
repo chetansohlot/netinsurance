@@ -2,8 +2,9 @@ from django import template
 from datetime import datetime
 import re
 from ..models import Commission, ExamResult,Users, DocumentUpload, Branch,BqpMaster
-
+from datetime import timedelta
 register = template.Library()
+from datetime import datetime, date, timedelta
 
 @register.filter
 def fallback(primary, secondary):
@@ -108,3 +109,47 @@ def get_user_details(user_id):
         return Users.objects.get(id=user_id)
     except Users.DoesNotExist:
         return None
+    
+    
+@register.filter
+def add_days(value, days):
+    try:
+        return value + timedelta(days=int(days))
+    except:
+        return value
+    
+    
+@register.filter
+def mask_aadhaar(value):
+    """
+    Mask Aadhaar number to format XXXX XXXX 1234
+    """
+    try:
+        digits = ''.join(filter(str.isdigit, str(value)))
+        if len(digits) == 12:
+            return f"XXXX XXXX {digits[-4:]}"
+    except Exception as e:
+        print("mask_aadhaar error:", e)
+    return "-"
+
+@register.filter
+def add_t_days(value, days):
+    try:
+        days = int(days)
+        if isinstance(value, (datetime, date)):
+            return value + timedelta(days=days)
+    except Exception as e:
+        print("add_t_days error:", e)
+    return value
+
+@register.filter
+def add_days_str(value, days):
+    from datetime import datetime, timedelta
+    from django.utils.timezone import make_aware
+
+    try:
+        dt = datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
+        aware_dt = make_aware(dt)
+        return aware_dt + timedelta(days=int(days))
+    except Exception:
+        return value

@@ -6,7 +6,13 @@
         <a class="nav-link {% if requested %}active{% endif %}" href="{% url 'members_requested' %}">Registered Partner</a>
     </li>
     <li class="nav-item text-bold">
-        <a class="nav-link {% if inprocess %}active{% endif %}" href="{% url 'members_inprocess' %}">Document Info</a> <!--Replaces In Process with Document Info-->
+        <a class="nav-link {% if docpendingupload %}active{% endif %}" href="{% url 'members_document_pending_upload' %}">Pending Upload</a> 
+    </li>
+    <li class="nav-item text-bold">
+        <a class="nav-link {% if docupload %}active{% endif %}" href="{% url 'members_document_upload' %}">Document Upload</a> 
+    </li>
+    <li class="nav-item text-bold">
+        <a class="nav-link {% if docinpending %}active{% endif %}" href="{% url 'members_document_inpending' %}">Doc In-Process</a> <!--Replaces In Process with Document Info-->
     </li>
     <li class="nav-item text-bold">
         <a class="nav-link {% if intraining %}active{% endif %}" href="{% url 'members_intraining' %}">In Training</a>

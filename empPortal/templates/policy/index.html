@@ -353,6 +353,9 @@ Policy Data
                                   <a href="{% url 'edit-policy' id=data.id %}" class="tooltip-sec" data-title="Edit Policy">
                                     <i class="fa-solid fa-edit"></i>
                                   </a>
+                                  <a href="{% url 'delete-policy' id=data.id %}" class="deletePolicyBtn tooltip-sec mx-2 text-danger" data-title="Delete Policy">
+                                    <i class="fa-solid fa-trash"></i>
+                                  </a>
                                 </div>
                               </td>
                             </tr>
@@ -387,5 +390,32 @@ Policy Data
 
 {% include 'footer-script.html' %}
 </body>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const deleteButtons = document.querySelectorAll('.deletePolicyBtn');
+
+    deleteButtons.forEach(function (button) {
+      button.addEventListener('click', function (event) {
+        event.preventDefault();
+
+        Swal.fire({
+          title: 'Are you sure?',
+          text: "You won't be able to revert this!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, delete it!',
+          cancelButtonText: 'Cancel',
+          reverseButtons: true
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = button.href;
+          }
+        });
+      });
+    });
+  });
+</script>
 
 {% endblock %}

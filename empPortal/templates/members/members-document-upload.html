@@ -1,7 +1,7 @@
 {% extends 'master.html' %}
 
 {% block title %}
-    Rejected Partner
+    Document Verification
 {% endblock %}
   
 {% block content %}
@@ -20,10 +20,10 @@
             <div class="container-fluid ">
               <div class="row pt-2 pb-2">
                 <div class="col-sm-6">
-                  <h1 class="admin-title m-0 pt-2">Rejected Partner</h1>
+                  <h1 class="admin-title m-0 pt-2">Document Verification</h1>
                   <ul class="breadcrump">
                     <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
-                    <li>Rejected Partner</li>
+                    <li>Document Verification</li>
                   </ul>
                 </div>
                 <div class="col-sm-6">
@@ -51,8 +51,8 @@
                 <div class="col-sm-12 col-md-12">  
                     <div class="card box-shadow-none">
                       <div class="card-body px-0 pb-0">
-                        <div class="row">
-                          <!-- <div class="col-md-6">
+                        <!-- <div class="row">
+                          <div class="col-md-6">
                             <div class="table-search-area">
                               <form method="GET" class="d-flex">
                                 <select class="table-select-field form-select" name="search_field">
@@ -71,38 +71,42 @@
                                 </button>
                             </form>
                             </div>
-                          </div> -->
-                          <!-- <div class="col-md-6">
+                          </div>
+                          <div class="col-md-6">
                             <div class=" d-flex justify-content-end">
-                              <div class="dropdown"> -->
-                                <!-- <div class="shorting-select"  data-toggle="dropdown" aria-expanded="false">
+                              <div class="dropdown">
+                                <div class="shorting-select"  data-toggle="dropdown" aria-expanded="false">
                                   <img src="{% static 'dist/img/svg/shorting-icon.svg' %}" alt="">
                                   <span>Short</span>
                                   <img src="{% static 'dist/img/svg/down-arrow-icon.svg' %}" alt="" class="change-arrow">
-                                </div> -->
-                                <!-- <form method="GET" class="d-flex">
+                                </div>
+                                <form method="GET" class="d-flex">
                                   <select class="table-select-field form-select" name="search_field">
                                       <option value="" disabled selected>Filter By</option>
                                       <option value="user_gen_id" {% if search_field == "user_gen_id" %}selected{% endif %}>User ID</option>
                                       <option value="user_name" {% if search_field == "user_name" %}selected{% endif %}>User Name</option>
                                       <option value="email" {% if search_field == "email" %}selected{% endif %}>Email</option>
                                       <option value="phone" {% if search_field == "phone" %}selected{% endif %}>Phone Number</option>
-                                  </select> -->
+                                  </select>
                               
-                                  <!-- <input type="text" name="search_query" class="table-search-field form-control" 
-                                         placeholder="Search" value="{{ search_query }}"> -->
+                                  <input type="text" name="search_query" class="table-search-field form-control" 
+                                         placeholder="Search" value="{{ search_query }}">
                               
-                                  <!-- <button type="submit" class="table-search-btn btn btn-primary">
+                                  <button type="submit" class="table-search-btn btn btn-primary">
                                       <img src="{% static 'dist/img/svg/search-icon.svg' %}" alt="Search">
                                   </button>
-                              </form> -->
-                              <!-- </div>   -->
-                              <!-- <div class="shorting-select" data-toggle="modal" data-target="#modal-filter">
+                              </form>
+                              </div>  
+                              <div class="shorting-select" data-toggle="modal" data-target="#modal-filter">
                                 <img src="{% static 'dist/img/svg/filter-icon.svg' %}" alt="">
                                 <span>Filter</span>
                                 <img src="{% static 'dist/img/svg/down-arrow-icon.svg' %}" alt="" class="change-arrow">
-                              </div> -->
-                                <!-- Partner Filter Start -->
+                              </div>
+                            </div>  
+                          </div>
+                        </div> -->
+                        
+                        <!-- Partner Filter Start -->
                           <div class="card w-100">
                             <div class="card-body pb-0">
                                 <form method="GET">
@@ -128,31 +132,32 @@
                                             </div>
                                         </div>
                                         <div class="col-sm-6 col-md-2">
-                                            <div class="form-group">
-                                                <input class="form-field" name="pan_no" type="text" placeholder="PAN Number" value="{{ request.GET.pan_no }}">
-                                            </div>
-                                        </div>
+                                          <div class="form-group">
+                                              <input class="form-field" name="pan_no" type="text" placeholder="PAN Number" value="{{ request.GET.pan_no }}">
+                                          </div>
+                                      </div>
+                                        
                                         <div class="col-sm-6 col-md-2">
                                             <div class="form-group d-flex">
                                                 <button type="submit" class="wrap-btn w-100">Apply</button>
-                                                <a href="{% url 'members_rejected' %}" class="wrap-btn w-100 bg-danger ml-2 text-center">Reset</a>
+                                                <a href="{% url 'members_inprocess' %}" class="wrap-btn w-100 bg-danger ml-2 text-center">Reset</a>
                                             </div>
                                         </div>
                                     </div>
                                 </form>
                             </div>
                           </div>
-                          <!-- Partner Filter End
+                          <!-- Partner Filter End -->
                           <div class="col-md-12">
                             <div class=" d-flex justify-content-between">
-                              <div class="dropdown">
+                              <!-- <div class="dropdown">
                                 <div class="shorting-select"  data-toggle="dropdown" aria-expanded="false">
                                   <img src="{% static 'dist/img/svg/shorting-icon.svg' %}" alt="">
                                    <span>Short</span>
                                   <img src="{% static 'dist/img/svg/down-arrow-icon.svg' %}" alt="" class="change-arrow">
-                                </div>
-                              </div>   -->
-                              <form method="GET" class="d-flex">
+                                </div> -->
+                              </div>  
+                              <!-- <form method="GET" class="d-flex"> -->
                                   <!-- <select class="table-select-field form-select" name="search_field">
                                       <option value="" disabled selected>Filter By</option>
                                       <option value="user_gen_id" {% if search_field == "user_gen_id" %}selected{% endif %}>User ID</option>
@@ -178,19 +183,13 @@
                         </div>
                       </div>
 
-                            <!-- </div>  
-                          </div>
-                        </div> -->
+                        {% include "components/members/member-list-tab.html" with docupload="true" %}
 
-                        {% include "components/members/member-list-tab.html" with rejected="true" %}
-
-                        {% include "components/members/member-list.html" %}
+                        {% include "components/members/member-list.html" with inprocess="true" %}
                       </div>
                     </div>
                     
-                    
                     {% include "components/filter/paginator.html" %}
-
 
                   </div>
                 </div>

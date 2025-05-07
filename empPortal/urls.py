@@ -108,6 +108,9 @@ urlpatterns = [
 
     path('members/all-partner', members.members, name='members'),
     path('members/in-process', members.members_inprocess, name='members_inprocess'),
+    path('members/document-pending-upload', members.members_document_pending_upload, name='members_document_pending_upload'),
+    path('members/document-upload', members.members_document_upload, name='members_document_upload'),
+    path('members/document-in-pending', members.members_document_inpending, name='members_document_inpending'),
     path('members/member-requested', members.members_requested, name='members_requested'),
     path('members/in-training', members.members_intraining, name='members_intraining'),
     path('members/in-exam', members.members_inexam, name='members_inexam'),
@@ -118,7 +121,7 @@ urlpatterns = [
     path('members/activated', members.members_activated, name='members_activated'),
     path('members/rejected', members.members_rejected, name='members_rejected'),
     path('members/inactive', members.members_inactive, name='members_inactive'), ## members_inactive ##
-
+    path('member/delete-member/<str:user_id>',members.deleteMember, name='delete-member'),
     path('member/member-view/<str:user_id>',members.memberView, name='member-view'),
     path('member/download-training-certificate/<str:user_id>',members.posTrainingCertificate, name='download-training-certificate'),
     path('member/download-certificate/<str:user_id>',members.posCertificate, name='download-certificate'),
@@ -274,6 +277,7 @@ urlpatterns = [
     path('bulk-browser-policy/', policy.bulkBrowsePolicy, name='bulk-browser-policy'),
     path('policy-data/', policy.policyData, name='policy-data'),
     path('edit-policy-data/<str:id>', views.editPolicy, name='edit-policy'),
+    path('delete-policy-data/<str:id>', policy.deletePolicy, name='delete-policy'),
     path('edit-policy/<str:policy_id>/', policy.edit_policy, name='edit-policy-data'),
     re_path(r'^edit-policy-vehicle-details/(?P<policy_id>.+)/$', policy.edit_vehicle_details, name='edit-policy-vehicle-details'),
     re_path(r'^edit-policy-docs/(?P<policy_id>.+)/$', policy.edit_policy_docs, name='edit-policy-docs'),

@@ -33,7 +33,7 @@ from pprint import pprint
 import pdfkit
 from django.templatetags.static import static  # ✅ Import static
 from django.template.loader import render_to_string
-from ..helpers import sync_user_to_partner
+from ..helpers import sync_user_to_partner, update_partner_by_user_id
 
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 
@@ -206,7 +206,7 @@ def storeAllocation(request):
     return redirect('member-view', user_id=user_id)
 
 def storeOrUpdateBankDetails(request):
-    if request.method == "POST":
+    if request.method == "POST" and request.user.id:
         user_id = request.user.id  # Get the logged-in user's ID
         account_number = request.POST.get('account_number')
 
@@ -234,6 +234,8 @@ def storeOrUpdateBankDetails(request):
         except IntegrityError:
             messages.error(request, "An error occurred while saving your bank details. Please try again.")
         
+        return redirect('my-account')
+    else: 
         return redirect('my-account')
 
     # If not a POST request, redirect to my-account
@@ -315,6 +317,8 @@ def upload_documents(request):
     # If there are validation errors, return them
     if errors:
         return JsonResponse({"errors": errors}, status=400)
+    
+    update_partner_by_user_id(user_id, {"partner_status": "1", "doc_status": '1'}, request=request)
 
     # Save only if there are updates
     if files_uploaded:
@@ -360,6 +364,7 @@ def update_document(request):
         else:
             new_image_url = None  # Handle case where file isn't uploaded
 
+        update_partner_by_user_id(user_id, {"partner_status": "1", "doc_status": '1'}, request=request)
 
         return JsonResponse({"message": f"{document_type.replace('_', ' ').title()} updated successfully!", "new_image_url": new_image_url})
     

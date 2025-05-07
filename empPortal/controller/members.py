@@ -6,6 +6,9 @@ from django.contrib import messages
 from django.template import loader
 from ..models import Commission, ExamResult,Users, DocumentUpload, Branch,BqpMaster
 from empPortal.model import BankDetails
+from django.utils.timezone import localtime
+from datetime import datetime
+
 from ..forms import DocumentUploadForm
 from django.core.mail import send_mail
 from django.core.mail import EmailMessage
@@ -62,24 +65,141 @@ def dictfetchall(cursor):
     columns = [col[0] for col in cursor.description]
     return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
+from django.db.models import Sum
+
+
+
 
 def partnerCounters():
-    counters = Partner.objects.aggregate(
-        total=Count('id'),
-        requested=Count('id', filter=models.Q(partner_status='0')),
-        document_verification=Count('id', filter=models.Q(partner_status='1')),
-        in_training=Count('id', filter=models.Q(partner_status='2')),
-        in_exam=Count('id', filter=models.Q(partner_status='3')),
-        activated=Count('id', filter=models.Q(partner_status='4')),
-        inactive=Count('id', filter=models.Q(partner_status='5')),
-        rejected=Count('id', filter=models.Q(partner_status='6')),
+    # 1) Filter out inactive partners up front
+    partners = Partner.objects.exclude(active=0).annotate(
+        doc_upload_count=Count('id', filter=Q(partner_status='1', doc_status=1)),
+        pending_doc_count =Count('id', filter=Q(partner_status='1', doc_status=2)),
     )
+
+    # 2) Aggregate on that already-filtered queryset
+    counters = partners.aggregate(
+        total                 = Count('id'),
+        requested             = Count('id', filter=Q(partner_status='0')),
+        document_verification = Count('id', filter=Q(partner_status='1')),
+        in_training           = Count('id', filter=Q(partner_status='2')),
+        in_exam               = Count('id', filter=Q(partner_status='3')),
+        activated             = Count('id', filter=Q(partner_status='4')),
+        inactive              = Count('id', filter=Q(partner_status='5')),
+        rejected              = Count('id', filter=Q(partner_status='6')),
+        doc_upload            = Sum('doc_upload_count'),
+        pending_docs          = Sum('pending_doc_count'),
+    )
+
     return counters
+
+from django.utils.timezone import now
+
+def update_partner_status():
+    users = Users.objects.all()
+
+    for user in users:
+        docs = DocumentUpload.objects.filter(user_id=user.id)
+
+        if not docs.exists():
+            Partner.objects.filter(user_id=user.id).update(doc_status='0', partner_status='0')
+            continue
+
+        all_approved = all(
+            doc.aadhaar_card_front_status == 'Approved' and
+            doc.aadhaar_card_back_status == 'Approved' and
+            doc.upload_pan_status == 'Approved' and
+            doc.upload_cheque_status == 'Approved' and
+            doc.tenth_marksheet_status == 'Approved'
+            for doc in docs
+        )
+
+        any_pending = any(
+            doc.aadhaar_card_front_status == 'Pending' or
+            doc.aadhaar_card_back_status == 'Pending' or
+            doc.upload_pan_status == 'Pending' or
+            doc.upload_cheque_status == 'Pending' or
+            doc.tenth_marksheet_status == 'Pending'
+            for doc in docs
+        )
+
+        # Set doc_status only if documents exist
+        if all_approved:
+            doc_status = '3'
+        elif any_pending:
+            doc_status = '2'
+        else:
+            doc_status = '1'
+
+        # Update doc_status in Partner
+        Partner.objects.filter(user_id=user.id).exclude(active=0).update(doc_status=doc_status)
+
+        # Handle partner_status
+        if all_approved:
+            exam_result = ExamResult.objects.filter(user_id=user.id).first()
+            if exam_result:
+                if exam_result.status.lower() == 'passed':
+                    partner_status = '4'  # Exam passed
+                else:
+                    partner_status = '3'  # Exam attempted but not passed
+            else:
+                partner_status = '2'  # Exam not attempted
+        elif any_pending:
+            partner_status = '1'
+        else:
+            partner_status = '1'
+
+        Partner.objects.filter(user_id=user.id).update(partner_status=partner_status)
+
+from datetime import timedelta
+from django.utils import timezone
+from django.db import transaction
+
+
+def update_exam_eligible_status():
+    cutoff = timezone.now() - timedelta(days=5)
+
+    # 1) Find all partner user_ids whose training_start_date is at least 5 days ago.
+    partners_qs = Partner.objects.filter(
+        partner_status='2',
+        training_start_date__lte=cutoff
+    )
+
+    eligible_user_ids = partners_qs.values_list('user_id', flat=True).distinct()
+
+
+    with transaction.atomic():
+        # 2) Update Users in bulk
+        users_qs = (
+            Users.objects
+                 .filter(
+                     id__in=eligible_user_ids,
+                     activation_status='1',
+                     exam_eligibility=0,
+                     exam_attempt__lt=3,
+                 )
+                 .exclude(exam_pass=1)
+        )
+        updated_users = users_qs.update(exam_eligibility=1)
+
+        # 3) Update their Partners' status
+        # Only affects partners whose user_id was in eligible_user_ids
+        updated_partners = (
+            Partner.objects
+                   .filter(user_id__in=eligible_user_ids)
+                   .update(partner_status='3')
+        )
+
+    return {
+        'users_marked_eligible': updated_users,
+        'partners_activated':    updated_partners,
+    }
 
 def members(request):
     if not request.user.is_authenticated:
         return redirect('login')
-
+    # update_partner_status()
+    update_exam_eligible_status()
     if request.user.role_id == 1:
         role_ids = [4]  # Filter for specific roles
 
@@ -117,7 +237,12 @@ def members(request):
         if search_field and search_query:
             filter_args = {f"{search_field}__icontains": search_query}
             users = users.filter(**filter_args)"""
-        users = Users.objects.filter(role_id__in=role_ids)
+        
+        partners = Partner.objects.exclude(active=0)  # Status '2' represents training
+        partner_ids = partners.values_list('user_id', flat=True)  # Get user IDs
+
+        # Base QuerySet: Users who are in training (partner_status='2')
+        users = Users.objects.filter(id__in=partner_ids)
 
         
 
@@ -313,7 +438,123 @@ def members_requested(request):
             'global_search': global_search,
             'sorting': sorting,
             'per_page': per_page,
-            'requested' : True,
+            'members_all' : False,
+        })
+    else:
+        return redirect('login')   
+
+        
+def members_document_pending_upload(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    if request.user.role_id == 1:
+        role_ids = [4]  # Filter for specific roles
+
+        per_page = request.GET.get('per_page', 10)
+        search_field = request.GET.get('search_field', '')  # Field to search
+        search_query = request.GET.get('search_query', '')  # Search value
+        sorting = request.GET.get('sorting', '')  # Sorting option
+        global_search = request.GET.get('global_search', '').strip()
+        
+        try:
+            per_page = int(per_page)
+        except ValueError:
+            per_page = 10  # Default to 10 if invalid value is given
+
+        # Base QuerySet
+        users = Users.objects.filter(role_id__in=role_ids).exclude(
+            activation_status='1'
+        )
+
+        if global_search:
+            users = users.annotate(
+                search_full_name=Concat('first_name', Value(' '), 'last_name')
+            ).filter(
+                Q(search_full_name__icontains=global_search) |  
+                Q(first_name__icontains=global_search) |
+                Q(last_name__icontains=global_search) |
+                Q(email__icontains=global_search) |
+                Q(phone__icontains=global_search)  
+            )
+
+        """# Apply filtering
+        if search_field and search_query:
+            filter_args = {f"{search_field}__icontains": search_query}
+            users = users.filter(**filter_args)"""
+
+        partners = Partner.objects.filter(partner_status='0')
+        partner_ids = partners.values_list('user_id', flat=True)  # Get user IDs
+
+        users = Users.objects.filter(id__in=partner_ids)
+
+    # Get filter values from GET request
+        user_gen_id = request.GET.get('user_gen_id', '').strip()
+        user_name = request.GET.get('user_name', '').strip()
+        email = request.GET.get('email', '').strip()
+        phone = request.GET.get('phone', '').strip()
+        pan_no = request.GET.get('pan_no', '').strip()  
+
+    # Apply filters
+        if user_gen_id:
+            users = users.filter(user_gen_id__icontains=user_gen_id)
+        if user_name:
+            users = users.filter(user_name__icontains=user_name)
+        if email:
+            users = users.filter(email__icontains=email)
+        if phone:
+            users = users.filter(phone__icontains=phone)
+        if pan_no:
+            users = users.filter(pan_no__icontains=pan_no)
+
+        context = {
+            'users': users
+         }
+        
+
+        # Apply sorting
+        if sorting == "name_a_z":
+            users = users.order_by("first_name")
+        elif sorting == "name_z_a":
+            users = users.order_by("-first_name")
+        elif sorting == "recently_activated":
+            users = users.filter(activation_status='1').order_by("-updated_at")
+        elif sorting == "recently_deactivated":
+            users = users.filter(
+                Q(activation_status='0') | Q(activation_status__isnull=True) | Q(activation_status='')
+            ).order_by("-updated_at")
+        else:
+            users = users.order_by("-updated_at")
+
+        
+        total_agents = Users.objects.filter(role_id__in=role_ids).count()
+        active_agents = Users.objects.filter(role_id__in=role_ids,activation_status='1').count()
+        deactive_agents = Users.objects.filter(
+            role_id__in=role_ids
+        ).exclude(
+            activation_status='1'
+        ).count()
+        pending_agents = 0  # Define pending logic if needed
+
+        # Paginate results
+        paginator = Paginator(users, per_page)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+        counters = partnerCounters()
+
+        return render(request, 'members/members-pending-upload.html', {
+            'page_obj': page_obj,
+            'total_agents': total_agents,
+            'active_agents': active_agents,
+            'deactive_agents': deactive_agents,
+            'counters': counters,
+            'partners': partners,
+            'pending_agents': pending_agents,
+            'search_field': search_field,
+            'search_query': search_query,
+            'global_search': global_search,
+            'sorting': sorting,
+            'per_page': per_page,
             'members_all' : False,
         })
     else:
@@ -328,10 +569,12 @@ def posTrainingCertificate(request, user_id):
     config = pdfkit.configuration(wkhtmltopdf=wkhtml_path)
 
     customer = get_object_or_404(Users, id=user_id)
+    partner = get_object_or_404(Partner, user_id=user_id)
 
 
 
     context = {
+        "partner": partner,
         "customer": customer,
         "logo_url": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/logo2.png'),
         "default_image_pos": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/default-image-pos.jpg'),
@@ -362,11 +605,14 @@ def posCertificate(request, user_id):
     config = pdfkit.configuration(wkhtmltopdf=wkhtml_path)
 
     customer = get_object_or_404(Users, id=user_id)
+    docs = DocumentUpload.objects.filter(user_id=user_id).first()
 
-
+    passed_date = customer.examRes.created_at
 
     context = {
         "customer": customer,
+        "passed_date": passed_date,
+        "docs": docs,
         "logo_url": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/logo2.png'),
         "default_image_pos": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/default-image-pos.jpg'),
         "signature_pos": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/signature-pos.webp'),
@@ -409,7 +655,10 @@ def members_inprocess(request):
         # Base QuerySet
         # users = Users.objects.filter(role_id__in=role_ids, activation_status=4)
 
-        partners = Partner.objects.filter(partner_status='1')
+                
+        partners = Partner.objects.filter(
+            Q(partner_status='1') | Q(doc_status__gte=1)
+        )
         partner_ids = partners.values_list('user_id', flat=True)  # Get user IDs
 
         users = Users.objects.filter(id__in=partner_ids)
@@ -488,6 +737,212 @@ def members_inprocess(request):
     else:
         return redirect('login')
     
+def members_document_upload(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    if request.user.role_id == 1:
+        role_ids = [4]  # Filter for specific roles
+
+        per_page = request.GET.get('per_page', 10)
+        search_field = request.GET.get('search_field', '')  # Field to search
+        search_query = request.GET.get('search_query', '')  # Search value
+        sorting = request.GET.get('sorting', '')  # Sorting option
+        global_search = request.GET.get('global_search', '').strip()
+        
+        try:
+            per_page = int(per_page)
+        except ValueError:
+            per_page = 10  # Default to 10 if invalid value is given
+
+        # Base QuerySet
+        # users = Users.objects.filter(role_id__in=role_ids, activation_status=4)
+
+                
+        partners = Partner.objects.filter(
+            Q(doc_status='1') | Q(doc_status=1)
+        )
+        partner_ids = partners.values_list('user_id', flat=True)  # Get user IDs
+
+        users = Users.objects.filter(id__in=partner_ids)
+        
+        if global_search:
+            users = users.annotate(
+                search_full_name=Concat('first_name', Value(' '), 'last_name')
+            ).filter(
+                Q(search_full_name__icontains=global_search) |  
+                Q(first_name__icontains=global_search) |
+                Q(last_name__icontains=global_search) |
+                Q(email__icontains=global_search) |
+                Q(phone__icontains=global_search)  
+            )
+
+        # Apply filtering
+        # if search_field and search_query:
+        #     filter_args = {f"{search_field}__icontains": search_query}
+        #     users = users.filter(**filter_args)
+         # Apply filtering
+        if 'user_gen_id' in request.GET and request.GET['user_gen_id']:
+            users = users.filter(user_gen_id__icontains=request.GET['user_gen_id'])
+        if 'user_name' in request.GET and request.GET['user_name']:
+            users = users.filter(user_name__icontains=request.GET['user_name'])
+        if 'pan_no' in request.GET and request.GET['pan_no']:
+            users = users.filter(pan_no__icontains=request.GET['pan_no'])
+        if 'email' in request.GET and request.GET['email']:
+            users = users.filter(email__icontains=request.GET['email'])
+        if 'phone' in request.GET and request.GET['phone']:
+            users = users.filter(phone__icontains=request.GET['phone'])
+
+        # Apply sorting
+        if sorting == "name_a_z":
+            users = users.order_by("first_name")
+        elif sorting == "name_z_a":
+            users = users.order_by("-first_name")
+        elif sorting == "recently_activated":
+            users = users.filter(activation_status='1').order_by("-updated_at")
+        elif sorting == "recently_deactivated":
+            users = users.filter(
+                Q(activation_status='0') | Q(activation_status__isnull=True) | Q(activation_status='')
+            ).order_by("-updated_at")
+        else:
+            users = users.order_by("-updated_at")
+
+        
+        total_agents = Users.objects.filter(role_id__in=role_ids).count()
+        active_agents = Users.objects.filter(role_id__in=role_ids,activation_status='1').count()
+        
+        deactive_agents = Users.objects.filter(
+            role_id__in=role_ids
+        ).exclude(
+            activation_status='1'
+        ).count()
+        pending_agents = 0  # Define pending logic if needed
+
+        # Paginate results
+        paginator = Paginator(users, per_page)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+        counters = partnerCounters()
+
+        return render(request, 'members/members-document-upload.html', {
+            'page_obj': page_obj,
+            'total_agents': total_agents,
+            'counters': counters,
+            'active_agents': active_agents,
+            'deactive_agents': deactive_agents,
+            'pending_agents': pending_agents,
+            'search_field': search_field,
+            'search_query': search_query,
+            'global_search': global_search,
+            'sorting': sorting,
+            'per_page': per_page,
+        })
+    else:
+        return redirect('login')
+    
+def members_document_inpending(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    if request.user.role_id == 1:
+        role_ids = [4]  # Filter for specific roles
+
+        per_page = request.GET.get('per_page', 10)
+        search_field = request.GET.get('search_field', '')  # Field to search
+        search_query = request.GET.get('search_query', '')  # Search value
+        sorting = request.GET.get('sorting', '')  # Sorting option
+        global_search = request.GET.get('global_search', '').strip()
+        
+        try:
+            per_page = int(per_page)
+        except ValueError:
+            per_page = 10  # Default to 10 if invalid value is given
+
+        # Base QuerySet
+        # users = Users.objects.filter(role_id__in=role_ids, activation_status=4)
+
+                
+        partners = Partner.objects.filter(
+            Q(doc_status='2') | Q(doc_status=2)
+        )
+        partner_ids = partners.values_list('user_id', flat=True)  # Get user IDs
+
+        users = Users.objects.filter(id__in=partner_ids)
+        
+        if global_search:
+            users = users.annotate(
+                search_full_name=Concat('first_name', Value(' '), 'last_name')
+            ).filter(
+                Q(search_full_name__icontains=global_search) |  
+                Q(first_name__icontains=global_search) |
+                Q(last_name__icontains=global_search) |
+                Q(email__icontains=global_search) |
+                Q(phone__icontains=global_search)  
+            )
+
+        # Apply filtering
+        # if search_field and search_query:
+        #     filter_args = {f"{search_field}__icontains": search_query}
+        #     users = users.filter(**filter_args)
+         # Apply filtering
+        if 'user_gen_id' in request.GET and request.GET['user_gen_id']:
+            users = users.filter(user_gen_id__icontains=request.GET['user_gen_id'])
+        if 'user_name' in request.GET and request.GET['user_name']:
+            users = users.filter(user_name__icontains=request.GET['user_name'])
+        if 'pan_no' in request.GET and request.GET['pan_no']:
+            users = users.filter(pan_no__icontains=request.GET['pan_no'])
+        if 'email' in request.GET and request.GET['email']:
+            users = users.filter(email__icontains=request.GET['email'])
+        if 'phone' in request.GET and request.GET['phone']:
+            users = users.filter(phone__icontains=request.GET['phone'])
+
+        # Apply sorting
+        if sorting == "name_a_z":
+            users = users.order_by("first_name")
+        elif sorting == "name_z_a":
+            users = users.order_by("-first_name")
+        elif sorting == "recently_activated":
+            users = users.filter(activation_status='1').order_by("-updated_at")
+        elif sorting == "recently_deactivated":
+            users = users.filter(
+                Q(activation_status='0') | Q(activation_status__isnull=True) | Q(activation_status='')
+            ).order_by("-updated_at")
+        else:
+            users = users.order_by("-updated_at")
+
+        
+        total_agents = Users.objects.filter(role_id__in=role_ids).count()
+        active_agents = Users.objects.filter(role_id__in=role_ids,activation_status='1').count()
+        
+        deactive_agents = Users.objects.filter(
+            role_id__in=role_ids
+        ).exclude(
+            activation_status='1'
+        ).count()
+        pending_agents = 0  # Define pending logic if needed
+
+        # Paginate results
+        paginator = Paginator(users, per_page)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+        counters = partnerCounters()
+
+        return render(request, 'members/members-document-inpending.html', {
+            'page_obj': page_obj,
+            'total_agents': total_agents,
+            'counters': counters,
+            'active_agents': active_agents,
+            'deactive_agents': deactive_agents,
+            'pending_agents': pending_agents,
+            'search_field': search_field,
+            'search_query': search_query,
+            'global_search': global_search,
+            'sorting': sorting,
+            'per_page': per_page,
+        })
+    else:
+        return redirect('login')
+    
 # def members_intraining(request):
 #     if request.user.is_authenticated:
 #         if request.user.role_id == 1:
@@ -531,7 +986,7 @@ def members_intraining(request):
             per_page = 10  # Default to 10 if invalid value is given
 
         # Get partners in training (assuming status '2' represents training)
-        partners = Partner.objects.filter(partner_status='2')  # Status '2' represents training
+        partners = Partner.objects.filter(partner_status='2').exclude(active=0)  # Status '2' represents training
         partner_ids = partners.values_list('user_id', flat=True)  # Get user IDs
 
         # Base QuerySet: Users who are in training (partner_status='2')
@@ -653,7 +1108,7 @@ def members_inexam(request):
             per_page = 10  # Default to 10 if invalid value is given
 
         # Fetch users that are in the "in exam" stage (partner_status='3')
-        partners = Partner.objects.filter(partner_status='3')
+        partners = Partner.objects.filter(Q(partner_status='3') | Q(partner_status='4'))
         partner_ids = partners.values_list('user_id', flat=True)  # Get user IDs
 
         users = Users.objects.filter(id__in=partner_ids, role_id__in=role_ids)
@@ -1052,6 +1507,9 @@ def memberView(request, user_id):
         user_details  = Users.objects.get(id=user_id)
         bank_details  = BankDetails.objects.filter(user_id=user_id).first()
         partner_info  = Partner.objects.filter(user_id=user_id).first()
+    
+        update_exam_eligible_status()
+
         if not partner_info: 
             sync_user_to_partner(user_id, request)
             partner_info  = Partner.objects.filter(user_id=user_id).first()
@@ -1299,7 +1757,7 @@ def activateUser(request, user_id):
 
     # Redirect to the member view page
 
-    update_partner_by_user_id(25, {"partner_status": "4", "active": False}, request=request)
+    
     return redirect('member-view', user_id=user_id)
 
 
@@ -1334,6 +1792,8 @@ def updatePartnerStatus(request, user_id):
             update_fields={"partner_status": partner_status},
             request=request
         )
+        if partner_status == 3:
+            Users.objects.filter(id=user_id).update(exam_eligibility=1)
 
         #  If they just moved into “Activated” (4), go through your full activateUser flow
         if partner_status == 4:
@@ -1564,6 +2024,7 @@ def update_doc_status(request):
             return JsonResponse({"error": "Invalid status"}, status=400)
 
         document = get_object_or_404(DocumentUpload, id=doc_id)
+        user_id = document.user_id
         status_field = f"{doc_type}_status"
         updated_at_field = f"{doc_type}_updated_at"
         reject_note_field = f"{doc_type}_reject_note"
@@ -1580,12 +2041,99 @@ def update_doc_status(request):
 
         document.save()
 
+        docs = DocumentUpload.objects.filter(user_id=user_id)
+        if docs.exists():
+            all_approved = all(doc.aadhaar_card_front_status == 'Approved' and
+                               doc.aadhaar_card_back_status == 'Approved' and
+                               doc.upload_pan_status == 'Approved' and
+                               doc.upload_cheque_status == 'Approved' and
+                               doc.tenth_marksheet_status == 'Approved' for doc in docs)
+            any_pending = any(doc.aadhaar_card_front_status == 'Pending' or
+                              doc.aadhaar_card_back_status == 'Pending' or
+                              doc.upload_pan_status == 'Pending' or
+                              doc.upload_cheque_status == 'Pending' or
+                              doc.tenth_marksheet_status == 'Pending' for doc in docs)
+            if all_approved:
+                doc_status = '3'  # All documents approved
+            elif any_pending:
+                doc_status = '2'  # At least one document pending
+            else:
+                doc_status = '1'  # Some documents rejected or other statuses
+            # Update partner status based on document statuses
+            update_partner_by_user_id(user_id, {"doc_status": doc_status}, request=request)
+
+            if all_approved: 
+                update_partner_by_user_id(
+                    user_id,
+                    {
+                        "partner_status": "2",
+                        "training_started_at": localtime().replace(microsecond=0, tzinfo=None),
+                    },
+                    request=request
+                )
+                send_training_mail(request,user_id)
         if document.user_id:
             updateUserStatus(doc_id, document.user_id)
         return JsonResponse({"success": True, "message": f"Status updated to {status}!"})
 
     return JsonResponse({"error": "Invalid request method"}, status=405)
 
+
+
+def deleteMember(request, user_id):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    update_partner_by_user_id(user_id, {"active": 0}, request=request)
+
+    return redirect(request.META.get('HTTP_REFERER', 'members'))
+
+
+def send_training_mail(request, user_id):
+    # Ensure the user is authenticated
+    
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    try:
+        # Fetch the user based on user_id
+        user = get_object_or_404(Users, id=user_id)
+        user_email = user.email
+
+        # Path to the training PDF
+        training_pdf_path = os.path.join(settings.MEDIA_ROOT, 'training/Training_Material_Elevate_Insurance_V1.0.pdf')
+        training_material_url = request.build_absolute_uri(settings.MEDIA_URL + 'training/Training_Material_Elevate_Insurance_V1.0.pdf')
+
+        # Render email HTML template
+        email_body = render_to_string('members/training-email.html', {
+            'user': user,
+            "logo_url": request.build_absolute_uri(static('dist/img/logo2.png')),
+            "support_email": "support@elevateinsurance.in",
+            "terms_conditions_url": "https://pos.elevateinsurance.in/empPortal/media/terms/Terms_And_Conditions.pdf",
+            "company_website": "https://pos.elevateinsurance.in/",
+            "training_material_url": training_material_url,
+            "support_number": "+918887779999",
+        })
+
+        # Prepare and send training email
+        subject = 'Training Material for Your Account'
+        from_email = settings.DEFAULT_FROM_EMAIL
+        recipient_list = [user_email]
+
+        email = EmailMessage(subject, email_body, from_email, recipient_list)
+        email.content_subtype = "html"  # Set content type to HTML
+
+        # Attach file if it exists
+        if os.path.exists(training_pdf_path):
+            email.attach_file(training_pdf_path)
+        else:
+            logger.error(f"Training PDF not found: {training_pdf_path}")
+
+        email.send()
+        logger.info(f"Training email sent to {user_email} successfully.")
+
+    except Exception as e:
+        logger.error(f"Error sending training email to user {user_id}: {e}")
 
 def updateUserStatus(doc_id, user_id):
     document = get_object_or_404(DocumentUpload, id=doc_id)
@@ -1607,6 +2155,10 @@ def updateUserStatus(doc_id, user_id):
         user.save()
 
 def add_partner(request):
+    
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
     if request.method == 'POST':
         # Extract form data
         full_name = request.POST.get('full_name', '').strip()
