@@ -913,7 +913,7 @@ def policyData(request):
     user = request.user
     filters_q = Q(status=6) & Q(policy_number__isnull=False) & ~Q(policy_number='')
 
-    if user.role_id != 1 and str(user.department_id) not in ["3", "5"]:
+    if user.role_id != 1 and str(user.department_id) not in ["3", "5", "2"]:
         filters_q &= Q(rm_id=user.id)
 
     branch_id   = request.GET.get('branch_name', '')
