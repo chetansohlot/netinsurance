@@ -29,14 +29,8 @@ Policy Data
             </ul>
           </div>
           <div class="col-sm-6">
-            {% if request.user.role_id == 1 %}
-              <div class="d-flex justify-content-end">
-                <a href="{% url 'edit-bulk-policy' %}" class="breadcrump-addbtn mx-1">Edit Bulk Policy</a>
-                <a href="{% url 'bulk-upload-logs' %}" class="breadcrump-addbtn mx-1">View Bulk Logs</a>
-                <a href="{% url 'bulk-policy-mgt' %}" class="breadcrump-addbtn mx-1">Add Bulk Policy</a>
-                <a href="{% url 'policy-mgt' %}" class="breadcrump-addbtn mx-1">Add Policy</a>
-              </div>
-            {% endif %}
+            <a href="{% url 'logs-franchise-commission-update' %}" class="breadcrump-addbtn mx-1">Logs View</a>
+
           </div>
         </div>
         <div class="row">
@@ -175,69 +169,76 @@ Policy Data
                 </div>  
 
                 
+                {% if has_filters %}
                 <div class="row">
                     <div class="col-md-12">
                       <div class="card">
                         <div class="card-body pb-0">
                   
-                          <!-- Update Insurer Commission Form -->
-                          <h5 class="mb-3">Update Insurer Commission</h5>
-                          <form method="post" action="{% url 'update-insurer-commission' %}">
+                          <!-- Update Franchise Commission Form -->
+                          <h5 class="mb-3">Update Franchise Commission</h5>
+                            <form method="post" action="{% url 'update-franchise-commission' %}">
                             {% csrf_token %}
                             <div class="row align-items-center">
                               <input type="hidden" name="policy_ids" value="{{ filtered_policy_ids|join:',' }}">
-                          
-                              <!-- Insurer OD Commission -->
+                              
+                              <!-- franchise OD Commission -->
                               <div class="col-6 col-md-2">
                                 <div class="form-group">
-                                  <input class="form-field" name="insurer_od_commission" type="text" placeholder="Insurer OD Commission">
+                                  <input class="form-field percentage" name="franchise_od_commission" type="text" placeholder="OD Commission">
+                                  <small class="text-muted">( OD Commission % )</small>
                                 </div>
                               </div>
-                          
-                              <!-- Insurer Net Commission -->
+                        
+                              <!-- franchise Net Commission -->
                               <div class="col-6 col-md-2">
                                 <div class="form-group">
-                                  <input class="form-field" name="insurer_net_commission" type="text" placeholder="Insurer Net Commission">
+                                  <input class="form-field percentage" name="franchise_net_commission" type="text" placeholder="Net Commission">
+                                  <small class="text-muted">( Net Commission % )</small>
                                 </div>
                               </div>
-                          
-                              <!-- Insurer TP Commission -->
+                        
+                              <!-- franchise TP Commission -->
                               <div class="col-6 col-md-2">
                                 <div class="form-group">
-                                  <input class="form-field" name="insurer_tp_commission" type="text" placeholder="Insurer TP Commission">
+                                  <input class="form-field percentage" name="franchise_tp_commission" type="text" placeholder="TP Commission">
+                                  <small class="text-muted">( TP Commission % )</small>
                                 </div>
                               </div>
-                          
-                              <!-- Insurer Incentive Amount -->
+                        
+                              <!-- franchise Incentive Amount -->
                               <div class="col-6 col-md-2">
                                 <div class="form-group">
-                                  <input class="form-field" name="insurer_incentive_amount" type="text" placeholder="Insurer Incentive Amount">
+                                  <input class="form-field amount-number" name="franchise_incentive_amount" type="text" placeholder="Incentive Amount">
+                                  <small class="text-muted">( Incentive Amount )</small>
                                 </div>
                               </div>
-                          
-                              <!-- Insurer TDS -->
+                        
+                              <!-- franchise TDS -->
                               <div class="col-6 col-md-2">
                                 <div class="form-group">
-                                  <input class="form-field" name="insurer_tds" type="text" placeholder="Insurer TDS">
+                                  <input class="form-field percentage" name="franchise_tds" type="text" placeholder="TDS">
+                                  <small class="text-muted">( TDS % )</small>
                                 </div>
                               </div>
-                          
+                        
                               <!-- Submit Button -->
                               <div class="col-6 col-md-2">
                                 <div class="form-group">
                                   <button type="submit" class="wrap-btn w-100 bg-danger text-white">Update Commission</button>
+                                  <small class="text-muted"> &nbsp;</small>
                                 </div>
                               </div>
-                          
                             </div>
-                          </form>
-                          
-                          
 
-                        </div>
+                            <input type="hidden" id="udpating_policy_ids" name="udpating_policy_ids">
+                            
+                            </form>
+                      </div>
                       </div>
                     </div>
                 </div>
+                {% endif %}
                 <ul class="nav nav-pills profile-tab">
                   <li class="nav-item text-bold">
                       <a class="nav-link active" href="#">MOTOR</a>
@@ -255,6 +256,7 @@ Policy Data
                       <table class="table table-design policy-data-table-width">
                         <thead class="table-thead-bg-light table-header-fix">
                           <tr>
+                            <th class="nowrap"></th>
                             <th class="nowrap">Insurance Co.</th>
                             <!-- <th class="nowrap">Reg. No.</th> -->
                             <th class="nowrap">Holder</th>
@@ -282,6 +284,8 @@ Policy Data
                         <tbody>
                           {% for data in page_obj %}
                             <tr>
+                              <td><input type="checkbox" name="checked_policy_ids[]" class="checked_policy_ids" value="{{data.id}}"></td>
+
                               <td>
                                 <div class="d-flex align-items-start">
                                   <div>
@@ -405,6 +409,28 @@ Policy Data
 <!-- ./wrapper -->
 
 {% include 'footer-script.html' %}
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+      const checkboxes = document.querySelectorAll(".checked_policy_ids");
+      const hiddenInput = document.getElementById("udpating_policy_ids");
+
+      function updateHiddenField() {
+          let selectedIds = [];
+          checkboxes.forEach((checkbox) => {
+              if (checkbox.checked) {
+                  selectedIds.push(checkbox.value);
+              }
+          });
+          hiddenInput.value = selectedIds.join(",");
+          console.log(hiddenInput.value);
+      }
+
+      checkboxes.forEach((checkbox) => {
+          checkbox.addEventListener("change", updateHiddenField);
+      });
+  });
+</script>
 </body>
 
 {% endblock %}

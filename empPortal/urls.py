@@ -224,10 +224,15 @@ urlpatterns = [
     path('policy-commission/agent-commission/', PolicyCommission.agent_commission, name='agent-commission'),
     path('policy-commission/logs-agent-commission/', PolicyCommission.logs_update_agent_commission, name='logs-agent-commission-update'),
     path('policy-commission/update-agent-commission/', PolicyCommission.update_agent_commission, name='update-agent-commission'),
+    
     path('policy-commission/update-franchise-commission/', PolicyCommission.update_franchise_commission, name='update-franchise-commission'),
     path('policy-commission/franchisees-commission/', PolicyCommission.franchisees_commission, name='franchisees-commission'),
+    path('policy-commission/logs-franchise-commission/', PolicyCommission.logs_update_franchise_commission, name='logs-franchise-commission-update'),
+    
     path('policy-commission/insurer-commission/', PolicyCommission.insurer_commission, name='insurer-commission'),
     path('policy-commission/update-insurer-commission/', PolicyCommission.update_insurer_commission, name='update-insurer-commission'),
+    path('policy-commission/logs-insurer-commission/', PolicyCommission.logs_update_insurer_commission, name='logs-insurer-commission-update'),
+    
     # POLICY-COMMISION 
 
     # POLICY-PAYMENT 
