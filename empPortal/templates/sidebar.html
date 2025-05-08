@@ -6,6 +6,11 @@
 {% url 'insurer-business-report' as insurer_business_url %}
 
 
+{% url 'agent-commission' as agent_commission %}
+{% url 'franchisees-commission' as franchise_commission %}
+{% url 'insurer-commission' as insurer_commission %}
+{% url 'insurer-payment' as insurer_payment %}
+
 {% if request.user.role_id|stringformat:"s" == "1" or request.user.role_id|stringformat:"s" == "4"%}
 
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
@@ -109,58 +114,54 @@
               </a>
             </li>
             
-            {% comment %} ____ COMMISSION POLICY _____  {% endcomment %}
-          
-          <li class="nav-item {% if '/policy-commission/' in request.path %} menu-is-opening menu-open {% endif %}">
-            <a href="#" class="nav-link {% if '/policy-commission/' in request.path %} active {% endif %}" {% if "/policy-commission/" in request.path %} style="display:block" {% endif %}>
-              <svg class="sidbarmenu-svg">
-                <use xlink:href="#billing-icon" />
-              </svg>
-              <p>Update Comm.<i class="fas fa-angle-right right"></i></p>
-            </a>
-            <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <a href="{{ agent_commission }}" class="nav-link sidebar-menutext {% if request.path == agent_commission %} active {% endif %}">
-                  <svg class="sidbarmenu-svg">
-                    <use xlink:href="#commission-icon" />
-                  </svg>
-                  <p>Agent Comm.</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="{{ insurer_commission }}" class="nav-link sidebar-menutext {% if request.path == insurer_commission %} active {% endif %}">
-                  <svg class="sidbarmenu-svg">
-                    <use xlink:href="#sales-icon" />
-                  </svg>
+          {% comment %} ____ COMMISSION POLICY _____ {% endcomment %}
+            <li class="nav-item {% if '/policy-commission/' in request.path %} menu-is-opening menu-open {% endif %}">
+              <a href="#" class="nav-link {% if '/policy-commission/' in request.path %} active {% endif %}">
+                <svg class="sidbarmenu-svg">
+                  <use xlink:href="#billing-icon" />
+                </svg>
+                <p>Update Comm.<i class="fas fa-angle-right right"></i></p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="{{ agent_commission }}" class="nav-link sidebar-menutext {% if request.path == agent_commission %} active {% endif %}">
+                    <svg class="sidbarmenu-svg">
+                      <use xlink:href="#commission-icon" />
+                    </svg>
+                    <p>Agent Comm.</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="{{ insurer_commission }}" class="nav-link sidebar-menutext {% if request.path == insurer_commission %} active {% endif %}">
+                    <svg class="sidbarmenu-svg">
+                      <use xlink:href="#sales-icon" />
+                    </svg>
                     <p>Insurer Comm.</p>
-                </a>
-              </li>
-              
-              <li class="nav-item">
+                  </a>
+                </li>
+                <li class="nav-item">
                   <a href="{{ franchise_commission }}" class="nav-link sidebar-menutext {% if request.path == franchise_commission %} active {% endif %}">
                     <svg class="sidbarmenu-svg">
                       <use xlink:href="#agent-business-icon" />
                     </svg>
-                      <p>Franchise Comm.</p>
+                    <p>Franchise Comm.</p>
                   </a>
-              </li>
-            </ul>
-            
-          </li>
-          {% comment %} ____ COMMISSION POLICY _____  {% endcomment %}
-          
-          {% comment %} ____ BULK UPDATE INSURER _____  {% endcomment %}
-        
-          <li class="nav-item">
-            <a href="{{ insurer_payment }}" class="nav-link sidebar-menutext {% if request.path == insurer_payment %} active {% endif %}">
-              <svg class="sidbarmenu-svg">
-                <use xlink:href="#sales-icon" />
-              </svg>
+                </li>
+              </ul>
+            </li>
+            {% comment %} ____ COMMISSION POLICY _____ {% endcomment %}
+
+            {% comment %} ____ BULK UPDATE INSURER _____ {% endcomment %}
+            <li class="nav-item">
+              <a href="{{ insurer_payment }}" class="nav-link sidebar-menutext {% if '/insurer-payment/' in request.path %} active {% endif %}">
+                <svg class="sidbarmenu-svg">
+                  <use xlink:href="#sales-icon" />
+                </svg>
                 <p>Insurer Payment</p>
-            </a>
-          </li>
-        {% comment %} ____ BULK UPDATE INSURER _____  {% endcomment %}
-        
+              </a>
+            </li>
+            {% comment %} ____ BULK UPDATE INSURER _____ {% endcomment %}
+
             <li class="nav-item {% if '/franchise-management/' in request.path or '/branch-management/' in request.path or '/user-and-roles/' in request.path %} menu-is-opening menu-open {% endif %}">
               <a href="#" class="nav-link">
                   <svg class="sidbarmenu-svg">
