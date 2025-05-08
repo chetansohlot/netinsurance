@@ -269,7 +269,7 @@
                     <svg class="sidbarmenu-svg">
                       <use xlink:href="#commission-icon" />
                     </svg>
-                    <p>Comm. Report </p>
+                    <p>Comp. Report </p>
                   </a>
                 </li>
                 {% if request.user.role_id|stringformat:"s" == "1" %}
@@ -426,7 +426,7 @@
                  <li class="nav-item {% if request.path == '/commission-report/' %} active {% endif %}">
                   <a href="{% url 'commission-report' %}" class="nav-link ">
                     <i class="nav-icon far fa-user"></i>
-                    <p> Commission Report </p>
+                    <p> Comparison Report </p>
                   </a>
                   </li>
               </ul>

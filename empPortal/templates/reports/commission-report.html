@@ -23,12 +23,12 @@
         <div class="row py-2">
           <div class="col-sm-6">
             <div class="d-flex align-items-center">
-              <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Commission Report</a>
+              <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Comparison Report</a>
             </div>
             <ul class="breadcrump">
               <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
               <li> <a href="#">Reports</a> <i class="fas fa-chevron-right"></i></li>
-              <li>Commission Report</li>
+              <li>Comparison Report</li>
             </ul>
           </div>
           <div class="col-sm-6">
@@ -306,7 +306,7 @@
     <div class="modal-content">
       <div class="modal-body">
         <button type="button" class="close" data-dismiss="modal" >&times;</button>
-        <h2 class="form-title font-weight-bold">Export Commission Report</h2>
+        <h2 class="form-title font-weight-bold">Export Comparison Report</h2>
         <p class="pb-2">Export is limited to a single month only.</p>
         <form action="{% url 'export-commission-report' %}" method="post" id="export-commission-report">
           {% csrf_token %}
@@ -372,7 +372,7 @@
         const downloadUrl = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = downloadUrl;
-        a.download = "commission_report.xlsx";
+        a.download = "comparison_report.xlsx";
         document.body.appendChild(a);
         a.click();
         a.remove();
