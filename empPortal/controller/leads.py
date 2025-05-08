@@ -36,7 +36,7 @@ from django.template.loader import render_to_string
 from pprint import pprint 
 from django.core.paginator import Paginator
 from django.db.models import Q
-from empPortal.model import Referral
+from empPortal.model import Referral, Partner
 
 import pandas as pd
 from django.core.files.storage import default_storage
@@ -117,7 +117,7 @@ def index(request):
         leads = leads.filter(email_address__icontains=request.GET['email_address'])
     if 'mobile_number' in request.GET and request.GET['mobile_number']:
         leads = leads.filter(mobile_number__icontains=request.GET['mobile_number']) """
-
+    
     # Get filter inputs
     lead_id = request.GET.get('lead_id', '')
     name = request.GET.get('name_as_per_pan', '')
@@ -135,6 +135,15 @@ def index(request):
     upcoming_renewals = request.GET.get('upcoming_renewals', '')
     lead_type = request.GET.get('lead_type')
     motor_type = request.GET.get('motor_type')
+
+    # Collect filter inputs
+    filters_applied = any([
+        lead_id, name, pan, email, mobile,
+        sales_manager, agent_name, policy_number,
+        start_date, end_date, insurance_company,
+        policy_type, vehicle_type, upcoming_renewals,
+        lead_type, motor_type
+    ])
 
     #today = datetime.today().date()
     #after_30_days = today + timedelta(days=30)
@@ -213,15 +222,37 @@ def index(request):
         leads = leads.order_by('-created_at')  # Default sort
 
     # After filtering leads
+    #if request.GET.get('export') == '1':
+        #return export_leads_to_excel(leads)
+    # Handle Export
     if request.GET.get('export') == '1':
-        return export_leads_to_excel(leads)
-
+        if filters_applied:
+            return export_leads_to_excel(leads)
+        else:
+            messages.warning(request, "Please select at least one filter to export data.")
+            return redirect('leads-mgt')
+    
     # Count
     all_leads = Leads.objects.all()
     total_leads = all_leads.count()  
     motor_leads = Leads.objects.filter(lead_type='MOTOR').count()
     health_leads = Leads.objects.filter(lead_type='HEALTH').count()
     term_leads = Leads.objects.filter(lead_type='TERM').count()
+
+    # Base queryset
+    if request.user.role_id != 1:
+        leads = Leads.objects.filter(created_by=request.user.id)
+        all_leads = Leads.objects.filter(created_by=request.user.id)
+        total_leads = all_leads.filter(created_by=request.user.id).count()  
+        motor_leads = Leads.objects.filter(created_by=request.user.id,lead_type='MOTOR').count()
+        health_leads = Leads.objects.filter(created_by=request.user.id,lead_type='HEALTH').count()
+        term_leads = Leads.objects.filter(created_by=request.user.id,lead_type='TERM').count()
+    else:
+        all_leads = Leads.objects.all()
+        total_leads = all_leads.count()  
+        motor_leads = Leads.objects.filter(lead_type='MOTOR').count()
+        health_leads = Leads.objects.filter(lead_type='HEALTH').count()
+        term_leads = Leads.objects.filter(lead_type='TERM').count()
 
     # Pagination
     paginator = Paginator(leads, per_page)
@@ -558,6 +589,7 @@ def create_or_edit_lead(request, lead_id=None):
 
     lead = None
     referrals = Referral.objects.all()
+    partners = Partner.objects.filter(active=True)
 
     if lead_id:
         lead = get_object_or_404(Leads, id=lead_id)
@@ -573,6 +605,7 @@ def create_or_edit_lead(request, lead_id=None):
             'referrals': referrals,
             'customers': customers,
             'states': states,
+            'partners':partners
         })
 
 
@@ -605,8 +638,11 @@ def create_or_edit_lead(request, lead_id=None):
         address = request.POST.get("address", "").strip()
         lead_source = request.POST.get("lead_source", "").strip()
         referral_by = request.POST.get("referral_by", "").strip()
+        partner_id = request.POST.get("partner_id", "").strip()
         if lead_source != 'referral_partner':
             referral_by = ''
+        if lead_source != 'pos_partner':
+            partner_id = None
         lead_description = request.POST.get("lead_description", "").strip()
         # lead_type = request.POST.get("lead_type", "MOTOR").strip()
         lead_type = request.POST.get("lead_type", "").strip()
@@ -675,6 +711,7 @@ def create_or_edit_lead(request, lead_id=None):
             lead.vehicle_type = vehicle_type
             lead.lead_source = lead_source
             lead.referral_by = referral_by
+            lead.partner_id = partner_id
             lead.status = status
             lead.updated_at = now()
             lead.insurance_company=insurance_company
@@ -710,7 +747,8 @@ def create_or_edit_lead(request, lead_id=None):
                 policy_number=policy_number,
                 policy_type=policy_type,
                 sum_insured=sum_insured,
-                risk_start_date = policy_date
+                risk_start_date = policy_date,
+                partner_id = partner_id
                 
             )
             messages.success(request, f"Lead created successfully!")

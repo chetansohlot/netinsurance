@@ -200,7 +200,10 @@ def members(request):
         return redirect('login')
     # update_partner_status()
     update_exam_eligible_status()
-    if request.user.role_id == 1:
+    
+    user = request.user
+
+    if user.role_id == 1 or str(user.department_id) in ["3"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -331,7 +334,9 @@ def members_requested(request):
     if not request.user.is_authenticated:
         return redirect('login')
 
-    if request.user.role_id == 1:
+    user = request.user
+
+    if user.role_id == 1 or str(user.department_id) in ["3"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -366,7 +371,7 @@ def members_requested(request):
             filter_args = {f"{search_field}__icontains": search_query}
             users = users.filter(**filter_args)"""
 
-        partners = Partner.objects.filter(partner_status='0')
+        partners = Partner.objects.filter(partner_status='0').exclude(active=0)
         partner_ids = partners.values_list('user_id', flat=True)  # Get user IDs
 
         users = Users.objects.filter(id__in=partner_ids)
@@ -438,7 +443,125 @@ def members_requested(request):
             'global_search': global_search,
             'sorting': sorting,
             'per_page': per_page,
-            'requested' : True,
+            'members_all' : False,
+        })
+    else:
+        return redirect('login')   
+
+        
+def members_document_pending_upload(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    user = request.user
+
+    if user.role_id == 1 or str(user.department_id) in ["3"]:
+        role_ids = [4]  # Filter for specific roles
+
+        per_page = request.GET.get('per_page', 10)
+        search_field = request.GET.get('search_field', '')  # Field to search
+        search_query = request.GET.get('search_query', '')  # Search value
+        sorting = request.GET.get('sorting', '')  # Sorting option
+        global_search = request.GET.get('global_search', '').strip()
+        
+        try:
+            per_page = int(per_page)
+        except ValueError:
+            per_page = 10  # Default to 10 if invalid value is given
+
+        # Base QuerySet
+        users = Users.objects.filter(role_id__in=role_ids).exclude(
+            activation_status='1'
+        )
+
+        if global_search:
+            users = users.annotate(
+                search_full_name=Concat('first_name', Value(' '), 'last_name')
+            ).filter(
+                Q(search_full_name__icontains=global_search) |  
+                Q(first_name__icontains=global_search) |
+                Q(last_name__icontains=global_search) |
+                Q(email__icontains=global_search) |
+                Q(phone__icontains=global_search)  
+            )
+
+        """# Apply filtering
+        if search_field and search_query:
+            filter_args = {f"{search_field}__icontains": search_query}
+            users = users.filter(**filter_args)"""
+
+        partners = Partner.objects.filter(partner_status='0').exclude(active=0)
+        partner_ids = partners.values_list('user_id', flat=True)  # Get user IDs
+
+        users = Users.objects.filter(id__in=partner_ids)
+
+    # Get filter values from GET request
+        user_gen_id = request.GET.get('user_gen_id', '').strip()
+        user_name = request.GET.get('user_name', '').strip()
+        email = request.GET.get('email', '').strip()
+        phone = request.GET.get('phone', '').strip()
+        pan_no = request.GET.get('pan_no', '').strip()  
+
+    # Apply filters
+        if user_gen_id:
+            users = users.filter(user_gen_id__icontains=user_gen_id)
+        if user_name:
+            users = users.filter(user_name__icontains=user_name)
+        if email:
+            users = users.filter(email__icontains=email)
+        if phone:
+            users = users.filter(phone__icontains=phone)
+        if pan_no:
+            users = users.filter(pan_no__icontains=pan_no)
+
+        context = {
+            'users': users
+         }
+        
+
+        # Apply sorting
+        if sorting == "name_a_z":
+            users = users.order_by("first_name")
+        elif sorting == "name_z_a":
+            users = users.order_by("-first_name")
+        elif sorting == "recently_activated":
+            users = users.filter(activation_status='1').order_by("-updated_at")
+        elif sorting == "recently_deactivated":
+            users = users.filter(
+                Q(activation_status='0') | Q(activation_status__isnull=True) | Q(activation_status='')
+            ).order_by("-updated_at")
+        else:
+            users = users.order_by("-updated_at")
+
+        
+        total_agents = Users.objects.filter(role_id__in=role_ids).count()
+        active_agents = Users.objects.filter(role_id__in=role_ids,activation_status='1').count()
+        deactive_agents = Users.objects.filter(
+            role_id__in=role_ids
+        ).exclude(
+            activation_status='1'
+        ).count()
+        pending_agents = 0  # Define pending logic if needed
+
+        # Paginate results
+        paginator = Paginator(users, per_page)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+        counters = partnerCounters()
+
+        return render(request, 'members/members-pending-upload.html', {
+            'page_obj': page_obj,
+            'total_agents': total_agents,
+            'active_agents': active_agents,
+            'deactive_agents': deactive_agents,
+            'counters': counters,
+            'partners': partners,
+            'pending_agents': pending_agents,
+            'search_field': search_field,
+            'search_query': search_query,
+            'global_search': global_search,
+            'sorting': sorting,
+            'per_page': per_page,
             'members_all' : False,
         })
     else:
@@ -456,12 +579,20 @@ def posTrainingCertificate(request, user_id):
     partner = get_object_or_404(Partner, user_id=user_id)
 
 
+    # Determine which image to use for the certificate
+    if customer.profile_image:
+        # Get the real file path of the profile image
+        profile_image_path = default_storage.path(customer.profile_image.name)
+        profile_image_url = profile_image_path if os.path.exists(profile_image_path) else os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/default-image-pos.jpg')
+    else:
+        profile_image_url = os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/default-image-pos.jpg')
 
     context = {
         "partner": partner,
         "customer": customer,
         "logo_url": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/logo2.png'),
-        "default_image_pos": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/default-image-pos.jpg'),
+        "signature_elevate": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/elevate-signature.png'),
+        "default_image_pos": profile_image_url,
         "signature_pos": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/signature-pos.webp'),
     }
 
@@ -480,7 +611,10 @@ def posTrainingCertificate(request, user_id):
 
     return response
 
- 
+from django.core.files.storage import default_storage
+from django.conf import settings
+import os
+
 def posCertificate(request, user_id):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -493,14 +627,24 @@ def posCertificate(request, user_id):
 
     passed_date = customer.examRes.created_at
 
+    # Determine which image to use for the certificate
+    if customer.profile_image:
+        # Get the real file path of the profile image
+        profile_image_path = default_storage.path(customer.profile_image.name)
+        profile_image_url = profile_image_path if os.path.exists(profile_image_path) else os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/default-image-pos.jpg')
+    else:
+        profile_image_url = os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/default-image-pos.jpg')
+
     context = {
         "customer": customer,
         "passed_date": passed_date,
         "docs": docs,
         "logo_url": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/logo2.png'),
-        "default_image_pos": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/default-image-pos.jpg'),
+        "signature_elevate": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/elevate-signature.png'),
+        "profile_image_url": profile_image_url,  # Pass the real image path here
         "signature_pos": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/signature-pos.webp'),
     }
+
     html_content = render_to_string("members/download-certificate.html", context)
 
     options = {
@@ -518,11 +662,14 @@ def posCertificate(request, user_id):
 
 
 
+
 def members_inprocess(request):
     if not request.user.is_authenticated:
         return redirect('login')
 
-    if request.user.role_id == 1:
+    user = request.user
+
+    if user.role_id == 1 or str(user.department_id) in ["3"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -625,7 +772,10 @@ def members_document_upload(request):
     if not request.user.is_authenticated:
         return redirect('login')
 
-    if request.user.role_id == 1:
+    
+    user = request.user
+
+    if user.role_id == 1 or str(user.department_id) in ["3"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -645,7 +795,7 @@ def members_document_upload(request):
                 
         partners = Partner.objects.filter(
             Q(doc_status='1') | Q(doc_status=1)
-        )
+        ).exclude(active=0)
         partner_ids = partners.values_list('user_id', flat=True)  # Get user IDs
 
         users = Users.objects.filter(id__in=partner_ids)
@@ -728,7 +878,10 @@ def members_document_inpending(request):
     if not request.user.is_authenticated:
         return redirect('login')
 
-    if request.user.role_id == 1:
+    
+    user = request.user
+
+    if user.role_id == 1 or str(user.department_id) in ["3"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -748,7 +901,7 @@ def members_document_inpending(request):
                 
         partners = Partner.objects.filter(
             Q(doc_status='2') | Q(doc_status=2)
-        )
+        ).exclude(active=0)
         partner_ids = partners.values_list('user_id', flat=True)  # Get user IDs
 
         users = Users.objects.filter(id__in=partner_ids)
@@ -829,7 +982,7 @@ def members_document_inpending(request):
     
 # def members_intraining(request):
 #     if request.user.is_authenticated:
-#         if request.user.role_id == 1:
+#     
 #             # Define the list of role IDs to filter
 #             # role_ids = [2, 3, 4]
 #             role_ids = [4]
@@ -855,7 +1008,10 @@ def members_intraining(request):
     if not request.user.is_authenticated:
         return redirect('login')
 
-    if request.user.role_id == 1:
+    
+    user = request.user
+
+    if user.role_id == 1 or str(user.department_id) in ["3"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -950,7 +1106,7 @@ def members_intraining(request):
     
 # def members_inexam(request):
 #     if request.user.is_authenticated:
-#         if request.user.role_id == 1:
+#   
 #             # Define the list of role IDs to filter
 #             # role_ids = [2, 3, 4]
 #             role_ids = [4]
@@ -975,7 +1131,10 @@ def members_inexam(request):
     if not request.user.is_authenticated:
         return redirect('login')
 
-    if request.user.role_id == 1:  # Admin role ID
+    
+    user = request.user
+
+    if user.role_id == 1 or str(user.department_id) in ["3"]:  # Admin role ID
         # Define role IDs for the user filter
         role_ids = [4]
         
@@ -992,7 +1151,7 @@ def members_inexam(request):
             per_page = 10  # Default to 10 if invalid value is given
 
         # Fetch users that are in the "in exam" stage (partner_status='3')
-        partners = Partner.objects.filter(Q(partner_status='3') | Q(partner_status='4'))
+        partners = Partner.objects.filter(Q(partner_status='3')).exclude(active=0)
         partner_ids = partners.values_list('user_id', flat=True)  # Get user IDs
 
         users = Users.objects.filter(id__in=partner_ids, role_id__in=role_ids)
@@ -1079,7 +1238,7 @@ def members_inexam(request):
     
 # def members_activated(request):
 #     if request.user.is_authenticated:
-#         if request.user.role_id == 1:
+#       
 #             # Define the list of role IDs to filter
 #             # role_ids = [2, 3, 4]
 #             role_ids = [4]
@@ -1095,7 +1254,10 @@ def members_activated(request):
     if not request.user.is_authenticated:
         return redirect('login')
 
-    if request.user.role_id == 1:
+    
+    user = request.user
+
+    if user.role_id == 1 or str(user.department_id) in ["3"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -1112,7 +1274,7 @@ def members_activated(request):
         # Base QuerySet
         users = Users.objects.filter(role_id__in=role_ids, activation_status=1)
 
-        partners = Partner.objects.filter(partner_status='4')
+        partners = Partner.objects.filter(partner_status='4').exclude(active=0)
         partner_ids = partners.values_list('user_id', flat=True)  # Get user IDs
 
         users = Users.objects.filter(id__in=partner_ids)
@@ -1195,8 +1357,10 @@ def members_activated(request):
 def members_rejected(request):
     if not request.user.is_authenticated:
         return redirect('login')
+    
+    user = request.user
 
-    if request.user.role_id == 1:
+    if user.role_id == 1 or str(user.department_id) in ["3"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -1298,7 +1462,10 @@ def members_inactive(request):
     if not request.user.is_authenticated:
         return redirect('login')
 
-    if request.user.role_id == 1:
+    
+    user = request.user
+
+    if user.role_id == 1 or str(user.department_id) in ["3"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -1970,6 +2137,40 @@ def deleteMember(request, user_id):
 
     update_partner_by_user_id(user_id, {"active": 0}, request=request)
 
+    messages.success(request, "Memeber Deleted successfully!")
+    return redirect(request.META.get('HTTP_REFERER', 'members'))
+
+    
+
+def requestForDoc(request, user_id):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    user = get_object_or_404(Users, id=user_id)
+    partner = get_object_or_404(Partner, user_id=user_id)
+    
+    try:
+        if user and user.email:
+            email_body = render_to_string('members/request-doc-email.html', {
+                'user': user,
+                "logo_url": request.build_absolute_uri(static('dist/img/logo2.png')),
+                "support_email": "support@elevateinsurance.in",
+                "company_website": "https://pos.elevateinsurance.in/",
+                "support_number": "+918887779999",
+            })
+
+            subject = 'Action Required: Please Upload Your Documents'
+            from_email = settings.DEFAULT_FROM_EMAIL
+            recipient_list = [user.email]
+
+            email = EmailMessage(subject, email_body, from_email, recipient_list)
+            email.content_subtype = "html"
+            email.send()
+
+    except Exception as e:
+        logger.error(f"Error requesting document for user {user_id}: {e}")
+    
+    messages.success(request, "Request sent successfully!")
     return redirect(request.META.get('HTTP_REFERER', 'members'))
 
 

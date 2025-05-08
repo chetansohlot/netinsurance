@@ -353,9 +353,15 @@ Policy Data
                                   <a href="{% url 'edit-policy' id=data.id %}" class="tooltip-sec" data-title="Edit Policy">
                                     <i class="fa-solid fa-edit"></i>
                                   </a>
+                                {% if request.user.role_id == 1 %}
                                   <a href="{% url 'delete-policy' id=data.id %}" class="deletePolicyBtn tooltip-sec mx-2 text-danger" data-title="Delete Policy">
                                     <i class="fa-solid fa-trash"></i>
                                   </a>
+                                {% elif request.user.id == data.rm_id %}
+                                  <a href="{% url 'delete-policy' id=data.id %}" class="deletePolicyBtn tooltip-sec mx-2 text-danger" data-title="Delete Policy">
+                                    <i class="fa-solid fa-trash"></i>
+                                  </a>
+                                {% endif %}
                                 </div>
                               </td>
                             </tr>

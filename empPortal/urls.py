@@ -103,11 +103,13 @@ urlpatterns = [
     path("check-account-number/", profile.check_account_number, name="check-account-number"),
 
     path('update-user-details/', profile.update_user_details, name='update-user-details'),
+    path('update-profile-image/', profile.update_profile_image, name='update-profile-image'),
 
     path("update-doc-status/", members.update_doc_status, name="update-doc-status"),  
 
     path('members/all-partner', members.members, name='members'),
     path('members/in-process', members.members_inprocess, name='members_inprocess'),
+    path('members/document-pending-upload', members.members_document_pending_upload, name='members_document_pending_upload'),
     path('members/document-upload', members.members_document_upload, name='members_document_upload'),
     path('members/document-in-pending', members.members_document_inpending, name='members_document_inpending'),
     path('members/member-requested', members.members_requested, name='members_requested'),
@@ -120,6 +122,7 @@ urlpatterns = [
     path('members/activated', members.members_activated, name='members_activated'),
     path('members/rejected', members.members_rejected, name='members_rejected'),
     path('members/inactive', members.members_inactive, name='members_inactive'), ## members_inactive ##
+    path('member/request-for-doc/<str:user_id>',members.requestForDoc, name='request-for-doc'),
     path('member/delete-member/<str:user_id>',members.deleteMember, name='delete-member'),
     path('member/member-view/<str:user_id>',members.memberView, name='member-view'),
     path('member/download-training-certificate/<str:user_id>',members.posTrainingCertificate, name='download-training-certificate'),
@@ -219,11 +222,17 @@ urlpatterns = [
 
     # POLICY-COMMISION 
     path('policy-commission/agent-commission/', PolicyCommission.agent_commission, name='agent-commission'),
+    path('policy-commission/logs-agent-commission/', PolicyCommission.logs_update_agent_commission, name='logs-agent-commission-update'),
     path('policy-commission/update-agent-commission/', PolicyCommission.update_agent_commission, name='update-agent-commission'),
+    
     path('policy-commission/update-franchise-commission/', PolicyCommission.update_franchise_commission, name='update-franchise-commission'),
     path('policy-commission/franchisees-commission/', PolicyCommission.franchisees_commission, name='franchisees-commission'),
+    path('policy-commission/logs-franchise-commission/', PolicyCommission.logs_update_franchise_commission, name='logs-franchise-commission-update'),
+    
     path('policy-commission/insurer-commission/', PolicyCommission.insurer_commission, name='insurer-commission'),
     path('policy-commission/update-insurer-commission/', PolicyCommission.update_insurer_commission, name='update-insurer-commission'),
+    path('policy-commission/logs-insurer-commission/', PolicyCommission.logs_update_insurer_commission, name='logs-insurer-commission-update'),
+    
     # POLICY-COMMISION 
 
     # POLICY-PAYMENT 

@@ -150,6 +150,7 @@ class QuotationCustomer(models.Model):
         return f"QuotationCustomer {self.customer_id} - {self.name_as_per_pan}"
     
 class Leads(models.Model):
+    partner = models.ForeignKey(Partner, on_delete=models.SET_NULL,null=True, related_name='lead_by_partner')  
     lead_id = models.CharField(max_length=20, unique=True)  # Unique customer identifier (e.g., CUS2343545)
     mobile_number = models.CharField(max_length=15)  # Customer's mobile number
     email_address = models.CharField(max_length=255)  # Customer's email address
@@ -633,6 +634,7 @@ class Users(AbstractBaseUser):
     last_name = models.CharField(max_length=255)
     email = models.CharField(max_length=255, unique=True)
     email_otp = models.CharField(max_length=10, null=True, blank=True)
+    profile_image = models.FileField(upload_to='uploads/profile_images/', null=True, blank=True)  # Change to FileField
     email_verified = models.BooleanField(default=False)
     phone = models.BigIntegerField(null=True, blank=True)
     phone_otp = models.CharField(max_length=10, null=True, blank=True)

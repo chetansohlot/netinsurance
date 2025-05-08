@@ -42,7 +42,11 @@
             <!-- <td>{{ user.role_names }} <span class="text-gray d-block small">{{ user.status_type }}</span></td> -->
             <td>
                 {% if user.partner.partner_status == '0' %}
-                  <p class="text-warning">Registered</p>
+                  {% if docpendingupload %}
+                    <p class="text-warning">Pending Upload</p>
+                  {% else %}
+                    <p class="text-warning">Registered</p>
+                  {% endif %}
                 {% elif user.partner.partner_status == '1' %}
                   <p class="text-info">Document Verification</p>
                 {% elif user.partner.partner_status == '2' %}
@@ -62,7 +66,7 @@
                 {% else %}
                   <p class="text-gray">Unknown Status</p>
                 {% endif %}
-              <span class="text-gray d-block small">{{ user.created_at|date:"d M 'y H:i:s" }} - Present</span>
+              <span class="text-gray d-block small">{{ user.partner.updated_at|date:"d M 'y H:i:s" }} - Present</span>
             </td>
 
             {% if inprocess %}
@@ -70,25 +74,29 @@
                 {% if user.partner.doc_status|stringformat:"s" == '1' %}
                     <span class="badge bg-secondary">Doc Uploaded</span>
                 {% elif user.partner.doc_status|stringformat:"s" == '2' %}
-                    <span class="badge bg-info text-dark">In-Pending</span>
+                    <span class="badge bg-info text-dark">In-Process</span>
                 {% elif user.partner.doc_status|stringformat:"s" == '3' %}
                     <span class="badge bg-success">Verified</span>
                 {% else %}
-                    <span class="badge bg-warning text-dark">Unknown Status</span>
+                    <span class="badge bg-warning text-dark">Pending Upload</span>
                 {% endif %}
-                <span class="text-gray d-block small">{{ user.created_at|date:"d M 'y H:i:s" }} - Present</span>
+                <span class="text-gray d-block small">{{ user.partner.updated_at|date:"d M 'y H:i:s" }} - Present</span>
             </td>
             {% endif %}
 
             {% if inexam %}
             <td>
-              {% if user %}
-                <span class="badge badge-success">
-                  Score: {{ user.examRes.percentage|default:"Not Attempted" }}<br>
-                  Status: {{ user.examRes.status|default:"Not Attempted" }}
-                </span>
+              {% if user and user.examRes %}
+                {% if user.examRes.percentage and user.examRes.status %}
+                  <span class="badge badge-success">
+                    Score: {{ user.examRes.percentage }}<br>
+                    Status: {{ user.examRes.status }}
+                  </span>
+                {% else %}
+                  <span class="badge badge-warning">Not Attempted</span>
+                {% endif %}
               {% else %}
-                <span class="badge badge-secondary">N/A</span>
+                <span class="badge badge-warning">Not Attempted</span>
               {% endif %}
             </td>
             {% endif %}
@@ -110,10 +118,19 @@
                       {% endif %}
                     {% endif %}  
                     <li>
-                       <a href="{% url 'delete-member' user_id=user.id %}" class="deleteMemberBtn dropdown-item" data-title="Delete Policy">
-                         Delete
-                       </a>
+                  {% if docpendingupload %}
+                      <a href="{% url 'request-for-doc' user_id=user.id %}" class="request-for-doc dropdown-item" data-title="Request For Doc">
+                        Request For Document
+                      </a>
+                  {% endif %}
                      </li>
+                      {% if request.user.role_id == 1 %}
+                      <li>
+                        <a href="{% url 'delete-member' user_id=user.id %}" class="deleteMemberBtn dropdown-item" data-title="Delete Policy">
+                          Delete
+                        </a>
+                      </li>
+                      {% endif %}
                 </ul>
               </div>
             </td>
@@ -144,6 +161,32 @@
           showCancelButton: true,
           confirmButtonText: 'Yes, delete it!',
           cancelButtonText: 'Cancel',
+          reverseButtons: true
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = button.href;
+          }
+        });
+      });
+    });
+  });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const requestButtons = document.querySelectorAll('.request-for-doc');
+
+    requestButtons.forEach(function (button) {
+      button.addEventListener('click', function (event) {
+        event.preventDefault();
+
+        Swal.fire({
+          title: 'Request document for this user?',
+          text: "This will send a document request. Do you want to continue?",
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, request it!',
+          cancelButtonText: 'No, cancel',
           reverseButtons: true
         }).then((result) => {
           if (result.isConfirmed) {

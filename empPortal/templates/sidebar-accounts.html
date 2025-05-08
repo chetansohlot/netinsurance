@@ -48,6 +48,14 @@
             </a>
           </li>
           
+          <li class="nav-item">
+            <a href="{% url 'members_requested' %}" class="nav-link {% if '/members/' in request.path or '/member/member-view/' in request.path %} active {% endif %}">
+                <svg class="sidbarmenu-svg">
+                    <use xlink:href="#members" />
+                </svg>
+                <p>Partners</p>
+            </a>
+          </li>
           {% comment %} ____ COMMISSION POLICY _____  {% endcomment %}
           
           <li class="nav-item {% if '/policy-commission/' in request.path %} menu-is-opening menu-open {% endif %}">
@@ -55,7 +63,7 @@
               <svg class="sidbarmenu-svg">
                 <use xlink:href="#billing-icon" />
               </svg>
-              <p>P. Comm. Mgt  <i class="fas fa-angle-right right"></i></p>
+              <p>Update Comm.<i class="fas fa-angle-right right"></i></p>
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
@@ -135,23 +143,6 @@
                       <p>Insurer Business </p>
                   </a>
               </li>
-              <li class="nav-item">
-                <a href="{{ pending_agent_commission_url }}" class="nav-link sidebar-menutext {% if request.path == pending_agent_commission_url %} active {% endif %}">
-                  <svg class="sidbarmenu-svg">
-                    <use xlink:href="#commission-icon" />
-                  </svg>
-                  <p>Pending Agent. Comm. Report </p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="{{ pending_insurer_commission_url }}" class="nav-link sidebar-menutext {% if request.path == pending_insurer_commission_url %} active {% endif %}">
-                  <svg class="sidbarmenu-svg">
-                    <use xlink:href="#commission-icon" />
-                  </svg>
-                  <p>Pending Ins. Comm. Report </p>
-                </a>
-              </li>
-              
               </ul>
             </li>
         </ul>

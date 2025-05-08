@@ -25,7 +25,7 @@
 		<thead>
 			<tr>
 				<td>
-					<img src="images/logo.png" alt="" class="gi-letter-logo">
+					<img src="{{ logo_url }}" alt="" class="gi-letter-logo">
 				</td>
 			</tr>
 		</thead>
@@ -34,34 +34,34 @@
 				<td>
 					<div class="text-right">
 						<p class="gi-letter-date">Date: <strong>{{ passed_date|date:"d/M/Y" }}</strong></p>
-						<img src="{{ default_image_pos }}" alt="" class="gi-letter-default-img">
+						<img src="{{ profile_image_url }}" alt="" class="gi-letter-default-img">
 					</div>
 				</td>
 			</tr>
 			<tr>
 				<td>
 					<p class="gi-letter-prgh">
-						<strong>{{ customer.full_name }}</strong><br>
+						<strong>{{ customer.full_name|upper }}</strong><br>
 						Address: <strong>{{ customer.address }}</strong> <br><br>
 
 						Subject: <strong>Point of Sales Person (PoSP) Appointment Letter</strong><br><br>
 
 						This is in reference to the application made by you for enrolling yourself to act as Point of Sale Person. <br><br>
 
-						This is to confirm that you have successfully completed the prescribed training and have also passed the examination specified for Point of Sales examination conducted by <strong>Elevate Insurance Pvt Ltd</strong> under the Guidelines on Point of Sales Person for Non-life and Health Insurers. <br><br>
+						This is to confirm that you have successfully completed the prescribed training and have also passed the examination specified for Point of Sales examination conducted by <strong>Elevate Insurance Brokers Private Limited</strong> under the Guidelines on Point of Sales Person for Non-life and Health Insurers. <br><br>
 
 						Aadhar No: <strong>{{ docs.aadhaar_number|mask_aadhaar }}</strong><br>
 						PAN No: <strong>{{ customer.pan_no }}</strong><br>
 						PoSP Id: <strong>{{ customer.user_gen_id }}</strong><br><br>
 
-						This letter authorizes you to act as Point of Sales Person for <strong>Elevate Insurance Pvt Ltd</strong> to market products categorized and identified under the POS Guidelines.<br><br>
+						This letter authorizes you to act as Point of Sales Person for <strong>Elevate Insurance Brokers Private Limited</strong> to market products categorized and identified under the POS Guidelines.<br><br>
 
 						In case you wish to work for another company, you are required to obtain a fresh letter from the new insurer/ insurance intermediary in order to act as Point of Sales Person for that entity<br><br><br>
 
 						Yours truly,<br><br>
 
 					</p>
-					<img src="{{ signature_pos }}" alt="" class="gi-letter-signature">
+					<img src="{{ signature_elevate }}" alt="" class="gi-letter-signature">
 					<p class="gi-letter-prgh">
 						<strong>
 							(Subhash Bishnoi)<br>
@@ -75,7 +75,7 @@
 		<tfoot>
 			<tr>
 				<td>
-					<strong>Elevate Insurance Pvt Ltd </strong><br>
+					<strong>Elevate Insurance Brokers Private Limited </strong><br>
 					Ground Floor Shop No. 56, Ganpat Market, Agroha Dham, Agroha, Hisar, Hisar, Haryana, India, 125047 <br>
 					CIN: U66220HR2024PTC121704 | IRDAI License No.: 1026 | Valid till: 27/01/2028
 				</td>

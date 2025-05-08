@@ -3,7 +3,7 @@ import re
 from django.shortcuts import render,redirect, get_object_or_404
 import openpyxl
 from empPortal.model import Referral
-from ..models import Franchises, Department,RefUploadedExcel
+from ..models import Franchises, Department,RefUploadedExcel, Branch, Users
 from django.db.models import OuterRef, Subquery
 from django.contrib import messages
 from datetime import date, datetime
@@ -51,8 +51,15 @@ def index(request):
     except ValueError:
         per_page = 10
 
-    referrals = Referral.objects.all()
-
+    # department_id = request.user.department_id
+    user_id = request.user.id
+    role_id = request.user.role_id
+    # if department_id == 1:
+    if role_id != 1:
+        referrals = Referral.objects.filter(sales=str(user_id))
+    else:
+        referrals = Referral.objects.all()
+        
     # Filtering
     # if search_field and search_query:
     #     filter_args = {f"{search_field}__icontains": search_query}
@@ -112,10 +119,19 @@ def create_or_edit(request, referral_id=None):
         referral = get_object_or_404(Referral, id=referral_id)
         is_editing = True
 
+    branchs = Branch.objects.filter(status='Active')
+    sales_managers = Users.objects.filter(department_id=1,is_active=1)
+    supervisors = Users.objects.filter(department_id=1,is_active=1)
+    franchises = Franchises.objects.filter(status="Active")
+    
     if request.method == "GET":
         return render(request, 'referral/create.html', {
             'referral': referral,
             'is_editing': is_editing,
+            'branchs': branchs,
+            'sales_managers':sales_managers,
+            'franchises':franchises,
+            'supervisors':supervisors
         })
 
     elif request.method == "POST":

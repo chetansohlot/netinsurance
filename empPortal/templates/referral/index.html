@@ -30,7 +30,7 @@ Referral Mgmt.
                 <div class="col-sm-6">
                   <div class="d-flex justify-content-end">
                     <a href="{% url 'referral-management-create' %}" class="breadcrump-addbtn mx-1"><i class="fas fa-plus"></i> Add Referral</a>
-                    <a href="{% url 'referral-bulk-upload' %}" class="breadcrump-addbtn mx-1"><i class="fas fa-plus"></i> Add Bulk Referral</a> 
+                    <!-- <a href="{% url 'referral-bulk-upload' %}" class="breadcrump-addbtn mx-1"><i class="fas fa-plus"></i> Add Bulk Referral</a>  -->
                   </div>
                 </div>
               </div>
@@ -290,7 +290,6 @@ Referral Mgmt.
                                         <th>Referral Name</th>
                                         <th>Contact Info</th>
                                         <th>KYC Info</th>
-                                        <th>Referral Code</th>
                                         <th>Status</th>
                                         <th>Info</th>
                                         <th>Action</th>
@@ -306,7 +305,7 @@ Referral Mgmt.
                                         <td>
                                             <a href="{% url 'referral-management-edit' referral.id %}" class="trlink">
                                                 {{ referral.name }}
-                                                <span class="text-gray d-block small">#{{ referral.id }}</span>
+                                                <span class="text-gray d-block small">#{{ referral.referral_code }}</span>
                                             </a>
                                         </td>
                                         <td>{{ referral.mobile }}
@@ -315,7 +314,6 @@ Referral Mgmt.
                                         <td>Pan No.{{ referral.pan_card_number }}
                                           <span class="text-gray d-block small">Aadhar No.{{ referral.aadhar_no }}</span>
                                         </td>
-                                        <td>{{ referral.referral_code }}</td>
                                         <td>
                                             <span class="badge {% if referral.active %}bg-success{% else %}bg-danger{% endif %}">
                                                 {% if referral.active %}Active{% else %}Inactive{% endif %}
