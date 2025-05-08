@@ -240,6 +240,9 @@ urlpatterns = [
     path('policy-payment/get-campaign-log/', PolicyPayment.get_campaign_log, name='get-campaign-log'),
     path('policy-payment/view-payment-update-log/', PolicyPayment.view_payment_update_log, name='view-payment-update-log'),
     path("ajax/get-campaigns/", PolicyPayment.ajax_get_campaigns, name="ajax-get-campaigns"),
+    # urls.py
+    path('policy-payment/campaign-logs/<int:upload_id>/', PolicyPayment.campaign_policy_logs, name='campaign-policy-logs'),
+
     # POLICY-PAYMENT 
     
 

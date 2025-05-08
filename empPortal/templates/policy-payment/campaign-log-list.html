@@ -22,9 +22,7 @@
               </ul>
             </div>
             <div class="col-md-6 d-flex justify-content-end align-items-center">
-              <a href="{% url 'get-campaign-log' %}" class="breadcrump-addbtn mx-1">Refresh</a>
-
-              <a href="{% url 'insurer-payment' %}" class="breadcrump-addbtn mx-1">Back to Bulk Update</a>
+                <a href="{% url 'get-campaign-log' %}" class="breadcrump-addbtn mx-1">View Logs</a>
             </div>
           </div>
         </div>
@@ -33,73 +31,70 @@
       <div class="content">
         <div class="container-fluid">
 
-          <!-- Search -->
-          <form method="get" class="mb-3">
-            <div class="input-group" style="max-width: 400px;">
-              <input type="text" name="q" id="searchCampaign" class="form-control" value="{{ request.GET.q }}" placeholder="Search campaign..." autocomplete="off">
-              <button type="submit" class="btn btn-primary">Search</button>
-            </div>
-            <ul id="campaignSuggestions" class="list-group mt-1" style="position:absolute; z-index:999;"></ul>
-          </form>
 
-          <!-- Table -->
-          <div class="card">
+          <div class="card mb-4 box-shadow-none">
+            <div class="card-header bg-light">
+              <strong>Campaign:</strong> {{ upload.campaign_name }} |
+              <strong>Uploaded At:</strong> {{ upload.uploaded_at|date:"d M Y H:i" }} |
+              <strong>Total Rows:</strong> {{ upload.total_rows|default:"-" }} |
+              <strong>Success:</strong> {{ upload.success_rows|default:"0" }} |
+              <strong>Failed:</strong> {{ upload.error_rows|default:"0" }} |
+              <strong>File Size:</strong> 
+              {% if upload.file %}
+                {{ upload.file.size|filesizeformat }}
+              {% else %}
+                -
+              {% endif %} |
+              <strong>Download:</strong>
+              {% if upload.file %}
+                <a href="{{ upload.file.url }}" target="_blank" class="btn btn-sm btn-outline-secondary">Download</a>
+              {% endif %}
+               |
+              {% get_user_details upload.created_by_id as user_details %}
+              <strong>Uploaded By:</strong> 
+              {% if user_details %}
+                {{ user_details.first_name }} {{ user_details.last_name }} <br>
+              {% else %}
+                User not found
+              {% endif %}
+            </div>
             <div class="card-body table-responsive p-0">
-              <table class="table table-hover table-bordered">
-                <thead class="thead-light">
+              <table class="table table-bordered mb-0">
+                <thead>
                   <tr>
                     <th>#</th>
-                    <th>Campaign Name</th>
-                    <th>Uploaded At</th>
-                    <th>Total Rows</th>
-                    <th>Success</th>
-                    <th>Failed</th>
-                    <th>File</th>
-                    <th>Uploaded By</th>
-                    <th>Actions</th>
+                    <th>Policy Number</th>
+                    <th>Status</th>
+                    <th>Message</th>
+                    <th>Logged At</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {% for upload in uploads %}
+                  {% if upload.logs.all %}
+                    {% for log in upload.logs.all %}
+                    <tr>
+                      <td>{{ forloop.counter }}</td>
+                      <td>{{ log.policy_number }}</td>
+                      <td>
+                        <span class="badge {% if log.status == 'success' %}bg-success{% else %}bg-danger{% endif %}">
+                          {{ log.status|title }}
+                        </span>
+                      </td>
+                      <td>{{ log.message }}</td>
+                      <td>{{ log.created_at|date:"d M Y H:i" }}</td>
+                    </tr>
+                    {% endfor %}
+                  {% else %}
                   <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td>{{ upload.campaign_name }}</td>
-                    <td>{{ upload.uploaded_at|date:"d M Y H:i" }}</td>
-                    <td>{{ upload.total_rows|default:"-" }}</td>
-                    <td>{{ upload.success_rows|default:"0" }}</td>
-                    <td>{{ upload.error_rows|default:"0" }}</td>
-                    <td>
-                      {% if upload.file %}
-                        <a href="{{ upload.file.url }}" class="btn btn-sm btn-outline-secondary" target="_blank">Download</a>
-                      {% else %}
-                        -
-                      {% endif %}
-                    </td>
-                    <td>
-                      {% get_user_details upload.created_by_id as user_details %}
-                      {% if user_details %}
-                        {{ user_details.first_name }} {{ user_details.last_name }}
-                      {% else %}
-                        Unknown
-                      {% endif %}
-                    </td>
-                    <td class="text-center">
-                      <a href="{% url 'campaign-policy-logs' upload.id %}" class="btn btn-sm btn-outline-info" title="View Logs">
-                        <i class="fas fa-eye"></i>
-                      </a>
-                    </td>
+                    <td colspan="5" class="text-center">No logs available for this campaign.</td>
                   </tr>
-                  {% empty %}
-                  <tr>
-                    <td colspan="9" class="text-center">No campaign uploads found.</td>
-                  </tr>
-                  {% endfor %}
+                  {% endif %}
                 </tbody>
               </table>
             </div>
           </div>
 
-          <!-- Optional Pagination -->
+          <!-- Optional Pagination (Add if paginated view implemented) -->
           {% if uploads.has_other_pages %}
           <div class="pagination-wrapper d-flex justify-content-center py-3">
             <nav>
