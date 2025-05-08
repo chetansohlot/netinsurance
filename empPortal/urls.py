@@ -209,7 +209,7 @@ urlpatterns = [
     path('report/f-business-report/', export.franchisees_business_report, name='franchisees-business-report'),
     path('report/i-business-report/', export.insurer_business_report, name='insurer-business-report'),
     
-    path('report/v1/commission-report/', reports.commission_report, name='commission-report'),  
+    path('report/v1/comparison-report/', reports.commission_report, name='commission-report'),  
     path('report/pending-insurer-commission-report/', reports.pending_insurer_commission_report, name='pending-insurer-commission-report'),
     path('report/pending-agent-commission-report/', reports.pending_agent_commission_report, name='pending-agent-commission-report'),
     
@@ -217,7 +217,7 @@ urlpatterns = [
     
     # EXPORT
     path('export-commission-report/', export.export_commission_data, name='export-commission-report-v0'),
-    path('v1/export-commission-report/', export.export_commission_data_v1, name='export-commission-report'),
+    path('v1/export-comparison-report/', export.export_commission_data_v1, name='export-commission-report'),
 
 
     # POLICY-COMMISION 
