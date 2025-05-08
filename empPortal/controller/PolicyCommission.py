@@ -48,8 +48,8 @@ logging.getLogger('faker').setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 from django.core.paginator import Paginator
-
-from django.db.models import Q, F, Value
+from django.utils.timezone import now
+from django.db.models import Q, F, Value, Count, Max
 from django.db.models.functions import Lower
 import json
 app = FastAPI()
@@ -58,6 +58,7 @@ app = FastAPI()
 from ..utils import send_sms_post
 from datetime import datetime
 from empPortal.model import Partner
+
 
 def parse_date(date_str):
     try:
@@ -141,19 +142,39 @@ def update_agent_commission(request):
 
     updatingPolicyList = udpating_policy_ids.split(",") if udpating_policy_ids else []
 
+    current_time = now()
+    unix_timestamp = int(current_time.timestamp())
+
     for policy_id in updatingPolicyList:
         policy = PolicyDocument.objects.filter(id=policy_id).last()
         policy_no = policy.policy_number
-        policy_info = PolicyInfo.objects.filter(policy_id=policy_id,policy_number=policy_no).last()
-        if not policy_info:
-            continue
         
         od_commission = float(request.POST.get('agent_od_commission', 0) or 0)
         tp_commission = float(request.POST.get('agent_tp_commission', 0) or 0)
         net_commission = float(request.POST.get('agent_net_commission', 0) or 0)
         incentive_amount = float(request.POST.get('agent_incentive_amount', 0) or 0)
         tds_commission = float(request.POST.get('agent_tds', 0) or 0)
-
+        
+        log_id = log_commission_update(
+            commission_type='agent',
+            policy_id=policy_id,
+            policy_number=policy_no,
+            updated_by_id=request.user.id,
+            updated_from='agent-commission',
+            upload_id=unix_timestamp,
+            data={
+                'agent_od_comm': od_commission,
+                'agent_net_comm': net_commission,
+                'agent_tp_comm': tp_commission,
+                'agent_incentive_amount': incentive_amount,
+                'agent_tds': tds_commission,
+            }
+        )
+        
+        policy_info = PolicyInfo.objects.filter(policy_id=policy_id,policy_number=policy_no).last()
+        if not policy_info:
+            continue
+        
         od_premium = float(policy_info.od_premium or 0)
         tp_premium = float(policy_info.tp_premium or 0)
         net_premium = float(policy_info.net_premium or 0)
@@ -166,6 +187,24 @@ def update_agent_commission(request):
         tds_amount = round((total_comm_amount * tds_commission) / 100, 2)
         net_payable_amount = round(total_comm_amount - tds_amount, 2)
 
+        return_dict = {
+            "od_commission":od_commission,
+            "tp_commission":tp_commission,
+            "net_commission":net_commission,
+            "incentive_amount":incentive_amount,
+            "tds_commission":tds_commission,
+            "od_premium":od_premium,
+            "tp_premium":tp_premium,
+            "net_premium":net_premium,
+            "od_amount":od_amount,
+            "tp_amount":tp_amount,
+            "net_amount":net_amount,
+            "total_comm_amount":total_comm_amount,
+            "tds_amount":tds_amount,
+            "net_payable_amount":net_payable_amount
+        }
+        # print(return_dict)
+        # return HttpResponse(return_dict)
         
         obj, created = AgentPaymentDetails.objects.get_or_create(policy_id=policy_id,policy_number=policy_no)
         obj.agent_od_comm = od_commission
@@ -182,20 +221,10 @@ def update_agent_commission(request):
         obj.updated_by = request.user
         obj.save()
         
-        log_commission_update(
-            commission_type='agent',
-            policy_id=policy_id,
-            policy_number=policy_no,
-            updated_by_id=request.user.id,
-            updated_from='agent-commission',
-            data={
-                'agent_od_comm': obj.agent_od_comm,
-                'agent_net_comm': obj.agent_net_comm,
-                'agent_tp_comm': obj.agent_tp_comm,
-                'agent_incentive_amount': obj.agent_incentive_amount,
-                'agent_tds': obj.agent_tds,
-            }
-        )
+        log = CommissionUpdateLog.objects.get(id=log_id)
+        log.status = 1
+        log.save()
+        
         
     messages.success(request, "Agent Commission Updated successfully!")
     return redirect('agent-commission')
@@ -458,15 +487,17 @@ def update_insurer_commission(request):
     return redirect('insurer-commission')
 
 
-def log_commission_update(commission_type, policy_id, policy_number, updated_by_id, updated_from, data):
-    CommissionUpdateLog.objects.create(
+def log_commission_update(commission_type, policy_id, policy_number, updated_by_id, updated_from, upload_id, data):
+    log_entry = CommissionUpdateLog.objects.create(
         commission_type=commission_type,
         policy_id=policy_id,
         policy_number=policy_number,
         updated_by_id=updated_by_id,
         updated_from=updated_from,
+        upload_id=upload_id,
         updated_data=data,
     )
+    return log_entry.id
 
 from django.db.models import Q
 from datetime import datetime
@@ -573,3 +604,31 @@ def paginate_queryset(queryset, request, per_page_default=10):
         per_page = per_page_default
     paginator = Paginator(queryset, per_page)
     return paginator.get_page(request.GET.get('page')), per_page
+
+def logs_update_agent_commission(request):
+    role_id = request.user.role_id
+    user_id = request.user.id
+
+    base_filter = {
+        "upload_id__isnull": False,
+        "commission_type": "agent"
+    }
+
+    if role_id != 1:
+        base_filter["updated_by_id"] = user_id
+
+    log_data = (
+        CommissionUpdateLog.objects
+        .filter(**base_filter)
+        .values("upload_id", "updated_by__first_name", "updated_by__last_name")
+        .annotate(
+            requested_count=Count("id"),
+            success_count=Count("id", filter=Q(status=1)),
+            failed_count=Count("id", filter=Q(status=0)),
+            updated_at=Max("created_at")
+        )
+    )
+    return render(request, "policy-commission/agent-commission-update-logs.html", {
+        "log_data": log_data
+    })
+    
