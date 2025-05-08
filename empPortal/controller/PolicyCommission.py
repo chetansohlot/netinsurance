@@ -606,6 +606,10 @@ def paginate_queryset(queryset, request, per_page_default=10):
     return paginator.get_page(request.GET.get('page')), per_page
 
 def logs_update_agent_commission(request):
+    if not request.user.is_authenticated and request.user.is_active != 1:
+        messages.error(request,'Please Login First')
+        return redirect('login')
+    
     role_id = request.user.role_id
     user_id = request.user.id
 
