@@ -1148,4 +1148,14 @@ def bulk_upload_leads(request):
         return redirect("leads-mgt")
 
     return render(request, "leads/bulk_upload.html")
+
+#for ctraye lead step by step
+def basic_info(request):
+    pass
+
+def lead_source_or_location(request):
+    pass
+def assignment(request):
+    pass
+    
     
