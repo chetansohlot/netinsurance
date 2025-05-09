@@ -484,8 +484,8 @@ body {
 }
 
 .admin-title {
-    font-size: 18px !important;
-    font-weight: 600;
+    font-size: 16px !important;
+    font-weight: 500;
 }
 
 .card-hding {
@@ -1133,20 +1133,20 @@ input[type="file"] {padding:0px !important; height: 31.6px;}
 }
 
 .userdetail-group {
-    margin-bottom: 25px;
+    margin-bottom: 15px;
 }
 
 .userdetail-lbl {
-    font-size: 13px;
+    font-size: 12px;
     color: #999;
     display: block;
     margin: 0;
     padding-bottom: 5px;
-    font-weight: 500;
+    font-weight: 400;
 }
 
 .userdetail-highligt {
-    font-size: 13px;
+    font-size: 12px;
     color: #000;
     margin: 0;
     display: block;
@@ -2697,6 +2697,9 @@ a:hover .dr-pdficon {
 .table-small-font td, .table-small-font th {
     padding: 0.75rem 8px !important;
 }
+
+.activity-circle {width: 40px; height: 40px; font-size:12px; border-radius: 50%; background-color: #ffd1c5; display: flex; align-items: center; justify-content: center; margin-right: 5px;}
+
 @media (max-width:767px) {
     .banner-hding {font-size: 30px;}
     .banner-subhding {font-size:20px;}
