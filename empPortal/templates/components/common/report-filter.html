@@ -1,3 +1,14 @@
+{% url 'commission-report' as commission_url %}
+{% url 'sales-manager-business-report' as sm_business_url %}
+{% url 'agent-business-report' as agent_business_url %}
+{% url 'franchisees-business-report' as franchise_business_url %}
+{% url 'insurer-business-report' as insurer_business_url %}
+
+
+{% url 'agent-commission' as agent_commission %}
+{% url 'franchisees-commission' as franchise_commission %}
+{% url 'insurer-commission' as insurer_commission %}
+{% url 'insurer-payment' as insurer_payment %}
 <form action="" method="get">
     <input type="hidden" name="_token" value="A2fV8nxKXXE5tj11gwhB8wlsa7Q6oj2rS8WfPOGo">
     <input type="hidden" name="filter_is_on" value="filter_on">
@@ -122,7 +133,13 @@
             <input type="submit" name="submit_filter" class="filter-search-btn" value="Apply">
           </div>
           <div class="col-auto">
-            <a href="{% url 'commission-report' %}" class="filter-search-btn bg-dark">Clear</a>
+            {% if request.path == commission_url %}
+              <a href="{% url 'commission-report' %}" class="filter-search-btn bg-dark">Clear</a>
+            {% elif request.path == agent_business_url %}
+              <a href="{% url 'agent-business-report' %}" class="filter-search-btn bg-dark">Clear</a>
+            {% elif request.path == franchise_business_url %}
+              <a href="{% url 'franchisees-business-report' %}" class="filter-search-btn bg-dark">Clear</a>
+            {% endif %}
           </div>
           <div class="col-auto">
           </div>

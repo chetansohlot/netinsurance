@@ -60,6 +60,9 @@ urlpatterns = [
     path('user-and-roles/', views.userAndRoles, name='user-and-roles'),
     path('', homeManagement.index, name='home-index'),
     path('dashboard/', Dashboard.dashboard, name='dashboard'),
+    path('business_summary_insurer_chartajax', Dashboard.business_summary_insurer_chartajax, name='business_summary_insurer_chartajax'),
+    path('business_consolidated_ajax/', Dashboard.business_consolidated_ajax, name='business_consolidated_ajax'),
+
 
 
     path('franchise-management/', Franchises.index, name='franchise-management'),
@@ -213,12 +216,17 @@ urlpatterns = [
 
     # REPORTS 
     path('report/commission-report/', export.commission_report, name='commission-report-v0'),
+    path('report/a-business-report/', export.agent_business_report, name='agent-business-report-v0'),
     path('report/sm-business-report/', export.sales_manager_business_report, name='sales-manager-business-report'),
-    path('report/a-business-report/', export.agent_business_report, name='agent-business-report'),
-    path('report/f-business-report/', export.franchisees_business_report, name='franchisees-business-report'),
-    path('report/i-business-report/', export.insurer_business_report, name='insurer-business-report'),
+    path('report/f-business-report/', export.franchisees_business_report, name='franchisees-business-report-v0'),
+    path('report/i-business-report/', export.insurer_business_report, name='insurer-business-report-v0'),
     
     path('report/v1/comparison-report/', reports.commission_report, name='commission-report'),  
+    path('report/v1/a-business-report/', reports.agent_business_report, name='agent-business-report'),
+    path('report/v1/f-business-report/', reports.franchisees_business_report, name='franchisees-business-report'),
+    path('report/v1/i-business-report/', reports.insurer_business_report, name='insurer-business-report'),
+    
+    
     path('report/pending-insurer-commission-report/', reports.pending_insurer_commission_report, name='pending-insurer-commission-report'),
     path('report/pending-agent-commission-report/', reports.pending_agent_commission_report, name='pending-agent-commission-report'),
     

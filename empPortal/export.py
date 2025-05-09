@@ -255,6 +255,10 @@ def sales_manager_business_report(request):
     })
 
 def agent_business_report(request):
+    if not request.user.is_authenticated and request.user.is_active != 1:
+        messages.error(request,'Please Login First')
+        return redirect('login')
+    
     # Get filter values from GET parameters
     policy_no = request.GET.get("policy_no", None)
     insurer_name = request.GET.get("insurer_name", None)
@@ -326,7 +330,7 @@ def agent_business_report(request):
             'net_commission_amount': net_commission_amount
         })
 
-    return render(request, 'reports/agent-business-report.html', {
+    return render(request, 'reports/agent-business-report-v0.html', {
         'policy_data': policy_data,
         'page_obj': page_obj  # Pass paginated object to template
     })

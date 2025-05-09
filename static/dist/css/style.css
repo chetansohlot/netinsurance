@@ -484,8 +484,8 @@ body {
 }
 
 .admin-title {
-    font-size: 18px !important;
-    font-weight: 600;
+    font-size: 16px !important;
+    font-weight: 500;
 }
 
 .card-hding {
@@ -704,7 +704,8 @@ body {
 .table-design tbody tr td {
     color: #000;
     padding: 8px 12px;
-    vertical-align: middle !important;
+    vertical-align: top !important;
+    /* vertical-align: middle !important; */
 }
 
 .table-design tbody tr:not(:last-of-type) {
@@ -1132,20 +1133,20 @@ input[type="file"] {padding:0px !important; height: 31.6px;}
 }
 
 .userdetail-group {
-    margin-bottom: 25px;
+    margin-bottom: 15px;
 }
 
 .userdetail-lbl {
-    font-size: 13px;
+    font-size: 12px;
     color: #999;
     display: block;
     margin: 0;
     padding-bottom: 5px;
-    font-weight: 500;
+    font-weight: 400;
 }
 
 .userdetail-highligt {
-    font-size: 13px;
+    font-size: 12px;
     color: #000;
     margin: 0;
     display: block;
@@ -2689,6 +2690,25 @@ a:hover .dr-pdficon {
 }
 
 .stepflow-five-col li {width: 20%;}
+ 
+.table-small-font thead tr th, .table-small-font tbody tr td {
+    font-size:10px !important;
+}
+.table-small-font td, .table-small-font th {
+    padding: 0.75rem 8px !important;
+}
+
+.activity-circle {width: 40px; height: 40px; font-size:12px; border-radius: 50%; background-color: #ffd1c5; display: flex; align-items: center; justify-content: center; margin-right: 5px;}
+
+.lead-view-step {margin:15px 0; padding:0px; display: flex; flex-wrap:wrap; justify-content: center; }
+.lead-view-step li {list-style: none; padding:8px 16px; font-size:13px; background-color: #ddd; display: flex; align-items: center; justify-content: center; margin-right: 20px; position: relative;}
+.lead-view-step li.active {background-color: #f15e33; color:#fff;}
+.lead-view-step li:first-child {border-radius: 20px 0 0 20px;}
+.lead-view-step li:last-child {border-radius: 0 20px 20px 0;}
+.lead-view-step li:not(:last-child):before {content:""; position:absolute; right:-14px; top:0; border-top:19px solid transparent; border-bottom: 18px solid transparent; border-left: 15px solid #ddd; z-index: 1;}
+.lead-view-step li.active:not(:last-child):before {border-left: 15px solid #f15e33;}
+.lead-view-step li:not(:first-child) .arrow-design:before {content:""; position:absolute; left:-14px; top:0; border-top:19px solid #ddd; border-bottom: 18px solid transparent; border-left: 15px solid #fff; z-index: 0;}
+.lead-view-step li:not(:first-child) .arrow-design:after {content:""; position:absolute; left:-14px; top:0; border-top:19px solid transparent; border-bottom: 18px solid #ddd; border-left: 15px solid #fff; z-index: 0;}
 
 @media (max-width:767px) {
     .banner-hding {font-size: 30px;}

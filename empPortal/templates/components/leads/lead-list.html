@@ -5,7 +5,7 @@
 <div class="tab-content" id="nav-tabContent">
   <div class="table-responsive">
    
-    <table class="table table-design table-trlink">
+    <table class="table table-design table-trlink table-small-font">
       <thead class="table-thead-bg-light table-header-fix">
         <tr>
           <th width="10">
@@ -13,7 +13,7 @@
             <label for="checkall"></label>
           </th>
           <th>Lead Info</th>
-          <th width="200">Customer Info</th>
+          <th width="180">Customer Info</th>
           <th>Personal Info</th>
           <th>Policy Info</th>
           <th>Lead Source Info</th>
@@ -32,8 +32,8 @@
             
               <!-- Lead ID + Date -->
           <td>
-            <span class="badge bg-secondary">{{ lead.lead_id }}</span><br>
-            <span class="d-block text-primary">{{ lead.name_as_per_pan }}</span>
+            <span class="badge bg-secondary">{{ lead.lead_id }}</span>
+            
             <span class="d-block">Lead Age : N/A</span>
             <small class="text-muted">
               {{ lead.created_at|date:"d M Y h:i A" }}
@@ -41,13 +41,16 @@
           </td>
              <!-- Customer Info -->
           <td>
-            {{ lead.email_address }}<br>
+            <div class="d-flex">
+              <span class="d-block text-primary">{{ lead.name_as_per_pan }}</span> 
+              <span class="text-muted ml-1">(Male)</span>
+            </div>  
+            <span class="d-block text-lowercase">{{ lead.email_address }}</span>
             <span class="d-block text-muted">{{ lead.mobile_number }}</span>
             
           </td>
             <!-- Project Name -->
           <td>
-            Male <br>
             <span class="d-block text-muted">DOB: 15-12-1986</span>
             <span>PAN: BAXPK1234K</span>
           </td>
@@ -90,17 +93,28 @@
           </td>
           <!--Action-->
           <td> 
-            <a href="#" class="btn btn-xs btn-info" title="View">
-              <i class="bi bi-eye"></i>
-            </a>
-            <a href="#" class="btn btn-xs btn-success" title="Allocation">
-              <i class="bi bi-person-plus"></i>
-            </a>
-            <a href="{% url 'leads-mgt-edit' lead_id=lead.id %}" class="btn btn-xs btn-warning" title="Edit">
-              <i class="bi bi-pencil-square"></i>
-            </a>
+            <div class="dropdown">
+              <img src="/static/dist/img/svg/menu-dot-vr.svg" alt="" class="table-doticon" data-toggle="dropdown" aria-expanded="false">
+              <ul class="dropdown-menu table-dropdown-menu" style="">
+                <li>
+                  <a class="dropdown-item" href="#">
+                    <i class="bi bi-eye mr-2"></i> View
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="dropdown-item">
+                    <i class="bi bi-person-plus mr-2"></i> Allocation
+                  </a>
+                </li>
+                <li>
+                  <a href="{% url 'leads-mgt-edit' lead_id=lead.id %}" class="dropdown-item">
+                    <i class="bi bi-pencil-square mr-2"></i> Edit
+                  </a>
+                </li>
+              </ul>
+            </div>
           </td>
-          </tr>
+        </tr>
         {% empty %}
           <tr>
             <td colspan="11" class="text-center">No leads found</td>

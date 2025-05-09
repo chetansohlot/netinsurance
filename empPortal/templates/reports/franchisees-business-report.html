@@ -1,12 +1,12 @@
 {% extends 'master.html' %}
 
 {% block title %}
-  Commission Report
+  Franchise Commission Report
 {% endblock %}
 
 {% block content %}
 {% load static %}
-
+{% load custom_filters %}
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
   {% include 'navbar.html' %}
@@ -23,16 +23,17 @@
         <div class="row py-2">
           <div class="col-sm-6">
             <div class="d-flex align-items-center">
-              <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Franchisees Business Report</a>
+              <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Franchise Commission Report</a>
             </div>
             <ul class="breadcrump">
               <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
               <li> <a href="#">Reports</a> <i class="fas fa-chevron-right"></i></li>
-              <li>Franchisees Business Report</li>
+              <li>Franchise Commission Report</li>
             </ul>
           </div>
           <div class="col-sm-6">
             <div class="d-flex justify-content-end">
+              <a href="javascript:void()" class="breadcrump-addbtn bg-warning mx-1" data-toggle="modal" data-target="#export-report-modal">Export</a>
             </div>
           </div>
         </div>
@@ -46,35 +47,7 @@
             <div class="row">
                 <button type="button" class="mobile-filter-close">×</button>
                 <div class="col-sm-12">
-                    <form action=" " method="get">
-                        <input type="hidden" name="_token" value="A2fV8nxKXXE5tj11gwhB8wlsa7Q6oj2rS8WfPOGo">
-                        <div class="row">
-                            <input type="hidden" name="filter_is_on" value="filter_on">
-                            
-
-                            <div class="col-sm-2 form-group">
-                              <input type="text" placeholder="Insurer Name" name="insurer_name" class="form-field" value="{{ request.GET.insurer_name }}">
-                          </div>
-                          
-                          <div class="col-sm-2 form-group">
-                              <input type="text" placeholder="Policy No" name="policy_no" class="form-field" value="{{ request.GET.policy_no }}">
-                          </div>
-                          
-                            <div class="col-sm-auto">
-                                <div class="row">
-                                    <div class="col-auto">
-                                        <input type="submit" name="submit_filter" class="filter-search-btn" value="Apply">
-                                    </div>
-                                    <div class="col-auto">
-                                        <a href="{% url 'franchisees-business-report' %}" class="filter-search-btn bg-dark">Clear</a>
-                                    </div>
-                                    <div class="col-auto">
-                                        <a href="{% url 'save-policy-data' %}" class="breadcrump-addbtn bg-warning mx-1">Export</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
+                  {% include "components/common/report-filter.html" %}
                 </div>
             </div>
       </div>
@@ -113,7 +86,7 @@
                               <th class="nowrap">Policy Number</th>
                               <th class="nowrap">Vehicle Type</th>
                               <th class="nowrap">Manufacturing Year</th>
-                              <th class="nowrap">Make & Model</th>
+                              <th class="nowrap">Vehicle Make/Model</th>
                               <th class="nowrap">Fuel Type</th>
                               <th class="nowrap">Policy Type</th>
                               <th class="nowrap">GVW</th>
@@ -127,8 +100,8 @@
                               <th class="nowrap">Gross Premium</th>
                               <th class="nowrap">Final Value</th>
                               <th class="nowrap">Policy Year</th>
-                              <th class="nowrap">Agent Payment Date</th>
                               <th class="nowrap">Agent Payment Mode</th>
+                              <th class="nowrap">Agent Payment Date</th>
                               <th class="nowrap">Policy Issue Date</th>
                               <th class="nowrap">Risk Start Date</th>
                               <th class="nowrap">Risk End Date</th>
@@ -150,91 +123,78 @@
                               <th class="nowrap">Franchise Incentive Amount</th>
                               <th class="nowrap">Franchise Total Comm Amount</th>
                               <th class="nowrap">Franchise Profit</th>
-                              <th class="nowrap">Insurer Amount</th>
-                              <th class="nowrap">Insurer OD Comm</th>
-                              <th class="nowrap">Insurer OD Amount</th>
-                              <th class="nowrap">Insurer Net Comm</th>
-                              <th class="nowrap">Insurer Net Amount</th>
-                              <th class="nowrap">Insurer TP Comm</th>
-                              <th class="nowrap">Insurer TP Amount</th>
-                              <th class="nowrap">Insurer Incentive Amount</th>
-                              <th class="nowrap">Insurer Total Comm Amount</th>
-                              <th class="nowrap">Insurer TDS</th>
-                              <th class="nowrap">Insurer TDS Amount</th>
-                              <th class="nowrap">Net Profit</th>
                               <th class="nowrap">Created By</th>
                               <th class="nowrap">Updated By</th>
                             </tr>
                         </thead>
                         <tbody>
-                          <!-- {% for data in policy_data %} -->
-                          <tr>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            <td>N/A</td>
-                        </tr>
-                        
-                          <!-- {% endfor %} -->
+                          {% for data in policy_data %}
+                            {% if data.policy_infos.policy_number %}
+                            <tr>
+                              <td>{{ data.policy_infos.policy_month_year|default:"-" }}</td>
+                              <td>{{ data.policy_infos.policy_month_year|default:"-" }}</td>
+                              <td>{{ data.policy_infos.branch.branch_name|default:"-" }}</td>
+                              <td>{{ data.policy_agent_info.referral.sales|default:"-" }}</td>
+                              <td> - </td>
+                              <td>{{ data.policy_agent_info.referral.name|default:"-" }}</td>
+                              <td>{{ data.policy_infos.insurance_company|default:"-" }}</td>
+                              <td>{{ data.policy_infos.insured_name|default:"-" }}</td>
+                              <td>{{ data.policy_vehicle_info.registration_number|default:"-" }}</td>
+                              <td>{{ data.policy_infos.policy_number|default:"-" }}</td>
+                              <td>{{ data.policy_vehicle_info.vehicle_type|default:"-" }}</td>
+                              <td>{{ data.policy_vehicle_info.manufacture_year|default:"-" }}</td>
+                              <td>{{ data.policy_vehicle_info.vehicle_make|default:"-" }}/{{ data.policy_vehicle_info.vehicle_model|default:"-" }}</td>
+                              <td>{{ data.policy_vehicle_info.fuel_type|default:"-" }}</td>
+                              <td>{{ data.policy_infos.policy_type|default:"-" }}</td>
+                              <td>{{ data.policy_vehicle_info.gvw|default:"-" }}</td>
+                              <td>{{ data.policy_vehicle_info.cubic_capacity|default:"-" }}</td>
+                              <td>{{ data.policy_vehicle_info.seating_capacity|default:"-" }}</td>
+                              <td>{{ data.policy_infos.sum_insured|floatformat:2|default:"-" }}</td>
+                              <td>{{ data.policy_vehicle_info.ncb|default:"-" }}</td>
+                              <td>{{ data.policy_infos.od_premium|floatformat:2|default:"-" }}</td>
+                              <td>{{ data.policy_infos.tp_premium|floatformat:2|default:"-" }}</td>
+                              <td>{{ data.policy_infos.net_premium|floatformat:2|default:"-" }}</td>
+                              <td>{{ data.policy_infos.gross_premium|floatformat:2|default:"-" }}</td>
+                              <td>-</td>
+                              <td>{{ data.policy_infos.policy_tenure|default:"-" }}</td>
+                              <td>{{ data.policy_agent_info.agent_payment_mod|default:"-" }}</td>
+                              <td>{{ data.policy_agent_info.payment_date|default:"-" }}</td>
+                              <td>{{ data.policy_infos.issue_date|default:"-" }}</td>
+                              <td>{{ data.policy_infos.start_date|default:"-" }}</td>
+                              <td>{{ data.policy_infos.end_date|default:"-" }}</td>
+                              <td>{{ data.policy_agent_info.agent_amount|floatformat:2|default:"-" }}</td>
+                              <td>{{ data.policy_agent_info.agent_od_comm|floatformat:2|default:"-" }}</td>
+                              <td>{{ data.policy_agent_info.agent_od_amount|floatformat:2|default:"-" }}</td>
+                              <td>{{ data.policy_agent_info.agent_net_comm|floatformat:2|default:"-" }}</td>
+                              <td>{{ data.policy_agent_info.agent_net_amount|floatformat:2|default:"-" }}</td>
+                              <td>{{ data.policy_agent_info.agent_tp_comm|floatformat:2|default:"-" }}</td>
+                              <td>{{ data.policy_agent_info.agent_tp_amount|floatformat:2|default:"-" }}</td>
+                              <td>{{ data.policy_agent_info.agent_incentive_amount|floatformat:2|default:"-" }}</td>
+                              <td>{{ data.policy_agent_info.agent_total_comm_amount|floatformat:2|default:"-" }}</td>
+                              <td>{{ data.policy_franchise_info.franchise_od_comm|floatformat:2|default:"-" }}</td>
+                              <td>{{ data.policy_franchise_info.franchise_od_amount|floatformat:2|default:"-" }}</td>
+                              <td>{{ data.policy_franchise_info.franchise_net_comm|floatformat:2|default:"-" }}</td>
+                              <td>{{ data.policy_franchise_info.franchise_net_amount|floatformat:2|default:"-" }}</td>
+                              <td>{{ data.policy_franchise_info.franchise_tp_comm|floatformat:2|default:"-" }}</td>
+                              <td>{{ data.policy_franchise_info.franchise_tp_amount|floatformat:2|default:"-" }}</td>
+                              <td>{{ data.policy_franchise_info.franchise_incentive_amount|floatformat:2|default:"-" }}</td>
+                              <td>{{ data.policy_franchise_info.franchise_total_comm_amount|floatformat:2|default:"-" }}</td>
+                              <td>
+                                {% with agent_comm=data.policy_agent_info.agent_total_comm_amount|default_if_none:0 %}
+                                    {% with franchise_comm=data.policy_franchise_info.franchise_total_comm_amount|default_if_none:0 %}
+                                        {% if franchise_comm %}
+                                          {{ franchise_comm|subtract:agent_comm|floatformat:2|default:"-" }}
+                                        {% else %}
+                                          -
+                                        {% endif %}
+                                    {% endwith %}
+                                {% endwith %}
+                              </td>
+                              <td>{{ data.policy.rm_name }}</td>
+                              <td>{{ data.policy_franchise_info.updated_by.full_name|default:"-" }}</td>
+                            </tr>
+                            {% endif %}
+                          {% endfor %}
                       </tbody>
                     </table>
                     </div>
@@ -243,29 +203,64 @@
                 </div>
               </div>
               <!-- <pre>{{ page_obj|pprint }}</pre>    -->
-              <div class="pagination-dynamic">
-                {% if page_obj.paginator.num_pages > 1 %}
+              
+              <div class="bottom-fix-pagination">
+                <div class="d-flex justify-content-between align-items-center">
                     <ul class="pagination">
                         {% if page_obj.has_previous %}
                             <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value|urlencode }}{% endif %}{% endfor %}">« Prev</a>
+                                <a class="page-link" href="?page=1&per_page={{ per_page }}" aria-label="First">
+                                    <span aria-hidden="true">&laquo;&laquo;</span>
+                                    <span class="sr-only">First</span>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}&per_page={{ per_page }}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                    <span class="sr-only">Previous</span>
+                                </a>
                             </li>
                         {% endif %}
-            
-                        {% for num in page_obj.paginator.page_range %}
-                            <li class="page-item {% if num == page_obj.number %}active{% endif %}">
-                                <a class="page-link" href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value|urlencode }}{% endif %}{% endfor %}">{{ num }}</a>
-                            </li>
-                        {% endfor %}
-            
+
+                        {% with page_obj.number|add:"-5" as start_page %}
+                        {% with page_obj.number|add:"5" as end_page %}
+                            {% for num in page_obj.paginator.page_range %}
+                                {% if num >= start_page and num <= end_page %}
+                                    <li class="page-item {% if num == page_obj.number %}active{% endif %}">
+                                        <a class="page-link" href="?page={{ num }}&per_page={{ per_page }}">{{ num }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        {% endwith %}
+                        {% endwith %}
+
                         {% if page_obj.has_next %}
                             <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value|urlencode }}{% endif %}{% endfor %}">Next »</a>
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}&per_page={{ per_page }}" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                    <span class="sr-only">Next</span>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&per_page={{ per_page }}" aria-label="Last">
+                                    <span aria-hidden="true">&raquo;&raquo;</span>
+                                    <span class="sr-only">Last</span>
+                                </a>
                             </li>
                         {% endif %}
                     </ul>
-                {% endif %}
-            </div>
+
+                    <form method="GET" class="d-flex">
+                        <select class="pagination-dropdown form-select" name="per_page" onchange="this.form.submit()">
+                            <option value="10" {% if per_page == '10' %}selected{% endif %}>10 / Page</option>
+                            <option value="20" {% if per_page == '20' %}selected{% endif %}>20 / Page</option>
+                            <option value="50" {% if per_page == '50' %}selected{% endif %}>50 / Page</option>
+                            <option value="100" {% if per_page == '100' %}selected{% endif %}>100 / Page</option>
+                        </select>
+                        <input type="hidden" name="page" value="1">
+                    </form>
+                </div>
+              </div>
             
             
             
@@ -277,6 +272,34 @@
     </div>
   </div>
 </div>
+
+<div class="modal fade" id="export-report-modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body">
+        <button type="button" class="close" data-dismiss="modal" >&times;</button>
+        <h2 class="form-title font-weight-bold">Export Comparison Report</h2>
+        <p class="pb-2">Export is limited to a single month only.</p>
+        <form action="{% url 'export-commission-report' %}" method="post" id="export-commission-report">
+          {% csrf_token %}
+          <div class="row">
+            <div class="col-md-6">
+                <div class="signup-form-group">
+                    <label class="signup-form-lbl">Created Date<span class="asterisk">*</span></label>
+                    <input type="date" name="date" id="date" class="form-field">
+                    <span class="error" style="color: red;" id="date_err"></span>
+                </div>    
+            </div>
+            <div class="col-sm-12 mt-5">
+                <button type="submit" class="signup-submit-btn">Export</button>
+            </div>
+        </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- /.content-wrapper -->
 
 <!-- Main Footer -->
@@ -286,6 +309,55 @@
 <!-- ./wrapper -->
 
 {% include 'footer-script.html' %}
+<script>
+  $('#export-commission-report').on('submit', function(e) {
+    e.preventDefault();
+
+    const form = $(this);
+    const dateInput = $('#date');  // Assuming the input field name is "date"
+    // Check if the date input is empty
+    if (!dateInput.val()) {
+        $('#date_err').show().text('Please Enter Date');
+        setTimeout(function(){
+          $('#date_err').hide().text('');
+        },2000);
+        return;  // Stop the form submission if date is not selected
+    }
+
+    const formData = new FormData(this);
+    const queryParams = new URLSearchParams(formData).toString();
+    const url = form.attr('action') + '?' + queryParams;
+
+    form.find('button[type="submit"]').prop('disabled', true).text('Exporting...');
+
+    fetch(url, {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => {
+        if (!response.ok) throw new Error("Export failed");
+        return response.blob();
+    })
+    .then(blob => {
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        a.download = "comparison_report.xlsx";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        form.find('button[type="submit"]').prop('disabled', false).text('Export');
+        $('#export-report-modal').hide();
+    })
+    .catch(err => {
+        alert("An error occurred while exporting the report.");
+        console.error(err);
+        form.find('button[type="submit"]').prop('disabled', false).text('Export');
+    });
+  });
+</script>
 </body>
 
 {% endblock %}
