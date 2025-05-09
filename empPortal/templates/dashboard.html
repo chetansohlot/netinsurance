@@ -143,7 +143,7 @@
                   </div>
                 </div>  
                 <div class="row">
-                  <div class="col-xs-6 col-sm-4 col-md-4">
+                  <div class="col-xs-6 col-sm-4 col-md-3">
                     <a href="#">
                       <div class="card counter-img-card counter-active-card ">
                         <div class="card-body">
@@ -158,24 +158,8 @@
                         </div>
                       </div>
                     </a>  
-                  </div>  
-                  <div class="col-xs-6 col-sm-4 col-md-4">
-                    <a href="#">
-                      <div class="card counter-img-card counter-deactive-card ">
-                        <div class="card-body">
-                          <div class="row">
-                            <div class="col">
-                              <p class="card-text text-dark">
-                                Total Revenue
-                              </p>
-                              <h5 class="card-title card-number"> <i class="fa-solid fa-indian-rupee-sign"></i>{{ total_revenue|indian_currency }}</h5>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </a>  
-                  </div>  
-                  <!-- <div class="col-xs-6 col-sm-4 col-md-4">
+                  </div>    
+                  <!-- <div class="col-xs-6 col-sm-4 col-md-3">
                     <a href="#">
                       <div class="card counter-img-card counter-pending-card ">
                         <div class="card-body">
@@ -192,7 +176,24 @@
                     </a>  
                   </div> -->
 
-                  <div class="col-xs-6 col-sm-4 col-md-4">
+                  <div class="col-xs-6 col-sm-4 col-md-3">
+                    <a href="#">
+                      <div class="card counter-img-card counter-deactive-card ">
+                        <div class="card-body">
+                          <div class="row">
+                            <div class="col">
+                              <p class="card-text text-dark">Total Revenue</p>
+                              <h5 class="card-title card-number">
+                                <i class="fa-solid fa-indian-rupee-sign"></i>{{ total_revenue|indian_currency }}
+                              </h5>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </a>
+                  </div>  
+                  
+                  <div class="col-xs-6 col-sm-4 col-md-3">
                     <a href="#">
                       <div class="card counter-img-card counter-deactive-card ">
                         <div class="card-body">
@@ -209,7 +210,7 @@
                     </a>
                   </div>  
                    
-                  <div class="col-xs-6 col-sm-4 col-md-4">
+                  <div class="col-xs-6 col-sm-4 col-md-3">
                     <a href="#">
                       <div class="card counter-img-card counter-deactive-card">
                         <div class="card-body">
@@ -238,14 +239,15 @@
                   <h5 class="card-hding pb-0">Business Summary- Consolidated</h5>
                   <div class="row">
                     <div class="col-auto">
-                        <select name="consolidated_by" class="form-field" id="consolidated_by">
-                            <option value="1">Today</option>
-                            <option value="2">MTD</option>
-                            <option value="3">Custom Date</option>
+                        <select name="business_consolidated_by" class="form-field" id="business_consolidated_by">
+                            <option value="1">All</option>
+                            <option value="2">Today</option>
+                            <option value="3">MTD</option>
+                            <option value="4">Custom Date</option>
                         </select>
                     </div>
                     <div class="col-auto" style="display: none;">
-                        <select name="consolidated_by_month" class="form-field" id="consolidated_by_month">
+                        <select name="business_consolidated_by_month" class="form-field" id="business_consolidated_by_month">
                             <option value="1">Jan</option>
                             <option value="2">Feb</option>
                             <option value="3">March</option>
@@ -261,17 +263,18 @@
                         </select>
                     </div>
                     <div class="col" style="display: none;">
-                        <input type="text" name="consolidated_from_date" class="form-field graph_datepicker" id="consolidated_from_date" placeholder="From Date" autocomplete="off">
+                        <input type="text" name="business_consolidated_from_date" class="form-field graph_datepicker" id="business_consolidated_from_date" placeholder="From Date" autocomplete="off">
                         <span class="error consolidated_from_date_err"></span>
                     </div>
                     <div class="col" style="display: none;">
-                        <input type="text" name="consolidated_to_date" class="form-field graph_datepicker" id="consolidated_to_date" placeholder="To Date" autocomplete="off">
-                        <span class="error consolidated_to_date_err"></span>
+                        <input type="text" name="business_consolidated_to_date" class="form-field graph_datepicker" id="business_consolidated_to_date" placeholder="To Date" autocomplete="off">
+                        <span class="error business_consolidated_to_date_err"></span>
                     </div>
                   </div>
                 </div>  
+                  
                 <hr class="my-2">
-                <canvas id="consolidated_bar_chart" style="width:100%; height: 280px;"></canvas>
+                <canvas id="consolidated_bar_chart" style="width:100%; height: 140px;"></canvas>
                 
               </div>
             </div>
@@ -280,46 +283,49 @@
             <div class="card">
               <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                  <h5 class="card-hding pb-0">Business Summary- Insurer</h5>
+                  <h5 class="card-hding pb-0">Business Summary - Insurer</h5>
                   <div class="row">
                     <div class="col-auto">
-                        <select name="consolidated_by" class="form-field" id="consolidated_by">
-                            <option value="1">Today</option>
-                            <option value="2">MTD</option>
-                            <option value="3">Custom Date</option>
-                        </select>
+                      <select name="summary_insurer" class="form-field" id="summary_insurer">
+                        <option value="1">All</option>
+                        <option value="2">Today</option>
+                        <option value="3">MTD</option>
+                        <option value="4">Custom Date</option>
+                      </select>
                     </div>
                     <div class="col-auto" style="display: none;">
-                        <select name="consolidated_by_month" class="form-field" id="consolidated_by_month">
-                            <option value="1">Jan</option>
-                            <option value="2">Feb</option>
-                            <option value="3">March</option>
-                            <option value="4">Apr</option>
-                            <option value="5">May</option>
-                            <option value="6">June</option>
-                            <option value="7">July</option>
-                            <option value="8">Aug</option>
-                            <option value="9">Sept</option>
-                            <option value="10">Oct</option>
-                            <option value="11">Nov</option>
-                            <option value="12">Dec</option>
-                        </select>
+                      <select name="summary_insurer_month" class="form-field" id="summary_insurer_month">
+                        <option value="1">Jan</option>
+                        <option value="2">Feb</option>
+                        <option value="3">March</option>
+                        <option value="4">Apr</option>
+                        <option value="5">May</option>
+                        <option value="6">June</option>
+                        <option value="7">July</option>
+                        <option value="8">Aug</option>
+                        <option value="9">Sept</option>
+                        <option value="10">Oct</option>
+                        <option value="11">Nov</option>
+                        <option value="12">Dec</option>
+                      </select>
                     </div>
                     <div class="col" style="display: none;">
-                        <input type="text" name="consolidated_from_date" class="form-field graph_datepicker" id="consolidated_from_date" placeholder="From Date" autocomplete="off">
-                        <span class="error consolidated_from_date_err"></span>
+                      <input type="text" name="summary_insurer_from_date" class="form-field " id="summary_insurer_from_date" placeholder="From Date" autocomplete="off">
+                      <span class="error summary_insurer_from_date_err"></span>
                     </div>
                     <div class="col" style="display: none;">
-                        <input type="text" name="consolidated_to_date" class="form-field graph_datepicker" id="consolidated_to_date" placeholder="To Date" autocomplete="off">
-                        <span class="error consolidated_to_date_err"></span>
+                      <input type="text" name="summary_insurer_to_date" class="form-field " id="summary_insurer_to_date" placeholder="To Date" autocomplete="off">
+                      <span class="error summary_insurer_to_date_err"></span>
                     </div>
                   </div>
-                </div>  
+                </div>
+          
                 <hr class="my-2">
-                <canvas id="insurer_bar_chart" style="width:100%; height: 280px;"></canvas>
+                <canvas id="insurer_bar_chart" style="width:100%; height: 140px;"></canvas>
               </div>
             </div>
           </div>
+          
           <div class="col-sm-6 col-md-6">  
             <div class="card">
               <div class="card-body">
@@ -351,14 +357,15 @@
                   <h5 class="card-hding pb-0">Referal Business Summary</h5>
                   <div class="row">
                     <div class="col-auto">
-                        <select name="consolidated_by" class="form-field" id="consolidated_by">
-                            <option value="1">Today</option>
-                            <option value="2">MTD</option>
-                            <option value="3">Custom Date</option>
+                        <select name="summary_referal" class="form-field" id="summary_referal">
+                            <option value="1">All</option>
+                            <option value="2">Today</option>
+                            <option value="3">MTD</option>
+                            <option value="4">Custom Date</option>
                         </select>
                     </div>
                     <div class="col-auto" style="display: none;">
-                        <select name="consolidated_by_month" class="form-field" id="consolidated_by_month">
+                        <select name="summary_referal_month" class="form-field" id="summary_referal_month">
                             <option value="1">Jan</option>
                             <option value="2">Feb</option>
                             <option value="3">March</option>
@@ -374,12 +381,12 @@
                         </select>
                     </div>
                     <div class="col" style="display: none;">
-                        <input type="text" name="consolidated_from_date" class="form-field graph_datepicker" id="consolidated_from_date" placeholder="From Date" autocomplete="off">
+                        <input type="text" name="summary_referal_from_date" class="form-field graph_datepicker" id="summary_referal_from_date" placeholder="From Date" autocomplete="off">
                         <span class="error consolidated_from_date_err"></span>
                     </div>
                     <div class="col" style="display: none;">
-                        <input type="text" name="consolidated_to_date" class="form-field graph_datepicker" id="consolidated_to_date" placeholder="To Date" autocomplete="off">
-                        <span class="error consolidated_to_date_err"></span>
+                        <input type="text" name="summary_referal_to_date" class="form-field graph_datepicker" id="summary_referal_to_date" placeholder="To Date" autocomplete="off">
+                        <span class="error summary_referal_to_date_err"></span>
                     </div>
                   </div>
                 </div>  
@@ -395,14 +402,15 @@
                   <h5 class="card-hding pb-0">Partner Business Summary</h5>
                   <div class="row">
                     <div class="col-auto">
-                        <select name="consolidated_by" class="form-field" id="consolidated_by">
-                            <option value="1">Today</option>
-                            <option value="2">MTD</option>
-                            <option value="3">Custom Date</option>
+                        <select name="summary_partner" class="form-field" id="summary_partner">
+                            <option value="1">All</option>
+                            <option value="2">Today</option>
+                            <option value="3">MTD</option>
+                            <option value="4">Custom Date</option>
                         </select>
                     </div>
                     <div class="col-auto" style="display: none;">
-                        <select name="consolidated_by_month" class="form-field" id="consolidated_by_month">
+                        <select name="summary_partner_month" class="form-field" id="summary_partner_month">
                             <option value="1">Jan</option>
                             <option value="2">Feb</option>
                             <option value="3">March</option>
@@ -418,12 +426,12 @@
                         </select>
                     </div>
                     <div class="col" style="display: none;">
-                        <input type="text" name="consolidated_from_date" class="form-field graph_datepicker" id="consolidated_from_date" placeholder="From Date" autocomplete="off">
+                        <input type="text" name="summary_partner_from_date" class="form-field" id="summary_partner_from_date" placeholder="From Date" autocomplete="off">
                         <span class="error consolidated_from_date_err"></span>
                     </div>
                     <div class="col" style="display: none;">
-                        <input type="text" name="consolidated_to_date" class="form-field graph_datepicker" id="consolidated_to_date" placeholder="To Date" autocomplete="off">
-                        <span class="error consolidated_to_date_err"></span>
+                        <input type="text" name="summary_partner_to_date" class="form-field " id="summary_partner_to_date" placeholder="To Date" autocomplete="off">
+                        <span class="error summary_partner_to_date_err"></span>
                     </div>
                   </div>
                 </div>  
@@ -435,78 +443,72 @@
           <div class="col-sm-12 col-md-12">  
             <div class="card">
               <div class="card-body">
-                <h5 class="card-hding">Business Summary Product Wise </h5>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <h5 class="card-hding pb-0 mb-0">Business Summary Insurer Wise</h5>
+                  
+                  <div class="d-flex align-items-center ms-auto gap-2">
+                    <div>
+                      <select name="insurer_wise" class="form-field" id="insurer_wise">
+                        <option value="1">All</option>
+                        <option value="2">Today</option>
+                        <option value="3">MTD</option>
+                        <option value="4">Custom Date</option>
+                      </select>
+                    </div>
+                
+                    <div style="display: none;" id="month_filter">
+                      <select name="summary_partner_month" class="form-field" id="insurer_wise_month">
+                        <option value="1">Jan</option>
+                        <option value="2">Feb</option>
+                        <option value="3">March</option>
+                        <option value="4">Apr</option>
+                        <option value="5">May</option>
+                        <option value="6">June</option>
+                        <option value="7">July</option>
+                        <option value="8">Aug</option>
+                        <option value="9">Sept</option>
+                        <option value="10">Oct</option>
+                        <option value="11">Nov</option>
+                        <option value="12">Dec</option>
+                      </select>
+                    </div>
+                
+                    <div style="display: none;" id="from_date_filter">
+                      <input type="text" name="insurer_wiser_from_date" class="form-field graph_datepicker" id="insurer_wise_from_date" placeholder="From Date" autocomplete="off">
+                      <span class="error insurer_wise_date_err"></span>
+                    </div>
+                
+                    <div style="display: none;" id="to_date_filter">
+                      <input type="text" name="insurer_wise_to_date" class="form-field graph_datepicker" id="insurer_wise_to_date" placeholder="To Date" autocomplete="off">
+                      <span class="error summary_partner_to_date_err"></span>
+                    </div>
+                  </div>
+                </div>
                 <div class="table-responsive">
                     <table class="table table-design table-trlink">
                       <thead class="table-thead-bg-light table-header-fix">
                         <tr>
                           <th>Policy Number</th>
-                          <th>Total Commission</th>
-                          <th>Received Amount</th>
-                          <th>Balance Amount</th>
-                          <th>Insurer</th>
+                          <th>Insurer Provider</th>
+                          <th>Net Commission</th>
+                          <th>Gross Commission</th>
                           <th>Month</th>
-                          <th>Partner Info </th>
-                          <th width="50">Action</th>
+                          <th>Partner Info</th>
+
                         </tr>
                       </thead>
                       <tbody>
-
+                        {% for policy in policies %}
                         <tr>
-                          <td>ELV00213255</td>
-                          <td>5000</td>
-                          <td>4000</td>
-                          <td>1000</td>
-                          <td>Godigit</td>
-                          <td>February</td>
-                          <td>Vinod Kumar <span class="text-gray">(012456)</span></td>
-                          <td>
-                            <div class="dropdown">
-                              <img src="dist/img/svg/menu-dot-vr.svg" alt="" class="table-doticon" data-toggle="dropdown" aria-expanded="false">
-                              <ul class="dropdown-menu table-dropdown-menu">
-                                <li><a class="dropdown-item" href="#"><i class="fa-solid fa-eye"></i> View</a></li>
-                                <li><a class="dropdown-item" href="#"><i class="fa-solid fa-pen-to-square"></i> Edit</a></li>
-                              </ul>
-                            </div>
-                          </td>
+                            <td>{{ policy.policy_number }}</td>
+                            <td>{{ policy.insurer_name }}</td> 
+                            <td>{{ policy.net_commission }}</td> 
+                            <td>{{ policy.gross_commission }}</td> 
+                            <td>{{ policy.start_date|date:"F" }}</td> 
+                            <td>{{ policy.partner_name }} <span class="text-gray">({{ policy.partner_id }})</span></td> <!-- Assuming partner_name and partner_id are fields in the model -->
                         </tr>
-                        <tr>
-                          <td>ELV00213255</td>
-                          <td>5000</td>
-                          <td>4000</td>
-                          <td>1000</td>
-                          <td>Godigit</td>
-                          <td>February</td>
-                          <td>Vinod Kumar <span class="text-gray">(012456)</span></td>
-                          <td>
-                            <div class="dropdown">
-                              <img src="dist/img/svg/menu-dot-vr.svg" alt="" class="table-doticon" data-toggle="dropdown" aria-expanded="false">
-                              <ul class="dropdown-menu table-dropdown-menu">
-                                <li><a class="dropdown-item" href="#"><i class="fa-solid fa-eye"></i> View</a></li>
-                                <li><a class="dropdown-item" href="#"><i class="fa-solid fa-pen-to-square"></i> Edit</a></li>
-                              </ul>
-                            </div>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>ELV00213255</td>
-                          <td>5000</td>
-                          <td>4000</td>
-                          <td>1000</td>
-                          <td>Godigit</td>
-                          <td>February</td>
-                          <td>Vinod Kumar <span class="text-gray">(012456)</span></td>
-                          <td>
-                            <div class="dropdown">
-                              <img src="dist/img/svg/menu-dot-vr.svg" alt="" class="table-doticon" data-toggle="dropdown" aria-expanded="false">
-                              <ul class="dropdown-menu table-dropdown-menu">
-                                <li><a class="dropdown-item" href="#"><i class="fa-solid fa-eye"></i> View</a></li>
-                                <li><a class="dropdown-item" href="#"><i class="fa-solid fa-pen-to-square"></i> Edit</a></li>
-                              </ul>
-                            </div>
-                          </td>
-                        </tr>
-                      </tbody>
+                        {% endfor %}
+                    </tbody>
                     </table>
                   </div>
               </div>
@@ -549,64 +551,75 @@
 <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script> -->
 <script src="http://retention.netcrm.in/js/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<script>
+  let window.myChart = null; // Or use window.myChart
+</script>
+
 {{ consolidated_month_labels|json_script:"monthLabels" }}
 {{ consolidated_month_counts|json_script:"motorData" }}
 
 <script type="text/javascript">
   Chart.register(ChartDataLabels);
+
+  // Parse the JSON data once
   const monthLabels = JSON.parse(document.getElementById('monthLabels').textContent);
   const motorData    = JSON.parse(document.getElementById('motorData').textContent);
 
-  new Chart(document.getElementById("consolidated_bar_chart"), {
-    type: 'bar',
-    data: {
-      labels: monthLabels,
-      datasets: [
-        {
-          type: 'bar',
-          label: 'Motor',
-          data: motorData,
-          backgroundColor: "#ff751d",
-          borderColor: '#ff751d'
+  // Hold the chart instance in a scoped variable
+  let consolidatedBarChart = null;
+
+  function consolidated_bar_chart_open(monthLabels, motorData) {
+    // If a chart already exists, destroy it before creating a new one
+    if (consolidatedBarChart) {
+      consolidatedBarChart.destroy();
+    }
+
+    // Create the new chart and save its instance
+    consolidatedBarChart = new Chart(
+      document.getElementById("consolidated_bar_chart"),
+      {
+        type: 'bar',
+        data: {
+          labels: monthLabels,
+          datasets: [{
+            label: 'Motor',
+            data: motorData,
+            backgroundColor: "#ff751d",
+            borderColor: '#ff751d'
+          }]
         },
-      ]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          labels: {
-            padding: 20,
-            font: { size: 11 }
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              labels: { padding: 20, font: { size: 11 } },
+              position: 'top'
+            },
+            datalabels: {
+              anchor: 'middle',
+              align: 'middle',
+              color: '#000',
+              font: { weight: 'bold' },
+              formatter: v => v
+            }
           },
-          position: 'top'
-        },
-        datalabels: {
-          anchor: 'middle',
-          align: 'middle',
-          color: '#000',
-          font: { weight: 'bold' },
-          formatter: function(value) {
-            return value;
-          }
-        }
-      },
-      scales: {
-        y: {
-          beginAtZero: true,
-          title: {
-            display: true,
-            text: 'Policy Count'
-          }
-        },
-        x: {
-          title: {
-            display: true,
-            text: 'Month'
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: { display: true, text: 'Policy Count' }
+            },
+            x: {
+              title: { display: true, text: 'Month' }
+            }
           }
         }
       }
-    }
+    );
+  }
+
+  // Example: run on DOM ready
+  document.addEventListener('DOMContentLoaded', function() {
+    consolidated_bar_chart_open(monthLabels, motorData);
   });
 </script>
 
@@ -614,54 +627,64 @@
 {{ insurer_provider_labels|json_script:"insurerProviderLabels" }}
 
 <script type="text/javascript">
-console.log("Counts:", insurerMotorCounts);
-  console.log("Provider:", insurerProviderLabels);
+  Chart.register(ChartDataLabels);
+
+  // 1) Parse your JSON‐script data
+  const insurerMotorCounts   = JSON.parse(document.getElementById('insurerMotorCounts').textContent);
+  const insurerProviderLabels = JSON.parse(document.getElementById('insurerProviderLabels').textContent);
+
+  // 2) Hold the chart instance in a variable
+  let insurerBarChart = null;
+
+  function insurer_bar_chart_open(counts, labels) {
+    // 3) If we already drew one, destroy it
+    if (insurerBarChart) {
+      insurerBarChart.destroy();
+    }
+    const ctx = document.getElementById("insurer_bar_chart").getContext("2d");
+    insurerBarChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Motor',
+          data: counts,
+          backgroundColor: "#4593dd",
+          borderColor: '#4593dd',
+          fill: false
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            labels: { padding: 20, font: { size: 11 } },
+            position: 'top'
+          },
+          datalabels: {
+            anchor: 'middle',
+            align: 'middle',
+            color: '#000',
+            font: { weight: 'bold' },
+            formatter: v => v
+          }
+        }
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    insurer_bar_chart_open(insurerMotorCounts, insurerProviderLabels);
+  });
 </script>
+
+
+
+
+
 <script type="text/javascript">
   Chart.register(ChartDataLabels);
 
-  const insurerMotorCounts = JSON.parse(document.getElementById('insurerMotorCounts').textContent);
-  const insurerProviderLabels    = JSON.parse(document.getElementById('insurerProviderLabels').textContent);
-  
-    new Chart("insurer_bar_chart", {
-    data: {
-            datasets: [{
-                type: 'bar',
-                label: 'Motor',
-                data: insurerMotorCounts,
-                backgroundColor: "#4593dd",
-                fill: false,
-                borderColor: '#4593dd'
-            }],
-            labels: insurerProviderLabels,
-        },
-        options: {
-            responsive: true,
-            
-            plugins: {
-                legend: {
-                    labels: {
-                      padding: 20, // Add space between graph and labels
-                      font: {
-                        size: 11, // Adjust font size for better readability
-                      },
-                    },
-                    position: 'top', // Position the legend at the top
-                  },
-                datalabels: {
-                    anchor: 'middle',
-                    align: 'middle',
-                    color: '#000',
-                    font: {
-                        weight: 'bold',
-                    },
-                    formatter: function(value, context) {
-                        return value;
-                    }
-                }
-            }
-        }
-    });
 
    new Chart("product_wise_bar_chart", {
     data: {
@@ -870,6 +893,266 @@ console.log("Counts:", insurerMotorCounts);
             }
         }
     });
+</script>
+
+<script>
+  // Function to update the chart
+  function updateChart() {
+      var startDate = document.getElementById('start_date').value;
+      var endDate = document.getElementById('end_date').value;
+
+      // Check if both dates are selected
+      if (!startDate || !endDate) {
+          alert('Please select both start and end dates');
+          return;
+      }
+
+      // AJAX request to fetch the data
+      $.ajax({
+          url: '/business_summary_insurer_chartajax/',  // Django view URL
+          type: 'GET',
+          data: {
+              start_date: startDate,
+              end_date: endDate
+          },
+          success: function(response) {
+              console.log("Counts:", response.insurer_motor_counts);
+              console.log("Provider:", response.insurer_provider_labels);
+              insurer_bar_chart_open(response.insurer_motor_counts, response.insurer_provider_labels);
+          },
+          error: function(xhr, status, error) {
+              console.error('AJAX Error: ' + error);
+          }
+      });
+  }
+</script>
+
+<script>
+  // Function to update the consolidated business chart
+  function updateConsolidatedChart() {
+      var startDate = document.getElementById('start_date').value;
+      var endDate = document.getElementById('end_date').value;
+
+      if (!startDate || !endDate) {
+          alert('Please select both start and end dates');
+          return;
+      }
+
+      // AJAX request to fetch data
+      $.ajax({
+          url: '/business_consolidated_ajax/',  // Django view URL
+          type: 'GET',
+          data: {
+              start_date: startDate,
+              end_date: endDate,
+              filter: '4'  // Custom date filter
+          },
+          success: function(response) {
+              console.log("Months:", response.consolidated_month_labels);
+              console.log("Document Counts:", response.consolidated_month_counts);
+              consolidated_bar_chart_open(consolidated_month_labels, consolidated_month_counts);
+          },
+          error: function(xhr, status, error) {
+              console.error('AJAX Error: ' + error);
+          }
+      });
+  }
+</script>
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const summarySelect = document.getElementById("summary_referal");
+    const monthDropdown = document.getElementById("summary_referal_month").parentElement;
+    const fromDateField = document.getElementById("summary_referal_from_date").parentElement;
+    const toDateField = document.getElementById("summary_referal_to_date").parentElement;
+
+    function updateReferalFilters() {
+      const value = summarySelect.value;
+
+      // Hide all first
+      monthDropdown.style.display = "none";
+      fromDateField.style.display = "none";
+      toDateField.style.display = "none";
+
+      if (value === "3") {
+        // MTD → show Month dropdown
+        monthDropdown.style.display = "block";
+      } else if (value === "4") {
+        // Custom Date → show From/To Date fields
+        fromDateField.style.display = "block";
+        toDateField.style.display = "block";
+      }
+    }
+
+    // Initial call
+    updateReferalFilters();
+
+    // On select change
+    summarySelect.addEventListener("change", updateReferalFilters);
+  });
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const partnerSelect = document.getElementById("summary_partner");
+    const partnerMonth = document.getElementById("summary_partner_month").parentElement;
+    const partnerFromDate = document.getElementById("summary_partner_from_date").parentElement;
+    const partnerToDate = document.getElementById("summary_partner_to_date").parentElement;
+
+    function updatePartnerFilters() {
+      const value = partnerSelect.value;
+
+      // Hide all
+      partnerMonth.style.display = "none";
+      partnerFromDate.style.display = "none";
+      partnerToDate.style.display = "none";
+
+      if (value === "3") {
+        // MTD
+        partnerMonth.style.display = "block";
+      } else if (value === "4") {
+        // Custom Date
+        partnerFromDate.style.display = "block";
+        partnerToDate.style.display = "block";
+      }
+    }
+
+    // Initial call
+    updatePartnerFilters();
+
+    // On change
+    partnerSelect.addEventListener("change", updatePartnerFilters);
+  });
+</script>
+
+<script>
+  let consolidatedChart = null;
+
+  function fetchAndRenderConsolidatedChart() {
+    const filter = document.getElementById("business_consolidated_by").value;
+    const month = document.getElementById("business_consolidated_by_month").value;
+    const fromDate = document.getElementById("business_consolidated_from_date").value;
+    const toDate = document.getElementById("business_consolidated_to_date").value;
+
+    let url = `/business_consolidated_ajax?filter=${filter}`;
+
+    if (filter === "3") {
+      url += `&month=${month}`;
+    } else if (filter === "4") {
+      url += `&start_date=${fromDate}&end_date=${toDate}`;
+      }
+  
+
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        console.log("AJAX payload:", data);
+        consolidated_bar_chart_open(data.consolidated_month_labels, data.consolidated_month_counts);
+      })
+      .catch(error => {
+        console.error("Chart fetch error:", error);
+      });
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const consolidatedBy = document.getElementById("business_consolidated_by");
+    const monthInput = document.getElementById("business_consolidated_by_month");
+    const fromDateInput = document.getElementById("business_consolidated_from_date");
+    const toDateInput = document.getElementById("business_consolidated_to_date");
+
+    const monthDiv = monthInput.parentElement;
+    const fromDateDiv = fromDateInput.parentElement;
+    const toDateDiv = toDateInput.parentElement;
+
+    function updateConsolidatedFiltersAndChart() {
+      const selected = consolidatedBy.value;
+
+      monthDiv.style.display = "none";
+      fromDateDiv.style.display = "none";
+      toDateDiv.style.display = "none";
+
+      if (selected === "3") {
+        monthDiv.style.display = "block";
+      } else if (selected === "4") {
+        fromDateDiv.style.display = "block";
+        toDateDiv.style.display = "block";
+      }
+
+      fetchAndRenderConsolidatedChart();
+    }
+
+    // Bind change listeners
+    consolidatedBy.addEventListener("change", updateConsolidatedFiltersAndChart);
+    monthInput.addEventListener("change", fetchAndRenderConsolidatedChart);
+    fromDateInput.addEventListener("change", fetchAndRenderConsolidatedChart);
+    toDateInput.addEventListener("change", fetchAndRenderConsolidatedChart);
+
+    updateConsolidatedFiltersAndChart(); // initial load
+  });
+</script>
+
+
+
+<script>
+  let insurerChart = null; // Global chart variable
+
+  function fetchAndRenderInsurerChart() {
+    const filter = document.getElementById("summary_insurer").value;
+    const month = document.getElementById("summary_insurer_month").value;
+    const fromDate = document.getElementById("summary_insurer_from_date").value;
+    const toDate = document.getElementById("summary_insurer_to_date").value;
+
+    let url = `/business_summary_insurer_chartajax?filter=${filter}`;
+
+    if (filter === "3") {
+      url += `&month=${month}`;
+    } else if (filter === "4") {
+      url += `&start_date=${fromDate}&end_date=${toDate}`;
+    }
+
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+
+         console.log("AJAX payload:", data);
+         insurer_bar_chart_open(data.insurer_motor_counts, data.insurer_provider_labels);
+      })
+      .catch(error => {
+        console.error("Chart fetch error:", error);
+      });
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const summarySelect = document.getElementById("summary_insurer");
+    const monthDropdown = document.getElementById("summary_insurer_month").parentElement;
+    const fromDateField = document.getElementById("summary_insurer_from_date").parentElement;
+    const toDateField = document.getElementById("summary_insurer_to_date").parentElement;
+
+    function updateSummaryFiltersAndChart() {
+      const value = summarySelect.value;
+
+      monthDropdown.style.display = "none";
+      fromDateField.style.display = "none";
+      toDateField.style.display = "none";
+
+      if (value === "3") {
+        monthDropdown.style.display = "block";
+      } else if (value === "4") {
+        fromDateField.style.display = "block";
+        toDateField.style.display = "block";
+      }
+
+      fetchAndRenderInsurerChart();
+    }
+
+    summarySelect.addEventListener("change", updateSummaryFiltersAndChart);
+    document.getElementById("summary_insurer_month").addEventListener("change", fetchAndRenderInsurerChart);
+    document.getElementById("summary_insurer_from_date").addEventListener("change", fetchAndRenderInsurerChart);
+    document.getElementById("summary_insurer_to_date").addEventListener("change", fetchAndRenderInsurerChart);
+
+    updateSummaryFiltersAndChart(); // initial load
+  });
 </script>
 
 </body>

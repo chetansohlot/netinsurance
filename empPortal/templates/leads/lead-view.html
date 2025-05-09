@@ -1,0 +1,556 @@
+{% extends 'master.html' %}
+
+{% load static %}
+
+{% block title %}
+{% if lead %}Edit Lead{% else %}Add New Lead{% endif %}
+{% endblock %}
+
+{% block content %}
+
+{% include "css-code.html" %}
+
+<body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+        {% include 'navbar.html' %}
+
+        {% include 'sidebar.html' %}
+    
+        <div class="content-wrapper white-bg">
+            <div class="content-header header-content-bg mb-0">
+              <div class="container-fluid">
+             
+                <div class="row justify-content-between justify-content-sm-start pb-4">
+                    <div class="col-sm-12">
+                        <h1 class="admin-title m-0 pt-2">Lead View</h1>
+                        <ul class="breadcrump">
+                          <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
+                          <li>Lead View</li>
+                        </ul>
+                    </div>
+        
+                </div>
+              </div>
+            </div>
+            <!-- Main content -->
+            <div class="content px-0">
+                <div class="container-fluid">
+                  <div class="row">
+                    <div class="col-md-4 px-0">
+                        <div class="card member-detail-left-card">
+                            <div class="card-body box-profile">
+                                <!-- {% if user_details.profile_image %}
+                                    <img src="{{ user_details.profile_image.url }}" alt="Profile Image" class="card-profile-img">
+                                {% else %}
+                                    <img src="{% static 'dist/img/svg/profile-avatar-male.svg' %}" alt="Default Profile" class="card-profile-img">
+                                {% endif %} -->
+                                
+                                <h3 class="profile-username text-center">Vinod (Male)</h3>
+                                <div class="d-flex justify-content-center mt-2">
+                                    <span class="text-muted">Customer Since: 2002</span>
+                                </div>  
+                                <div class="profile-info-divider"></div>
+                                <ul class="member-detail-list">
+                                    
+                                  
+                                    <li>
+                                        <span class="list">Lead Id / Status</span>
+                                        <span class="list-output">1010 / Pending</span>
+                                    </li>
+                                    <li>
+                                        <span class="list">Email</span>
+                                        <span class="list-output">
+                                            vinod.kumar@netleafinfosoft.com
+                                        </span>
+                                    </li>
+                                    <li>
+                                        <span class="list">Mobile </span>
+                                        <span class="list-output">9876543210</span>
+                                    </li>
+                                    <li>
+                                        <span class="list">PANCARD</span>
+                                        <span class="list-output text-uppercase"> baxpk1234K</span>
+                                    </li>
+                                    <li>
+                                        <span class="list">Insurance Type</span>
+                                        <span class="list-output">N/A</span>
+                                    </li>
+                                    <li>
+                                        <span class="list">Product Category</span>
+                                        <span class="list-output">N/A</span>
+                                    </li>
+                                    <li>
+                                        <span class="list">Product Name</span>
+                                        <span class="list-output">N/A</span>
+                                    </li>
+                                    <li>
+                                        <span class="list">Lead Source Type</span>
+                                        <span class="list-output">N/A</span>
+                                    </li>
+                                    <li>
+                                        <span class="list">Lead Source Name</span>
+                                        <span class="list-output">N/A</span>
+                                    </li>
+                                    <li>
+                                        <span class="list">Referral Name</span>
+                                        <span class="list-output">N/A</span>
+                                    </li>
+                                    <li>
+                                        <span class="list">Source Medium</span>
+                                        <span class="list-output">N/A</span>
+                                    </li>
+                                    <li>
+                                        <span class="list">Assigned BY</span>
+                                        <span class="list-output">N/A</span>
+                                    </li>
+                                    <li>
+                                        <span class="list">Assigned To</span>
+                                        <span class="list-output">N/A</span>
+                                    </li>
+
+                                     
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+
+                    <div class="col-md-8 px-0">
+                      <div class="card member-detail-right-card">
+                        
+                        <ul class="nav nav-pills profile-tab">
+                            <li class="nav-item text-bold"><a class="nav-link active" href="#activity-tab" data-toggle="tab">Activity</a></li>
+                            <li class="nav-item text-bold"><a class="nav-link" href="#lead-details-tab" data-toggle="tab">Lead Deatils</a></li>
+                            <li class="nav-item text-bold"><a class="nav-link" href="#previous-policy-info-tab" data-toggle="tab">Previous Policy Information </a></li>
+                            <li class="nav-item text-bold"><a class="nav-link" href="#quote-tab" data-toggle="tab">Quote </a></li>
+                            <li class="nav-item text-bold"><a class="nav-link" href="#booking-tab" data-toggle="tab">Booking</a></li>
+                            <li class="nav-item text-bold"><a class="nav-link" href="#policy-issued -tab" data-toggle="tab">Policy Issued </a></li>
+                        </ul>
+
+
+                        
+                        
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                          <div class="tab-content tab-scrollbar">
+                            <div class="active tab-pane" id="activity-tab">
+                                <div class="row mt-3">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>File</th>
+                                                    <th>File Type</th>
+                                                    <th>Doc ID</th>
+                                                    <th>Updated At</th>
+                                                    <th>Status</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                            
+                                </div>
+                            </div>
+
+                            <div class="tab-pane" id="lead-details-tab">
+                              <div class="row">
+                                  <div class="col-md-12">
+                                    <div class="table-responsive">
+                                      <table class="table table-design table-trlink">
+                                          <thead class="table-thead-bg-light table-header-fix">
+                                              <tr>
+                                                  <th>Product</th>
+                                                  <th>TP Prem. (%)</th>
+                                                  <th>OD Prem. (%)</th>
+                                                  <th>Net Prem. (%)</th>
+                                                  {% if request.user.role_id == 1 %}
+                                                  <th>Action</th>
+                                                  {% endif %}
+                                              </tr>
+                                          </thead>
+                                          <tbody>
+                                              {% for commission in commissions %}
+                                              <tr>
+                                                  <td>{{ commission.product_name }}</td>
+                                                  <td>{{ commission.tp_percentage }}%</td>
+                                                  <td>{{ commission.od_percentage }}%</td>
+                                                  <td>{{ commission.net_percentage }}%</td>
+                                                  {% if request.user.role_id == 1 %}
+                                                  <td>
+                                                      <button class="btn btn-xs btn-primary edit-btn" 
+                                                              data-id="{{ commission.id }}" 
+                                                              data-member="{{ commission.member_id }}"
+                                                              data-product="{{ commission.product_id }}"
+                                                              data-tp="{{ commission.tp_percentage }}"
+                                                              data-od="{{ commission.od_percentage }}"
+                                                              data-net="{{ commission.net_percentage }}"
+                                                              data-toggle="modal" 
+                                                              data-target="#editCommissionModal">
+                                                              <i class="fas fa-edit"></i>
+                                                      </button>
+                                                  </td>
+                                                  {% endif %}
+                                              </tr>
+                                              {% empty %}
+                                              <tr>
+                                                  <td colspan="5" class="text-center">No commission found</td>
+                                              </tr>
+                                              {% endfor %}
+                                          </tbody>
+                                      </table>
+                                    </div>  
+                                  </div>
+                              </div>
+                            </div>
+
+                            <div class="tab-pane" id="previous-policy-info-tab">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="d-flex justify-content-end mb-3">
+                                            <button type="button" class="dashboard-addbtn" data-toggle="modal" data-target="#editAllocation">Edit</button>
+                                        </div>    
+                                    </div>
+                                </div>
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Type</th>
+                                                <th>Name</th>
+                                                <th>Email</th>
+                                                <th>Contact No</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>BQP</td>
+                                                <td>
+                                                    {% if user_details.bqpData and user_details.bqpData.bqp_name %}
+                                                        {{ user_details.bqpData.bqp_name }}
+                                                    {% else %}
+                                                         N/A
+                                                    {% endif %}
+                                            </td>
+                                            <td>{{ user_details.bqpData.email_address|default:"N/A" }}</td>
+                                            <td>{{ user_details.bqpData.mobile_number|default:"N/A" }}</td>
+                                            
+                                            </tr>
+                                            <tr>
+                                                <td>Branch</td>
+                                                <td>{{ branch.branch_name|default:"N/A" }}</td>
+                                                <td>{{ branch.email|default:"N/A" }}</td>
+                                                <td>{{ branch.mobile|default:"N/A" }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Manager</td>
+                                                <td>{{ manager_details.full_name|default:"N/A" }}</td>
+                                                <td>{{ manager_details.email|default:"N/A" }}</td>
+                                                <td>{{ manager_details.phone|default:"N/A" }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Team leader</td>
+                                                <td>{{ tl_details.full_name|default:"N/A" }}</td>
+                                                <td>{{ tl_details.email|default:"N/A" }}</td>
+                                                <td>{{ tl_details.phone|default:"N/A" }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Relationship Member</td>
+                                                <td>{{ rm_details.full_name|default:"N/A" }}</td>
+                                                <td>{{ rm_details.email|default:"N/A" }}</td>
+                                                <td>{{ rm_details.phone|default:"N/A" }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                
+                            </div>
+
+                            <div class="tab-pane" id="quote-tab">
+                                <!-- Personal Details -->
+                                <div class="row mt-3">
+                                    <div class="col-6 col-sm-6 col-md-4 col-lg-3">
+                                        <div class="userdetail-group">
+                                            <p class="userdetail-lbl">Account Holder Name</p>
+                                            <p class="userdetail-highligt" id="accountHolderName">
+                                                {% if bank_details %}
+                                                    {{ bank_details.account_holder_name }}
+                                                {% else %}
+                                                    -
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-6 col-sm-6 col-md-4 col-lg-4">
+                                        <div class="userdetail-group">
+                                            <p class="userdetail-lbl">Account Number</p>
+                                            <p class="userdetail-highligt" id="accountNumber">
+                                                {% if bank_details %}
+                                                    {{ bank_details.account_number }}
+                                                {% else %}
+                                                    -
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-sm-6 col-md-4 col-lg-4">
+                                        <div class="userdetail-group">
+                                            <p class="userdetail-lbl">IFSC Code</p>
+                                            <p class="userdetail-highligt" id="ifscCode">
+                                                {% if bank_details %}
+                                                    {{ bank_details.ifsc_code }}
+                                                {% else %}
+                                                    -
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-sm-6 col-md-4 col-lg-4">
+                                        <div class="userdetail-group">
+                                            <p class="userdetail-lbl">City</p>
+                                            <p class="userdetail-highligt" id="city">
+                                                {% if bank_details %}
+                                                    {{ bank_details.city }}
+                                                {% else %}
+                                                    -
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-sm-6 col-md-4 col-lg-4">
+                                        <div class="userdetail-group">
+                                            <p class="userdetail-lbl">State</p>
+                                            <p class="userdetail-highligt" id="state">
+                                                {% if bank_details %}
+                                                    {{ bank_details.state }}
+                                                {% else %}
+                                                    -
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <style>
+                                        .nametag {
+                                            padding: 10px; /* Adjust padding as needed */
+                                            margin: 35px; /* Adjust padding as needed */
+                                            display: flex;
+                                            justify-content: center;
+                                            align-items: center;
+                                        }
+                                    
+                                        .preview-img {
+                                            max-width: 100px;
+                                            height: auto;
+                                            display: block;
+                                        }
+                                    </style>
+                                    <div class="col-6 col-sm-6 col-md-6 col-lg-6">
+                                        <div class="family-info-card">
+                                            <div class="row align-items-center">
+                                                <div class="col-auto">
+                                                    <div class="nametag">
+                                                        {% if docs.upload_cheque %}
+                                                            <a href="{{ docs.upload_cheque.url }}" data-lightbox="cheque-set" data-title="Cancelled Cheque">
+                                                                <img class="preview-img img-fluid" id="upload_cheque_preview" 
+                                                                    src="{{ docs.upload_cheque.url }}" 
+                                                                    alt="Cancelled Cheque" 
+                                                                    onerror="this.onerror=null; this.src='/static/dist/img/aadhar-front.jpg';">
+                                                            </a>
+                                                        {% else %}
+                                                            <img class="preview-img img-fluid" src="/static/dist/img/aadhar-front.jpg" alt="Cancelled Cheque">
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <h4 class="card-hding mb-0 pb-0">Cancelled Cheque</h4>
+                                                    {% if docs.upload_cheque %}
+                                                        <a href="{{ docs.upload_cheque.url }}" class="wrap-small text-gray" target="_blank">
+                                                            <i class="fas fa-eye"></i> View Document
+                                                        </a>
+                                                    {% else %}
+                                                        <p class="text-muted">No cheque uploaded</p>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    <hr>
+                                                    <div class="ml-3 pl-1">
+                                                        <p class="wrap-prgh font-weight-bold mb-0 pb-0">Account Number</p>
+                                                        <p class="wrap-small text-uppercase">{{ docs.cheque_number|default:"-" }}</p>
+                                                    </div>  
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    
+                                    
+                                    
+                                </div>
+                                <!-- Edit Button -->
+                            </div>
+                            
+
+                            
+                            
+
+
+
+
+                            <!-- /.tab-pane -->
+                            <div class="tab-pane" id="claims-tab">
+                                <div class="row align-items-center mt-3 mb-3">
+                                  <div class="col-md-auto">
+                                    <h3 class="card-hding mb-0 pb-0">Claim History</h3>
+                                  </div>
+                                  <div class="col">
+                                    <div class="d-flex justify-content-end">
+                                      <a href="#" class="dashboard-btn-outline mx-2">Search Cashless Hospitals</a>
+                                      <a href="#" class="dashboard-addbtn">Raise a Claim</a>
+                                    </div>
+                                  </div>
+                                </div>  
+                              <!-- Documents -->
+                              <div class="table-responsive">
+                                <table class="table table-design admin-table-design">
+                                  <thead class="align-middle thead-light">
+                                      <tr>
+                                          <th>Claim ID/Type</th>
+                                          <th>Patient Name/Relation</th>
+                                          <th>Claim Status/Last Update On</th>
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr>
+                                      <td colspan="3">
+                                        <div class="d-flex justify-content-center py-5">
+                                          <div>
+                                            <img src="dist/img/svg/drive.svg" alt="" class="mx-auto d-table">
+                                            <p class="wrap-small text-gray text-center pt-2">No Data</p>
+                                          </div>  
+                                        </div>   
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                </table>                               
+                               </div>    
+                              <!-- /.Documents -->
+                            </div>
+                          </div>
+                            <!-- /.tab-content -->
+                        </div>
+                      </div>
+                    </div>
+                  </div>  
+                </div>
+                
+              </div>
+            </div>
+          </div>
+        <!-- /.content-wrapper -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
+        <script>
+            function showRejectNote(note) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Rejected Reason',
+                    text: note || 'No reason provided',  // Show message if note is empty
+                    confirmButtonColor: '#d33'
+                });
+            }
+            </script>
+        <!-- <script>
+            function showRejectNote(note) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Rejected Reason',
+                    text: note || 'No reason provided',  // Show message if note is empty
+                    confirmButtonColor: '#d33'
+                });
+            }
+            </script>
+        <script>
+            // Add event listener to the button
+            document.getElementById('activate-btn').addEventListener('click', function() {
+              var userId = this.getAttribute('data-user-id');
+              
+              // Show SweetAlert confirmation
+              Swal.fire({
+                title: 'Are you sure?',
+                text: "You are about to activate this account.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, activate it!',
+                cancelButtonText: 'Cancel',
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  // Submit the hidden form
+                  document.getElementById('activate-form').submit();
+                }
+              });
+            });
+          </script>
+
+          
+        <script>
+            // Add event listener to the button
+            document.getElementById('deactivate-btn').addEventListener('click', function() {
+              var userId = this.getAttribute('data-user-id');
+              
+              // Show SweetAlert confirmation
+              Swal.fire({
+                title: 'Are you sure?',
+                text: "You are about to deactivate this account.",
+                icon: 'danger',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, deactivate it!',
+                cancelButtonText: 'Cancel',
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  // Submit the hidden form
+                  document.getElementById('deactivate-form').submit();
+                }
+              });
+            });
+          </script>
+
+          
+        <script>
+            // Add event listener to the button
+            document.getElementById('login-activate-btn').addEventListener('click', function() {
+              var userId = this.getAttribute('data-user-id');
+              
+              // Show SweetAlert confirmation
+              Swal.fire({
+                title: 'Are you sure?',
+                text: "You are about to activate this account.",
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, activate it!',
+                cancelButtonText: 'Cancel',
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  // Submit the hidden form
+                  document.getElementById('login-activate-form').submit();
+                }
+              });
+            });
+          </script> -->
+    
+      
+        {% include "footer.html" %}
+    </div>
+    <!-- ./wrapper -->
+    
+    {% include 'footer-script.html' %}
+            
+    {% include "js-code.html" %}
+    
+    
+    </body>
+
+{% endblock %}
