@@ -87,7 +87,7 @@
 
     <div class="container">
         <div class="header">
-            <img src="https://pos.elevateinsurance.in/empPortal/static/home/assets/image/logo.png" 
+            <img src="{{ EMP_PORTAL_PATH }}static/home/assets/image/logo.png" 
             alt="Company Logo">
 
             <h1>Your Account is Activated - Complete Training Before Taking the Sub-Broker Test</h1>
@@ -119,7 +119,7 @@
 
         <div class="footer">
             <p>Best Regards,</p>
-            <p><strong>Elevate Insurance</strong></p>
+            <p><strong>{{ COMPANY_SHORT_NAME }}</strong></p>
             <p>
                 <a href="{{ company_website }}">Company Website</a> | 
                 <a href="mailto:{{ support_email }}">{{ support_email }}</a> | 

@@ -1,9 +1,9 @@
 {% load static %}
 
 <meta charset="utf-8">
-<title>Elevate Insurance</title>
+<title>{{ COMPANY_SHORT_NAME }}</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="shortcut icon" type="image/png" href="{% static 'home/assets/image/favicon.png' %}">
+<link rel="shortcut icon" type="image/png" href="{% static FAVICON_LOGO %}">
 <link rel="stylesheet" type="text/css" href="{% static 'home/assets/css/bootstrap.min.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'home/assets/css/style.css' %}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -14,7 +14,7 @@
 <div class="container">
     <nav class="navbar navbar-expand-lg">
         <a class="navbar-brand" href="{% url 'home-index' %}">
-            <img src="{% static 'home/assets/image/logo.png' %}" alt="" class="logo">
+            <img src="{% static GLOBAL_BIG_LOGO %}" alt="" class="logo">
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>

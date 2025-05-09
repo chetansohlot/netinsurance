@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Training Material & Question Paper - Elevate Insurance</title>
-    <link rel="stylesheet" href="https://pos.elevateinsurance.in/assets/css/style.css">
+    <title>Training Material & Question Paper - {{ COMPANY_SHORT_NAME }}</title>
+    <link rel="stylesheet" href="{{ COMPANY_WEBSITE }}assets/css/style.css">
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -65,16 +65,16 @@
 </head>
 <body>
     <header class="header">
-        <h1>Elevate Insurance Training & Examination</h1>
+        <h1>{{ COMPANY_SHORT_NAME }} Training & Examination</h1>
         <p>Empowering Agents with Knowledge</p>
     </header>
     
     <div class="container">
         <section class="section">
             <h2>Company Information</h2>
-            <p><strong>Address:</strong> Ground Floor Shop No. 56, Ganpat Market, Agroha Dham, Agroha, Hisar, Haryana, India, 125047</p>
-            <p><strong>Email:</strong> info@elevateinsurance.in | <strong>Website:</strong> <a href="https://www.elevateinsurance.in">www.elevateinsurance.in</a></p>
-            <p><strong>IRDAI License Number:</strong> 1026</p>
+            <p><strong>Address:</strong> {{ COMPANY_ADDRESS }}</p>
+            <p><strong>Email:</strong> {{ COMPANY_EMAIL }} | <strong>Website:</strong> <a href="{{ COMPANY_WEBSITE }}">{{ COMPANY_WEBSITE }}</a></p>
+            <p><strong>IRDAI License Number:</strong> {{ IRDAI_LICENSE_NO }}</p>
         </section>
         
         <section class="section">
@@ -112,7 +112,7 @@
     </div>
     
     <footer class="footer">
-        <p>&copy; 2025 Elevate Insurance. All Rights Reserved.</p>
+        <p>&copy; 2025 {{ COMPANY_SHORT_NAME }}. All Rights Reserved.</p>
     </footer>
 </body>
 </html>
