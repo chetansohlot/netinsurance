@@ -48,8 +48,8 @@ logging.getLogger('faker').setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 from django.core.paginator import Paginator
-
-from django.db.models import Q, F, Value
+from django.utils.timezone import now
+from django.db.models import Q, F, Value, Count, Max
 from django.db.models.functions import Lower
 import json
 app = FastAPI()
@@ -58,6 +58,7 @@ app = FastAPI()
 from ..utils import send_sms_post
 from datetime import datetime
 from empPortal.model import Partner
+
 
 def parse_date(date_str):
     try:
@@ -111,7 +112,7 @@ def agent_commission(request):
     referrals = Referral.objects.all().order_by('name')
     bqpList = BqpMaster.objects.all().order_by('bqp_fname')
     partners = Partner.objects.all().order_by('name')
-
+    has_filters = any(value for value in filters_dict.values())
     return render(request, 'policy-commission/agent-commission.html', {
         "page_obj": page_obj,
         "policy_count": policy_count,
@@ -122,63 +123,117 @@ def agent_commission(request):
         'referrals': referrals,
         'bqpList': bqpList,
         'partners': partners,
+        'has_filters':has_filters,
         'filtered_policy_ids': [obj.id for obj in filtered],
         'filtered_count': len(filtered),
     })
-
-
 
 def update_agent_commission(request):
     if not request.user.is_authenticated:
         return redirect('login')
 
-    policy_ids_str = request.POST.get('policy_ids', '')
-    policy_ids = [int(id.strip()) for id in policy_ids_str.split(',') if id.strip().isdigit()]
-
-    if not policy_ids:
-        return redirect('agent-commission')
-
-    policies = PolicyDocument.objects.filter(id__in=policy_ids).only('id', 'policy_number')
-
-    policy_map = {policy.id: policy.policy_number for policy in policies}
-
-    for policy_id in policy_ids:
-        policy_number = policy_map.get(policy_id)
-        if not policy_number:
-            continue  # Skip if policy not found
-
-        obj, created = AgentPaymentDetails.objects.get_or_create(policy_id=policy_id, defaults={'policy_number': policy_number})
-
-        if not created:
-            # If already exists, also update the policy_number (in case it was missing before)
-            obj.policy_number = policy_number
-
-        obj.agent_od_comm = request.POST.get('agent_od_commission')
-        obj.agent_net_comm = request.POST.get('agent_net_commission')
-        obj.agent_tp_comm = request.POST.get('agent_tp_commission')
-        obj.agent_incentive_amount = request.POST.get('agent_incentive_amount')
-        obj.agent_tds = request.POST.get('agent_tds')
-        obj.updated_by = request.user
-        obj.save()
-
+    udpating_policy_ids = request.POST.get('udpating_policy_ids', '')
         
-        # Log the update
-        log_commission_update(
+    if not udpating_policy_ids:
+        messages.error(request,'Select Atleast One Policy')
+        return redirect(request.META.get('HTTP_REFERER', '/'))
+
+    try:
+        od_commission = float(request.POST.get('agent_od_commission'))
+        tp_commission = float(request.POST.get('agent_tp_commission'))
+        net_commission = float(request.POST.get('agent_net_commission'))
+        incentive_amount = float(request.POST.get('agent_incentive_amount'))
+        tds_commission = float(request.POST.get('agent_tds'))
+
+        if any(val < 0 for val in [od_commission, tp_commission, net_commission, incentive_amount, tds_commission]):
+            messages.error(request, "Commission values must be non-negative.")
+            return redirect(request.META.get('HTTP_REFERER', '/'))
+
+    except ValueError:
+        messages.error(request, "Invalid number entered in commission fields.")
+        return redirect(request.META.get('HTTP_REFERER', '/'))
+    
+    updatingPolicyList = udpating_policy_ids.split(",") if udpating_policy_ids else []
+
+    current_time = now()
+    unix_timestamp = int(current_time.timestamp())
+
+    for policy_id in updatingPolicyList:
+        policy = PolicyDocument.objects.filter(id=policy_id).last()
+        policy_no = policy.policy_number
+        
+        log_id = log_commission_update(
             commission_type='agent',
             policy_id=policy_id,
-            policy_number=policy_number,
+            policy_number=policy_no,
             updated_by_id=request.user.id,
             updated_from='agent-commission',
+            upload_id=unix_timestamp,
             data={
-                'agent_od_comm': obj.agent_od_comm,
-                'agent_net_comm': obj.agent_net_comm,
-                'agent_tp_comm': obj.agent_tp_comm,
-                'agent_incentive_amount': obj.agent_incentive_amount,
-                'agent_tds': obj.agent_tds,
+                'agent_od_comm': od_commission,
+                'agent_net_comm': net_commission,
+                'agent_tp_comm': tp_commission,
+                'agent_incentive_amount': incentive_amount,
+                'agent_tds': tds_commission,
             }
         )
-        messages.success(request, "Agent Commission Updated successfully!")
+        
+        policy_info = PolicyInfo.objects.filter(policy_id=policy_id,policy_number=policy_no).last()
+        if not policy_info:
+            continue
+        
+        od_premium = float(policy_info.od_premium or 0)
+        tp_premium = float(policy_info.tp_premium or 0)
+        net_premium = float(policy_info.net_premium or 0)
 
+        od_amount = round((od_premium * od_commission) / 100, 2)
+        tp_amount = round((tp_premium * tp_commission) / 100, 2)
+        net_amount = round((net_premium * net_commission) / 100, 2)
+
+        total_comm_amount = round(od_amount + tp_amount + net_amount + incentive_amount, 2)
+        tds_amount = round((total_comm_amount * tds_commission) / 100, 2)
+        net_payable_amount = round(total_comm_amount - tds_amount, 2)
+
+        return_dict = {
+            "od_commission":od_commission,
+            "tp_commission":tp_commission,
+            "net_commission":net_commission,
+            "incentive_amount":incentive_amount,
+            "tds_commission":tds_commission,
+            "od_premium":od_premium,
+            "tp_premium":tp_premium,
+            "net_premium":net_premium,
+            "od_amount":od_amount,
+            "tp_amount":tp_amount,
+            "net_amount":net_amount,
+            "total_comm_amount":total_comm_amount,
+            "tds_amount":tds_amount,
+            "net_payable_amount":net_payable_amount
+        }
+        # print(return_dict)
+        # return HttpResponse(return_dict)
+        
+        obj, created = AgentPaymentDetails.objects.get_or_create(policy_id=policy_id,policy_number=policy_no)
+        obj.agent_od_comm = od_commission
+        obj.agent_net_comm = net_commission
+        obj.agent_tp_comm = tp_commission
+        obj.agent_incentive_amount = incentive_amount
+        obj.agent_tds = tds_commission
+        obj.agent_od_amount = od_amount
+        obj.agent_net_amount = net_amount
+        obj.agent_tp_amount = tp_amount
+        obj.agent_total_comm_amount = total_comm_amount
+        obj.agent_net_payable_amount = net_payable_amount
+        obj.agent_tds_amount = tds_amount
+        obj.updated_by = request.user
+        obj.save()
+        
+        log = CommissionUpdateLog.objects.get(id=log_id)
+        log.status = 1
+        log.save()
+        
+        
+    messages.success(request, "Agent Commission Updated successfully!")
     return redirect('agent-commission')
 
 def franchisees_commission(request):
@@ -221,6 +276,7 @@ def franchisees_commission(request):
     referrals = Referral.objects.all().order_by('name')
     bqpList = BqpMaster.objects.all().order_by('bqp_fname')
     partners = Partner.objects.all().order_by('name')
+    has_filters = any(value for value in filters.values())
 
     return render(request, 'policy-commission/franchisees-commission.html', {
         "page_obj": page_obj,
@@ -234,6 +290,7 @@ def franchisees_commission(request):
         "partners": partners,
         "filtered_policy_ids": [obj.id for obj in filtered_policies],
         "filtered_count": len(filtered_policies),
+        "has_filters":has_filters
     })
 
 
@@ -243,74 +300,90 @@ def update_franchise_commission(request):
     if not request.user.is_authenticated:
         return redirect('login')
 
-    policy_ids_str = request.POST.get('policy_ids', '')
-    policy_ids = [int(id.strip()) for id in policy_ids_str.split(',') if id.strip().isdigit()]
-
-    if not policy_ids:
-        return redirect('franchise-commission')
-
-    policies = PolicyDocument.objects.filter(id__in=policy_ids).only('id', 'policy_number')
-
-    # Create a dictionary mapping policy IDs to policy numbers
-    policy_map = {policy.id: policy.policy_number for policy in policies}
-
-    for policy_id in policy_ids:
-        policy_number = policy_map.get(policy_id)
-        if not policy_number:
-            continue  # Skip if policy not found
-
-        # Get or create the FranchisePayment object for this policy
-        obj, created = FranchisePayment.objects.get_or_create(
-            policy_id=policy_id, defaults={'policy_number': policy_number}
-        )
-
-        if not created:
-            # If already exists, also update the policy_number (in case it was missing before)
-            obj.policy_number = policy_number
-
-        # Update the fields from the form data
-        obj.franchise_od_comm = request.POST.get('franchise_od_commission')
-        obj.franchise_net_comm = request.POST.get('franchise_net_commission')
-        obj.franchise_tp_comm = request.POST.get('franchise_tp_commission')
-        obj.franchise_incentive_amount = request.POST.get('franchise_incentive_amount')
-        obj.franchise_tds = request.POST.get('franchise_tds')
-        obj.updated_by = request.user
-
-        # Calculate the amounts based on the commissions
-        try:
-            obj.franchise_od_amount = float(obj.franchise_od_comm) if obj.franchise_od_comm else 0
-            obj.franchise_net_amount = float(obj.franchise_net_comm) if obj.franchise_net_comm else 0
-            obj.franchise_tp_amount = float(obj.franchise_tp_comm) if obj.franchise_tp_comm else 0
-            obj.franchise_total_comm_amount = obj.franchise_od_amount + obj.franchise_net_amount + obj.franchise_tp_amount
-            obj.franchise_net_payable_amount = obj.franchise_total_comm_amount - (float(obj.franchise_tds) if obj.franchise_tds else 0)
-            obj.franchise_tds_amount = float(obj.franchise_tds) if obj.franchise_tds else 0
-        except ValueError:
-            # Handle any invalid values that might cause errors when converting to float
-            pass
-
-        # Save the updated franchise payment
-        obj.save()
-
+    udpating_policy_ids = request.POST.get('udpating_policy_ids', '')
         
-        log_commission_update(
+    if not udpating_policy_ids:
+        messages.error(request,'Select Atleast One Policy')
+        return redirect(request.META.get('HTTP_REFERER', '/'))
+
+    try:
+        od_commission = float(request.POST.get('franchise_od_commission'))
+        tp_commission = float(request.POST.get('franchise_tp_commission'))
+        net_commission = float(request.POST.get('franchise_net_commission'))
+        incentive_amount = float(request.POST.get('franchise_incentive_amount'))
+        tds_commission = float(request.POST.get('franchise_tds'))
+
+        if any(val < 0 for val in [od_commission, tp_commission, net_commission, incentive_amount, tds_commission]):
+            messages.error(request, "Commission values must be non-negative.")
+            return redirect(request.META.get('HTTP_REFERER', '/'))
+
+    except ValueError:
+        messages.error(request, "Invalid number entered in commission fields.")
+        return redirect(request.META.get('HTTP_REFERER', '/'))
+
+    updatingPolicyList = udpating_policy_ids.split(",") if udpating_policy_ids else []
+
+    current_time = now()
+    unix_timestamp = int(current_time.timestamp())
+    
+    for policy_id in updatingPolicyList:
+        policy = PolicyDocument.objects.filter(id=policy_id).last()
+        policy_no = policy.policy_number
+        
+        log_id = log_commission_update(
             commission_type='franchise',
             policy_id=policy_id,
-            policy_number=policy_number,
+            policy_number=policy_no,
             updated_by_id=request.user.id,
             updated_from='franchise-commission',
+            upload_id=unix_timestamp,
             data={
-                'franchise_od_comm': obj.franchise_od_comm,
-                'franchise_net_comm': obj.franchise_net_comm,
-                'franchise_tp_comm': obj.franchise_tp_comm,
-                'franchise_incentive_amount': obj.franchise_incentive_amount,
-                'franchise_tds': obj.franchise_tds,
+                'franchise_od_comm': od_commission,
+                'franchise_net_comm': net_commission,
+                'franchise_tp_comm': tp_commission,
+                'franchise_incentive_amount': incentive_amount,
+                'franchise_tds': tds_commission,
             }
         )
+        
+        policy_info = PolicyInfo.objects.filter(policy_id=policy_id,policy_number=policy_no).last()
+        if not policy_info:
+            continue
+        
+        od_premium = float(policy_info.od_premium or 0)
+        tp_premium = float(policy_info.tp_premium or 0)
+        net_premium = float(policy_info.net_premium or 0)
 
-        messages.success(request, "Franchise Commission Updated successfully!")
+        od_amount = round((od_premium * od_commission) / 100, 2)
+        tp_amount = round((tp_premium * tp_commission) / 100, 2)
+        net_amount = round((net_premium * net_commission) / 100, 2)
 
+        total_comm_amount = round(od_amount + tp_amount + net_amount + incentive_amount, 2)
+        tds_amount = round((total_comm_amount * tds_commission) / 100, 2)
+        net_payable_amount = round(total_comm_amount - tds_amount, 2)
+
+        obj, created = FranchisePayment.objects.get_or_create(policy_id=policy_id,policy_number=policy_no)
+        obj.franchise_od_comm = od_commission
+        obj.franchise_net_comm = net_commission
+        obj.franchise_tp_comm = tp_commission
+        obj.franchise_incentive_amount = incentive_amount
+        obj.franchise_tds = tds_commission
+        obj.franchise_od_amount = od_amount
+        obj.franchise_net_amount = net_amount
+        obj.franchise_tp_amount = tp_amount
+        obj.franchise_total_comm_amount = total_comm_amount
+        obj.franchise_net_payable_amount = net_payable_amount
+        obj.franchise_tds_amount = tds_amount
+        obj.updated_by = request.user
+        obj.save()
+        
+        log = CommissionUpdateLog.objects.get(id=log_id)
+        log.status = 1
+        log.save()
+        
+        
+    messages.success(request, "Franchise Commission Updated successfully!")
     return redirect('franchisees-commission')
-
 
 def insurer_commission(request):
     if not request.user.is_authenticated:
@@ -352,7 +425,7 @@ def insurer_commission(request):
     referrals = Referral.objects.all().order_by('name')
     bqpList = BqpMaster.objects.all().order_by('bqp_fname')
     partners = Partner.objects.all().order_by('name')
-
+    has_filters = any(value for value in filters.values())
     return render(request, 'policy-commission/insurer-commission.html', {
         "page_obj": page_obj,
         "policy_count": policy_count,
@@ -365,89 +438,109 @@ def insurer_commission(request):
         'partners': partners,
         'filtered_policy_ids': [obj.id for obj in filtered],
         'filtered_count': len(filtered),
+        'has_filters': has_filters
     })
-
-
-
 
 def update_insurer_commission(request):
     if not request.user.is_authenticated:
         return redirect('login')
-
-    policy_ids_str = request.POST.get('policy_ids', '')
-    policy_ids = [int(id.strip()) for id in policy_ids_str.split(',') if id.strip().isdigit()]
-
-    if not policy_ids:
-        return redirect('insurer-commission')
-
-    policies = PolicyDocument.objects.filter(id__in=policy_ids).only('id', 'policy_number')
-
-    # Create a dictionary mapping policy IDs to policy numbers
-    policy_map = {policy.id: policy.policy_number for policy in policies}
-
-    for policy_id in policy_ids:
-        policy_number = policy_map.get(policy_id)
-        if not policy_number:
-            continue  # Skip if policy not found
-
-        # Get or create the InsurerPaymentDetails object for this policy
-        obj, created = InsurerPaymentDetails.objects.get_or_create(
-            policy_id=policy_id, defaults={'policy_number': policy_number}
-        )
-
-        if not created:
-            obj.policy_number = policy_number  # Update if exists
-
-        # Update fields from the form
-        obj.insurer_od_comm = request.POST.get('insurer_od_commission')
-        obj.insurer_net_comm = request.POST.get('insurer_net_commission')
-        obj.insurer_tp_comm = request.POST.get('insurer_tp_commission')
-        obj.insurer_incentive_amount = request.POST.get('insurer_incentive_amount')
-        obj.insurer_tds = request.POST.get('insurer_tds')
-        obj.updated_by = request.user
-
-        # Calculate amounts based on commissions
-        try:
-            obj.insurer_od_amount = str(float(obj.insurer_od_comm) if obj.insurer_od_comm else 0)
-            obj.insurer_net_amount = str(float(obj.insurer_net_comm) if obj.insurer_net_comm else 0)
-            obj.insurer_tp_amount = str(float(obj.insurer_tp_comm) if obj.insurer_tp_comm else 0)
-            obj.insurer_total_comm_amount = str(float(obj.insurer_od_amount) + float(obj.insurer_net_amount) + float(obj.insurer_tp_amount))
-            obj.insurer_net_payable_amount = str(float(obj.insurer_total_comm_amount) - (float(obj.insurer_tds) if obj.insurer_tds else 0))
-            obj.insurer_tds_amount = str(float(obj.insurer_tds) if obj.insurer_tds else 0)
-        except ValueError:
-            pass
-
-        obj.save()
-
+    
+    udpating_policy_ids = request.POST.get('udpating_policy_ids', '')
         
-        log_commission_update(
+    if not udpating_policy_ids:
+        messages.error(request,'Select Atleast One Policy')
+        return redirect(request.META.get('HTTP_REFERER', '/'))
+
+    try:
+        od_commission = float(request.POST.get('insurer_od_commission'))
+        tp_commission = float(request.POST.get('insurer_tp_commission'))
+        net_commission = float(request.POST.get('insurer_net_commission'))
+        incentive_amount = float(request.POST.get('insurer_incentive_amount'))
+        tds_commission = float(request.POST.get('insurer_tds'))
+
+        if any(val < 0 for val in [od_commission, tp_commission, net_commission, incentive_amount, tds_commission]):
+            messages.error(request, "Commission values must be non-negative.")
+            return redirect(request.META.get('HTTP_REFERER', '/'))
+
+    except ValueError:
+        messages.error(request, "Invalid number entered in commission fields.")
+        return redirect(request.META.get('HTTP_REFERER', '/'))
+
+    updatingPolicyList = udpating_policy_ids.split(",") if udpating_policy_ids else []
+
+    current_time = now()
+    unix_timestamp = int(current_time.timestamp())
+    
+    for policy_id in updatingPolicyList:
+        policy = PolicyDocument.objects.filter(id=policy_id).last()
+        policy_no = policy.policy_number
+        
+        log_id = log_commission_update(
             commission_type='insurer',
             policy_id=policy_id,
-            policy_number=policy_number,
+            policy_number=policy_no,
             updated_by_id=request.user.id,
             updated_from='insurer-commission',
+            upload_id=unix_timestamp,
             data={
-                'insurer_od_comm': obj.insurer_od_comm,
-                'insurer_net_comm': obj.insurer_net_comm,
-                'insurer_tp_comm': obj.insurer_tp_comm,
-                'insurer_incentive_amount': obj.insurer_incentive_amount,
-                'insurer_tds': obj.insurer_tds,
+                'insurer_od_comm': od_commission,
+                'insurer_net_comm': net_commission,
+                'insurer_tp_comm': tp_commission,
+                'insurer_incentive_amount': incentive_amount,
+                'insurer_tds': tds_commission,
             }
         )
-        messages.success(request, "Insurer Commission Updated successfully!")
+        
+        policy_info = PolicyInfo.objects.filter(policy_id=policy_id,policy_number=policy_no).last()
+        if not policy_info:
+            continue
+        
+        od_premium = float(policy_info.od_premium or 0)
+        tp_premium = float(policy_info.tp_premium or 0)
+        net_premium = float(policy_info.net_premium or 0)
 
+        od_amount = round((od_premium * od_commission) / 100, 2)
+        tp_amount = round((tp_premium * tp_commission) / 100, 2)
+        net_amount = round((net_premium * net_commission) / 100, 2)
+
+        total_comm_amount = round(od_amount + tp_amount + net_amount + incentive_amount, 2)
+        tds_amount = round((total_comm_amount * tds_commission) / 100, 2)
+        net_payable_amount = round(total_comm_amount - tds_amount, 2)
+
+        obj, created = InsurerPaymentDetails.objects.get_or_create(policy_id=policy_id,policy_number=policy_no)
+        obj.insurer_od_comm = od_commission
+        obj.insurer_net_comm = net_commission
+        obj.insurer_tp_comm = tp_commission
+        obj.insurer_incentive_amount = incentive_amount
+        obj.insurer_tds = tds_commission
+        obj.insurer_od_amount = od_amount
+        obj.insurer_net_amount = net_amount
+        obj.insurer_tp_amount = tp_amount
+        obj.insurer_total_comm_amount = total_comm_amount
+        obj.insurer_net_payable_amount = net_payable_amount
+        obj.insurer_tds_amount = tds_amount
+        obj.updated_by = request.user
+        obj.save()
+        
+        log = CommissionUpdateLog.objects.get(id=log_id)
+        log.status = 1
+        log.save()
+        
+        
+    messages.success(request, "Insurer Commission Updated successfully!")
     return redirect('insurer-commission')
 
-
-def log_commission_update(commission_type, policy_id, policy_number, updated_by_id, updated_from, data):
-    CommissionUpdateLog.objects.create(
+def log_commission_update(commission_type, policy_id, policy_number, updated_by_id, updated_from, upload_id, data):
+    log_entry = CommissionUpdateLog.objects.create(
         commission_type=commission_type,
         policy_id=policy_id,
         policy_number=policy_number,
         updated_by_id=updated_by_id,
         updated_from=updated_from,
+        upload_id=upload_id,
         updated_data=data,
     )
+    return log_entry.id
 
 from django.db.models import Q
 from datetime import datetime
@@ -554,3 +647,97 @@ def paginate_queryset(queryset, request, per_page_default=10):
         per_page = per_page_default
     paginator = Paginator(queryset, per_page)
     return paginator.get_page(request.GET.get('page')), per_page
+
+def logs_update_agent_commission(request):
+    if not request.user.is_authenticated and request.user.is_active != 1:
+        messages.error(request,'Please Login First')
+        return redirect('login')
+    
+    role_id = request.user.role_id
+    user_id = request.user.id
+
+    base_filter = {
+        "upload_id__isnull": False,
+        "commission_type": "agent"
+    }
+
+    if role_id != 1:
+        base_filter["updated_by_id"] = user_id
+
+    log_data = (
+        CommissionUpdateLog.objects
+        .filter(**base_filter)
+        .values("upload_id", "updated_by__first_name", "updated_by__last_name")
+        .annotate(
+            requested_count=Count("id"),
+            success_count=Count("id", filter=Q(status=1)),
+            failed_count=Count("id", filter=Q(status=0)),
+            updated_at=Max("created_at")
+        )
+    )
+    return render(request, "policy-commission/agent-commission-update-logs.html", {
+        "log_data": log_data
+    })
+    
+def logs_update_insurer_commission(request):
+    if not request.user.is_authenticated and request.user.is_active != 1:
+        messages.error(request,'Please Login First')
+        return redirect('login')
+    
+    role_id = request.user.role_id
+    user_id = request.user.id
+
+    base_filter = {
+        "upload_id__isnull": False,
+        "commission_type": "insurer"
+    }
+
+    if role_id != 1:
+        base_filter["updated_by_id"] = user_id
+
+    log_data = (
+        CommissionUpdateLog.objects
+        .filter(**base_filter)
+        .values("upload_id", "updated_by__first_name", "updated_by__last_name")
+        .annotate(
+            requested_count=Count("id"),
+            success_count=Count("id", filter=Q(status=1)),
+            failed_count=Count("id", filter=Q(status=0)),
+            updated_at=Max("created_at")
+        )
+    )
+    return render(request, "policy-commission/insurer-commission-update-logs.html", {
+        "log_data": log_data
+    })
+    
+def logs_update_franchise_commission(request):
+    if not request.user.is_authenticated and request.user.is_active != 1:
+        messages.error(request,'Please Login First')
+        return redirect('login')
+    
+    role_id = request.user.role_id
+    user_id = request.user.id
+
+    base_filter = {
+        "upload_id__isnull": False,
+        "commission_type": "franchise"
+    }
+
+    if role_id != 1:
+        base_filter["updated_by_id"] = user_id
+
+    log_data = (
+        CommissionUpdateLog.objects
+        .filter(**base_filter)
+        .values("upload_id", "updated_by__first_name", "updated_by__last_name")
+        .annotate(
+            requested_count=Count("id"),
+            success_count=Count("id", filter=Q(status=1)),
+            failed_count=Count("id", filter=Q(status=0)),
+            updated_at=Max("created_at")
+        )
+    )
+    return render(request, "policy-commission/franchise-commission-update-logs.html", {
+        "log_data": log_data
+    })
+    

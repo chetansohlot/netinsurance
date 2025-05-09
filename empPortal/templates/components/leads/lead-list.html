@@ -13,11 +13,12 @@
             <label for="checkall"></label>
           </th>
           <th>Lead Info</th>
-          <th>Customer Info</th>
-          <th>Project Name</th>
+          <th width="200">Customer Info</th>
+          <th>Personal Info</th>
           <th>Policy Info</th>
+          <th>Lead Source Info</th>
+          <th>Lead Allocation</th>
           <th>Status</th>
-          <th>Allocated</th>
           <th>Action</th>
         </tr>
       </thead>
@@ -32,44 +33,70 @@
               <!-- Lead ID + Date -->
           <td>
             <span class="badge bg-secondary">{{ lead.lead_id }}</span><br>
+            <span class="d-block text-primary">{{ lead.name_as_per_pan }}</span>
+            <span class="d-block">Lead Age : N/A</span>
             <small class="text-muted">
               {{ lead.created_at|date:"d M Y h:i A" }}
             </small>
           </td>
              <!-- Customer Info -->
           <td>
-            <strong>Name:</strong> {{ lead.name_as_per_pan }}<br>
-            <strong>Mobile:</strong> {{ lead.mobile_number }}<br>
-            <strong>Email:</strong> {{ lead.email_address }}<br>
+            {{ lead.email_address }}<br>
+            <span class="d-block text-muted">{{ lead.mobile_number }}</span>
+            
           </td>
             <!-- Project Name -->
-          <td class="text-center">
+          <td>
+            Male <br>
+            <span class="d-block text-muted">DOB: 15-12-1986</span>
+            <span>PAN: BAXPK1234K</span>
+          </td>
+          <!-- <td class="text-center">
             {{ lead.project_name|default:"-" }}
+          </td> -->
+          <td>
+            <strong>Insurance Type:</strong> {{ lead.lead_type|default:"-" }}<br>
+            <span class="d-block text-muted">Category: N/A</span>
+            <span>Product Name: ABC</span>
+            <!-- <strong>Company:</strong> {{ lead.insurance_company|default:"-" }} -->
           </td>
           <td>
-            <strong>Type:</strong> {{ lead.lead_type|default:"-" }}<br>
-            <strong>Company:</strong> {{ lead.insurance_company|default:"-" }}
+            Source Type: N/A <br>
+            <span class="d-block text-muted">Source Name: ABC</span>
+            Refferal Name: Ankit<br>
+            <span>Source Medium: N/A</span>
+
+          </td>
+          <td>
+            Allocated user: N/A <br>
+            <span class="d-block text-muted">Allocation Date: 5-5-2025</span>
           </td>
             <!-- Status -->
-          <td class="text-center">
+          <!-- <td class="text-center">
             <span class="badge bg-light text-dark">
               {{ lead.status|default:"-" }}
             </span>
-          </td>
+          </td> -->
 
              <!-- Allocation -->
-          <td class="text-center">
+          <!-- <td class="text-center">
             {{ lead.sales_manager|default:"Un-Allocated" }}
+          </td> -->
+          <td>
+            Create : 8-5-2025 <br>
+            <span class="d-block text-muted">Quote: N/A</span>
+            Booking: 7-5-2025 <br>
+            Issued: 8-5-2025
           </td>
           <!--Action-->
           <td> 
-            <a href="#" class="btn btn-sm btn-info" title="View">
+            <a href="#" class="btn btn-xs btn-info" title="View">
               <i class="bi bi-eye"></i>
             </a>
-            <a href="#" class="btn btn-sm btn-success" title="Assign">
+            <a href="#" class="btn btn-xs btn-success" title="Allocation">
               <i class="bi bi-person-plus"></i>
             </a>
-            <a href="{% url 'leads-mgt-edit' lead_id=lead.id %}" class="btn btn-sm btn-warning" title="Edit">
+            <a href="{% url 'leads-mgt-edit' lead_id=lead.id %}" class="btn btn-xs btn-warning" title="Edit">
               <i class="bi bi-pencil-square"></i>
             </a>
           </td>

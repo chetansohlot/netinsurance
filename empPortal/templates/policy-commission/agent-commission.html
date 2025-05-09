@@ -29,14 +29,14 @@ Pending Agent Commission
             </ul>
           </div>
           <div class="col-sm-6">
-            {% if request.user.role_id == 1 %}
               <div class="d-flex justify-content-end">
-                <a href="{% url 'edit-bulk-policy' %}" class="breadcrump-addbtn mx-1">Edit Bulk Policy</a>
+                <a href="{% url 'logs-agent-commission-update' %}" class="breadcrump-addbtn mx-1">Logs View</a>
+
+                <!-- <a href="{% url 'edit-bulk-policy' %}" class="breadcrump-addbtn mx-1">Edit Bulk Policy</a>
                 <a href="{% url 'bulk-upload-logs' %}" class="breadcrump-addbtn mx-1">View Bulk Logs</a>
                 <a href="{% url 'bulk-policy-mgt' %}" class="breadcrump-addbtn mx-1">Add Bulk Policy</a>
-                <a href="{% url 'policy-mgt' %}" class="breadcrump-addbtn mx-1">Add Policy</a>
+                <a href="{% url 'policy-mgt' %}" class="breadcrump-addbtn mx-1">Add Policy</a> -->
               </div>
-            {% endif %}
           </div>
         </div>
         <div class="row">
@@ -156,6 +156,8 @@ Pending Agent Commission
                             {% include "components/policy-commission/commission-filter.html" %}
 
                             <!-- Buttons -->
+
+                            
                             <div class="col-sm-6 col-md-2">
                               <div class="form-group d-flex">
                                 <button type="submit" class="wrap-btn w-100 mr-2">Apply</button>
@@ -171,7 +173,7 @@ Pending Agent Commission
                         </form>
                   
                 </div>  
-
+                {% if has_filters %}
                 <div class="row">
                     <div class="col-md-12">
                       <div class="card">
@@ -179,44 +181,48 @@ Pending Agent Commission
                   
                           <!-- Update Insurer Commission Form -->
                           <h5 class="mb-3">Update Agent Commission</h5>
-                          
-                          <form method="post" action="{% url 'update-agent-commission' %}">
+                            <form method="post" action="{% url 'update-agent-commission' %}">
                             {% csrf_token %}
                             <div class="row align-items-center">
                               <input type="hidden" name="policy_ids" value="{{ filtered_policy_ids|join:',' }}">
-                        
+                              
                               <!-- Agent OD Commission -->
                               <div class="col-6 col-md-2">
                                 <div class="form-group">
-                                  <input class="form-field" name="agent_od_commission" type="text" placeholder="Agent OD Commission">
+                                  <input class="form-field percentage" name="agent_od_commission" type="text" placeholder="OD Commission">
+                                  <small class="text-muted">( OD Commission % )</small>
                                 </div>
                               </div>
                         
                               <!-- Agent Net Commission -->
                               <div class="col-6 col-md-2">
                                 <div class="form-group">
-                                  <input class="form-field" name="agent_net_commission" type="text" placeholder="Agent Net Commission">
+                                  <input class="form-field percentage" name="agent_net_commission" type="text" placeholder="Net Commission">
+                                  <small class="text-muted">( Net Commission % )</small>
                                 </div>
                               </div>
                         
                               <!-- Agent TP Commission -->
                               <div class="col-6 col-md-2">
                                 <div class="form-group">
-                                  <input class="form-field" name="agent_tp_commission" type="text" placeholder="Agent TP Commission">
+                                  <input class="form-field percentage" name="agent_tp_commission" type="text" placeholder="TP Commission">
+                                  <small class="text-muted">( TP Commission % )</small>
                                 </div>
                               </div>
                         
                               <!-- Agent Incentive Amount -->
                               <div class="col-6 col-md-2">
                                 <div class="form-group">
-                                  <input class="form-field" name="agent_incentive_amount" type="text" placeholder="Agent Incentive Amount">
+                                  <input class="form-field amount-number" name="agent_incentive_amount" type="text" placeholder="Incentive Amount">
+                                  <small class="text-muted">( Incentive Amount )</small>
                                 </div>
                               </div>
                         
                               <!-- Agent TDS -->
                               <div class="col-6 col-md-2">
                                 <div class="form-group">
-                                  <input class="form-field" name="agent_tds" type="text" placeholder="Agent TDS">
+                                  <input class="form-field percentage" name="agent_tds" type="text" placeholder="TDS">
+                                  <small class="text-muted">( TDS % )</small>
                                 </div>
                               </div>
                         
@@ -224,16 +230,19 @@ Pending Agent Commission
                               <div class="col-6 col-md-2">
                                 <div class="form-group">
                                   <button type="submit" class="wrap-btn w-100 bg-danger text-white">Update Commission</button>
+                                  <small class="text-muted"> &nbsp;</small>
                                 </div>
                               </div>
-                        
                             </div>
-                        </form>
-                        
-                        </div>
+
+                            <input type="hidden" id="udpating_policy_ids" name="udpating_policy_ids">
+                            
+                            </form>
+                      </div>
                       </div>
                     </div>
                 </div>
+                {% endif %}
                   
                 <ul class="nav nav-pills profile-tab">
                   <li class="nav-item text-bold">
@@ -252,6 +261,7 @@ Pending Agent Commission
                       <table class="table table-design policy-data-table-width">
                         <thead class="table-thead-bg-light table-header-fix">
                           <tr>
+                            <th></th>
                             <th class="nowrap">Insurance Co.</th>
                             <th class="nowrap">Holder</th>
                             <th class="nowrap">Policy Type</th>
@@ -274,6 +284,7 @@ Pending Agent Commission
                         <tbody>
                           {% for data in page_obj %}
                             <tr>
+                              <td><input type="checkbox" name="checked_policy_ids[]" class="checked_policy_ids" value="{{data.id}}"></td>
                               <td>
                                 <div class="d-flex align-items-start">
                                   <div>
@@ -397,6 +408,28 @@ Pending Agent Commission
 <!-- ./wrapper -->
 
 {% include 'footer-script.html' %}
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const checkboxes = document.querySelectorAll(".checked_policy_ids");
+        const hiddenInput = document.getElementById("udpating_policy_ids");
+
+        function updateHiddenField() {
+            let selectedIds = [];
+            checkboxes.forEach((checkbox) => {
+                if (checkbox.checked) {
+                    selectedIds.push(checkbox.value);
+                }
+            });
+            hiddenInput.value = selectedIds.join(",");
+            console.log(hiddenInput.value);
+        }
+
+        checkboxes.forEach((checkbox) => {
+            checkbox.addEventListener("change", updateHiddenField);
+        });
+    });
+  </script>
 </body>
 
 {% endblock %}

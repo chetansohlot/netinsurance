@@ -212,7 +212,7 @@ urlpatterns = [
     path('report/f-business-report/', export.franchisees_business_report, name='franchisees-business-report'),
     path('report/i-business-report/', export.insurer_business_report, name='insurer-business-report'),
     
-    path('report/v1/commission-report/', reports.commission_report, name='commission-report'),  
+    path('report/v1/comparison-report/', reports.commission_report, name='commission-report'),  
     path('report/pending-insurer-commission-report/', reports.pending_insurer_commission_report, name='pending-insurer-commission-report'),
     path('report/pending-agent-commission-report/', reports.pending_agent_commission_report, name='pending-agent-commission-report'),
     
@@ -220,16 +220,22 @@ urlpatterns = [
     
     # EXPORT
     path('export-commission-report/', export.export_commission_data, name='export-commission-report-v0'),
-    path('v1/export-commission-report/', export.export_commission_data_v1, name='export-commission-report'),
+    path('v1/export-comparison-report/', export.export_commission_data_v1, name='export-commission-report'),
 
 
     # POLICY-COMMISION 
     path('policy-commission/agent-commission/', PolicyCommission.agent_commission, name='agent-commission'),
+    path('policy-commission/logs-agent-commission/', PolicyCommission.logs_update_agent_commission, name='logs-agent-commission-update'),
     path('policy-commission/update-agent-commission/', PolicyCommission.update_agent_commission, name='update-agent-commission'),
+    
     path('policy-commission/update-franchise-commission/', PolicyCommission.update_franchise_commission, name='update-franchise-commission'),
     path('policy-commission/franchisees-commission/', PolicyCommission.franchisees_commission, name='franchisees-commission'),
+    path('policy-commission/logs-franchise-commission/', PolicyCommission.logs_update_franchise_commission, name='logs-franchise-commission-update'),
+    
     path('policy-commission/insurer-commission/', PolicyCommission.insurer_commission, name='insurer-commission'),
     path('policy-commission/update-insurer-commission/', PolicyCommission.update_insurer_commission, name='update-insurer-commission'),
+    path('policy-commission/logs-insurer-commission/', PolicyCommission.logs_update_insurer_commission, name='logs-insurer-commission-update'),
+    
     # POLICY-COMMISION 
 
     # POLICY-PAYMENT 
@@ -237,6 +243,9 @@ urlpatterns = [
     path('policy-payment/get-campaign-log/', PolicyPayment.get_campaign_log, name='get-campaign-log'),
     path('policy-payment/view-payment-update-log/', PolicyPayment.view_payment_update_log, name='view-payment-update-log'),
     path("ajax/get-campaigns/", PolicyPayment.ajax_get_campaigns, name="ajax-get-campaigns"),
+    # urls.py
+    path('policy-payment/campaign-logs/<int:upload_id>/', PolicyPayment.campaign_policy_logs, name='campaign-policy-logs'),
+
     # POLICY-PAYMENT 
     
 
