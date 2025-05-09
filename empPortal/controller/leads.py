@@ -61,6 +61,8 @@ from django.http import HttpResponse
 from openpyxl import Workbook
 from ..model import State, City
 app = FastAPI()
+from datetime import datetime
+from ..model import InsuranceType, InsuranceCategory, InsuranceProduct
 
 def dictfetchall(cursor):
     "Returns all rows from a cursor as a dict"
@@ -579,6 +581,24 @@ def termlead(request):
     else:
         return redirect('login')
 
+def lead_init_view(request):
+    types = InsuranceType.objects.all()
+    return render(request, 'leads/lead_init.html', {'types': types})
+
+# For AJAX - Load categories
+def load_categories(request):
+    type_id = request.GET.get('insurance_type')
+    categories = InsuranceCategory.objects.filter(insurance_type_id=type_id).values('id', 'name')
+    return JsonResponse(list(categories), safe=False)
+
+# For AJAX - Load products
+def load_products(request):
+    category_id = request.GET.get('insurance_category')
+    products = InsuranceProduct.objects.filter(category_id=category_id).values('id', 'name')
+    return JsonResponse(list(products), safe=False)
+
+
+
 def create_or_edit_lead(request, lead_id=None):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -652,10 +672,12 @@ def create_or_edit_lead(request, lead_id=None):
 
         if lead_type == "MOTOR":
             registration_number = request.POST.get("registration_number", "").strip()
+            
             vehicle_type = request.POST.get("vehicle_type", "").strip()
 
         else:
            registration_number = ""
+           vehicle_type = ""  
 
         # Before creating Lead, try to fetch matching PolicyDocument
         policy_document = None
@@ -722,7 +744,7 @@ def create_or_edit_lead(request, lead_id=None):
             lead.save()
             messages.success(request, f"Lead updated successfully! Lead ID: {lead.lead_id}")
         else:
-            Leads.objects.create(
+            new_lead = Leads.objects.create(
                 mobile_number=mobile_number,
                 email_address=email_address,
                 quote_date=quote_date,
@@ -737,6 +759,7 @@ def create_or_edit_lead(request, lead_id=None):
                 lead_type=lead_type,
                 registration_number=registration_number,
                 vehicle_type=vehicle_type,
+                #vehicle_type = request.POST.get("vehicle_type", None)
                 lead_source=lead_source,
                 referral_by=referral_by,
                 status=status,
@@ -751,7 +774,16 @@ def create_or_edit_lead(request, lead_id=None):
                 partner_id = partner_id
                 
             )
-            messages.success(request, f"Lead created successfully!")
+
+            # Step 2: Generate lead_id using date + ID
+           
+            today_str = datetime.today().strftime('%Y%m%d')  # e.g., 20250508
+            lead_id = f"{today_str}{new_lead.id}"   
+
+            # Step 3: Save it to the lead
+            new_lead.lead_id = lead_id
+            new_lead.save()
+            messages.success(request, f"Lead created successfully!  {lead_id}")
 
         return redirect("leads-mgt")
 

@@ -147,6 +147,9 @@ urlpatterns = [
     path('fetch-policy-details/', leads.fetch_policy_details, name='fetch-policy-details'),
     path('lead-mgt/export/', leads.export_leads_to_excel, name='lead_mgt_export'),
     path('get-cities/', leads.get_cities, name='get_cities'),
+    path('leads/lead-init/', leads.lead_init_view, name='lead-init'),
+    path('leads/load-categories/', leads.load_categories, name='load-categories'),
+    path('leads/load-products/', leads.load_products, name='load-products'),
 
 
     #Insurance
