@@ -128,8 +128,6 @@ def agent_commission(request):
         'filtered_count': len(filtered),
     })
 
-
-
 def update_agent_commission(request):
     if not request.user.is_authenticated:
         return redirect('login')
