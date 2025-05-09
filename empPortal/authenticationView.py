@@ -70,7 +70,10 @@ def login_view(request):
         user = authenticate(request, username=email, password=password)
         if user:
             if user.user_active == 0 :  
-                messages.error(request, 'Your Account is deactivated. Please Contact Elevate Insurance Support !')
+                messages.error(
+                    request,
+                    f'Your Account is deactivated. Please Contact {settings.COMPANY_SHORT_NAME} Support!'
+                )
                 logout(request)
                 return redirect(request.META.get('HTTP_REFERER', '/'))
         

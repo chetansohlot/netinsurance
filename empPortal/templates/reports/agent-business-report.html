@@ -1,7 +1,7 @@
 {% extends 'master.html' %}
 
 {% block title %}
-  Agent Commission Report
+  Agent Business Report
 {% endblock %}
 
 {% block content %}
@@ -145,7 +145,7 @@
                               <td>{{ data.policy_infos.tp_premium|floatformat:2|default:"-" }}</td>
                               <td>{{ data.policy_infos.net_premium|floatformat:2|default:"-" }}</td>
                               <td>{{ data.policy_infos.gross_premium|floatformat:2|default:"-" }}</td>
-                              <td>Final Value</td>
+                              <td>-</td>
                               <td>{{ data.policy_infos.policy_tenure|default:"-" }}</td>
                               <td>{{ data.policy_agent_info.agent_payment_mod|default:"-" }}</td>
                               <td>{{ data.policy_agent_info.payment_date|default:"-" }}</td>
@@ -251,9 +251,9 @@
     <div class="modal-content">
       <div class="modal-body">
         <button type="button" class="close" data-dismiss="modal" >&times;</button>
-        <h2 class="form-title font-weight-bold">Export Comparison Report</h2>
+        <h2 class="form-title font-weight-bold">Export Agent Business Report</h2>
         <p class="pb-2">Export is limited to a single month only.</p>
-        <form action="{% url 'export-commission-report' %}" method="post" id="export-commission-report">
+        <form action="{% url 'export-agent-business-report' %}" method="post" id="export-agent-business-report">
           {% csrf_token %}
           <div class="row">
             <div class="col-md-6">
@@ -283,7 +283,7 @@
 
 {% include 'footer-script.html' %}
 <script>
-  $('#export-commission-report').on('submit', function(e) {
+  $('#export-agent-business-report').on('submit', function(e) {
     e.preventDefault();
 
     const form = $(this);
@@ -317,7 +317,7 @@
         const downloadUrl = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = downloadUrl;
-        a.download = "comparison_report.xlsx";
+        a.download = "agent_business_report.xlsx";
         document.body.appendChild(a);
         a.click();
         a.remove();

@@ -212,12 +212,16 @@ urlpatterns = [
     # REPORTS 
     path('report/commission-report/', export.commission_report, name='commission-report-v0'),
     path('report/a-business-report/', export.agent_business_report, name='agent-business-report-v0'),
-    path('report/sm-business-report/', export.sales_manager_business_report, name='sales-manager-business-report'),
-    path('report/f-business-report/', export.franchisees_business_report, name='franchisees-business-report'),
-    path('report/i-business-report/', export.insurer_business_report, name='insurer-business-report'),
+    path('report/sm-business-report/', export.sales_manager_business_report, name='sales-manager-business-report-v0'),
+    path('report/f-business-report/', export.franchisees_business_report, name='franchisees-business-report-v0'),
+    path('report/i-business-report/', export.insurer_business_report, name='insurer-business-report-v0'),
     
     path('report/v1/comparison-report/', reports.commission_report, name='commission-report'),  
     path('report/v1/a-business-report/', reports.agent_business_report, name='agent-business-report'),
+    path('report/v1/f-business-report/', reports.franchisees_business_report, name='franchisees-business-report'),
+    path('report/v1/i-business-report/', reports.insurer_business_report, name='insurer-business-report'),
+    path('report/v1/sm-business-report/', reports.sales_manager_business_report, name='sales-manager-business-report'),
+    
     
     path('report/pending-insurer-commission-report/', reports.pending_insurer_commission_report, name='pending-insurer-commission-report'),
     path('report/pending-agent-commission-report/', reports.pending_agent_commission_report, name='pending-agent-commission-report'),
@@ -227,6 +231,10 @@ urlpatterns = [
     # EXPORT
     path('export-commission-report/', export.export_commission_data, name='export-commission-report-v0'),
     path('v1/export-comparison-report/', export.export_commission_data_v1, name='export-commission-report'),
+    path('v1/export-sales-manager-business-report/', export.export_sales_manager_business_report, name='export-sales-manager-business-report'),
+    path('v1/export-agent-business-report/', export.export_agent_business_report, name='export-agent-business-report'),
+    path('v1/export-franchise-business-report/', export.export_franchise_business_report, name='export-franchise-business-report'),
+    path('v1/export-insurer-business-report/', export.export_insurer_business_report, name='export-insurer-business-report'),
 
 
     # POLICY-COMMISION 

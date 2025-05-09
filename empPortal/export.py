@@ -21,7 +21,7 @@ import zipfile
 from django.contrib import messages
 from .models import PolicyDocument
 from faker import Faker 
-from .models import PolicyDocument ,Commission, AgentPaymentDetails, InsurerPaymentDetails, PolicyInfo, PolicyVehicleInfo
+from .models import PolicyDocument ,Commission, AgentPaymentDetails, InsurerPaymentDetails, PolicyInfo, PolicyVehicleInfo,FranchisePayment
 import openpyxl
 from openpyxl.styles import Font, PatternFill
 from django.http import HttpResponse
@@ -852,7 +852,7 @@ def export_commission_data_v1(request):
     
     wb = openpyxl.Workbook()
     ws = wb.active
-    ws.title = "Policy Data"
+    ws.title = "Comparison Report"
     user_id = request.user.id
 
 
@@ -982,5 +982,470 @@ def export_commission_data_v1(request):
     wb.save(response)
     return response
 
+def export_sales_manager_business_report(request):
+    if not request.user.is_authenticated or not request.user.is_active:
+        messages.error(request, "Please Login First")
+        return redirect('login')
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Sales Manager Business Report"
+
+    headers = [
+        "Month", "Policy Month", "Branch Name", "Sales Manager", "Agent Name", "Insurance Company", "Insured Name",
+        "Reg Number", "Policy No", "Vehicle Type", "Manufacturing Year", "Vehicle Make/Model", "Fuel Type",
+        "Policy Type", "GVW", "Cubic Capacity", "Seating Capacity", "Sum Insured", "NCB", "OD Premium", "TP Premium",
+        "Net Premium", "Gross Premium", "Final Value", "Policy Year", "Agent Payment Mode", "Agent Payment Date",
+        "Policy Issue Date", "Risk Start Date", "Risk End Date", "Agent Amount", "Agent OD Comm", "Agent OD Amount",
+        "Agent Net Comm", "Agent Net Amount", "Agent TP Comm", "Agent TP Amount", "Agent Incentive Amount",
+        "Agent Total Comm Amount", "Agent Remarks", "Insurer Amount", "Insurer OD Comm", "Insurer OD Amount",
+        "Insurer Net Comm", "Insurer Net Amount", "Insurer TP Comm", "Insurer TP Amount", "Insurer Incentive Amount",
+        "Insurer Total Comm Amount", "Insurer TDS", "Insurer TDS Amount", "Net Profit", "Insurer Remark", "Created By", "Updated By"
+    ]
+
+    header_fill = PatternFill(start_color="0000FF", end_color="0000FF", fill_type="solid")
+    header_font = Font(bold=True, color="FFFFFF")
+    for col_num, header in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col_num, value=header)
+        cell.fill = header_fill
+        cell.font = header_font
+
+    # Get and parse date filter
+    start_date_str = request.GET.get("date")
+    start_date, one_month_later = None, None
+    if start_date_str:
+        start_date = make_aware(datetime.strptime(start_date_str, "%Y-%m-%d"))
+        one_month_later = start_date + relativedelta(months=1)
+
+    # Filter policies
+    policies = PolicyDocument.objects.filter(status=6).exclude(rm_id__isnull=True)
+    if request.user.role_id != 1:
+        policies = policies.filter(rm_id=request.user.id)
+    if start_date and one_month_later:
+        policies = policies.filter(created_at__gte=start_date, created_at__lt=one_month_later)
+
+    policies = policies.order_by('-id')
+
+    for policy in policies:
+        policy_info = PolicyInfo.objects.filter(policy_number=policy.policy_number, policy_id=policy.id).first()
+        if not policy_info:
+            continue  # Skip if no policy info
+
+        agent_payment_info = AgentPaymentDetails.objects.filter(policy_number=policy.policy_number, policy_id=policy.id).first()
+        insurer_payment_info = InsurerPaymentDetails.objects.filter(policy_number=policy.policy_number, policy_id=policy.id).first()
+        vehicle_info = PolicyVehicleInfo.objects.filter(policy_number=policy.policy_number, policy_id=policy.id).first()
+
+        
+
+        agent_total = float(safe_get(agent_payment_info, 'agent_total_comm_amount', 0) or 0)
+        insurer_total = float(safe_get(insurer_payment_info, 'insurer_total_comm_amount', 0) or 0)
+        net_profit = insurer_total - agent_total
+
+        row_data = [
+            safe_get(policy_info, 'policy_month_year'),
+            safe_get(policy_info, 'policy_month_year'),
+            safe_get(getattr(policy_info, 'branch', None), 'branch_name'),
+            safe_get(getattr(agent_payment_info, 'referral', None), 'sales'),
+            safe_get(getattr(agent_payment_info, 'referral', None), 'name'),
+            safe_get(policy_info, 'insurance_company'),
+            safe_get(policy_info, 'insured_name'),
+            safe_get(vehicle_info, 'registration_number'),
+            safe_get(policy_info, 'policy_number'),
+            safe_get(vehicle_info, 'vehicle_type'),
+            safe_get(vehicle_info, 'manufacture_year'),
+            combine_make_model(vehicle_info),
+            safe_get(vehicle_info, 'fuel_type'),
+            safe_get(policy_info, 'policy_type'),
+            safe_get(vehicle_info, 'gvw'),
+            safe_get(vehicle_info, 'cubic_capacity'),
+            safe_get(vehicle_info, 'seating_capacity'),
+            safe_get(policy_info, 'sum_insured'),
+            safe_get(vehicle_info, 'ncb'),
+            safe_get(policy_info, 'od_premium'),
+            safe_get(policy_info, 'tp_premium'),
+            safe_get(policy_info, 'net_premium'),
+            safe_get(policy_info, 'gross_premium'),
+            "-",  # Final Value placeholder
+            safe_get(policy_info, 'policy_tenure'),
+            safe_get(agent_payment_info, 'agent_payment_mod'),
+            safe_get(agent_payment_info, 'payment_date'),
+            safe_get(policy_info, 'issue_date'),
+            safe_get(policy_info, 'start_date'),
+            safe_get(policy_info, 'end_date'),
+            safe_get(agent_payment_info, 'agent_amount'),
+            safe_get(agent_payment_info, 'agent_od_comm'),
+            safe_get(agent_payment_info, 'agent_od_amount'),
+            safe_get(agent_payment_info, 'agent_net_comm'),
+            safe_get(agent_payment_info, 'agent_net_amount'),
+            safe_get(agent_payment_info, 'agent_tp_comm'),
+            safe_get(agent_payment_info, 'agent_tp_amount'),
+            safe_get(agent_payment_info, 'agent_incentive_amount'),
+            safe_get(agent_payment_info, 'agent_total_comm_amount'),
+            safe_get(agent_payment_info, 'agent_remarks'),
+            safe_get(insurer_payment_info, 'insurer_amount'),
+            safe_get(insurer_payment_info, 'insurer_od_comm'),
+            safe_get(insurer_payment_info, 'insurer_od_amount'),
+            safe_get(insurer_payment_info, 'insurer_net_comm'),
+            safe_get(insurer_payment_info, 'insurer_net_amount'),
+            safe_get(insurer_payment_info, 'insurer_tp_comm'),
+            safe_get(insurer_payment_info, 'insurer_tp_amount'),
+            safe_get(insurer_payment_info, 'insurer_incentive_amount'),
+            safe_get(insurer_payment_info, 'insurer_total_comm_amount'),
+            safe_get(insurer_payment_info, 'insurer_tds'),
+            safe_get(insurer_payment_info, 'insurer_tds_amount'),
+            net_profit,
+            safe_get(insurer_payment_info, 'insurer_remarks'),
+            safe_get(policy, 'rm_name'),
+            safe_get(getattr(agent_payment_info, 'updated_by', None), 'full_name')
+        ]
+
+        ws.append(row_data)
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename="sales_manager_business_report.xlsx"'
+    wb.save(response)
+    return response
+
+def export_franchise_business_report(request):
+    if not request.user.is_authenticated or not request.user.is_active:
+        messages.error(request, "Please Login First")
+        return redirect('login')
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Franchise Business Report"
+
+    headers = [
+        "Month","Policy Month","Branch Name","Sales Manager","Franchise","Agent Name","Insurance Company","Insured Name","Reg Number","Policy Number","Vehicle Type","Manufacturing Year","Vehicle Make/Model","Fuel Type","Policy Type","GVW","Cubic Capacity","Seating Capacity","Sum Insured","NCB","OD Premium","TP Premium","Net Premium","Gross Premium","Final Value","Policy Year","Agent Payment Mode","Agent Payment Date","Policy Issue Date","Risk Start Date","Risk End Date","Agent Amount","Agent OD Comm","Agent OD Amount","Agent Net Comm","Agent Net Amount","Agent TP Comm","Agent TP Amount","Agent Incentive Amount","Agent Total Comm Amount","Franchise OD Comm","Franchise OD Amount","Franchise Net Comm","Franchise Net Amount","Franchise TP Comm","Franchise TP Amount","Franchise Incentive Amount","Franchise Total Comm Amount","Franchise Profit","Created By","Updated By"
+    ]
+
+    header_fill = PatternFill(start_color="0000FF", end_color="0000FF", fill_type="solid")
+    header_font = Font(bold=True, color="FFFFFF")
+    for col_num, header in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col_num, value=header)
+        cell.fill = header_fill
+        cell.font = header_font
+
+    # Get and parse date filter
+    start_date_str = request.GET.get("date")
+    start_date, one_month_later = None, None
+    if start_date_str:
+        start_date = make_aware(datetime.strptime(start_date_str, "%Y-%m-%d"))
+        one_month_later = start_date + relativedelta(months=1)
+
+    # Filter policies
+    policies = PolicyDocument.objects.filter(status=6).exclude(rm_id__isnull=True)
+    if request.user.role_id != 1:
+        policies = policies.filter(rm_id=request.user.id)
+    if start_date and one_month_later:
+        policies = policies.filter(created_at__gte=start_date, created_at__lt=one_month_later)
+
+    policies = policies.order_by('-id')
+
+    for policy in policies:
+        policy_info = PolicyInfo.objects.filter(policy_number=policy.policy_number, policy_id=policy.id).first()
+        if not policy_info:
+            continue  # Skip if no policy info
+
+        agent_payment_info = AgentPaymentDetails.objects.filter(policy_number=policy.policy_number, policy_id=policy.id).first()
+        insurer_payment_info = InsurerPaymentDetails.objects.filter(policy_number=policy.policy_number, policy_id=policy.id).first()
+        vehicle_info = PolicyVehicleInfo.objects.filter(policy_number=policy.policy_number, policy_id=policy.id).first()
+        franchise_payment_info = FranchisePayment.objects.filter(policy_number=policy.policy_number, policy_id=policy.id).first()
+
+        agent_total = float(safe_get(agent_payment_info, 'agent_total_comm_amount', 0) or 0)
+        franchise_total = float(safe_get(franchise_payment_info, 'franchise_total_comm_amount', 0) or 0)
+        net_profit = franchise_total - agent_total
 
 
+        row_data = [
+            safe_get(policy_info, 'policy_month_year'),
+            safe_get(policy_info, 'policy_month_year'),
+            safe_get(getattr(policy_info, 'branch', None), 'branch_name'),
+            safe_get(getattr(agent_payment_info, 'referral', None), 'sales'),
+            "-",
+            safe_get(getattr(agent_payment_info, 'referral', None), 'name'),
+            safe_get(policy_info, 'insurance_company'),
+            safe_get(policy_info, 'insured_name'),
+            safe_get(vehicle_info, 'registration_number'),
+            safe_get(policy_info, 'policy_number'),
+            safe_get(vehicle_info, 'vehicle_type'),
+            safe_get(vehicle_info, 'manufacture_year'),
+            combine_make_model(vehicle_info),
+            safe_get(vehicle_info, 'fuel_type'),
+            safe_get(policy_info, 'policy_type'),
+            safe_get(vehicle_info, 'gvw'),
+            safe_get(vehicle_info, 'cubic_capacity'),
+            safe_get(vehicle_info, 'seating_capacity'),
+            safe_get(policy_info, 'sum_insured'),
+            safe_get(vehicle_info, 'ncb'),
+            safe_get(policy_info, 'od_premium'),
+            safe_get(policy_info, 'tp_premium'),
+            safe_get(policy_info, 'net_premium'),
+            safe_get(policy_info, 'gross_premium'),
+            "-",  # Final Value placeholder
+            safe_get(policy_info, 'policy_tenure'),
+            safe_get(agent_payment_info, 'agent_payment_mod'),
+            safe_get(agent_payment_info, 'payment_date'),
+            safe_get(policy_info, 'issue_date'),
+            safe_get(policy_info, 'start_date'),
+            safe_get(policy_info, 'end_date'),
+            safe_get(agent_payment_info, 'agent_amount'),
+            safe_get(agent_payment_info, 'agent_od_comm'),
+            safe_get(agent_payment_info, 'agent_od_amount'),
+            safe_get(agent_payment_info, 'agent_net_comm'),
+            safe_get(agent_payment_info, 'agent_net_amount'),
+            safe_get(agent_payment_info, 'agent_tp_comm'),
+            safe_get(agent_payment_info, 'agent_tp_amount'),
+            safe_get(agent_payment_info, 'agent_incentive_amount'),
+            safe_get(agent_payment_info, 'agent_total_comm_amount'),
+            safe_get(franchise_payment_info,'franchise_od_comm'),
+            safe_get(franchise_payment_info,'franchise_od_amount'),
+            safe_get(franchise_payment_info,'franchise_net_comm'),
+            safe_get(franchise_payment_info,'franchise_net_amount'),
+            safe_get(franchise_payment_info,'franchise_tp_comm'),
+            safe_get(franchise_payment_info,'franchise_tp_amount'),
+            safe_get(franchise_payment_info,'franchise_incentive_amount'),
+            safe_get(franchise_payment_info,'franchise_total_comm_amount'),
+            net_profit,
+            safe_get(policy, 'rm_name'),
+            safe_get(getattr(agent_payment_info, 'updated_by', None), 'full_name')
+        ]
+        
+        ws.append(row_data)
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename="franchise_business_report.xlsx"'
+    wb.save(response)
+    return response
+
+def export_insurer_business_report(request):
+    if not request.user.is_authenticated or not request.user.is_active:
+        messages.error(request, "Please Login First")
+        return redirect('login')
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Insurer Business Report"
+
+    headers = [
+        "Policy Month","Branch Name","Booking Id","Insurance Company","Insurer Name","Service Provider","Portal Id","Insured Name","Reg Number","Policy Number",
+        "Vehicle Type","Manufacturing Year","Vehicle Make/Model","Fuel Type","Policy Type","GVW","Cubic Capacity","Seating Capacity","Sum Insured","NCB",
+        "OD Premium","TP Premium","Net Premium","Gross Premium","Final Value","Policy Year","Insurer Payment Mode","Insurer Payment Date","Policy Issue Date","Risk Start Date",
+        "Risk End Date","Insurer Amount","Insurer OD Comm","Insurer OD Amount","Insurer Net Comm","Insurer Net Amount","Insurer TP Comm","Insurer TP Amount","Insurer Incentive Amount","Insurer Total Comm Amount",
+        "Insurer TDS","Insurer TDS Amount","Insurer Remark","Created By","Updated By","Pdf Uploaded"
+    ]
+
+    header_fill = PatternFill(start_color="0000FF", end_color="0000FF", fill_type="solid")
+    header_font = Font(bold=True, color="FFFFFF")
+    for col_num, header in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col_num, value=header)
+        cell.fill = header_fill
+        cell.font = header_font
+
+    # Get and parse date filter
+    start_date_str = request.GET.get("date")
+    start_date, one_month_later = None, None
+    if start_date_str:
+        start_date = make_aware(datetime.strptime(start_date_str, "%Y-%m-%d"))
+        one_month_later = start_date + relativedelta(months=1)
+
+    # Filter policies
+    policies = PolicyDocument.objects.filter(status=6).exclude(rm_id__isnull=True)
+    if request.user.role_id != 1:
+        policies = policies.filter(rm_id=request.user.id)
+    if start_date and one_month_later:
+        policies = policies.filter(created_at__gte=start_date, created_at__lt=one_month_later)
+
+    policies = policies.order_by('-id')
+
+    for policy in policies:
+        policy_info = PolicyInfo.objects.filter(policy_number=policy.policy_number, policy_id=policy.id).first()
+        if not policy_info:
+            continue  # Skip if no policy info
+
+        agent_payment_info = AgentPaymentDetails.objects.filter(policy_number=policy.policy_number, policy_id=policy.id).first()
+        insurer_payment_info = InsurerPaymentDetails.objects.filter(policy_number=policy.policy_number, policy_id=policy.id).first()
+        vehicle_info = PolicyVehicleInfo.objects.filter(policy_number=policy.policy_number, policy_id=policy.id).first()
+        franchise_payment_info = FranchisePayment.objects.filter(policy_number=policy.policy_number, policy_id=policy.id).first()
+
+        agent_total = float(safe_get(agent_payment_info, 'agent_total_comm_amount', 0) or 0)
+        franchise_total = float(safe_get(franchise_payment_info, 'franchise_total_comm_amount', 0) or 0)
+        net_profit = franchise_total - agent_total
+
+
+        row_data = [
+            safe_get(policy_info, 'policy_month_year'),
+            safe_get(getattr(policy_info, 'branch', None), 'branch_name'),
+            "-",
+            safe_get(policy_info, 'insurance_company'),
+            safe_get(policy_info, 'insurance_company'),
+            safe_get(policy_info, 'insurance_company'),
+            "-",
+            safe_get(policy_info, 'insured_name'),
+            safe_get(vehicle_info, 'registration_number'),
+            safe_get(policy_info, 'policy_number'),
+            safe_get(vehicle_info, 'vehicle_type'),
+            safe_get(vehicle_info, 'manufacture_year'),
+            combine_make_model(vehicle_info),
+            safe_get(vehicle_info, 'fuel_type'),
+            safe_get(policy_info, 'policy_type'),
+            safe_get(vehicle_info, 'gvw'),
+            safe_get(vehicle_info, 'cubic_capacity'),
+            safe_get(vehicle_info, 'seating_capacity'),
+            safe_get(policy_info, 'sum_insured'),
+            safe_get(vehicle_info, 'ncb'),
+            safe_get(policy_info, 'od_premium'),
+            safe_get(policy_info, 'tp_premium'),
+            safe_get(policy_info, 'net_premium'),
+            safe_get(policy_info, 'gross_premium'),
+            "-",  # Final Value placeholder
+            safe_get(policy_info, 'policy_tenure'),
+            safe_get(insurer_payment_info, 'insurer_payment_mode'),
+            safe_get(insurer_payment_info, 'insurer_payment_date'),
+            safe_get(policy_info, 'issue_date'),
+            safe_get(policy_info, 'start_date'),
+            safe_get(policy_info, 'end_date'),
+            safe_get(insurer_payment_info, 'insurer_amount'),
+            safe_get(insurer_payment_info, 'insurer_od_comm'),
+            safe_get(insurer_payment_info, 'insurer_od_amount'),
+            safe_get(insurer_payment_info, 'insurer_net_comm'),
+            safe_get(insurer_payment_info, 'insurer_net_amount'),
+            safe_get(insurer_payment_info, 'insurer_tp_comm'),
+            safe_get(insurer_payment_info, 'insurer_tp_amount'),
+            safe_get(insurer_payment_info, 'insurer_incentive_amount'),
+            safe_get(insurer_payment_info, 'insurer_total_comm_amount'),
+            safe_get(insurer_payment_info, 'insurer_tds'),
+            safe_get(insurer_payment_info, 'insurer_tds_amount'),
+            safe_get(insurer_payment_info, 'insurer_remarks'),
+            safe_get(policy, 'rm_name'),
+            safe_get(getattr(insurer_payment_info, 'updated_by', None), 'full_name'),
+            "Yes"
+        ]
+        
+        ws.append(row_data)
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename="insurer_business_report.xlsx"'
+    wb.save(response)
+    return response
+
+
+def export_agent_business_report(request):
+    if not request.user.is_authenticated or not request.user.is_active:
+        messages.error(request, "Please Login First")
+        return redirect('login')
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Agent Business Report"
+
+    headers = [
+        "Month","Policy Month","Branch Name","Sales Manager","Agent Name","Insurance Company","Insured Name","Reg Number","Policy Number","Vehicle Type",
+        "Manufacturing Year","Vehicle Make/Model","Fuel Type","Policy Type","GVW","Cubic Capacity","Seating Capacity","Sum Insured","NCB","OD Premium",
+        "TP Premium","Net Premium","Gross Premium","Final Value","Policy Year","Agent Payment Mode","Agent Payment Date","Policy Issue Date","Risk Start Date","Risk End Date",
+        "Agent Amount","Agent OD Comm","Agent OD Amount","Agent Net Comm","Agent Net Amount","Agent TP Comm","Agent TP Amount","Agent Incentive Amount","Agent Total Comm Amount","Agent Remarks",
+        "Created By","Updated By"
+    ]
+
+    header_fill = PatternFill(start_color="0000FF", end_color="0000FF", fill_type="solid")
+    header_font = Font(bold=True, color="FFFFFF")
+    for col_num, header in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col_num, value=header)
+        cell.fill = header_fill
+        cell.font = header_font
+
+    # Get and parse date filter
+    start_date_str = request.GET.get("date")
+    start_date, one_month_later = None, None
+    if start_date_str:
+        start_date = make_aware(datetime.strptime(start_date_str, "%Y-%m-%d"))
+        one_month_later = start_date + relativedelta(months=1)
+
+    # Filter policies
+    policies = PolicyDocument.objects.filter(status=6).exclude(rm_id__isnull=True)
+    if request.user.role_id != 1:
+        policies = policies.filter(rm_id=request.user.id)
+    if start_date and one_month_later:
+        policies = policies.filter(created_at__gte=start_date, created_at__lt=one_month_later)
+
+    policies = policies.order_by('-id')
+
+    for policy in policies:
+        policy_info = PolicyInfo.objects.filter(policy_number=policy.policy_number, policy_id=policy.id).first()
+        if not policy_info:
+            continue  # Skip if no policy info
+
+        agent_payment_info = AgentPaymentDetails.objects.filter(policy_number=policy.policy_number, policy_id=policy.id).first()
+        insurer_payment_info = InsurerPaymentDetails.objects.filter(policy_number=policy.policy_number, policy_id=policy.id).first()
+        vehicle_info = PolicyVehicleInfo.objects.filter(policy_number=policy.policy_number, policy_id=policy.id).first()
+
+        row_data = [
+            safe_get(policy_info, 'policy_month_year'),
+            safe_get(policy_info, 'policy_month_year'),
+            safe_get(getattr(policy_info, 'branch', None), 'branch_name'),
+            safe_get(getattr(agent_payment_info, 'referral', None), 'sales'),
+            safe_get(getattr(agent_payment_info, 'referral', None), 'name'),
+            safe_get(policy_info, 'insurance_company'),
+            safe_get(policy_info, 'insured_name'),
+            safe_get(vehicle_info, 'registration_number'),
+            safe_get(policy_info, 'policy_number'),
+            safe_get(vehicle_info, 'vehicle_type'),
+            safe_get(vehicle_info, 'manufacture_year'),
+            combine_make_model(vehicle_info),
+            safe_get(vehicle_info, 'fuel_type'),
+            safe_get(policy_info, 'policy_type'),
+            safe_get(vehicle_info, 'gvw'),
+            safe_get(vehicle_info, 'cubic_capacity'),
+            safe_get(vehicle_info, 'seating_capacity'),
+            safe_get(policy_info, 'sum_insured'),
+            safe_get(vehicle_info, 'ncb'),
+            safe_get(policy_info, 'od_premium'),
+            safe_get(policy_info, 'tp_premium'),
+            safe_get(policy_info, 'net_premium'),
+            safe_get(policy_info, 'gross_premium'),
+            "-",  # Final Value placeholder
+            safe_get(policy_info, 'policy_tenure'),
+            safe_get(agent_payment_info, 'agent_payment_mod'),
+            safe_get(agent_payment_info, 'payment_date'),
+            safe_get(policy_info, 'issue_date'),
+            safe_get(policy_info, 'start_date'),
+            safe_get(policy_info, 'end_date'),
+            safe_get(agent_payment_info, 'agent_amount'),
+            safe_get(agent_payment_info, 'agent_od_comm'),
+            safe_get(agent_payment_info, 'agent_od_amount'),
+            safe_get(agent_payment_info, 'agent_net_comm'),
+            safe_get(agent_payment_info, 'agent_net_amount'),
+            safe_get(agent_payment_info, 'agent_tp_comm'),
+            safe_get(agent_payment_info, 'agent_tp_amount'),
+            safe_get(agent_payment_info, 'agent_incentive_amount'),
+            safe_get(agent_payment_info, 'agent_total_comm_amount'),
+            safe_get(agent_payment_info, 'agent_remarks'),
+            safe_get(insurer_payment_info, 'insurer_amount'),
+            safe_get(insurer_payment_info, 'insurer_od_comm'),
+            safe_get(insurer_payment_info, 'insurer_od_amount'),
+            safe_get(insurer_payment_info, 'insurer_net_comm'),
+            safe_get(insurer_payment_info, 'insurer_net_amount'),
+            safe_get(insurer_payment_info, 'insurer_tp_comm'),
+            safe_get(insurer_payment_info, 'insurer_tp_amount'),
+            safe_get(insurer_payment_info, 'insurer_incentive_amount'),
+            safe_get(insurer_payment_info, 'insurer_total_comm_amount'),
+            safe_get(insurer_payment_info, 'insurer_remarks'),
+            safe_get(policy, 'rm_name'),
+            safe_get(getattr(agent_payment_info, 'updated_by', None), 'full_name')
+        ]
+
+        ws.append(row_data)
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename="agent_business_report.xlsx"'
+    wb.save(response)
+    return response
+
+
+def safe_get(obj, attr, default="-"):
+    return getattr(obj, attr, default) if obj else default
+
+def combine_make_model(vehicle):
+    make = safe_get(vehicle, 'vehicle_make')
+    model = safe_get(vehicle, 'vehicle_model')
+    return f"{make}/{model}" if make != "-" and model != "-" else "-"

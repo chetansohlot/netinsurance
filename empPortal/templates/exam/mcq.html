@@ -4,7 +4,7 @@
     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Training Material & Question Paper - Elevate Insurance</title>
+    <title>Training Material & Question Paper - {{ COMPANY_SHORT_NAME }}</title>
     <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
     <style>
         body {
@@ -72,7 +72,7 @@
 </head>
 <body>
     <header class="header">
-        <h1>Elevate Insurance Training & Examination</h1>
+        <h1>{{ COMPANY_SHORT_NAME }} Training & Examination</h1>
         <p>Empowering Agents with Knowledge</p>
     </header>
     <div class="container">
@@ -97,7 +97,7 @@
     </div>
     
     <footer class="footer">
-        <p>&copy; 2025 Elevate Insurance. All Rights Reserved.</p>
+        <p>&copy; 2025 {{ COMPANY_SHORT_NAME }}. All Rights Reserved.</p>
     </footer>
     
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

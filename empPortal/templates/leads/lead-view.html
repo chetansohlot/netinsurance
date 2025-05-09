@@ -1,0 +1,778 @@
+{% extends 'master.html' %}
+
+{% load static %}
+
+{% block title %}
+{% if lead %}Edit Lead{% else %}Add New Lead{% endif %}
+{% endblock %}
+
+{% block content %}
+
+{% include "css-code.html" %}
+
+<body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+        {% include 'navbar.html' %}
+
+        {% include 'sidebar.html' %}
+    
+        <div class="content-wrapper white-bg">
+            <div class="content-header header-content-bg mb-0">
+              <div class="container-fluid">
+             
+                <div class="row justify-content-between justify-content-sm-start pb-4">
+                    <div class="col-sm-12">
+                        <h1 class="admin-title m-0 pt-2">Lead View</h1>
+                        <ul class="breadcrump">
+                          <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
+                          <li>Lead View</li>
+                        </ul>
+                    </div>
+        
+                </div>
+              </div>
+            </div>
+            <!-- Main content -->
+            <div class="content px-0">
+                <div class="container-fluid">
+                  <div class="row">
+                    <div class="col-md-12 px-0">
+                        <ul class="lead-view-step">
+                            <li class="active">Working-Contacted</li>
+                            <li>
+                                <div class="arrow-design"></div>
+                                Close - Not Converted
+                            </li>
+                            <li>
+                                <div class="arrow-design"></div>
+                                Disqualified
+                            </li>
+                            <li>
+                                <div class="arrow-design"></div>
+                                Converted
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4 px-0">
+                        <div class="card member-detail-left-card">
+                            <div class="card-body box-profile">
+                                <!-- {% if user_details.profile_image %}
+                                    <img src="{{ user_details.profile_image.url }}" alt="Profile Image" class="card-profile-img">
+                                {% else %}
+                                    <img src="{% static 'dist/img/svg/profile-avatar-male.svg' %}" alt="Default Profile" class="card-profile-img">
+                                {% endif %} -->
+                                
+                                <h3 class="profile-username text-center">Vinod (Male)</h3>
+                                <div class="d-flex justify-content-center mt-2">
+                                    <span class="text-muted">Customer Since: 2002</span>
+                                </div>  
+                                <div class="d-flex justify-content-center mt-2">
+                                    <a href="#" class="breadcrump-addbtn">Dispose the lead </a>
+                                </div>
+                                <div class="profile-info-divider my-3"></div>
+                                <ul class="member-detail-list">
+                                    
+                                  
+                                    <li>
+                                        <span class="list">Lead Id / Status</span>
+                                        <span class="list-output">1010 / Pending</span>
+                                    </li>
+                                    <li>
+                                        <span class="list">Email</span>
+                                        <span class="list-output">
+                                            vinod.kumar@netleafinfosoft.com
+                                        </span>
+                                    </li>
+                                    <li>
+                                        <span class="list">Mobile </span>
+                                        <span class="list-output">9876543210</span>
+                                    </li>
+                                    <li>
+                                        <span class="list">PANCARD</span>
+                                        <span class="list-output text-uppercase"> baxpk1234K</span>
+                                    </li>
+                                    <li>
+                                        <span class="list">Insurance Type</span>
+                                        <span class="list-output">N/A</span>
+                                    </li>
+                                    <li>
+                                        <span class="list">Product Category</span>
+                                        <span class="list-output">N/A</span>
+                                    </li>
+                                    <li>
+                                        <span class="list">Product Name</span>
+                                        <span class="list-output">N/A</span>
+                                    </li>
+                                    <li>
+                                        <span class="list">Lead Source Type</span>
+                                        <span class="list-output">N/A</span>
+                                    </li>
+                                    <li>
+                                        <span class="list">Lead Source Name</span>
+                                        <span class="list-output">N/A</span>
+                                    </li>
+                                    <li>
+                                        <span class="list">Referral Name</span>
+                                        <span class="list-output">N/A</span>
+                                    </li>
+                                    <li>
+                                        <span class="list">Source Medium</span>
+                                        <span class="list-output">N/A</span>
+                                    </li>
+                                    <li>
+                                        <span class="list">Assigned BY</span>
+                                        <span class="list-output">N/A</span>
+                                    </li>
+                                    <li>
+                                        <span class="list">Assigned To</span>
+                                        <span class="list-output">N/A</span>
+                                    </li>
+                                </ul>
+                                
+                            </div>
+                        </div>
+                    </div>
+                    
+
+                    <div class="col-md-8 px-0">
+                      <div class="card member-detail-right-card">
+                        
+                        <ul class="nav nav-pills profile-tab">
+                            <li class="nav-item text-bold"><a class="nav-link active" href="#activity-tab" data-toggle="tab">Activity</a></li>
+                            <li class="nav-item text-bold"><a class="nav-link" href="#lead-details-tab" data-toggle="tab">Lead Deatils</a></li>
+                            <li class="nav-item text-bold"><a class="nav-link" href="#previous-policy-info-tab" data-toggle="tab">Previous Policy Information </a></li>
+                            <li class="nav-item text-bold"><a class="nav-link" href="#quote-tab" data-toggle="tab">Quote </a></li>
+                            <li class="nav-item text-bold"><a class="nav-link" href="#booking-tab" data-toggle="tab">Booking</a></li>
+                            <li class="nav-item text-bold"><a class="nav-link" href="#policy-issued-tab" data-toggle="tab">Policy Issued </a></li>
+                        </ul>
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                          <div class="tab-content tab-scrollbar">
+                            <div class="active tab-pane" id="activity-tab">
+                                <div class="row mt-3">
+                                    <div class="table-responsive">
+                                        <table class="table table-design table-bordered">
+                                            
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <div class="d-flex">
+                                                            <div class="activity-circle">
+                                                                I
+                                                            </div>
+                                                            <div class="ml-2">
+                                                                <span class="d-block">05 Dec</span>
+                                                                <span class="text-muted">5:43 PM</span>
+                                                            </div>    
+                                                        </div>    
+                                                    </td>
+                                                    <td>
+                                                        <div class="d-flex flex-wrap">
+                                                            <span class="d-block text-primary">Ishank Ahuja - NEET UG</span>
+                                                            <span class="ml-1">Opportunity added via Opportunity Capture API</span>
+                                                        </div>    
+                                                        <span class="text-muted d-block">Added by Utkarsh Rai on 16 Jul 2020 5:10 PM</span>
+                                                    </td>
+                                                    <td>
+                                                        <div class="d-flex">
+                                                            <a href="#" class="mx-1"><i class="fa-solid fa-eye"></i></a>
+                                                            <a href="#" class="mx-1 text-info"><i class="fa-solid fa-pen-to-square"></i></a>
+                                                            <a href="#" class="mx-1 text-danger"><i class="fa-solid fa-trash-can"></i></a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="d-flex">
+                                                            <div class="activity-circle">
+                                                                A
+                                                            </div>
+                                                            <div class="ml-2">
+                                                                <span class="d-block">05 Dec</span>
+                                                                <span class="text-muted">5:43 PM</span>
+                                                            </div>    
+                                                        </div>    
+                                                    </td>
+                                                    <td>
+                                                        <div class="d-flex flex-wrap">
+                                                            <span class="d-block text-primary">Agree to pay</span>
+                                                        </div>    
+                                                        <span class="text-muted d-block">Added by Rajesh Aggarwal on 16 Jul 2020 5:10 PM</span>
+                                                    </td>
+                                                    <td>
+                                                        <div class="d-flex">
+                                                            <a href="#" class="mx-1"><i class="fa-solid fa-eye"></i></a>
+                                                            <a href="#" class="mx-1 text-info"><i class="fa-solid fa-pen-to-square"></i></a>
+                                                            <a href="#" class="mx-1 text-danger"><i class="fa-solid fa-trash-can"></i></a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="d-flex">
+                                                            <div class="activity-circle">
+                                                                I
+                                                            </div>
+                                                            <div class="ml-2">
+                                                                <span class="d-block">05 Dec</span>
+                                                                <span class="text-muted">5:43 PM</span>
+                                                            </div>    
+                                                        </div>    
+                                                    </td>
+                                                    <td>
+                                                        <div class="d-flex flex-wrap">
+                                                            <span class="d-block text-primary">Ishank Ahuja - NEET UG</span>
+                                                            <span class="ml-1">Opportunity added via Opportunity Capture API</span>
+                                                        </div>    
+                                                        <span class="text-muted d-block">Added by Utkarsh Rai on 16 Jul 2020 5:10 PM</span>
+                                                    </td>
+                                                    <td>
+                                                        <div class="d-flex">
+                                                            <a href="#" class="mx-1"><i class="fa-solid fa-eye"></i></a>
+                                                            <a href="#" class="mx-1 text-info"><i class="fa-solid fa-pen-to-square"></i></a>
+                                                            <a href="#" class="mx-1 text-danger"><i class="fa-solid fa-trash-can"></i></a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                            
+                                </div>
+                            </div>
+
+                            <div class="tab-pane" id="lead-details-tab">
+                              <div class="row">
+                                  <div class="col-sm-12">
+                                    <h2 class="admin-title pb-2 mb-3 border-bottom">Basic Info</h2>
+                                  </div>
+                                  <div class="col-md-3">
+                                    <div class="userdetail-group">
+                                        <p class="userdetail-lbl">Lead ID</p>
+                                        <p class="userdetail-highligt">
+                                            10110
+                                        </p>
+                                    </div>  
+                                  </div>
+                                  <div class="col-md-3">
+                                    <div class="userdetail-group">
+                                        <p class="userdetail-lbl">Customer Name</p>
+                                        <p class="userdetail-highligt">
+                                            Vinod Kumar
+                                        </p>
+                                    </div>  
+                                  </div>
+                                  <div class="col-md-3">
+                                    <div class="userdetail-group">
+                                        <p class="userdetail-lbl">Mobile Number</p>
+                                        <p class="userdetail-highligt">
+                                            9876543210
+                                        </p>
+                                    </div>  
+                                  </div>
+                                  
+                                  <div class="col-md-3">
+                                    <div class="userdetail-group">
+                                        <p class="userdetail-lbl">Gender</p>
+                                        <p class="userdetail-highligt">
+                                            Male
+                                        </p>
+                                    </div>  
+                                  </div>
+                                  <div class="col-md-3">
+                                    <div class="userdetail-group">
+                                        <p class="userdetail-lbl">Date of Birth</p>
+                                        <p class="userdetail-highligt">
+                                            15-12-1986
+                                        </p>
+                                    </div>  
+                                  </div>
+                                  <div class="col-md-3">
+                                    <div class="userdetail-group">
+                                        <p class="userdetail-lbl">PAN/Aadhaar</p>
+                                        <p class="userdetail-highligt text-uppercase">
+                                            baxkp1234k
+                                        </p>
+                                    </div>  
+                                  </div>
+                                  <div class="col-md-auto">
+                                    <div class="userdetail-group">
+                                        <p class="userdetail-lbl">Email ID</p>
+                                        <p class="userdetail-highligt">
+                                            vinod.kumar@netleafinfosoft.com
+                                        </p>
+                                    </div>  
+                                  </div>
+
+                                  <div class="col-sm-12">
+                                    <h2 class="admin-title pb-2 mb-3 border-bottom">Lead Source Info</h2>
+                                  </div>
+                                  <div class="col-md-3">
+                                    <div class="userdetail-group">
+                                        <p class="userdetail-lbl">Lead Source Type</p>
+                                        <p class="userdetail-highligt">
+                                            Website
+                                        </p>
+                                    </div>  
+                                  </div>
+                                  <div class="col-md-3">
+                                    <div class="userdetail-group">
+                                        <p class="userdetail-lbl">Lead Source Name</p>
+                                        <p class="userdetail-highligt">
+                                            N/A
+                                        </p>
+                                    </div>  
+                                  </div>
+                                  <div class="col-md-3">
+                                    <div class="userdetail-group">
+                                        <p class="userdetail-lbl">Referral Name</p>
+                                        <p class="userdetail-highligt">
+                                            Ankit
+                                        </p>
+                                    </div>  
+                                  </div>
+                                  <div class="col-md-3">
+                                    <div class="userdetail-group">
+                                        <p class="userdetail-lbl">Source Medium</p>
+                                        <p class="userdetail-highligt">
+                                            Facebook
+                                        </p>
+                                    </div>  
+                                  </div>
+
+                                  <div class="col-sm-12">
+                                    <h2 class="admin-title pb-2 mb-3 border-bottom">Location Info</h2>
+                                  </div>
+                                  <div class="col-md-3">
+                                    <div class="userdetail-group">
+                                        <p class="userdetail-lbl">State</p>
+                                        <p class="userdetail-highligt">
+                                            Haryana
+                                        </p>
+                                    </div>  
+                                  </div>
+                                  <div class="col-md-3">
+                                    <div class="userdetail-group">
+                                        <p class="userdetail-lbl">City</p>
+                                        <p class="userdetail-highligt">
+                                            Gurugram                                        
+                                        </p>
+                                    </div>  
+                                  </div>
+                                  <div class="col-md-3">
+                                    <div class="userdetail-group">
+                                        <p class="userdetail-lbl">Pin Code</p>
+                                        <p class="userdetail-highligt">
+                                            121001                                       
+                                        </p>
+                                    </div>  
+                                  </div>
+
+                                  <div class="col-sm-12">
+                                    <h2 class="admin-title pb-2 mb-3 border-bottom">Assignment</h2>
+                                  </div>
+                                  <div class="col-md-3">
+                                    <div class="userdetail-group">
+                                        <p class="userdetail-lbl">Assigned To</p>
+                                        <p class="userdetail-highligt">
+                                            Sales Agent
+                                        </p>
+                                    </div>  
+                                  </div>
+                                  <div class="col-md-3">
+                                    <div class="userdetail-group">
+                                        <p class="userdetail-lbl">Branch</p>
+                                        <p class="userdetail-highligt">
+                                            Gurugram
+                                        </p>
+                                    </div>  
+                                  </div>
+                                  <div class="col-md-3">
+                                    <div class="userdetail-group">
+                                        <p class="userdetail-lbl">Lead Status Type</p>
+                                        <p class="userdetail-highligt">
+                                            Follow-up
+                                        </p>
+                                    </div>  
+                                  </div>
+                                  <div class="col-md-3">
+                                    <div class="userdetail-group">
+                                        <p class="userdetail-lbl">Lead Tag</p>
+                                        <p class="userdetail-highligt">
+                                            Renewal
+                                        </p>
+                                    </div>  
+                                  </div>
+
+                              </div>
+                            </div>
+
+                            <div class="tab-pane" id="previous-policy-info-tab">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <h2 class="admin-title pb-2 mb-3 border-bottom">Previous Policy Information</h2>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="userdetail-group">
+                                            <p class="userdetail-lbl">Policy Number</p>
+                                            <p class="userdetail-highligt">
+                                                ELV0022215545
+                                            </p>
+                                        </div>  
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="userdetail-group">
+                                            <p class="userdetail-lbl">Previous Insurer Name</p>
+                                            <p class="userdetail-highligt">
+                                                ICICI Lomboard
+                                            </p>
+                                        </div>  
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="userdetail-group">
+                                            <p class="userdetail-lbl">Policy Type</p>
+                                            <p class="userdetail-highligt">
+                                                Third Party
+                                            </p>
+                                        </div>  
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="userdetail-group">
+                                            <p class="userdetail-lbl">Policy Start Date</p>
+                                            <p class="userdetail-highligt">
+                                                19-5-2024
+                                            </p>
+                                        </div>  
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="userdetail-group">
+                                            <p class="userdetail-lbl">Policy End Date</p>
+                                            <p class="userdetail-highligt">
+                                                9-5-2025
+                                            </p>
+                                        </div>  
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="userdetail-group">
+                                            <p class="userdetail-lbl">Expiry Status</p>
+                                            <p class="userdetail-highligt">
+                                                Grace Period
+                                            </p>
+                                        </div>  
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="userdetail-group">
+                                            <p class="userdetail-lbl">No Claim Bonus (NCB)</p>
+                                            <p class="userdetail-highligt">
+                                                25%
+                                            </p>
+                                        </div>  
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="userdetail-group">
+                                            <p class="userdetail-lbl">Previous IDV (for Motor)</p>
+                                            <p class="userdetail-highligt">
+                                                ₹4,50,000
+                                            </p>
+                                        </div>  
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="userdetail-group">
+                                            <p class="userdetail-lbl">Previous Sum Insured (for Health)</p>
+                                            <p class="userdetail-highligt">
+                                                ₹5,50,000
+                                            </p>
+                                        </div>  
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="userdetail-group">
+                                            <p class="userdetail-lbl">Claims Made</p>
+                                            <p class="userdetail-highligt">
+                                                Yes
+                                            </p>
+                                        </div>  
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="userdetail-group">
+                                            <p class="userdetail-lbl">Claim Amount </p>
+                                            <p class="userdetail-highligt">
+                                                ₹4,00,000
+                                            </p>
+                                        </div>  
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="userdetail-group">
+                                            <p class="userdetail-lbl">Copy of Previous Policy </p>
+                                            <p class="userdetail-highligt">
+                                                Uploaded File <a href="#">View</a>
+                                            </p>
+                                        </div>  
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="userdetail-group">
+                                            <p class="userdetail-lbl">Previous Policy Source </p>
+                                            <p class="userdetail-highligt">
+                                                Online
+                                            </p>
+                                        </div>  
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="userdetail-group">
+                                            <p class="userdetail-lbl">Vehicle Type </p>
+                                            <p class="userdetail-highligt">
+                                                Private
+                                            </p>
+                                        </div>  
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="userdetail-group">
+                                            <p class="userdetail-lbl">Vehicle Class </p>
+                                            <p class="userdetail-highligt">
+                                                Two-Wheeler
+                                            </p>
+                                        </div>  
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="userdetail-group">
+                                            <p class="userdetail-lbl">Insurance Type </p>
+                                            <p class="userdetail-highligt">
+                                                Motor
+                                            </p>
+                                        </div>  
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="userdetail-group">
+                                            <p class="userdetail-lbl">Product Category </p>
+                                            <p class="userdetail-highligt">
+                                                Private Car
+                                            </p>
+                                        </div>  
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <h2 class="admin-title pb-2 mb-3 border-bottom">Vehicle Details</h2>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="userdetail-group">
+                                            <p class="userdetail-lbl">Registration No</p>
+                                            <p class="userdetail-highligt">
+                                                REG0022215001
+                                            </p>
+                                        </div>  
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="userdetail-group">
+                                            <p class="userdetail-lbl">Make</p>
+                                            <p class="userdetail-highligt">
+                                                N/A
+                                            </p>
+                                        </div>  
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="userdetail-group">
+                                            <p class="userdetail-lbl">Modal</p>
+                                            <p class="userdetail-highligt">
+                                                Yamaha
+                                            </p>
+                                        </div>  
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="userdetail-group">
+                                            <p class="userdetail-lbl">Year</p>
+                                            <p class="userdetail-highligt">
+                                                2013
+                                            </p>
+                                        </div>  
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="userdetail-group">
+                                            <p class="userdetail-lbl">Sum Insured</p>
+                                            <p class="userdetail-highligt">
+                                                ₹4,00,000
+                                            </p>
+                                        </div>  
+                                    </div>
+                                </div>
+                                
+                            </div>
+
+                            <div class="tab-pane" id="quote-tab">
+                                <div class="row mt-3">
+                                    <div class="col-sm-12">
+                                        <h2 class="admin-title pb-2 mb-3 border-bottom">Quote</h2>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tab-pane" id="booking-tab">
+                                <div class="row mt-3">
+                                    <div class="col-sm-12">
+                                        <h2 class="admin-title pb-2 mb-3 border-bottom">Booking</h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="policy-issued-tab">
+                                <div class="row mt-3">
+                                    <div class="col-sm-12">
+                                        <h2 class="admin-title pb-2 mb-3 border-bottom">Policy Issued</h2>
+                                    </div>
+                                </div>
+                            </div>
+                            
+
+
+
+
+                            <!-- /.tab-pane -->
+                            <div class="tab-pane" id="claims-tab">
+                                <div class="row align-items-center mt-3 mb-3">
+                                  <div class="col-md-auto">
+                                    <h3 class="card-hding mb-0 pb-0">Claim History</h3>
+                                  </div>
+                                  <div class="col">
+                                    <div class="d-flex justify-content-end">
+                                      <a href="#" class="dashboard-btn-outline mx-2">Search Cashless Hospitals</a>
+                                      <a href="#" class="dashboard-addbtn">Raise a Claim</a>
+                                    </div>
+                                  </div>
+                                </div>  
+                              <!-- Documents -->
+                              <div class="table-responsive">
+                                <table class="table table-design admin-table-design">
+                                  <thead class="align-middle thead-light">
+                                      <tr>
+                                          <th>Claim ID/Type</th>
+                                          <th>Patient Name/Relation</th>
+                                          <th>Claim Status/Last Update On</th>
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr>
+                                      <td colspan="3">
+                                        <div class="d-flex justify-content-center py-5">
+                                          <div>
+                                            <img src="dist/img/svg/drive.svg" alt="" class="mx-auto d-table">
+                                            <p class="wrap-small text-gray text-center pt-2">No Data</p>
+                                          </div>  
+                                        </div>   
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                </table>                               
+                               </div>    
+                              <!-- /.Documents -->
+                            </div>
+                          </div>
+                            <!-- /.tab-content -->
+                        </div>
+                      </div>
+                    </div>
+                  </div>  
+                </div>
+                
+              </div>
+            </div>
+          </div>
+        <!-- /.content-wrapper -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
+        <script>
+            function showRejectNote(note) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Rejected Reason',
+                    text: note || 'No reason provided',  // Show message if note is empty
+                    confirmButtonColor: '#d33'
+                });
+            }
+            </script>
+        <!-- <script>
+            function showRejectNote(note) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Rejected Reason',
+                    text: note || 'No reason provided',  // Show message if note is empty
+                    confirmButtonColor: '#d33'
+                });
+            }
+            </script>
+        <script>
+            // Add event listener to the button
+            document.getElementById('activate-btn').addEventListener('click', function() {
+              var userId = this.getAttribute('data-user-id');
+              
+              // Show SweetAlert confirmation
+              Swal.fire({
+                title: 'Are you sure?',
+                text: "You are about to activate this account.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, activate it!',
+                cancelButtonText: 'Cancel',
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  // Submit the hidden form
+                  document.getElementById('activate-form').submit();
+                }
+              });
+            });
+          </script>
+
+          
+        <script>
+            // Add event listener to the button
+            document.getElementById('deactivate-btn').addEventListener('click', function() {
+              var userId = this.getAttribute('data-user-id');
+              
+              // Show SweetAlert confirmation
+              Swal.fire({
+                title: 'Are you sure?',
+                text: "You are about to deactivate this account.",
+                icon: 'danger',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, deactivate it!',
+                cancelButtonText: 'Cancel',
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  // Submit the hidden form
+                  document.getElementById('deactivate-form').submit();
+                }
+              });
+            });
+          </script>
+
+          
+        <script>
+            // Add event listener to the button
+            document.getElementById('login-activate-btn').addEventListener('click', function() {
+              var userId = this.getAttribute('data-user-id');
+              
+              // Show SweetAlert confirmation
+              Swal.fire({
+                title: 'Are you sure?',
+                text: "You are about to activate this account.",
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, activate it!',
+                cancelButtonText: 'Cancel',
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  // Submit the hidden form
+                  document.getElementById('login-activate-form').submit();
+                }
+              });
+            });
+          </script> -->
+    
+      
+        {% include "footer.html" %}
+    </div>
+    <!-- ./wrapper -->
+    
+    {% include 'footer-script.html' %}
+            
+    {% include "js-code.html" %}
+    
+    
+    </body>
+
+{% endblock %}

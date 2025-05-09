@@ -6,12 +6,12 @@
 </head>
 <body style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
     <div style="text-align: center;">
-        <img src="{{ logo_url }}" alt="Elevate Insurance Logo" style="height: 60px; margin-bottom: 20px;">
+        <img src="{{ logo_url }}" alt="{{ COMPANY_SHORT_NAME }} Logo" style="height: 60px; margin-bottom: 20px;">
     </div>
 
     <p>Dear {{ user.first_name|default:user.user_name }},</p>
 
-    <p>Welcome to <strong>Elevate Insurance</strong>!</p>
+    <p>Welcome to <strong>{{ COMPANY_SHORT_NAME }}</strong>!</p>
 
     <p>To activate your account and proceed with onboarding, we kindly request you to upload the following mandatory documents:</p>
 
@@ -34,7 +34,7 @@
 
     <p>Visit our website: <a href="{{ company_website }}">{{ company_website }}</a></p>
 
-    <p>Thank you for choosing Elevate Insurance.<br>
-    <strong>Team Elevate Insurance</strong></p>
+    <p>Thank you for choosing {{ COMPANY_SHORT_NAME }}.<br>
+    <strong>Team {{ COMPANY_SHORT_NAME }}</strong></p>
 </body>
 </html>
