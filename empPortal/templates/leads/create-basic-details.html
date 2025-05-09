@@ -44,17 +44,17 @@
                 <div class="card box-shadow-none p-md-4 p-3">
                   <div class="card-body px-0 pb-0 pt-0">
                     <ul class="stepflow-text stepflow-five-col mt-0">
-                      <li class="active"><a href="#">Basic Info</a></li>
-                      <li class="active"><a href="#">Lead Source Info</a></li>
-                      <li class="active"><a href="#">Location Info</a></li>
-                      <li class="active"><a href="#">Assignment</a></li>
+                      <li><a href="#">Basic Info</a></li>
+                      <li><a href="#">Lead Source Info</a></li>
+                      <li><a href="#">Location Info</a></li>
+                      <li><a href="#">Assignment</a></li>
                       <li><a href="#">Previous Policy Information</a></li>
                     </ul>
                     <ul class="new-stepflow mb-2">
-                      <li class="active"></li>
-                      <li class="active"></li>
-                      <li class="active"></li>
-                      <li class="active"></li>
+                      <li></li>
+                      <li></li>
+                      <li></li>
+                      <li></li>
                       <li></li>
                     </ul>
                   </div>
@@ -71,166 +71,48 @@
 
                       <div class="row">
                           <div class="col-md-12">
-                            <h2 class="admin-title border-bottom pb-2 mb-4">Previous Policy Information</h2>
+                            <h2 class="admin-title border-bottom pb-2 mb-4">Basic Details</h2>
                           </div>
                           <div class="form-group col-md-4">
-                            <label class="form-lbl">Previous Insurer Name</label>
-                            <select class="form-field">
-                                <option value="">Select</option>
-                                <option>ICICI Lombard</option>
-                                <option>HDFC Ergo</option>                                
-                            </select>
+                            <label class="form-lbl">Lead ID</label>
+                            <input type="text" class="form-field" placeholder="Enter Lead ID" value="">
                           </div>
                           <div class="form-group col-md-4">
-                            <label class="form-lbl" for="policy_number">Policy Number</label>
-                            <input type="text" class="form-field" name="policy_number" id="policy_number" placeholder="Enter Policy Number" >
+                            <label class="form-lbl" >Customer Name</label>
+                            <input type="text" class="form-field" placeholder="Enter Customer Name" value="">
                           </div>
                           <div class="form-group col-md-4">
-                            <label class="form-lbl">Policy Type</label>
-                            <select class="form-field">
-                                <option value="">Select</option>
-                                <option>Comprehensive</option>
-                                <option>Third Party</option>                                
-                                <option>OD Only</option>                                
-                            </select>
-                          </div>
-                          <div class="form-group col-md-4">
-                            <label class="form-lbl" for="policy_date">Policy Start Date</label>
-                            <input type="text" class="form-field datepicker_common" name="policy_date" id="policy_date" placeholder="Enter Policy Start Date" >
-                          </div>
-                          <div class="form-group col-md-4">
-                            <label class="form-lbl" for="policy_date">Policy End Date</label>
-                            <input type="text" class="form-field datepicker_common" name="policy_end_date" id="policy_end_date" placeholder="Enter Policy End Date" >
-                          </div>
-                          <div class="form-group col-md-4">
-                            <label class="form-lbl">Expiry Status</label>
-                            <select class="form-field">
-                                <option value="">Select</option>
-                                <option>Expired</option>
-                                <option>Active</option>                                
-                                <option>Grace Perio</option>                                
-                            </select>
-                          </div>
-                          <div class="form-group col-md-4">
-                            <label class="form-lbl">No Claim Bonus (NCB)</label>
-                            <select class="form-field">
-                                <option value="">0%</option>
-                                <option>20%</option>
-                                <option>25%</option>                                
-                                <option>35%</option>                                
-                                <option>45%</option>                                
-                                <option>50%</option>                                
-                            </select>
-                          </div>
-                          <div class="form-group col-md-4">
-                            <label class="form-lbl">Previous IDV (for Motor)</label>
-                            <input type="text" class="form-field" placeholder="Enter IDV Amount" >
-                          </div>
-                          <div class="form-group col-md-4">
-                            <label class="form-lbl">Previous Sum Insured (for Health)</label>
-                            <input type="text" class="form-field" placeholder="Enter Amount" >
+                              <label class="form-lbl" for="mobile_number">Mobile Number</label>
+                              <input type="tel" class="form-field" name="mobile_number" id="mobile_number" pattern="[0-9]{10}"
+                                    placeholder="Enter Mobile Number" value="{{ lead.mobile_number|default_if_none:'' }}">
                           </div>
 
                           <div class="form-group col-md-4">
-                            <label class="form-lbl">Claims Made</label>
+                              <label class="form-lbl" for="email_address">Email ID</label>
+                              <input type="email" class="form-field" name="email_address" id="email_address"
+                                    placeholder="Enter Email" value="{{ lead.email_address|default_if_none:'' }}">
+                          </div>
+                          <div class="form-group col-md-4">
+                            <label class="form-lbl">Gender</label>
                             <select class="form-field">
-                                <!-- <option value="">Select</option> -->
-                                <option value="">Yes</option>
-                                <option value="">No</option>
+                                <option>Male</option>
+                                <option>Female</option>
+                                <option>Other</option>
                             </select>
                           </div>
                           <div class="form-group col-md-4">
-                            <label class="form-lbl">Claim Amount (optional)</label>
-                            <input type="text" class="form-field" placeholder="Enter Amount" >
+                            <label class="form-lbl" for="date_of_birth">Date of Birth</label>
+                            <input type="text" class="form-field dob_datepicker" name="date_of_birth" id="date_of_birth"
+                                  value="{{ lead.date_of_birth|date:'Y-m-d' }}">
                           </div>
                           <div class="form-group col-md-4">
-                            <label class="form-lbl">Copy of Previous Policy</label>
-                            <input type="file" class="form-field" >
+                            <label class="form-lbl" for="date_of_birth">PAN/Aadhaar (Optional)</label>
+                            <input type="text" class="form-field" maxlength="12">
                           </div>
 
-                          <div class="form-group col-md-4">
-                            <label class="form-lbl">Previous Policy Source</label>
-                            <select class="form-field">
-                                <option value="">Select</option>
-                                <option value="">Agent</option>
-                                <option value="">Online</option>
-                                <option value="">Dealer</option>
-                                <option value="">Direct</option>
-                                <option value="">Aggregator</option>
-                            </select>
-                          </div>
-                          <div class="form-group col-md-4">
-                            <label class="form-lbl">Vehicle Type</label>
-                            <select class="form-field">
-                                <option value="">Select</option>
-                                <option value="">Private</option>
-                                <option value="">Commercial</option>
-                                <option value="">Other</option>
-                            </select>
-                          </div> 
-                          <div class="form-group col-md-4">
-                            <label class="form-lbl">Vehicle Class</label>
-                            <select class="form-field">
-                                <option value="">Select</option>
-                                <option value="">Two-Wheeler</option>
-                                <option value="">Four-Wheeler</option>
-                                <option value="">Other</option>
-                            </select>
-                          </div> 
-                          <div class="form-group col-md-4">
-                            <label class="form-lbl">Insurance Type</label>
-                            <select class="form-field">
-                                <option value="">Select</option>
-                                <option value="">Motor</option>
-                                <option value="">Health</option>
-                                <option value="">Life</option>
-                                <option value="">Travel</option>
-                                <option value="">General</option>
-                            </select>
-                          </div>
-                          <div class="form-group col-md-4">
-                            <label class="form-lbl">Product Category</label>
-                            <select class="form-field">
-                                <option value="">Select</option>
-                                <option value="">Private Car</option>
-                                <option value="">Mediclaim</option>
-                                <option value="">Term Life</option>
-                            </select>
-                          </div>
-                          <div class="col-sm-12">
-                            <h2 class="admin-title pb-3 border-bottom mb-4">Vehicle Details</h2>
-                          </div>
-                          <div class="form-group col-md-4">
-                            <label class="form-lbl">Registration No</label>
-                            <input type="text" class="form-field" placeholder="Registration No" >
-                          </div>
-                          <div class="form-group col-md-4">
-                            <label class="form-lbl">Make</label>
-                            <input type="text" class="form-field" placeholder="Make" >
-                          </div>
-                          <div class="form-group col-md-4">
-                            <label class="form-lbl">Model</label>
-                            <input type="text" class="form-field" placeholder="Model" >
-                          </div>
-                          <div class="form-group col-md-4">
-                            <label class="form-lbl">Year</label>
-                            <input type="text" class="form-field" placeholder="Year" >
-                          </div>
-                          <div class="form-group col-md-4">
-                            <label class="form-lbl">Sum Insured (if Health/Life)</label>
-                            <input type="text" class="form-field" placeholder="Amount" >
-                          </div>
-                          <div class="form-group col-md-4">
-                            <label class="form-lbl">Policy Type</label>
-                            <select class="form-field">
-                                <option value="">Select</option>
-                                <option value="">Comprehensive</option>
-                                <option value="">Third Party</option>
-                                <option value="">OD</option>
-                            </select>
-                          </div>
+
+                        
                         <script>
-                            
                         function toggleReferralBy() {
                             var leadSource = document.getElementById("lead_source").value;
                             var referralDiv = document.getElementById("referral_by_div");
