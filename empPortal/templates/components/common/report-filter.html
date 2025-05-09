@@ -137,6 +137,8 @@
               <a href="{% url 'commission-report' %}" class="filter-search-btn bg-dark">Clear</a>
             {% elif request.path == agent_business_url %}
               <a href="{% url 'agent-business-report' %}" class="filter-search-btn bg-dark">Clear</a>
+            {% elif request.path == franchise_business_url %}
+              <a href="{% url 'franchisees-business-report' %}" class="filter-search-btn bg-dark">Clear</a>
             {% endif %}
           </div>
           <div class="col-auto">
