@@ -155,7 +155,7 @@
                               <td>{{ data.policy_infos.tp_premium|floatformat:2|default:"-" }}</td>
                               <td>{{ data.policy_infos.net_premium|floatformat:2|default:"-" }}</td>
                               <td>{{ data.policy_infos.gross_premium|floatformat:2|default:"-" }}</td>
-                              <td>Final Value</td>
+                              <td>-</td>
                               <td>{{ data.policy_infos.policy_tenure|default:"-" }}</td>
                               <td>{{ data.policy_agent_info.agent_payment_mod|default:"-" }}</td>
                               <td>{{ data.policy_agent_info.payment_date|default:"-" }}</td>
@@ -179,7 +179,17 @@
                               <td>{{ data.policy_franchise_info.franchise_tp_amount|floatformat:2|default:"-" }}</td>
                               <td>{{ data.policy_franchise_info.franchise_incentive_amount|floatformat:2|default:"-" }}</td>
                               <td>{{ data.policy_franchise_info.franchise_total_comm_amount|floatformat:2|default:"-" }}</td>
-                              <td>Franchise Profit</td>
+                              <td>
+                                {% with agent_comm=data.policy_agent_info.agent_total_comm_amount|default_if_none:0 %}
+                                    {% with franchise_comm=data.policy_franchise_info.franchise_total_comm_amount|default_if_none:0 %}
+                                        {% if franchise_comm %}
+                                          {{ franchise_comm|subtract:agent_comm|floatformat:2|default:"-" }}
+                                        {% else %}
+                                          -
+                                        {% endif %}
+                                    {% endwith %}
+                                {% endwith %}
+                              </td>
                               <td>{{ data.policy.rm_name }}</td>
                               <td>{{ data.policy_franchise_info.updated_by.full_name|default:"-" }}</td>
                             </tr>
