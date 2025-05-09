@@ -44,6 +44,7 @@
                 <div class="card box-shadow-none p-md-4 p-3">
                   <div class="card-body px-0 pb-0 pt-0">
                     <ul class="stepflow-text stepflow-five-col mt-0">
+                      <li class="active"><a href="#">Insurance Info</a></li>
                       <li><a href="#">Basic Info</a></li>
                       <li><a href="#">Lead Source Info</a></li>
                       <li><a href="#">Location Info</a></li>
@@ -51,6 +52,7 @@
                       <li><a href="#">Previous Policy Information</a></li>
                     </ul>
                     <ul class="new-stepflow mb-2">
+                      <li class="active"></li>
                       <li></li>
                       <li></li>
                       <li></li>
@@ -73,10 +75,10 @@
                           <div class="col-md-12">
                             <h2 class="admin-title border-bottom pb-2 mb-4">Basic Details</h2>
                           </div>
-                          <div class="form-group col-md-4">
+                          <!--<div class="form-group col-md-4">
                             <label class="form-lbl">Lead ID</label>
                             <input type="text" class="form-field" placeholder="Enter Lead ID" value="">
-                          </div>
+                          </div>-->
                           <div class="form-group col-md-4">
                             <label class="form-lbl" >Customer Name</label>
                             <input type="text" class="form-field" placeholder="Enter Customer Name" value="">
@@ -139,6 +141,8 @@
                         
                       </div>
                       <div class="d-flex justify-content-end">
+                  <a href="{% url 'lead-source' %}"  class="btn btn-success mt-3">Next Step</a>
+
                         <button type="submit" class="form-submit-btn mt-3">
                             {% if lead %}Update Lead{% else %}Add Lead{% endif %}
                         </button>

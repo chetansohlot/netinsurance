@@ -583,7 +583,7 @@ def termlead(request):
 
 def lead_init_view(request):
     types = InsuranceType.objects.all()
-    return render(request, 'leads/lead_init.html', {'types': types})
+    return render(request, 'leads/lead-init.html', {'types': types})
 
 # For AJAX - Load categories
 def load_categories(request):
@@ -1151,11 +1151,16 @@ def bulk_upload_leads(request):
 
 #for ctraye lead step by step
 def basic_info(request):
-    pass
-
-def lead_source_or_location(request):
-    pass
-def assignment(request):
-    pass
+    return render(request, "leads/create-basic-details.html")
     
+
+def lead_source(request):
+    return render(request, "leads/create-lead-source-info.html")
+
+def lead_location(request):
+    return render(request, "leads/create-location-info.html")
+def assignment(request):
+    return render(request, "leads/create-assignment.html")
+def previous_policy_info(request):
+    return render(request, "leads/create.html")
     
