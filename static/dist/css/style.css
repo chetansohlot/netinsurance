@@ -2688,6 +2688,8 @@ a:hover .dr-pdficon {
     color: #fff !important;
 }
 
+.stepflow-five-col li {width: 20%;}
+
 @media (max-width:767px) {
     .banner-hding {font-size: 30px;}
     .banner-subhding {font-size:20px;}

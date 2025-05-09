@@ -113,6 +113,7 @@ def edit_policy(request, policy_id):
         policy.insurer_contact_name = request.POST.get('owner_name')
         # policy.bqp = request.POST.get('father_name')
         # policy.pos_name = request.POST.get('vehicle_owner_number')
+        policy.branch_id = request.POST.get('registration_city')
         policy.branch_name = request.POST.get('registration_city')
         policy.supervisor_name = request.POST.get('supervisor_name')
         policy.policy_type = request.POST.get('policy_type')
@@ -178,6 +179,7 @@ def edit_vehicle_details(request, policy_id):
         vehicle.engine_number = none_if_blank(request.POST.get('engine_number'))
         vehicle.chassis_number = none_if_blank(request.POST.get('chassis_number'))
         vehicle.manufacture_year = none_if_blank(request.POST.get('mgf_year'))
+        vehicle.ncb = none_if_blank(request.POST.get('ncb'))
         vehicle.save()
         messages.success(request, "Policy Vehicle details Updated successfully!")
 

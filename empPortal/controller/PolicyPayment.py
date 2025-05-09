@@ -266,6 +266,22 @@ def process_insurer_bulk_excel(file_id, user):
     except Exception as e:
         logger.exception(f"Fatal error while processing file ID {file_id}: {e}")
 
+
+def campaign_policy_logs(request, upload_id):
+    """
+    View to show all policy-level logs for a specific InsurerBulkUpload (campaign).
+    """
+    # Get the specific campaign upload instance
+    upload = get_object_or_404(InsurerBulkUpload, id=upload_id)
+
+    # Get all policy logs linked to this upload
+    logs = InsurerBulkUploadPolicyLog.objects.filter(upload=upload).order_by('-created_at')
+
+    return render(request, 'policy-payment/campaign-log-list.html', {
+        'upload': upload,
+        'logs': logs,
+    })
+
 def log_commission_update(commission_type, policy_id, policy_number, updated_by_id, updated_from, data):
     CommissionUpdateLog.objects.create(
         commission_type=commission_type,

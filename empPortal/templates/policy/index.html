@@ -32,7 +32,6 @@ Policy Data
             {% if request.user.role_id == 1 or request.user.department_id|stringformat:"s" == "5" or request.user.department_id|stringformat:"s" == "3"%}
               <div class="d-flex justify-content-end">
                 {% if request.user.department_id|stringformat:"s" != "5" and request.user.department_id|stringformat:"s" != "3" %}
-                <a href="{% url 'edit-bulk-policy' %}" class="breadcrump-addbtn mx-1">Edit Bulk Policy</a>
                 <a href="{% url 'bulk-upload-logs' %}" class="breadcrump-addbtn mx-1">View Bulk Logs</a>
                 <a href="{% url 'bulk-policy-mgt' %}" class="breadcrump-addbtn mx-1">Add Bulk Policy</a>
                 {% endif %}
@@ -47,7 +46,7 @@ Policy Data
           </div>
         </div>
         <div class="row">
-          <div class="col-xs-6 col-sm-4 col-md-3">
+          <div class="col-xs-6 col-sm-4 col-md-2">
             <a href="#">
               <div class="card counter-img-card active">
                 <div class="card-body">
@@ -65,7 +64,7 @@ Policy Data
               </div>
             </a>   
           </div>  
-          <div class="col-xs-6 col-sm-4 col-md-3">
+          <div class="col-xs-6 col-sm-4 col-md-2">
             <a href="#">
               <div class="card counter-img-card counter-active-card ">
                 <div class="card-body">
@@ -83,7 +82,7 @@ Policy Data
               </div>
             </a>  
           </div>  
-          <div class="col-xs-6 col-sm-4 col-md-3">
+          <div class="col-xs-6 col-sm-4 col-md-2">
             <a href="#">
               <div class="card counter-img-card counter-deactive-card ">
                 <div class="card-body">
@@ -101,7 +100,7 @@ Policy Data
               </div>
             </a>  
           </div>  
-          <div class="col-xs-6 col-sm-4 col-md-3">
+          <div class="col-xs-6 col-sm-4 col-md-2">
             <a href="#">
               <div class="card counter-img-card counter-pending-card ">
                 <div class="card-body">

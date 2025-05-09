@@ -150,6 +150,9 @@ urlpatterns = [
     path('fetch-policy-details/', leads.fetch_policy_details, name='fetch-policy-details'),
     path('lead-mgt/export/', leads.export_leads_to_excel, name='lead_mgt_export'),
     path('get-cities/', leads.get_cities, name='get_cities'),
+    path('leads/lead-init/', leads.lead_init_view, name='lead-init'),
+    path('leads/load-categories/', leads.load_categories, name='load-categories'),
+    path('leads/load-products/', leads.load_products, name='load-products'),
 
 
     #Insurance
@@ -207,12 +210,14 @@ urlpatterns = [
 
     # REPORTS 
     path('report/commission-report/', export.commission_report, name='commission-report-v0'),
+    path('report/a-business-report/', export.agent_business_report, name='agent-business-report-v0'),
     path('report/sm-business-report/', export.sales_manager_business_report, name='sales-manager-business-report'),
-    path('report/a-business-report/', export.agent_business_report, name='agent-business-report'),
     path('report/f-business-report/', export.franchisees_business_report, name='franchisees-business-report'),
     path('report/i-business-report/', export.insurer_business_report, name='insurer-business-report'),
     
-    path('report/v1/commission-report/', reports.commission_report, name='commission-report'),  
+    path('report/v1/comparison-report/', reports.commission_report, name='commission-report'),  
+    path('report/v1/a-business-report/', reports.agent_business_report, name='agent-business-report'),
+    
     path('report/pending-insurer-commission-report/', reports.pending_insurer_commission_report, name='pending-insurer-commission-report'),
     path('report/pending-agent-commission-report/', reports.pending_agent_commission_report, name='pending-agent-commission-report'),
     
@@ -220,7 +225,7 @@ urlpatterns = [
     
     # EXPORT
     path('export-commission-report/', export.export_commission_data, name='export-commission-report-v0'),
-    path('v1/export-commission-report/', export.export_commission_data_v1, name='export-commission-report'),
+    path('v1/export-comparison-report/', export.export_commission_data_v1, name='export-commission-report'),
 
 
     # POLICY-COMMISION 
@@ -243,6 +248,9 @@ urlpatterns = [
     path('policy-payment/get-campaign-log/', PolicyPayment.get_campaign_log, name='get-campaign-log'),
     path('policy-payment/view-payment-update-log/', PolicyPayment.view_payment_update_log, name='view-payment-update-log'),
     path("ajax/get-campaigns/", PolicyPayment.ajax_get_campaigns, name="ajax-get-campaigns"),
+    # urls.py
+    path('policy-payment/campaign-logs/<int:upload_id>/', PolicyPayment.campaign_policy_logs, name='campaign-policy-logs'),
+
     # POLICY-PAYMENT 
     
 

@@ -2671,3 +2671,14 @@ a:hover .dr-pdficon {
     .wrap-subhding {font-size:16px;}
     .hiw-first-arrow, .hiw-sec-arrow {display: none; }
   }
+
+.content-header {
+    padding: 0px 7px;
+}
+.counter-img-card .card-body {
+        padding: 10px 10px;
+}
+.counter-img-card .card-body .card-number {
+        font-size: 16px;
+        font-weight: 500;
+}

@@ -52,6 +52,39 @@ class BqpMaster(models.Model):
     def bqp_name(self):
         return self.bqp_fname +" "+ self.bqp_lname
         
+class Branch(models.Model):
+    franchise_id = models.IntegerField(null=True, blank=True, verbose_name="Franchise ID")
+    branch_name = models.CharField(max_length=255, null=True, blank=True, verbose_name="Branch Name")
+    contact_person = models.CharField(max_length=255, null=True, blank=True, verbose_name="Contact Person")
+    mobile = models.CharField(max_length=15, null=True, blank=True, verbose_name="Mobile")
+    email = models.EmailField(max_length=255, null=True, blank=True, verbose_name="Email")
+
+    address = models.TextField(null=True, blank=True, verbose_name="Address")
+    city = models.CharField(max_length=100, null=True, blank=True, verbose_name="City")
+    state = models.CharField(max_length=100, null=True, blank=True, verbose_name="State")
+    pincode = models.CharField(max_length=10, null=True, blank=True, verbose_name="Pincode")
+
+    STATUS_CHOICES = [
+        ('Active', 'Active'),
+        ('Inactive', 'Inactive'),
+    ]
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, null=True, blank=True, default='Active', verbose_name="Status")
+
+    created_at = models.DateTimeField(default=timezone.now, verbose_name="Created At")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Updated At")
+
+    class Meta:
+        db_table = 'branches'
+        verbose_name = "Branch"
+        verbose_name_plural = "Branches"
+
+    def __str__(self):
+        return f"{self.branch_name if self.branch_name else 'Unnamed Branch'}"
+
+    def status_type(self):
+        return "Active" if self.status == "Active" else "Inactive"
+
+
 class Commission(models.Model):
     rm_name  =models.CharField(max_length=255, unique=True)
     member_id = models.CharField(max_length=20, null=True, blank=True)
@@ -364,7 +397,8 @@ class PolicyInfo(models.Model):
     bqp = models.ForeignKey(BqpMaster,on_delete=models.SET_NULL,null=True,blank=True)
     pos_name = models.CharField(max_length=255, null=True, blank=True)
     referral_by = models.CharField(max_length=50, null=True, blank=True)
-  
+    
+    branch = models.ForeignKey(Branch, on_delete=models.SET_NULL, null=True, blank=True)
     branch_name = models.CharField(max_length=255, null=True, blank=True)
     supervisor_name = models.CharField(max_length=255, null=True, blank=True)
     policy_type = models.CharField(max_length=255, null=True, blank=True)
@@ -423,6 +457,15 @@ class PolicyInfo(models.Model):
             return datetime.strptime(self.policy_expiry_date, "%Y-%m-%d %H:%M:%S").strftime("%d-%m-%Y")
         except (ValueError, TypeError):
             return None
+        
+    @property
+    def policy_tenure(self):
+        try:
+            start = datetime.strptime(self.policy_start_date, "%Y-%m-%d %H:%M:%S")
+            end = datetime.strptime(self.policy_expiry_date, "%Y-%m-%d %H:%M:%S")
+            return int((end.year - start.year) + ((end.month - start.month) / 12))
+        except (ValueError,TypeError):
+            return None
 
 class AgentPaymentDetails(models.Model):
     policy = models.ForeignKey(PolicyDocument, on_delete=models.CASCADE, related_name='policy_agent_info')
@@ -459,6 +502,12 @@ class AgentPaymentDetails(models.Model):
     class Meta:
         db_table = 'agent_payment_details'
 
+    @property
+    def payment_date(self):
+        try:
+            return datetime.strptime(self.agent_payment_date, "%Y-%m-%d").strftime("%d-%m-%Y")
+        except(ValueError, TypeError):
+            return None 
     def __str__(self):
         return f"{self.agent_name} - {self.policy_number}"
     
@@ -568,7 +617,7 @@ class PolicyVehicleInfo(models.Model):
     gvw = models.CharField(max_length=50, null=True, blank=True)
     cubic_capacity = models.CharField(max_length=50, null=True, blank=True)
     seating_capacity = models.CharField(max_length=10, null=True, blank=True)
-
+    ncb = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     registration_number = models.CharField(max_length=100, null=True, blank=True)
     engine_number = models.CharField(max_length=100, null=True, blank=True)
     chassis_number = models.CharField(max_length=100, null=True, blank=True)
@@ -804,37 +853,6 @@ class Department(models.Model):
         return "Active" if self.status == "Active" else "Inactive"
 
 
-class Branch(models.Model):
-    franchise_id = models.IntegerField(null=True, blank=True, verbose_name="Franchise ID")
-    branch_name = models.CharField(max_length=255, null=True, blank=True, verbose_name="Branch Name")
-    contact_person = models.CharField(max_length=255, null=True, blank=True, verbose_name="Contact Person")
-    mobile = models.CharField(max_length=15, null=True, blank=True, verbose_name="Mobile")
-    email = models.EmailField(max_length=255, null=True, blank=True, verbose_name="Email")
-
-    address = models.TextField(null=True, blank=True, verbose_name="Address")
-    city = models.CharField(max_length=100, null=True, blank=True, verbose_name="City")
-    state = models.CharField(max_length=100, null=True, blank=True, verbose_name="State")
-    pincode = models.CharField(max_length=10, null=True, blank=True, verbose_name="Pincode")
-
-    STATUS_CHOICES = [
-        ('Active', 'Active'),
-        ('Inactive', 'Inactive'),
-    ]
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, null=True, blank=True, default='Active', verbose_name="Status")
-
-    created_at = models.DateTimeField(default=timezone.now, verbose_name="Created At")
-    updated_at = models.DateTimeField(auto_now=True, verbose_name="Updated At")
-
-    class Meta:
-        db_table = 'branches'
-        verbose_name = "Branch"
-        verbose_name_plural = "Branches"
-
-    def __str__(self):
-        return f"{self.branch_name if self.branch_name else 'Unnamed Branch'}"
-
-    def status_type(self):
-        return "Active" if self.status == "Active" else "Inactive"
 
 class UserFiles(models.Model):
     user = models.ForeignKey('Users', on_delete=models.CASCADE, related_name='files')
