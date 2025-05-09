@@ -2700,6 +2700,16 @@ a:hover .dr-pdficon {
 
 .activity-circle {width: 40px; height: 40px; font-size:12px; border-radius: 50%; background-color: #ffd1c5; display: flex; align-items: center; justify-content: center; margin-right: 5px;}
 
+.lead-view-step {margin:15px 0; padding:0px; display: flex; flex-wrap:wrap; justify-content: center; }
+.lead-view-step li {list-style: none; padding:8px 16px; font-size:13px; background-color: #ddd; display: flex; align-items: center; justify-content: center; margin-right: 20px; position: relative;}
+.lead-view-step li.active {background-color: #f15e33; color:#fff;}
+.lead-view-step li:first-child {border-radius: 20px 0 0 20px;}
+.lead-view-step li:last-child {border-radius: 0 20px 20px 0;}
+.lead-view-step li:not(:last-child):before {content:""; position:absolute; right:-14px; top:0; border-top:19px solid transparent; border-bottom: 18px solid transparent; border-left: 15px solid #ddd; z-index: 1;}
+.lead-view-step li.active:not(:last-child):before {border-left: 15px solid #f15e33;}
+.lead-view-step li:not(:first-child) .arrow-design:before {content:""; position:absolute; left:-14px; top:0; border-top:19px solid #ddd; border-bottom: 18px solid transparent; border-left: 15px solid #fff; z-index: 0;}
+.lead-view-step li:not(:first-child) .arrow-design:after {content:""; position:absolute; left:-14px; top:0; border-top:19px solid transparent; border-bottom: 18px solid #ddd; border-left: 15px solid #fff; z-index: 0;}
+
 @media (max-width:767px) {
     .banner-hding {font-size: 30px;}
     .banner-subhding {font-size:20px;}
