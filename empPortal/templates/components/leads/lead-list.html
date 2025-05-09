@@ -41,14 +41,16 @@
           </td>
              <!-- Customer Info -->
           <td>
-            <span class="d-block text-primary">{{ lead.name_as_per_pan }}</span>
+            <div class="d-flex">
+              <span class="d-block text-primary">{{ lead.name_as_per_pan }}</span> 
+              <span class="text-muted ml-1">(Male)</span>
+            </div>  
             <span class="d-block text-lowercase">{{ lead.email_address }}</span>
             <span class="d-block text-muted">{{ lead.mobile_number }}</span>
             
           </td>
             <!-- Project Name -->
           <td>
-            Male <br>
             <span class="d-block text-muted">DOB: 15-12-1986</span>
             <span>PAN: BAXPK1234K</span>
           </td>
