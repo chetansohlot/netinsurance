@@ -133,11 +133,11 @@
                         </select>
                     </div>
                     <div class="col" style="display: none;">
-                        <input type="text" name="consolidated_from_date" class="form-field graph_datepicker" id="consolidated_from_date" placeholder="From Date" autocomplete="off">
+                        <input type="text" name="consolidated_from_date" class="datepicker_common" id="consolidated_from_date" placeholder="From Date" autocomplete="off">
                         <span class="error consolidated_from_date_err"></span>
                     </div>
                     <div class="col" style="display: none;">
-                        <input type="text" name="consolidated_to_date" class="form-field graph_datepicker" id="consolidated_to_date" placeholder="To Date" autocomplete="off">
+                        <input type="text" name="consolidated_to_date" class="datepicker_common" id="consolidated_to_date" placeholder="To Date" autocomplete="off">
                         <span class="error consolidated_to_date_err"></span>
                     </div>
                   </div>
@@ -263,11 +263,11 @@
                         </select>
                     </div>
                     <div class="col" style="display: none;">
-                        <input type="text" name="business_consolidated_from_date" class="form-field graph_datepicker" id="business_consolidated_from_date" placeholder="From Date" autocomplete="off">
+                        <input type="text" name="business_consolidated_from_date" class="datepicker_common" id="business_consolidated_from_date" placeholder="From Date" autocomplete="off">
                         <span class="error consolidated_from_date_err"></span>
                     </div>
                     <div class="col" style="display: none;">
-                        <input type="text" name="business_consolidated_to_date" class="form-field graph_datepicker" id="business_consolidated_to_date" placeholder="To Date" autocomplete="off">
+                        <input type="text" name="business_consolidated_to_date" class="datepicker_common" id="business_consolidated_to_date" placeholder="To Date" autocomplete="off">
                         <span class="error business_consolidated_to_date_err"></span>
                     </div>
                   </div>
@@ -381,11 +381,11 @@
                         </select>
                     </div>
                     <div class="col" style="display: none;">
-                        <input type="text" name="summary_referal_from_date" class="form-field graph_datepicker" id="summary_referal_from_date" placeholder="From Date" autocomplete="off">
+                        <input type="text" name="summary_referal_from_date" class="datepicker_common" id="summary_referal_from_date" placeholder="From Date" autocomplete="off">
                         <span class="error consolidated_from_date_err"></span>
                     </div>
                     <div class="col" style="display: none;">
-                        <input type="text" name="summary_referal_to_date" class="form-field graph_datepicker" id="summary_referal_to_date" placeholder="To Date" autocomplete="off">
+                        <input type="text" name="summary_referal_to_date" class="datepicker_common" id="summary_referal_to_date" placeholder="To Date" autocomplete="off">
                         <span class="error summary_referal_to_date_err"></span>
                     </div>
                   </div>
@@ -474,47 +474,126 @@
                     </div>
                 
                     <div style="display: none;" id="from_date_filter">
-                      <input type="text" name="insurer_wiser_from_date" class="form-field graph_datepicker" id="insurer_wise_from_date" placeholder="From Date" autocomplete="off">
+                      <input type="text" name="insurer_wiser_from_date" class="datepicker_common" id="insurer_wise_from_date" placeholder="From Date" autocomplete="off">
                       <span class="error insurer_wise_date_err"></span>
                     </div>
                 
                     <div style="display: none;" id="to_date_filter">
-                      <input type="text" name="insurer_wise_to_date" class="form-field graph_datepicker" id="insurer_wise_to_date" placeholder="To Date" autocomplete="off">
+                      <input type="text" name="insurer_wise_to_date" class="datepicker_common" id="insurer_wise_to_date" placeholder="To Date" autocomplete="off">
                       <span class="error summary_partner_to_date_err"></span>
                     </div>
                   </div>
                 </div>
                 <div class="table-responsive">
-                    <table class="table table-design table-trlink">
-                      <thead class="table-thead-bg-light table-header-fix">
-                        <tr>
-                          <th>Policy Number</th>
-                          <th>Insurer Provider</th>
-                          <th>Net Commission</th>
-                          <th>Gross Commission</th>
-                          <th>Month</th>
-                          <th>Partner Info</th>
+                  <table class="table table-design table-trlink">
+                    <thead class="table-thead-bg-light table-header-fix">
+                      <tr>
+                        <th>Insurer</th>
+                        <th>Policy Sold</th>
+                        <th>Total Revenue</th>
+                        <th>Net Premium</th>
+                        <th>Gross Premium</th>
 
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {% for policy in policies %}
-                        <tr>
-                            <td>{{ policy.policy_number }}</td>
-                            <td>{{ policy.insurer_name }}</td> 
-                            <td>{{ policy.net_commission }}</td> 
-                            <td>{{ policy.gross_commission }}</td> 
-                            <td>{{ policy.start_date|date:"F" }}</td> 
-                            <td>{{ policy.partner_name }} <span class="text-gray">({{ policy.partner_id }})</span></td> <!-- Assuming partner_name and partner_id are fields in the model -->
-                        </tr>
-                        {% endfor %}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for provider in provider_summary %}
+                          <tr>
+                              <td>{{ provider.insurance_provider|default:"N/A" }}</td>
+                              <td>{{ provider.policies_sold }}</td>
+                              <td>₹{{ provider.policy_income|floatformat:2|default:"0" }}</td>
+                              <td>₹{{ provider.total_net_premium|floatformat:2|default:"0" }}</td>
+                              <td>₹{{ provider.total_gross_premium|floatformat:2|default:"0" }}</td>
+                          </tr>
+                      {% endfor %}
                     </tbody>
-                    </table>
-                  </div>
+                  </table>
+                </div>
+                
               </div>
             </div>
           </div>
-        </div>
+          
+          
+          <!-- <div class="col-sm-12 col-md-12">  
+            <div class="card">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <h5 class="card-hding pb-0 mb-0">Business Summary Insurer Wise</h5>
+                  
+                  <div class="d-flex align-items-center ms-auto gap-2">
+                    <div>
+                      <select name="insurer_wise" class="form-field" id="insurer_wise">
+                        <option value="1">All</option>
+                        <option value="2">Today</option>
+                        <option value="3">MTD</option>
+                        <option value="4">Custom Date</option>
+                      </select>
+                    </div>
+                
+                    <div style="display: none;" id="month_filter">
+                      <select name="summary_partner_month" class="form-field" id="insurer_wise_month">
+                        <option value="1">Jan</option>
+                        <option value="2">Feb</option>
+                        <option value="3">March</option>
+                        <option value="4">Apr</option>
+                        <option value="5">May</option>
+                        <option value="6">June</option>
+                        <option value="7">July</option>
+                        <option value="8">Aug</option>
+                        <option value="9">Sept</option>
+                        <option value="10">Oct</option>
+                        <option value="11">Nov</option>
+                        <option value="12">Dec</option>
+                      </select>
+                    </div>
+                
+                    <div style="display: none;" id="from_date_filter">
+                      <input type="text" name="insurer_wiser_from_date" class="datepicker_common" id="insurer_wise_from_date" placeholder="From Date" autocomplete="off">
+                      <span class="error insurer_wise_date_err"></span>
+                    </div>
+                
+                    <div style="display: none;" id="to_date_filter">
+                      <input type="text" name="insurer_wise_to_date" class="datepicker_common" id="insurer_wise_to_date" placeholder="To Date" autocomplete="off">
+                      <span class="error summary_partner_to_date_err"></span>
+                    </div>
+                  </div>
+                </div>
+                <div class="table-responsive">
+                  <table class="table table-design table-trlink">
+                    <thead class="table-thead-bg-light table-header-fix">
+                      <tr>
+                        <th>Policy Number</th>
+                        <th>Insurer Provider</th>
+                        <th>Net Commission</th>
+                        <th>Gross Commission</th>
+                        <th>Created At</th>
+                        <th>Partner Info</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for policy in policies_insurer_wise %}
+                      <tr>
+                        <td>{{ policy.policy_number }}</td>
+                        <td>{{ policy.insurance_company }}</td>
+                        <td>{{ policy.net_premium }}</td>
+                        <td>{{ policy.gross_premium }}</td>
+                        <td>{{ policy.created_at }}</td>
+                        <td>{{ policy.pos_name }} <span class="text-gray">({{ policy.policy_id }})</span></td>
+                      </tr>
+                      {% empty %}
+                      <tr>
+                        <td colspan="6" class="text-center">No data is available</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+                
+              </div>
+            </div>
+          </div>
+        </div> -->
 
         </div>  
         <!-- /.row -->
@@ -678,7 +757,66 @@
   });
 </script>
 
+{{ referral_counts|json_script:"referralMotorCounts" }}
+{{ referral_agent_labels|json_script:"referralProviderLabels" }}
 
+<script type="text/javascript">
+  Chart.register(ChartDataLabels);
+
+  // 1) Parse your JSON‐script data
+  const referralMotorCounts = JSON.parse(document.getElementById('referralMotorCounts').textContent);
+  const referralProviderLabels = JSON.parse(document.getElementById('referralProviderLabels').textContent);
+
+  // 2) Hold the chart instance in a variable
+  let referralBarChart = null;
+
+  function referral_bar_chart_open(counts, labels) {
+    // 3) If we already drew one, destroy it
+    if (referralBarChart) {
+      referralBarChart.destroy();
+    }
+    const ctx = document.getElementById("referal_bar_chart").getContext("2d");
+    referralBarChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Motor',
+          data: counts,
+          backgroundColor: "#4593dd",
+          borderColor: '#4593dd',
+          fill: false
+        }]
+      },
+      options: {
+        responsive: true,
+        indexAxis: 'x', // horizontal bars
+        plugins: {
+          legend: {
+            labels: { padding: 20, font: { size: 11 } },
+            position: 'top'
+          },
+          datalabels: {
+            anchor: 'center',
+            align: 'center',
+            color: '#000',
+            font: { weight: 'bold' },
+            formatter: v => v
+          }
+        },
+        scales: {
+          x: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    referral_bar_chart_open(referralMotorCounts, referralProviderLabels);
+  });
+</script>
 
 
 
@@ -790,57 +928,53 @@
         }
     });
 
-   new Chart("referal_bar_chart", {
-    data: {
-            datasets: [{
-                type: 'bar',
-                label: 'Motor',
-                data: [50, 12, 60, 90],
-                backgroundColor: "#4593dd",
-                fill: false,
-                borderColor: '#4593dd'
-            }, {
-                type: 'bar',
-                label: 'Health',
-                data: [40, 18, 70, 50],
-                backgroundColor: "#85c7de",
-                borderColor: '#85c7de'
-            }, {
-                type: 'bar',
-                label: 'Term',
-                data: [15, 70, 110, 60],
-                backgroundColor: "#f1ae83",
-                borderColor: '#f1ae83'
-            }],
-            labels: ['Vinod-REF1201', 'Ankit-REF1202', 'Sumit-REF1203', 'Kunal-REF1204'],
-        },
-        options: {
-            responsive: true,
-            indexAxis: 'y',
-            plugins: {
-                legend: {
-                    labels: {
-                      padding: 20, // Add space between graph and labels
-                      font: {
-                        size: 11, // Adjust font size for better readability
-                      },
-                    },
-                    position: 'top', // Position the legend at the top
-                  },
-                datalabels: {
-                    anchor: 'middle',
-                    align: 'middle',
-                    color: '#000',
-                    font: {
-                        weight: 'bold',
-                    },
-                    formatter: function(value, context) {
-                        return value;
-                    }
-                }
-            }
-        }
-    });
+//     new Chart("referal_bar_chart", {
+//     type: 'bar',
+//     data: {
+//         labels: ['Vinod-REF1201', 'Ankit-REF1202', 'Sumit-REF1203', 'Kunal-REF1204'],
+//         datasets: [
+//             {
+//                 label: 'Motor',
+//                 data: [50, 12, 60, 90],
+//                 backgroundColor: "#4593dd",
+//                 borderColor: '#4593dd',
+//                 borderWidth: 1
+//             }
+           
+//         ]
+//     },
+//     options: {
+//         responsive: true,
+//         indexAxis: 'x', // horizontal bars
+//         plugins: {
+//             legend: {
+//                 position: 'top',
+//                 labels: {
+//                     padding: 20,
+//                     font: {
+//                         size: 11
+//                     }
+//                 }
+//             },
+//             datalabels: {
+//                 anchor: 'center',
+//                 align: 'center',
+//                 color: '#000',
+//                 font: {
+//                     weight: 'bold',
+//                 },
+//                 formatter: function(value) {
+//                     return value;
+//                 }
+//             }
+//         },
+//         scales: {
+//             x: {
+//                 beginAtZero: true
+//             }
+//         }
+//     },
+// });
    
    new Chart("partner_bar_chart", {
     data: {
@@ -896,7 +1030,7 @@
 </script>
 
 <script>
-  // Function to update the chart
+  //Function to update the Insurer business chart
   function updateChart() {
       var startDate = document.getElementById('start_date').value;
       var endDate = document.getElementById('end_date').value;
@@ -958,6 +1092,39 @@
       });
   }
 </script>
+
+<script>
+  // Function to update the Referral business chart
+  function updateReferralChart() {
+      var startDate = document.getElementById('start_date').value;
+      var endDate = document.getElementById('end_date').value;
+
+      // Check if both dates are selected
+      if (!startDate || !endDate) {
+          alert('Please select both start and end dates');
+          return;
+      }
+
+      // AJAX request to fetch the data for referral chart
+      $.ajax({
+          url: '/referral_summary_chartajax/',  // Django view URL for referral data
+          type: 'GET',
+          data: {
+              start_date: startDate,
+              end_date: endDate
+          },
+          success: function(response) {
+              console.log("Referral Counts:", response.referral_motor_counts);
+              console.log("Referral Provider:", response.referral_provider_labels);
+              referral_bar_chart_open(response.referral_motor_counts, response.referral_provider_labels);
+          },
+          error: function(xhr, status, error) {
+              console.error('AJAX Error: ' + error);
+          }
+      });
+  }
+</script>
+
 
 
 <script>
@@ -1154,6 +1321,67 @@
     updateSummaryFiltersAndChart(); // initial load
   });
 </script>
+
+<script>
+  let referralChart = null; // Global chart variable
+
+  function fetchAndRenderReferralChart() {
+    const filter = document.getElementById("summary_referral").value;
+    const month = document.getElementById("summary_referral_month").value;
+    const fromDate = document.getElementById("summary_referral_from_date").value;
+    const toDate = document.getElementById("summary_referral_to_date").value;
+
+    let url = `/referral_summary_chartajax?filter=${filter}`;
+
+    if (filter === "3") {
+      url += `&month=${month}`;
+    } else if (filter === "4") {
+      url += `&start_date=${fromDate}&end_date=${toDate}`;
+    }
+
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        console.log("AJAX payload:", data);
+        referral_bar_chart_open(data.referral_motor_counts, data.referral_provider_labels);
+      })
+      .catch(error => {
+        console.error("Chart fetch error:", error);
+      });
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const summarySelect = document.getElementById("summary_referral");
+    const monthDropdown = document.getElementById("summary_referral_month").parentElement;
+    const fromDateField = document.getElementById("summary_referral_from_date").parentElement;
+    const toDateField = document.getElementById("summary_referral_to_date").parentElement;
+
+    function updateSummaryFiltersAndChart() {
+      const value = summarySelect.value;
+
+      monthDropdown.style.display = "none";
+      fromDateField.style.display = "none";
+      toDateField.style.display = "none";
+
+      if (value === "3") {
+        monthDropdown.style.display = "block";
+      } else if (value === "4") {
+        fromDateField.style.display = "block";
+        toDateField.style.display = "block";
+      }
+
+      fetchAndRenderReferralChart();
+    }
+
+    summarySelect.addEventListener("change", updateSummaryFiltersAndChart);
+    document.getElementById("summary_referral_month").addEventListener("change", fetchAndRenderReferralChart);
+    document.getElementById("summary_referral_from_date").addEventListener("change", fetchAndRenderReferralChart);
+    document.getElementById("summary_referral_to_date").addEventListener("change", fetchAndRenderReferralChart);
+
+    updateSummaryFiltersAndChart(); // initial load
+  });
+</script>
+
 
 </body>
 

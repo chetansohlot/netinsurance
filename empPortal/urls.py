@@ -60,8 +60,9 @@ urlpatterns = [
     path('user-and-roles/', views.userAndRoles, name='user-and-roles'),
     path('', homeManagement.index, name='home-index'),
     path('dashboard/', Dashboard.dashboard, name='dashboard'),
-    path('business_summary_insurer_chartajax', Dashboard.business_summary_insurer_chartajax, name='business_summary_insurer_chartajax'),
+    path('business_summary_insurer_chartajax/', Dashboard.business_summary_insurer_chartajax, name='business_summary_insurer_chartajax'),
     path('business_consolidated_ajax/', Dashboard.business_consolidated_ajax, name='business_consolidated_ajax'),
+    path('referral_summary_chartajax', Dashboard.referral_summary_chartajax, name='referral_summary_chartajax'),
 
 
 
