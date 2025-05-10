@@ -44,6 +44,7 @@
                 <div class="card box-shadow-none p-md-4 p-3">
                   <div class="card-body px-0 pb-0 pt-0">
                     <ul class="stepflow-text stepflow-five-col mt-0">
+                      <li class="active"><a href="#">Insurance Info</a></li>
                       <li class="active"><a href="#">Basic Info</a></li>
                       <li class="active"><a href="#">Lead Source Info</a></li>
                       <li><a href="#">Location Info</a></li>
@@ -51,6 +52,7 @@
                       <li><a href="#">Previous Policy Information</a></li>
                     </ul>
                     <ul class="new-stepflow mb-2">
+                      <li class="active"><li>
                       <li class="active"></li>
                       <li class="active"></li>
                       <li></li>
@@ -75,24 +77,34 @@
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl" for="state">State</label>
-                            <select class="form-field" name="state" id="state">
+                            <!--<select class="form-field" name="state" id="state">
                                 <option value="">Select State</option>
                                 {% for s in states %}
                                     <option value="{{ s.name }}" {% if lead and lead.state == s.name %}selected{% endif %}>
                                         {{ s.name }}
                                     </option>
                                 {% endfor %}
+                            </select>-->
+                            <select class="form-field" name="state" id="state">
+                              <option value="">Select State</option>
+                              {% for state in states %}
+                                <option value="{{ state.id }}">{{ state.name }}</option>
+                              {% endfor %}
                             </select>
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl" for="city">City</label>
-                            <select class="form-field" name="city" id="city">
+                            <!--<select class="form-field" name="city" id="city">
                                 {% if lead %}
                                     <option value="{{ lead.city }}" selected>{{ lead.city }}</option>
                                 {% else %}
                                     <option value="">Select City</option>
                                 {% endif %}
+                            </select>-->
+                            <select class="form-field" name="city" id="city">
+                              <option value="">Select City</option>
                             </select>
+                            
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl" for="pincode">Pincode</label>
@@ -128,6 +140,9 @@
                         
                       </div>
                       <div class="d-flex justify-content-end">
+                        <a href="{% url 'lead-source' %}" class="btn btn-secondary mt-3 me-2">Back</a>
+                        <a href="{% url 'lead-assignment' %}" class="btn btn-success mt-3">Next Step</a>
+                        
                         <button type="submit" class="form-submit-btn mt-3">
                             {% if lead %}Update Lead{% else %}Add Lead{% endif %}
                         </button>
@@ -325,7 +340,7 @@
   </script>
   
   
-  <script>
+  <!--<script>
   $('#state').change(function () {
     var stateName = $(this).val();  // changed to state name
     $('#city').html('<option value="">Loading...</option>');
@@ -390,9 +405,32 @@
             loadCities(stateName);
         });
     });
+</script>-->
+<!-- jQuery for AJAX -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  $(document).ready(function () {
+    $('#state').change(function () {
+      var stateId = $(this).val();
+      if (stateId) {
+        $.ajax({
+          url: "{% url 'get_cities' %}",
+          data: {
+            'state_id': stateId
+          },
+          success: function (data) {
+            $('#city').empty();
+            $('#city').append('<option value="">Select City</option>');
+            $.each(data.cities, function (index, city) {
+              $('#city').append('<option value="' + city.id + '">' + city.city + '</option>');
+            });
+          }
+        });
+      } else {
+        $('#city').empty().append('<option value="">Select City</option>');
+      }
+    });
+  });
 </script>
-
-
-
 </body>
 {% endblock %}

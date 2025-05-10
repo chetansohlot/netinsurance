@@ -44,6 +44,7 @@
                 <div class="card box-shadow-none p-md-4 p-3">
                   <div class="card-body px-0 pb-0 pt-0">
                     <ul class="stepflow-text stepflow-five-col mt-0">
+                      <li class="active"><a href="#">Insurance Info</a></li>
                       <li class="active"><a href="#">Basic Info</a></li>
                       <li><a href="#">Lead Source Info</a></li>
                       <li><a href="#">Location Info</a></li>
@@ -51,6 +52,7 @@
                       <li><a href="#">Previous Policy Information</a></li>
                     </ul>
                     <ul class="new-stepflow mb-2">
+                      <li class="active"></li>
                       <li class="active"></li>
                       <li></li>
                       <li></li>
@@ -90,9 +92,19 @@
                             <input type="text" class="form-field" placeholder="Enter Lead Source Name" value="">
                           </div>
                           <div class="form-group col-md-4">
+                            <label class="form-lbl">Refered By</label>
+                            <select class="form-field">
+                                <option>Select</option>
+                            </select>
+                          </div>
+                          <div class="form-group col-md-4">
                               <label class="form-lbl" for="mobile_number">Referral Name</label>
                               <input type="tel" class="form-field" placeholder="Enter Referral Name">
                           </div>
+                          <div class="form-group col-md-4">
+                            <label class="form-lbl" for="mobile_number">Referral Mobile Number</label>
+                            <input type="tel" class="form-field" placeholder="Enter Referral Mobile Number">
+                        </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Source Medium</label>
                             <select class="form-field">
@@ -133,6 +145,9 @@
                         
                       </div>
                       <div class="d-flex justify-content-end">
+                        <a href="{% url 'basic-info' %}" class="btn btn-secondary mt-3 me-2">Back</a><br>
+                        <a href="{% url 'lead-location' %}"  class="btn btn-success mt-3">Next Step</a>
+
                         <button type="submit" class="form-submit-btn mt-3">
                             {% if lead %}Update Lead{% else %}Add Lead{% endif %}
                         </button>

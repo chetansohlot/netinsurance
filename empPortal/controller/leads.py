@@ -583,7 +583,7 @@ def termlead(request):
 
 def lead_init_view(request):
     types = InsuranceType.objects.all()
-    return render(request, 'leads/lead_init.html', {'types': types})
+    return render(request, 'leads/lead-init.html', {'types': types})
 
 # For AJAX - Load categories
 def load_categories(request):
@@ -819,15 +819,22 @@ def fetch_policy_details(request):
             return JsonResponse({'success': False, 'message': str(e)})
 
     return JsonResponse({'success': False, 'message': 'Invalid request'})
+#state
+def get_state(request):
+    states = State.objects.all()
+    return render(request, 'leads/create-location-info.html', {'states': states})
 
 def get_cities(request):
-    state_name = request.GET.get('state_id')
+    """state_name = request.GET.get('state_id')
     try:
         state = State.objects.get(name=state_name)
         cities = City.objects.filter(state=state).values('city')
         return JsonResponse(list(cities), safe=False)
     except State.DoesNotExist:
-        return JsonResponse([], safe=False)
+        return JsonResponse([], safe=False)"""
+    state_id = request.GET.get('state_id')
+    cities = City.objects.filter(state_id=state_id).values('id', 'city')
+    return JsonResponse({'cities': list(cities)})
 
 """def bulk_upload_leads(request):
     if request.method == 'POST':
@@ -1148,4 +1155,19 @@ def bulk_upload_leads(request):
         return redirect("leads-mgt")
 
     return render(request, "leads/bulk_upload.html")
+
+#for ctraye lead step by step
+def basic_info(request):
+    return render(request, "leads/create-basic-details.html")
+    
+
+def lead_source(request):
+    return render(request, "leads/create-lead-source-info.html")
+
+def lead_location(request):
+    return render(request, "leads/create-location-info.html")
+def assignment(request):
+    return render(request, "leads/create-assignment.html")
+def previous_policy_info(request):
+    return render(request, "leads/create.html")
     

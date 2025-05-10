@@ -150,10 +150,17 @@ urlpatterns = [
     path('bulk-upload/', leads.bulk_upload_leads, name='bulk-upload-leads'),
     path('fetch-policy-details/', leads.fetch_policy_details, name='fetch-policy-details'),
     path('lead-mgt/export/', leads.export_leads_to_excel, name='lead_mgt_export'),
+    path('get-state/', leads.get_state, name='get_state'),
     path('get-cities/', leads.get_cities, name='get_cities'),
-    path('leads/lead-init/', leads.lead_init_view, name='lead-init'),
-    path('leads/load-categories/', leads.load_categories, name='load-categories'),
-    path('leads/load-products/', leads.load_products, name='load-products'),
+    path('leads/product-info/lead-init/', leads.lead_init_view, name='lead-init'),
+    path('leads/product-info/load-categories/', leads.load_categories, name='load-categories'),
+    path('leads/product-info/load-products/', leads.load_products, name='load-products'),
+    path('lead/basic_info/', leads.basic_info, name='basic-info'),
+    path('leads/lead-source',leads.lead_source, name='lead-source'),
+    path('leads/lead-locationn',leads.lead_location, name='lead-location'),
+    
+    path('leads/assignment', leads.assignment, name='lead-assignment'),
+    path('leads/previous-policy-info', leads.previous_policy_info, name='leads-previous-policy-info'),
 
 
     #Insurance
