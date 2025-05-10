@@ -1161,13 +1161,19 @@ def lead_init_view(request):
     types = InsuranceType.objects.all()
     return render(request, 'leads/lead-init.html', {'types': types})
 
-def lead_init_edit(request):
+def lead_init_edit(request,lead_id):
     if not request.user.is_authenticated and request.user.is_active!=1: 
         messages.error(request,'Please Login First')
         return redirect('login')
     
     types = InsuranceType.objects.all()
-    return render(request, 'leads/edit-lead-init.html', {'types': types})
+    
+    lead_data =  Leads.objects.filter(lead_id=lead_id).first()
+    if not lead_data:
+        messages.error(request,'This lead is not found in our data')
+        return redirect('leads-mgt')
+    
+    return render(request, 'leads/edit-lead-init.html', {'types': types,'lead_data':lead_data})
 
 
 def basic_info(request,lead_id):
@@ -1249,25 +1255,70 @@ def save_leads_insurance_info(request):
     lead_last_name = clean(lead_last_name)
     mobile_number = clean(mobile_number)
     
+    try:
+        leads_insert = Leads.objects.create(
+            lead_id = int(time.time()),
+            lead_insurance_type_id = lead_insurance_type_id,
+            lead_insurance_category_id = lead_insurance_category_id,
+            lead_insurance_product_id = lead_insurance_product_id,
+            lead_first_name = lead_first_name,
+            lead_last_name = lead_last_name,
+            mobile_number = mobile_number,
+            created_by = request.user.id
+        )
+        
+        lead_ref_id = leads_insert.lead_id
+        
+        messages.success(request,f"Saved Succesfully")
+        return redirect('basic-info',lead_id=lead_ref_id)
+        
+    except Exception as e:
+        logger.error(f"Error in save_leads_insurance_info error: {str(e)}")
+        messages.error(request,'Something Went Wrong Please Try After Sometime')
+        return redirect('leads-mgt')
+    
+def update_leads_insurance_info(request):
+    if not request.user.is_authenticated and request.user.is_active != 1:
+        messages.error(request,'Please Login First')
+        return redirect('login')
+    
+    lead_id = request.POST.get('lead_ref_id') or None
+    lead_insurance_type_id = request.POST.get('insurance_type') or None
+    lead_insurance_category_id = request.POST.get('insurance_category') or None
+    lead_insurance_product_id = request.POST.get('insurance_product') or None
+    lead_first_name = request.POST.get('first_name') or None
+    lead_last_name = request.POST.get('last_name') or None
+    mobile_number = request.POST.get('mobile') or None
+    
+    # Apply cleaning
+    lead_insurance_type_id = clean(lead_insurance_type_id)
+    lead_insurance_category_id = clean(lead_insurance_category_id)
+    lead_insurance_product_id = clean(lead_insurance_product_id)
+    lead_first_name = clean(lead_first_name)
+    lead_last_name = clean(lead_last_name)
+    mobile_number = clean(mobile_number)
+    
+    if not lead_id or lead_id == 0:
+        messages.error(request,'Lead Id is not found') 
+        return redirect('leads-mgt')
+    
+    lead_data = Leads.objects.filter(lead_id = lead_id).first()
+    
     # try:
-    leads_insert = Leads.objects.create(
-        lead_id = int(time.time()),
-        lead_insurance_type_id = lead_insurance_type_id,
-        lead_insurance_category_id = lead_insurance_category_id,
-        lead_insurance_product_id = lead_insurance_product_id,
-        lead_first_name = lead_first_name,
-        lead_last_name = lead_last_name,
-        mobile_number = mobile_number,
-        created_by = request.user.id
-    )
+    lead_data.lead_insurance_type_id = int(lead_insurance_type_id)
+    lead_data.lead_insurance_category_id = int(lead_insurance_category_id)
+    lead_data.lead_insurance_product_id = int(lead_insurance_product_id)
+    lead_data.lead_first_name = lead_first_name
+    lead_data.lead_last_name = lead_last_name
+    lead_data.mobile_number = mobile_number
+    lead_data.save()
     
-    lead_ref_id = leads_insert.lead_id
-    
+    lead_id = lead_data.lead_id
     messages.success(request,f"Saved Succesfully")
-    return redirect('basic-info',lead_id=lead_ref_id)
+    return redirect('lead-source',lead_id=lead_id)
         
     # except Exception as e:
-    #     logger.error(f"Error in save_leads_insurance_info error: {str(e)}")
+    #     logger.error(f"Error in update_leads_insurance_info error: {str(e)}")
     #     messages.error(request,'Something Went Wrong Please Try After Sometime')
     #     return redirect('leads-mgt')
     

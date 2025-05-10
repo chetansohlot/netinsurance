@@ -165,7 +165,7 @@ urlpatterns = [
     
     #save lead steps 
     path('leads/v1/save-lead-insurance-info',leads.save_leads_insurance_info,name="save-lead-insurance-info"), 
-    path('leads/v1/save-lead-insurance-info',leads.save_leads_insurance_info,name="save-lead-insurance-info"), 
+    path('leads/v1/udpate-lead-insurance-info',leads.update_leads_insurance_info,name="udpate-lead-insurance-info"), 
     path('leads/v1/save-lead-basic-info',leads.save_leads_basic_info,name="save-lead-basic-info"), 
     path('leads/v1/save-lead-source-info',leads.save_leads_source_info,name="save-lead-source-info"), 
     path('leads/v1/save-lead-location-info',leads.save_leads_location_info,name="save-lead-location-info"), 
