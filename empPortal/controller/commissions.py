@@ -36,30 +36,64 @@ def dictfetchall(cursor):
 from django.db import connection
 from django.shortcuts import render, redirect
 
+
+
 def commissions(request):
     if request.user.is_authenticated:
         user_id = request.user.id
-        
-        if request.user.role_id == 1:
+
+        if request.user.role_id == 1:  # Admin
             query = """
                 SELECT c.*, u.first_name, u.last_name, u.user_gen_id, c.product_id
                 FROM commissions c
-                INNER JOIN users u ON c.member_id = u.id
-                where role_id = 2
+                LEFT JOIN users u ON c.member_id = u.id
+                WHERE u.role_id = 4
+                ORDER BY c.id DESC
+            """
+            count_total_query = """
+                SELECT COUNT(*) FROM commissions c
+                LEFT JOIN users u ON c.member_id = u.id
+                WHERE u.role_id = 4
+            """
+            count_active_query = """
+                SELECT COUNT(*) FROM commissions c
+                LEFT JOIN users u ON c.member_id = u.id
+                WHERE u.role_id = 4 AND c.active = 1
+            """
+            count_inactive_query = """
+                SELECT COUNT(*) FROM commissions c
+                LEFT JOIN users u ON c.member_id = u.id
+                WHERE u.role_id = 4 AND c.active = 0
             """
             params = []
-        else:
+            count_params = []
+        else:  # Regular member
             query = """
                 SELECT c.*, u.first_name, u.last_name, c.product_id
                 FROM commissions c
-                INNER JOIN users u ON c.member_id = u.id
+                LEFT JOIN users u ON c.member_id = u.id
                 WHERE c.member_id = %s
+                ORDER BY c.id DESC
             """
+            count_total_query = "SELECT COUNT(*) FROM commissions WHERE member_id = %s"
+            count_active_query = "SELECT COUNT(*) FROM commissions WHERE member_id = %s AND active = 1"
+            count_inactive_query = "SELECT COUNT(*) FROM commissions WHERE member_id = %s AND active = 0"
             params = [user_id]
+            count_params = [user_id]
 
         with connection.cursor() as cursor:
             cursor.execute(query, params)
             commissions_list = dictfetchall(cursor)
+
+            # Fetch counts
+            cursor.execute(count_total_query, count_params)
+            total_count = cursor.fetchone()[0]
+
+            cursor.execute(count_active_query, count_params)
+            active_count = cursor.fetchone()[0]
+
+            cursor.execute(count_inactive_query, count_params)
+            inactive_count = cursor.fetchone()[0]
 
         # Define available products
         products = [
@@ -67,19 +101,23 @@ def commissions(request):
             {'id': 2, 'name': 'Health'},
             {'id': 3, 'name': 'Term'},
         ]
-
-        # Ensure dictionary uses integer keys
         product_dict = {product['id']: product['name'] for product in products}
 
-        # Map product names to commissions list
         for commission in commissions_list:
-            product_id = commission.get('product_id')  # Get product_id safely
+            product_id = commission.get('product_id')
             if product_id is not None:
                 commission['product_name'] = product_dict.get(int(product_id), 'Unknown')
             else:
                 commission['product_name'] = 'Unknown'
 
-        return render(request, 'commissions/commissions.html', {'commissions': commissions_list})
+        context = {
+            'commissions': commissions_list,
+            'total_count': total_count,
+            'active_count': active_count,
+            'inactive_count': inactive_count,
+        }
+
+        return render(request, 'commissions/commissions.html', context)
     else:
         return redirect('login')
 
@@ -96,7 +134,7 @@ def create(request):
         ]
         
         if request.user.role_id == 1:
-            members = Users.objects.filter(role_id=2, activation_status='1')
+            members = Users.objects.filter(role_id=4, activation_status='1')
         else:
             members = Users.objects.none()
     
@@ -136,7 +174,7 @@ def store(request):
             return redirect('add-commission')
 
         # Save to database
-        Commission.objects.create(
+        new_commission = Commission.objects.create(
             product_id=product_id,
             member_id=member_id,
             tp_percentage=float(tp_percentage),
@@ -144,8 +182,9 @@ def store(request):
             net_percentage=float(net_percentage),
             created_by=request.user.id
         )
+
         CommissionHistory.objects.create(
-            commission_id=Commission.id,
+            commission_id=new_commission.id,  # ✅ Use the instance's ID
             member_id=member_id,
             product_id=product_id,
             tp_percentage=tp_percentage,
@@ -153,6 +192,7 @@ def store(request):
             net_percentage=net_percentage,
             created_by=request.user.id
         )
+
 
 
         messages.success(request, "Commission added successfully.")
