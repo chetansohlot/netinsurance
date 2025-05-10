@@ -542,12 +542,12 @@
                         </tr>
                       </thead>
                       <tbody>
-                        {% for provider in provider_summary %}
+                        {% for pos_agent in formatted_pos_summary %}
                         <tr>
-                          <td>{{ provider.insurance_provider|default:"N/A" }}</td>
-                          <td>{{ provider.policies_sold }}</td>
-                          <td>₹{{ provider.total_net_premium|floatformat:2|default:"0" }}</td>
-                          <td>₹{{ provider.total_gross_premium|floatformat:2|default:"0" }}</td>
+                          <td>{{ pos_agent.pos_name|default:"N/A" }}</td>
+                          <td>{{ pos_agent.policies_sold }}</td>
+                          <td>₹{{ pos_agent.total_net_premium|floatformat:2|default:"0" }}</td>
+                          <td>₹{{ pos_agent.total_gross_premium|floatformat:2|default:"0" }}</td>
                         </tr>
                         {% endfor %}
                       </tbody>

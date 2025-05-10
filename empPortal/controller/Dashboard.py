@@ -136,6 +136,49 @@ def dashboard(request):
     ]
 
 
+    # Step 1: Get policies with POS (agent_name = user ID)
+    pos_qs = AgentPaymentDetails.objects.filter(
+        policy__in=aggregation_qs,
+        agent_name__isnull=False
+    ).values('agent_name').annotate(
+        policies_sold=Count('policy_id', distinct=True),
+        policy_income=Sum(Cast('policy__policy_premium', FloatField())),
+        total_net_premium=Sum(Cast('policy__policy_info__net_premium', FloatField())),
+        total_gross_premium=Sum(Cast('policy__policy_info__gross_premium', FloatField())),
+    ).order_by('-policy_income', '-policies_sold')
+
+    # Step 2: Clean agent_name and collect valid user IDs
+    valid_user_ids = [
+        int(item['agent_name']) for item in pos_qs
+        if item['agent_name'] and str(item['agent_name']).isdigit()
+    ]
+
+    # Step 3: Fetch users with valid names only
+    users_qs = Users.objects.filter(id__in=valid_user_ids)
+    users_map = {
+        user.id: f"{user.first_name} {user.last_name}".strip()
+        for user in users_qs
+        if (user.first_name or user.last_name)
+    }
+
+    # Step 4: Prepare final POS summary — only if user name is present
+    formatted_pos_summary = [
+        {
+            'pos_name': users_map[int(item['agent_name'])],
+            'policies_sold': item['policies_sold'],
+            'policy_income': item['policy_income'],
+            'total_net_premium': item['total_net_premium'],
+            'total_gross_premium': item['total_gross_premium'],
+        }
+        for item in pos_qs
+        if item['agent_name']
+        and str(item['agent_name']).isdigit()
+        and int(item['agent_name']) in users_map  # skip if no valid name
+    ]
+
+
+
+
     # Totals
     total_policies = aggregation_qs.count()
     total_revenue = aggregation_qs.aggregate(
@@ -200,6 +243,7 @@ def dashboard(request):
         'user': user,
         'provider_summary': provider_summary,
         'branch_summary': branch_summary,
+        'formatted_pos_summary': formatted_pos_summary,
         'referral_summary': referral_summary,
         'policies_insurer_wise': policies_insurer_wise,
         'consolidated_month_labels': consolidated_month_labels,
