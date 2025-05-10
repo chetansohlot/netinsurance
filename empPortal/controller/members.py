@@ -644,6 +644,7 @@ def posCertificate(request, user_id):
         "profile_image_url": profile_image_url,
         "signature_pos": os.path.join(settings.BASE_DIR, getattr(settings, 'SIGNATURE_POS', 'empPortal/static/dist/img/signature-pos.webp')),
     }
+    context.update(company_constants(request))
 
     html_content = render_to_string("members/download-certificate.html", context)
 
