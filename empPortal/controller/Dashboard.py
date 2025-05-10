@@ -178,7 +178,7 @@ def business_summary_insurer_chart(request):
             WHERE status = 6 
             GROUP BY insurance_provider
             ORDER BY policies_sold DESC
-            LIMIT 4;
+            LIMIT 8;
         """)
         result = cursor.fetchall()
 
@@ -209,15 +209,32 @@ def business_summary_insurer_chartajax(request):
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
 
-    filters = "status = 6"
+    filters = "status = 6"  # Default filter for active status
 
+    # Ensure that filter_type is passed and is valid
+    if not filter_type:
+        return JsonResponse({'error': 'filter_type parameter is missing'}, status=400)
+
+    # Filter logic based on filter_type
     if filter_type == "2":  # Today
         filters += " AND DATE(created_at) = CURDATE()"
     elif filter_type == "3" and month:  # MTD
-        filters += f" AND MONTH(created_at) = {int(month)} AND YEAR(created_at) = YEAR(CURDATE())"
-    elif filter_type == "4" and start_date and end_date:  # Custom
+        try:
+            # Ensure month is valid
+            month = int(month)
+            if month < 1 or month > 12:
+                return JsonResponse({'error': 'Invalid month parameter'}, status=400)
+            filters += f" AND MONTH(created_at) = {month} AND YEAR(created_at) = YEAR(CURDATE())"
+        except ValueError:
+            return JsonResponse({'error': 'Invalid month parameter'}, status=400)
+    elif filter_type == "4" and start_date and end_date:  # Custom range
         filters += f" AND DATE(created_at) BETWEEN '{start_date}' AND '{end_date}'"
+    elif filter_type == "1":  # No filter, show all data
+        filters = ""  # Remove the default status filter
+    else:
+        return JsonResponse({'error': 'Invalid filter_type or missing parameters'}, status=400)
 
+    # Execute the query
     with connection.cursor() as cursor:
         cursor.execute(f"""
             SELECT insurance_provider, COUNT(*) AS policies_sold
@@ -225,10 +242,15 @@ def business_summary_insurer_chartajax(request):
             WHERE {filters}
             GROUP BY insurance_provider
             ORDER BY policies_sold DESC
-            LIMIT 4;
+            LIMIT 8;
         """)
         result = cursor.fetchall()
 
+    # If no results are found, return a relevant message
+    if not result:
+        return JsonResponse({'message': 'No data found for the given filters'}, status=200)
+
+    # Process results
     insurer_motor_counts = [row[1] for row in result]
     insurer_provider_labels = [
         ''.join(word[0] for word in row[0].split() if word).upper() if row[0] else ''
@@ -239,6 +261,7 @@ def business_summary_insurer_chartajax(request):
         'insurer_motor_counts': insurer_motor_counts,
         'insurer_provider_labels': insurer_provider_labels
     })
+
 
 
 def business_consolidated_ajax(request):
