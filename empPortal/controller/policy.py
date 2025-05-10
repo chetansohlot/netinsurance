@@ -1073,12 +1073,13 @@ def get_filter_conditions(filters):
         if not val:
             continue
         val = val.strip().lower()
-
-        if key in ['policy_number', 'vehicle_number', 'vehicle_type',
+        
+        if key in ['policy_number', 'vehicle_number', 'policy_type', 'vehicle_type',
                    'policy_holder_name', 'insurance_provider']:
             field_map = {
                 'policy_number': 'policy_number__icontains',
                 'vehicle_number': 'vehicle_number__icontains',
+                'policy_type': 'policy_type__iexact',
                 'vehicle_type': 'vehicle_type__iexact',
                 'policy_holder_name': 'holder_name__icontains',
                 'insurance_provider': 'insurance_provider__icontains',
@@ -1088,10 +1089,18 @@ def get_filter_conditions(filters):
         elif key in ['insurance_company', 'mobile_number', 'engine_number', 'chassis_number', 'fuel_type']:
             json_filters.append(lambda data, k=key, v=val: v in data.get(k, '').lower())
 
+        
         elif key == 'gvw_from':
             try:
                 val = int(val)
-                json_filters.append(lambda data, v=val: int(data.get('gvw', '0')) >= v)
+                json_filters.append(lambda data, v=val: int(data.get('cubic_capacity', '0')) >= v)
+            except ValueError:
+                continue
+
+        elif key == 'gvw_to':
+            try:
+                val = int(val)
+                json_filters.append(lambda data, v=val: int(data.get('cubic_capacity', '0')) <= v)
             except ValueError:
                 continue
 

@@ -21,18 +21,18 @@ def commission_report(request):
         return redirect('login')
     
     # Get filter values from GET parameters
-    filters = {
-        'policy_no': request.GET.get("policy_no", None),
-        'insurer_name': request.GET.get("insurer_name", None),
-        'service_provider': request.GET.get("service_provider", None),
-        'insurance_company': request.GET.get("insurance_company", None),
-        'policy_type': request.GET.get("policy_type", None),
-        'vehicle_type': request.GET.get("vehicle_type", None),
-        'referral_name': request.GET.get("referral_name", None),
-        'vehicle_reg_no': request.GET.get("vehicle_reg_no", None),
-        'policy_start_date': request.GET.get("policy_start_date", None),
-        'policy_end_date': request.GET.get("policy_end_date", None),
-    }
+    # filters = {
+    #     'policy_no': request.GET.get("policy_no", None),
+    #     'insurer_name': request.GET.get("insurer_name", None),
+    #     'service_provider': request.GET.get("service_provider", None),
+    #     'insurance_company': request.GET.get("insurance_company", None),
+    #     'policy_type': request.GET.get("policy_type", None),
+    #     'vehicle_type': request.GET.get("vehicle_type", None),
+    #     'referral_name': request.GET.get("referral_name", None),
+    #     'vehicle_reg_no': request.GET.get("vehicle_reg_no", None),
+    #     'policy_start_date': request.GET.get("policy_start_date", None),
+    #     'policy_end_date': request.GET.get("policy_end_date", None),
+    # }
     
     # Pagination setup
     per_page = request.GET.get("per_page", 20)  # Default: 20 records per page
@@ -52,6 +52,12 @@ def commission_report(request):
         policies = PolicyDocument.objects.filter(status=6).exclude(rm_id__isnull=True)
 
     # Apply filters
+    # filtered_policies = apply_policy_filters(policies, filters)
+
+    policies = policies.prefetch_related(
+        'policy_agent_info', 'policy_franchise_info', 'policy_insurer_info'
+    )
+    filters = get_common_filters(request)
     filtered_policies = apply_policy_filters(policies, filters)
 
     # Pagination for filtered policies
@@ -128,6 +134,11 @@ def agent_business_report(request):
         policies = PolicyDocument.objects.filter(status=6).exclude(rm_id__isnull=True)
 
     # Apply filters
+    
+    policies = policies.prefetch_related(
+        'policy_agent_info', 'policy_franchise_info', 'policy_insurer_info'
+    )
+    filters = get_common_filters(request)
     filtered_policies = apply_policy_filters(policies, filters)
 
     # Pagination for filtered policies
@@ -204,6 +215,10 @@ def franchisees_business_report(request):
         policies = PolicyDocument.objects.filter(status=6).exclude(rm_id__isnull=True)
 
     # Apply filters
+    policies = policies.prefetch_related(
+        'policy_agent_info', 'policy_franchise_info', 'policy_insurer_info'
+    )
+    filters = get_common_filters(request)
     filtered_policies = apply_policy_filters(policies, filters)
 
     # Pagination for filtered policies
@@ -280,6 +295,11 @@ def insurer_business_report(request):
         policies = PolicyDocument.objects.filter(status=6).exclude(rm_id__isnull=True)
 
     # Apply filters
+    
+    policies = policies.prefetch_related(
+        'policy_agent_info', 'policy_franchise_info', 'policy_insurer_info'
+    )
+    filters = get_common_filters(request)
     filtered_policies = apply_policy_filters(policies, filters)
 
     # Pagination for filtered policies
@@ -356,6 +376,10 @@ def sales_manager_business_report(request):
         policies = PolicyDocument.objects.filter(status=6).exclude(rm_id__isnull=True)
 
     # Apply filters
+    policies = policies.prefetch_related(
+        'policy_agent_info', 'policy_franchise_info', 'policy_insurer_info'
+    )
+    filters = get_common_filters(request)
     filtered_policies = apply_policy_filters(policies, filters)
 
     # Pagination for filtered policies
@@ -417,6 +441,9 @@ def get_filter_conditions(filters):
         elif key == 'vehicle_type':
             db_filters &= Q(vehicle_type__iexact=val)
 
+        elif key == 'policy_type':
+            db_filters &= Q(policy_type__iexact=val)
+
         elif key == 'policy_holder_name':
             db_filters &= Q(holder_name__icontains=val)
 
@@ -433,10 +460,18 @@ def get_filter_conditions(filters):
         elif key in ['insurance_company', 'mobile_number', 'engine_number', 'chassis_number', 'fuel_type']:
             json_filters.append(lambda data, k=key, v=val: v in data.get(k, '').lower())
 
+
         elif key == 'gvw_from':
             try:
                 val = int(val)
-                json_filters.append(lambda data, v=val: int(data.get('gvw', '0')) >= v)
+                json_filters.append(lambda data, v=val: int(data.get('cubic_capacity', '0')) >= v)
+            except ValueError:
+                continue
+
+        elif key == 'gvw_to':
+            try:
+                val = int(val)
+                json_filters.append(lambda data, v=val: int(data.get('cubic_capacity', '0')) <= v)
             except ValueError:
                 continue
 

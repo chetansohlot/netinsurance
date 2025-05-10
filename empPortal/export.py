@@ -13,6 +13,7 @@ import requests
 from fastapi import FastAPI, File, UploadFile
 import fitz
 import openai
+from datetime import datetime, timedelta
 import time
 import json
 from django.http import JsonResponse
@@ -115,7 +116,7 @@ def commission_report(request):
     # user_id = request.user.id
 
     # Start with a base queryset
-    policies = PolicyDocument.objects.filter(status=1)
+
 
     # Apply user role filter
     # if user_id == 2:  
@@ -133,6 +134,13 @@ def commission_report(request):
         policies = policies.filter(policy_number__icontains=policy_no)
     if insurer_name:
         policies = policies.filter(insurance_provider__icontains=insurer_name)
+
+
+    policies = policies.prefetch_related(
+        'policy_agent_info', 'policy_franchise_info', 'policy_insurer_info'
+    )
+    filters = get_common_filters(request)
+    policies = apply_policy_filters(policies, filters)
 
     # Order by latest first
     policies = policies.order_by('-id')
@@ -177,6 +185,96 @@ def commission_report(request):
         'page_obj': page_obj  # Pass paginated object to template
     })
 
+
+    
+def get_filter_conditions(filters):
+    """
+    Generate Q object conditions and post-filter lambdas for fields stored in extracted_text JSON.
+    """
+    db_filters = Q()
+    json_filters = []
+
+    for key, val in filters.items():
+        if not val:
+            continue
+        val = val.strip().lower()
+
+        if key in ['policy_number', 'vehicle_number', 'vehicle_type',
+                   'policy_holder_name', 'insurance_provider']:
+            field_map = {
+                'policy_number': 'policy_number__icontains',
+                'vehicle_number': 'vehicle_number__icontains',
+                'vehicle_type': 'vehicle_type__iexact',
+                'policy_holder_name': 'holder_name__icontains',
+                'insurance_provider': 'insurance_provider__icontains',
+            }
+            db_filters &= Q(**{field_map[key]: val})
+
+        elif key in ['insurance_company', 'mobile_number', 'engine_number', 'chassis_number', 'fuel_type']:
+            json_filters.append(lambda data, k=key, v=val: v in data.get(k, '').lower())
+
+        elif key == 'gvw_from':
+            try:
+                val = int(val)
+                json_filters.append(lambda data, v=val: int(data.get('gvw', '0')) >= v)
+            except ValueError:
+                continue
+
+        elif key in ['manufacturing_year_from', 'manufacturing_year_to']:
+            try:
+                year = int(val)
+                if key.endswith('from'):
+                    json_filters.append(lambda data, y=year: int(data.get('manufacturing_year', '0')) >= y)
+                else:
+                    json_filters.append(lambda data, y=year: int(data.get('manufacturing_year', '0')) <= y)
+            except ValueError:
+                continue
+
+        elif key == 'start_date':
+            try:
+                dt = datetime.strptime(val, '%Y-%m-%d')  # No .date() here
+                db_filters &= Q(created_at__gte=dt)
+            except ValueError:
+                continue
+
+        elif key == 'end_date':
+            try:
+                dt = datetime.strptime(val, '%Y-%m-%d') + timedelta(days=1)  # Include full end date
+                db_filters &= Q(created_at__lt=dt)
+            except ValueError:
+                continue
+
+    return db_filters, json_filters
+
+
+def apply_policy_filters(queryset, filters):
+    db_q, json_conditions = get_filter_conditions(filters)
+    filtered_qs = queryset.filter(db_q)
+
+    final_list = []
+    for obj in filtered_qs:
+        try:
+            data = obj.extracted_text if isinstance(obj.extracted_text, dict) else json.loads(obj.extracted_text or '{}')
+        except Exception:
+            continue
+
+        if all(cond(data) for cond in json_conditions):
+            obj.json_data = data
+            final_list.append(obj)
+
+    return final_list
+
+
+def get_common_filters(request):
+    return {
+        key: request.GET.get(key, '').strip() for key in [
+            'policy_number', 'policy_type', 'vehicle_number', 'engine_number', 'chassis_number',
+            'vehicle_type', 'policy_holder_name', 'mobile_number',
+            'insurance_provider', 'insurance_company', 'start_date',
+            'end_date', 'manufacturing_year_from', 'manufacturing_year_to',
+            'fuel_type', 'gvw_from', 'gvw_to', 'branch_name', 'referred_by', 'pos_name', 'bqp'
+        ]
+    }
 def sales_manager_business_report(request):
     # Get filter values from GET parameters
     policy_no = request.GET.get("policy_no", None)
