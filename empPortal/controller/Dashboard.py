@@ -63,7 +63,8 @@ def dashboard(request):
             base_qs = PolicyDocument.objects.filter(status=6)
 
         # For aggregation, do NOT prefetch to avoid duplication
-        aggregation_qs = base_qs.filter(policy_info__isnull=False)
+        # aggregation_qs = base_qs.filter(policy_info__isnull=False)
+        aggregation_qs = base_qs.filter(policy_info__isnull=False).distinct()
 
         # Group by insurance_provider with safe annotations
         provider_summary = (
