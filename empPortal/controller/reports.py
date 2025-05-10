@@ -61,7 +61,7 @@ def commission_report(request):
     # Apply DB field filters
     policy_number = request.GET.get('policy_number', '').strip().lower()
     if policy_number:
-        q_filters &= Q(policy_number__icontains=policy_number)
+        policies = policies.filter(policy_number__icontains=policy_number)
 
     policy_type = request.GET.get('policy_type', '').strip().lower()
     if policy_type:
