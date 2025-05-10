@@ -330,67 +330,70 @@ def business_summary_insurer_chart(request):
 
     return insurer_motor_counts, insurer_provider_labels, insurer_sum_insured  # Return sum insured
 
+
 def business_summary_insurer_chartajax(request):
     filter_type = request.GET.get('filter')
     month = request.GET.get('month')
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
 
-    filters = "status = 6"  # Default filter for active status
+    where_clauses = []
 
-    # Ensure that filter_type is passed and is valid
+    # Validate filter_type
     if not filter_type:
         return JsonResponse({'error': 'filter_type parameter is missing'}, status=400)
 
-    # Filter logic based on filter_type
-    if filter_type == "2":  # Today
-        filters += " AND DATE(created_at) = CURDATE()"
+    if filter_type == "1":
+        pass  # No filters applied
+    elif filter_type == "2":  # Today
+        where_clauses.append("DATE(pd.created_at) = CURDATE()")
     elif filter_type == "3" and month:  # MTD
         try:
-            # Ensure month is valid
             month = int(month)
-            if month < 1 or month > 12:
+            if not 1 <= month <= 12:
                 return JsonResponse({'error': 'Invalid month parameter'}, status=400)
-            filters += f" AND MONTH(created_at) = {month} AND YEAR(created_at) = YEAR(CURDATE())"
+            where_clauses.append(f"MONTH(pd.created_at) = {month}")
+            where_clauses.append("YEAR(pd.created_at) = YEAR(CURDATE())")
         except ValueError:
             return JsonResponse({'error': 'Invalid month parameter'}, status=400)
     elif filter_type == "4" and start_date and end_date:  # Custom range
-        filters += f" AND DATE(created_at) BETWEEN '{start_date}' AND '{end_date}'"
-    elif filter_type == "1":  # No filter, show all data
-        filters = ""  # Remove the default status filter
+        where_clauses.append(f"DATE(pd.created_at) BETWEEN '{start_date}' AND '{end_date}'")
     else:
         return JsonResponse({'error': 'Invalid filter_type or missing parameters'}, status=400)
+
+    # Always add pd.status = 6 unless filter_type == 1
+    if filter_type != "1":
+        where_clauses.append("pd.status = 6")
+
+    # Join WHERE conditions
+    where_sql = f"WHERE {' AND '.join(where_clauses)}" if where_clauses else ""
 
     # Execute the query
     with connection.cursor() as cursor:
         cursor.execute(f"""
             SELECT 
-                    pd.insurance_provider, 
-                    COUNT(*) AS policies_sold, 
-                    SUM(pi.gross_premium) AS total_sum_insured
-                FROM 
-                    policydocument pd
-                LEFT JOIN 
-                    policy_info pi 
-                    ON pd.id = pi.policy_id AND pd.policy_number = pi.policy_number
-                WHERE 
-                    pd.status = 6
-                    {filters}
-                GROUP BY 
-                    pd.insurance_provider
-                ORDER BY 
-                    policies_sold DESC
-                LIMIT 8;
+                pd.insurance_provider, 
+                COUNT(*) AS policies_sold, 
+                SUM(pi.gross_premium) AS total_sum_insured
+            FROM 
+                policydocument pd
+            LEFT JOIN 
+                policy_info pi 
+                ON pd.id = pi.policy_id AND pd.policy_number = pi.policy_number
+            {where_sql}
+            GROUP BY 
+                pd.insurance_provider
+            ORDER BY 
+                policies_sold DESC
+            LIMIT 8;
         """)
         result = cursor.fetchall()
 
-    # If no results are found, return a relevant message
     if not result:
         return JsonResponse({'message': 'No data found for the given filters'}, status=200)
 
-    # Process results
     insurer_motor_counts = [row[1] for row in result]
-    insurer_sum_insured = [row[2] for row in result]  # Add sum insured to the list
+    insurer_sum_insured = [row[2] for row in result]
     insurer_provider_labels = [
         ''.join(word[0] for word in row[0].split() if word).upper() if row[0] else ''
         for row in result
@@ -399,8 +402,9 @@ def business_summary_insurer_chartajax(request):
     return JsonResponse({
         'insurer_motor_counts': insurer_motor_counts,
         'insurer_provider_labels': insurer_provider_labels,
-        'insurer_sum_insured': insurer_sum_insured  # Include sum insured in the response
+        'insurer_sum_insured': insurer_sum_insured
     })
+
 
 
 def business_consolidated_ajax(request):
