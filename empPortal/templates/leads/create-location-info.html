@@ -52,7 +52,7 @@
                       <li><a href="#">Previous Policy Information</a></li>
                     </ul>
                     <ul class="new-stepflow mb-2">
-                      <li class="active"><li>
+                      <li class="active"></li>
                       <li class="active"></li>
                       <li class="active"></li>
                       <li></li>
@@ -66,11 +66,10 @@
                 <div class="card box-shadow-none p-md-4 p-3">
                   <div class="card-body px-0 pb-0 pt-0">
                       
-                    <form autocomplete="off" id="leadForm" name="leadForm"
-                        action=""
-                        method="post">
+                    <form autocomplete="off" id="leadForm" name="leadForm" action="{% url 'save-lead-location-info' %}" method="post">
                       {% csrf_token %}
 
+                      <input type="hidden" id="lead_ref_id" name="lead_ref_id" value="{{lead_ref_id}}">
                       <div class="row">
                           <div class="col-md-12">
                             <h2 class="admin-title border-bottom pb-2 mb-4">Location Info</h2>
@@ -87,9 +86,12 @@
                             </select>-->
                             <select class="form-field" name="state" id="state">
                               <option value="">Select State</option>
-                              {% for state in states %}
+                              <option value="1">State 1</option>
+                              <option value="2">State 2</option>
+                              <option value="3">State 3</option>
+                              <!-- {% for state in states %}
                                 <option value="{{ state.id }}">{{ state.name }}</option>
-                              {% endfor %}
+                              {% endfor %} -->
                             </select>
                           </div>
                           <div class="form-group col-md-4">
@@ -103,6 +105,8 @@
                             </select>-->
                             <select class="form-field" name="city" id="city">
                               <option value="">Select City</option>
+                              <option value="1">City 1</option>
+                              <option value="2">City 2</option>
                             </select>
                             
                           </div>
@@ -136,13 +140,8 @@
                         });
                         </script>
                         
-                          
-                        
                       </div>
                       <div class="d-flex justify-content-end">
-                        <a href="{% url 'lead-source' %}" class="btn btn-secondary mt-3 me-2">Back</a>
-                        <a href="{% url 'lead-assignment' %}" class="btn btn-success mt-3">Next Step</a>
-                        
                         <button type="submit" class="form-submit-btn mt-3">
                             {% if lead %}Update Lead{% else %}Add Lead{% endif %}
                         </button>

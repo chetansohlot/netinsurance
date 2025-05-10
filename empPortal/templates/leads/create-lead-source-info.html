@@ -66,54 +66,58 @@
                 <div class="card box-shadow-none p-md-4 p-3">
                   <div class="card-body px-0 pb-0 pt-0">
                       
-                    <form autocomplete="off" id="leadForm" name="leadForm"
-                        action=""
-                        method="post">
+                    <form autocomplete="off" id="leadForm" name="leadForm" action="{% url 'save-lead-source-info' %}" method="post">
                       {% csrf_token %}
-
+                      <input type="hidden" name="lead_ref_id" id="lead_ref_id" value="{{lead_ref_id}}">
                       <div class="row">
                           <div class="col-md-12">
                             <h2 class="admin-title border-bottom pb-2 mb-4">Lead Source Info</h2>
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Lead Source Type</label>
-                            <select class="form-field">
+                            <select class="form-field" name="lead_source_type" id="lead_source_type">
                                 <option>Select</option>
-                                <option>Website</option>
-                                <option>POSP</option>
-                                <option>Call Center</option>
-                                <option>Referral</option>
-                                <option>Campaign</option>
-                                <option>Landing  Page</option>
+                                <option value="1">Website</option>
+                                <option value="2">POSP</option>
+                                <option value="3">Call Center</option>
+                                <option value="4">Referral</option>
+                                <option value="5">Campaign</option>
+                                <option value="6">Landing  Page</option>
                             </select>
                           </div>
+
                           <div class="form-group col-md-4">
                             <label class="form-lbl" >Lead Source Name (Optional)</label>
-                            <input type="text" class="form-field" placeholder="Enter Lead Source Name" value="">
+                            <input type="text" class="form-field" name="lead_source_name" id="lead_source_name" placeholder="Enter Lead Source Name"  value="">
                           </div>
+
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Refered By</label>
-                            <select class="form-field">
+                            <select class="form-field" name="refered_by" id="refered_by">
                                 <option>Select</option>
+                                <option value="1">referal 1</option>
+                                <option value="2">referal 2</option>
+                                <option value="3">referal 3</option>
                             </select>
                           </div>
+
                           <div class="form-group col-md-4">
-                              <label class="form-lbl" for="mobile_number">Referral Name</label>
-                              <input type="tel" class="form-field" placeholder="Enter Referral Name">
+                              <label class="form-lbl" for="referral_name">Referral Name</label>
+                              <input type="text" class="form-field" name="referral_name" id="referral_name" placeholder="Enter Referral Name">
                           </div>
                           <div class="form-group col-md-4">
-                            <label class="form-lbl" for="mobile_number">Referral Mobile Number</label>
-                            <input type="tel" class="form-field" placeholder="Enter Referral Mobile Number">
+                            <label class="form-lbl" for="referral_mobile_number">Referral Mobile Number</label>
+                            <input type="text" class="form-field" name="referral_mobile_number" id="referral_mobile_number" placeholder="Enter Referral Mobile Number">
                         </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Source Medium</label>
-                            <select class="form-field">
+                            <select class="form-field" name="source_medium" id="source_medium">
                                 <option>Select</option>
-                                <option>Facebook</option>
-                                <option>Google</option>
-                                <option>WhatsApp</option>
-                                <option>Walk-in</option>
-                                <option>Embedded Partner</option>
+                                <option value="1">Facebook</option>
+                                <option value="2">Google</option>
+                                <option value="3">WhatsApp</option>
+                                <option value="4">Walk-in</option>
+                                <option value="5">Embedded Partner</option>
                             </select>
                           </div>
 
@@ -145,9 +149,6 @@
                         
                       </div>
                       <div class="d-flex justify-content-end">
-                        <a href="{% url 'basic-info' %}" class="btn btn-secondary mt-3 me-2">Back</a><br>
-                        <a href="{% url 'lead-location' %}"  class="btn btn-success mt-3">Next Step</a>
-
                         <button type="submit" class="form-submit-btn mt-3">
                             {% if lead %}Update Lead{% else %}Add Lead{% endif %}
                         </button>

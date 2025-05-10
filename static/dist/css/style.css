@@ -2689,7 +2689,7 @@ a:hover .dr-pdficon {
     color: #fff !important;
 }
 
-.stepflow-five-col li {width: 20%;}
+/* .stepflow-five-col li {width: %;} */
  
 .table-small-font thead tr th, .table-small-font tbody tr td {
     font-size:10px !important;

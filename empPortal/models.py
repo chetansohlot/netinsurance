@@ -198,6 +198,16 @@ class Leads(models.Model):
     lead_description = models.TextField(null=True, blank=True)
     lead_source = models.CharField(max_length=25, null=True, blank=True)  
     referral_by = models.CharField(max_length=25, null=True, blank=True)  
+    
+    assigned_to = models.IntegerField( null=True, blank=True)  
+    branch_id = models.IntegerField( null=True, blank=True)  
+    lead_status_type = models.IntegerField( null=True, blank=True)  
+    lead_tag = models.IntegerField( null=True, blank=True)  
+    
+    referral_mobile_no = models.BigIntegerField(null=True, blank=True)
+    referral_name = models.CharField(max_length=255,null=True,blank=True)
+    lead_source_medium = models.IntegerField(null=True, blank=True)
+    
     created_at = models.DateTimeField(auto_now_add=True)  # Timestamp when the lead was created
     created_by = models.CharField(max_length=20, null=True, blank=True)  
     updated_at = models.DateTimeField(auto_now=True)  # Timestamp when the lead was last updated
@@ -220,6 +230,30 @@ class Leads(models.Model):
     net_premium = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     gross_premium = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     risk_start_date = models.DateField(null=True, blank=True)
+    lead_insurance_type_id = models.IntegerField(null=True,blank=True)
+    lead_insurance_category_id = models.IntegerField(null=True,blank=True)
+    lead_insurance_product_id = models.IntegerField(null=True,blank=True)
+    lead_first_name = models.CharField(max_length=255,null=True,blank=True)
+    lead_last_name = models.CharField(max_length=255,null=True,blank=True)
+    lead_customer_identity_no = models.CharField(max_length=255,null=True,blank=True)
+    lead_customer_gender = models.IntegerField(null=True,blank=True)
+    
+    previous_idv_amount = models.IntegerField(null=True,blank=True)
+    previous_sum_insured = models.IntegerField(null=True,blank=True)
+    claim_amount = models.IntegerField(null=True,blank=True)
+    mgf_year = models.IntegerField(null=True,blank=True)
+    claim_made = models.IntegerField(null=True,blank=True)
+    previous_insurer_name = models.CharField(max_length=255,null=True,blank=True)
+    previous_policy_source = models.CharField(max_length=255,null=True,blank=True)
+    expiry_status = models.CharField(max_length=255,null=True,blank=True)
+    vehicle_class = models.CharField(max_length=255,null=True,blank=True)
+    insurance_type = models.CharField(max_length=255,null=True,blank=True)
+    vehicle_reg_no = models.CharField(max_length=255,null=True,blank=True)
+    product_category = models.CharField(max_length=255,null=True,blank=True)
+    vehicle_model = models.CharField(max_length=255,null=True,blank=True)
+    vehicle_make = models.CharField(max_length=255,null=True,blank=True)
+    policy_end_date = models.DateField(null=True, blank=True)
+
     lead_type = models.CharField(
         max_length=10, 
         choices=[('MOTOR', 'MOTOR'), ('HEALTH', 'HEALTH'), ('TERM', 'TERM')], 

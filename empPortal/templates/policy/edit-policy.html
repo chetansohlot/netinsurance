@@ -256,7 +256,7 @@
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl">OD Premium</label>
-                                      <input type="text" class="form-field" name="od_premium" placeholder="OD Premium" value="{{ policy.od_premium|default:policy_data.od_premium }}">
+                                      <input type="text" class="form-field" id="od_premium" name="od_premium" placeholder="OD Premium" value="{{ policy.od_premium|default:policy_data.od_premium }}">
                                     </div>
                                   </div>
                                   <div class="col-sm-6 col-md-4 col-lg-3">
@@ -269,14 +269,10 @@
                                           <i class="fas fa-info-circle"></i> <!-- FontAwesome info icon -->
                                         </span>
                                       </label>
-                                      <input type="text" class="form-field" name="tp_premium" placeholder="TP Premium" 
+                                      <input type="text" class="form-field"  id="tp_premium" name="tp_premium" placeholder="TP Premium" 
                                         value="{{ policy.tp_premium|default:policy_data.tp_premium }}">
                                     </div>
                                   </div>
-                                  
-                                
-                                
-                                
                             
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
@@ -317,7 +313,7 @@
                                   <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl">Net Premium</label>
-                                      <input type="text" class="form-field" name="net_premium" placeholder="Net Premium" value="{{ policy.net_premium|default:extracted_data.net_premium|default:0.00 }}">
+                                      <input type="text" class="form-field" id="net_premium" name="net_premium" placeholder="Net Premium" value="{{ policy.net_premium|default:extracted_data.net_premium|default:0.00 }}" readonly>
                                     </div>
                                   </div>
 
@@ -367,6 +363,7 @@
       });
 
       $(document).ready(function(){
+        updateNetPremium();
         var fuel_type = $('#fuel_type').val();
         updaterFuelAmount(fuel_type);
       });
@@ -383,6 +380,19 @@
           $('#be_fuel_amount').val(0);
         }
       }
+
+      function updateNetPremium() {
+          let od_amount = parseFloat($('#od_premium').val()) || 0;
+          let tp_amount = parseFloat($('#tp_premium').val()) || 0;
+          let net_premium = od_amount + tp_amount;
+          $('#net_premium').val(net_premium.toFixed(2));
+      }
+
+      $('#od_premium, #tp_premium').on('input', function() {
+          updateNetPremium(); 
+      });
+
+
     </script>
 </body>
 {% endblock %}
