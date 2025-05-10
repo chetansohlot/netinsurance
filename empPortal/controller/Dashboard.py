@@ -52,103 +52,113 @@ from django.utils.timezone import make_naive
 from django.db import connection
 
 
+
 def dashboard(request):
-    if request.user.is_authenticated:
-        user = request.user
-
-        # Base queryset depending on role
-        if request.user.role_id != 1 and str(request.user.department_id) not in ["3", "5", "2"]:
-            base_qs = PolicyDocument.objects.filter(status=6, rm_id=user.id)
-        else:
-            base_qs = PolicyDocument.objects.filter(status=6)
-
-        # For aggregation, do NOT prefetch to avoid duplication
-        # aggregation_qs = base_qs.filter(policy_info__isnull=False)
-        aggregation_qs = base_qs.filter(policy_info__isnull=False).distinct()
-
-        # Group by insurance_provider with safe annotations
-        provider_summary = (
-            aggregation_qs
-            .values('insurance_provider')  # Group by insurance_provider
-            .annotate(
-                policies_sold=Count('id', distinct=True),  # Use distinct count for policies
-                policy_income=Sum(Cast('policy_premium', output_field=FloatField())),
-                total_net_premium=Sum(Cast('policy_info__net_premium', FloatField())),
-                total_gross_premium=Sum(Cast('policy_info__gross_premium', FloatField())),
-            )
-            .order_by('-policy_income', '-policies_sold')
-        )
-
-        total_policies = aggregation_qs.count()
-        total_revenue = aggregation_qs.aggregate(
-            total=Sum(Cast('policy_premium', output_field=FloatField()))
-        )['total'] or 0
-
-        total_net_premium = aggregation_qs.aggregate(
-            total=Sum(Cast('policy_info__net_premium', FloatField()))
-        )['total'] or 0
-
-        total_gross_premium = aggregation_qs.aggregate(
-            total=Sum(Cast('policy_info__gross_premium', FloatField()))
-        )['total'] or 0
-
-        # Monthly data for last 6 months
-        with connection.cursor() as cursor:
-            cursor.execute("""
-                WITH RECURSIVE month_series AS (
-                    SELECT DATE_FORMAT(CURDATE() - INTERVAL 5 MONTH, '%Y-%m-01') AS month_start
-                    UNION ALL
-                    SELECT DATE_FORMAT(DATE_ADD(month_start, INTERVAL 1 MONTH), '%Y-%m-01')
-                    FROM month_series
-                    WHERE month_start < DATE_FORMAT(CURDATE(), '%Y-%m-01')
-                )
-                SELECT 
-                    DATE_FORMAT(ms.month_start, '%b') AS month_name,
-                    COUNT(pd.id) AS document_count
-                FROM 
-                    month_series ms
-                LEFT JOIN 
-                    policydocument pd 
-                    ON DATE_FORMAT(pd.created_at, '%Y-%m') = DATE_FORMAT(ms.month_start, '%Y-%m')
-                    AND pd.created_at >= CURDATE() - INTERVAL 6 MONTH
-                    AND pd.status = 6
-                GROUP BY 
-                    ms.month_start
-                ORDER BY 
-                    ms.month_start;
-            """)
-            result = cursor.fetchall()
-
-        monthly_data = [(row[0], row[1]) for row in result]
-        consolidated_month_labels = [row[0] for row in monthly_data]
-        consolidated_month_counts = [row[1] for row in monthly_data]
-
-        # Extract data for chart
-        provider_labels = [entry['insurance_provider'] for entry in provider_summary]
-        motor_counts = [entry['policies_sold'] for entry in provider_summary]
-        insurer_motor_counts, insurer_provider_labels = business_summary_insurer_chart(request)
-        policies_insurer_wise = insurer_wise_date(request)
-        referral_agent_labels, referral_counts = referral_summary_chart(request)
-
-        return render(request, 'dashboard.html', {
-            'user': user,
-            'provider_summary': provider_summary,
-            'policies_insurer_wise': policies_insurer_wise,
-            'consolidated_month_labels': consolidated_month_labels,
-            'consolidated_month_counts': consolidated_month_counts,
-            'insurer_motor_counts': insurer_motor_counts,
-            'insurer_provider_labels': insurer_provider_labels,
-            'referral_counts': referral_counts,
-            'referral_agent_labels': referral_agent_labels,
-            'provider_labels': provider_labels,
-            'motor_counts': motor_counts,
-            'policy_count': total_policies,
-            'total_revenue': total_revenue,
-            'total_net_premium': total_net_premium,
-            'total_gross_premium': total_gross_premium,
-        })
-    else:
+    if not request.user.is_authenticated:
         return redirect('login')
+
+    user = request.user
+
+    # Base queryset depending on role
+    if user.role_id != 1 and str(user.department_id) not in ["3", "5", "2"]:
+        base_qs = PolicyDocument.objects.filter(status=6, rm_id=user.id)
+    else:
+        base_qs = PolicyDocument.objects.filter(status=6)
+
+    aggregation_qs = base_qs.filter(policy_info__isnull=False).distinct()
+
+    # Grouped summary by insurance provider
+    provider_summary = (
+        aggregation_qs
+        .values('insurance_provider')
+        .annotate(
+            policies_sold=Count('id', distinct=True),
+            policy_income=Sum(Cast('policy_premium', output_field=FloatField())),
+            total_net_premium=Sum(Cast('policy_info__net_premium', FloatField())),
+            total_gross_premium=Sum(Cast('policy_info__gross_premium', FloatField())),
+        )
+        .order_by('-policy_income', '-policies_sold')
+    )
+
+    # Totals
+    total_policies = aggregation_qs.count()
+    total_revenue = aggregation_qs.aggregate(
+        total=Sum(Cast('policy_premium', output_field=FloatField()))
+    )['total'] or 0
+
+    total_net_premium = aggregation_qs.aggregate(
+        total=Sum(Cast('policy_info__net_premium', FloatField()))
+    )['total'] or 0
+
+    total_gross_premium = aggregation_qs.aggregate(
+        total=Sum(Cast('policy_info__gross_premium', FloatField()))
+    )['total'] or 0
+
+    # Monthly data with document count and total sum insured
+    # Monthly data with document count and total sum insured
+    with connection.cursor() as cursor:
+        cursor.execute("""
+           WITH RECURSIVE month_series AS (
+                SELECT DATE_FORMAT(CURDATE() - INTERVAL 5 MONTH, '%Y-%m-01') AS month_start
+                UNION ALL
+                SELECT DATE_FORMAT(DATE_ADD(month_start, INTERVAL 1 MONTH), '%Y-%m-01')
+                FROM month_series
+                WHERE month_start < DATE_FORMAT(CURDATE(), '%Y-%m-01')
+            )
+            SELECT 
+                DATE_FORMAT(ms.month_start, '%b') AS month_name,
+                CONCAT(
+                    COUNT(pd.id), 
+                    ' - ₹', 
+                    FORMAT(COALESCE(SUM(pd.sum_insured), 0), 0)
+                ) AS document_summary
+            FROM 
+                month_series ms
+            LEFT JOIN 
+                policydocument pd 
+                ON DATE_FORMAT(pd.created_at, '%Y-%m') = DATE_FORMAT(ms.month_start, '%Y-%m')
+                AND pd.created_at >= CURDATE() - INTERVAL 6 MONTH
+                AND pd.status = 6
+            GROUP BY 
+                ms.month_start
+            ORDER BY 
+                ms.month_start;
+
+        """)
+        result = cursor.fetchall()
+
+    # Convert result rows to string, ensuring no `bytes` type in data
+    monthly_data = [(row[0], row[1].decode('utf-8') if isinstance(row[1], bytes) else row[1]) for row in result]
+    consolidated_month_labels = [row[0] for row in monthly_data]
+    consolidated_month_counts = [row[1] for row in monthly_data]
+
+
+    # Charts and summaries
+    provider_labels = [entry['insurance_provider'] for entry in provider_summary]
+    motor_counts = [entry['policies_sold'] for entry in provider_summary]
+    insurer_motor_counts, insurer_provider_labels, insurer_sum_insured = business_summary_insurer_chart(request)
+    policies_insurer_wise = insurer_wise_date(request)
+    referral_agent_labels, referral_counts = referral_summary_chart(request)
+
+    return render(request, 'dashboard.html', {
+        'user': user,
+        'provider_summary': provider_summary,
+        'policies_insurer_wise': policies_insurer_wise,
+        'consolidated_month_labels': consolidated_month_labels,
+        'consolidated_month_counts': consolidated_month_counts,
+        'insurer_motor_counts': insurer_motor_counts,
+        'insurer_provider_labels': insurer_provider_labels,
+        'insurer_sum_insured': insurer_sum_insured,
+        'referral_counts': referral_counts,
+        'referral_agent_labels': referral_agent_labels,
+        'provider_labels': provider_labels,
+        'motor_counts': motor_counts,
+        'policy_count': total_policies,
+        'total_revenue': total_revenue,
+        'total_net_premium': total_net_premium,
+        'total_gross_premium': total_gross_premium,
+    })
+
 
 
 def insurer_wise_date(request):
@@ -161,7 +171,6 @@ def insurer_wise_date(request):
 
     return policies
 
-
 def business_summary_insurer_chart(request):
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
@@ -170,38 +179,48 @@ def business_summary_insurer_chart(request):
     if start_date and end_date:
         filters = f"AND created_at BETWEEN '{start_date}' AND '{end_date}'"
 
-
     with connection.cursor() as cursor:
-        cursor.execute("""
-            SELECT insurance_provider, COUNT(*) AS policies_sold
-            FROM policydocument
-            WHERE status = 6 
-            GROUP BY insurance_provider
-            ORDER BY policies_sold DESC
+        cursor.execute(f"""
+            SELECT 
+                insurance_provider, 
+                COUNT(*) AS policies_sold, 
+                SUM(sum_insured) AS total_sum_insured
+            FROM 
+                policydocument
+            WHERE 
+                status = 6
+                {filters}
+            GROUP BY 
+                insurance_provider
+            ORDER BY 
+                policies_sold DESC
             LIMIT 8;
         """)
         result = cursor.fetchall()
 
-
     provider_summary = []
     insurer_motor_counts = []
+    insurer_sum_insured = []  # New list for sum insured
     insurer_provider_labels = []
+
     for row in result:
         insurance_provider = row[0]
         policies_sold = row[1]
+        total_sum_insured = row[2]  # Get the total sum insured
         initials = ''.join(word[0] for word in insurance_provider.split() if word).upper() if insurance_provider else ''
 
         provider_summary.append({
             'insurance_provider': insurance_provider,
             'policies_sold': policies_sold,
+            'total_sum_insured': total_sum_insured,  # Include sum insured
             'initials': initials
         })
 
         insurer_motor_counts.append(policies_sold)
+        insurer_sum_insured.append(total_sum_insured)  # Add sum insured to the list
         insurer_provider_labels.append(initials)
 
-
-    return insurer_motor_counts, insurer_provider_labels
+    return insurer_motor_counts, insurer_provider_labels, insurer_sum_insured  # Return sum insured
 
 def business_summary_insurer_chartajax(request):
     filter_type = request.GET.get('filter')
@@ -237,11 +256,19 @@ def business_summary_insurer_chartajax(request):
     # Execute the query
     with connection.cursor() as cursor:
         cursor.execute(f"""
-            SELECT insurance_provider, COUNT(*) AS policies_sold
-            FROM policydocument
-            WHERE {filters}
-            GROUP BY insurance_provider
-            ORDER BY policies_sold DESC
+            SELECT 
+                insurance_provider, 
+                COUNT(*) AS policies_sold, 
+                SUM(sum_insured) AS total_sum_insured
+            FROM 
+                policydocument
+            WHERE 
+                status = 6
+                {filters}
+            GROUP BY 
+                insurance_provider
+            ORDER BY 
+                policies_sold DESC
             LIMIT 8;
         """)
         result = cursor.fetchall()
@@ -252,6 +279,7 @@ def business_summary_insurer_chartajax(request):
 
     # Process results
     insurer_motor_counts = [row[1] for row in result]
+    insurer_sum_insured = [row[2] for row in result]  # Add sum insured to the list
     insurer_provider_labels = [
         ''.join(word[0] for word in row[0].split() if word).upper() if row[0] else ''
         for row in result
@@ -259,9 +287,9 @@ def business_summary_insurer_chartajax(request):
 
     return JsonResponse({
         'insurer_motor_counts': insurer_motor_counts,
-        'insurer_provider_labels': insurer_provider_labels
+        'insurer_provider_labels': insurer_provider_labels,
+        'insurer_sum_insured': insurer_sum_insured  # Include sum insured in the response
     })
-
 
 
 def business_consolidated_ajax(request):
@@ -279,7 +307,6 @@ def business_consolidated_ajax(request):
     elif filter_type == "4" and start_date and end_date:  # Custom
         filters += f" AND DATE(created_at) BETWEEN '{start_date}' AND '{end_date}'"
     else:
-        # Default to last 6 months if no filter provided
         filters += " AND created_at >= CURDATE() - INTERVAL 6 MONTH"
 
     with connection.cursor() as cursor:
@@ -292,8 +319,9 @@ def business_consolidated_ajax(request):
                 WHERE month_start < DATE_FORMAT(CURDATE(), '%Y-%m-01')
             )
             SELECT 
-                DATE_FORMAT(ms.month_start, '%b') AS month_name,  -- 3-letter month name
-                COUNT(pd.id) AS document_count
+                DATE_FORMAT(ms.month_start, '%b') AS month_name,
+                COUNT(pd.id) AS document_count,
+                COALESCE(SUM(pd.sum_insured), 0) AS total_sum_insured
             FROM 
                 month_series ms
             LEFT JOIN 
@@ -307,21 +335,24 @@ def business_consolidated_ajax(request):
         """)
         result = cursor.fetchall()
 
-    # Debugging: Check the result
-    print(result)
-
     # Prepare the results for rendering
-    monthly_data = [(row[0], row[1]) for row in result if row[0] and row[1] is not None]  # Format as (month_name, document_count)
+    monthly_data = [
+        (row[0], row[1], row[2]) for row in result if row[0] and row[1] is not None
+    ]  # Format as (month_name, document_count, total_sum_insured)
     
     # The last 6 months' labels
     consolidated_month_labels = [row[0] for row in monthly_data]
-    consolidated_month_counts = [row[1] for row in monthly_data]
+    consolidated_month_counts = [row[1] for row in monthly_data]  # Document counts
+    consolidated_sum_insured = [row[2] for row in monthly_data]  # Sum insured values
 
     return JsonResponse({
         'monthly_data': monthly_data,
         'consolidated_month_labels': consolidated_month_labels,
-        'consolidated_month_counts': consolidated_month_counts
-    }) 
+        'consolidated_month_counts': consolidated_month_counts,
+        'consolidated_sum_insured': consolidated_sum_insured
+    })
+
+
 
 def referral_summary_chart(request):
     with connection.cursor() as cursor:
