@@ -31,48 +31,53 @@
             </td>
             
               <!-- Lead ID + Date -->
-          <td>
-            <span class="badge bg-secondary">{{ lead.lead_id }}</span>
-            
-            <span class="d-block">Lead Age : N/A</span>
-            <small class="text-muted">
-              {{ lead.created_at|date:"d M Y h:i A" }}
-            </small>
-          </td>
-             <!-- Customer Info -->
-          <td>
-            <div class="d-flex">
-              <span class="d-block text-primary">{{ lead.name_as_per_pan }}</span> 
-              <span class="text-muted ml-1">(Male)</span>
-            </div>  
-            <span class="d-block text-lowercase">{{ lead.email_address }}</span>
-            <span class="d-block text-muted">{{ lead.mobile_number }}</span>
-            
-          </td>
-            <!-- Project Name -->
-          <td>
-            <span class="d-block text-muted">DOB: 15-12-1986</span>
-            <span>PAN: BAXPK1234K</span>
-          </td>
+              <td>
+                <span class="badge bg-secondary">{{ lead.lead_id }}</span><br>
+                <span class="d-block">Lead Age : N/A</span>
+                <small class="text-muted">{{ lead.created_at|date:"d M Y h:i A" }}</small>
+              </td>
+                 <!-- Customer Info -->
+                <td>
+                <div class="d-flex">
+                  <span class="d-block text-primary">{{ lead.name_as_per_pan }}</span> 
+                    {% if lead.lead_customer_gender == 1 %}
+                    <span class="text-muted ml-1">(Male)</span>
+                  {% elif lead.lead_customer_gender == 2 %}
+                  <span class="text-muted ml-1">(Female)</span>
+                    {% else %}
+                  
+                  {% endif %}
+                  </div>  
+                  <span class="d-block text-lowercase">{{ lead.email_address }}</span>
+                  <span class="d-block text-muted">{{ lead.mobile_number }}</span>
+                </td>
+
+                  <!-- Personal Info -->
+              <td>
+                <span class="d-block text-muted">DOB: {{ lead.date_of_birth|default:"-" }}</span>
+                  <span>PAN: {{ lead.pan_card_number|default:"-" }}</span>
+              </td>
           <!-- <td class="text-center">
             {{ lead.project_name|default:"-" }}
           </td> -->
           <td>
             <strong>Insurance Type:</strong> {{ lead.lead_type|default:"-" }}<br>
-            <span class="d-block text-muted">Category: N/A</span>
-            <span>Product Name: ABC</span>
-            <!-- <strong>Company:</strong> {{ lead.insurance_company|default:"-" }} -->
+            <span class="d-block text-muted">Category: {{ lead.product_category|default:"N/A" }}</span>
+            <span>Product Name: {{ lead.make_and_model|default:"-" }}</span>
           </td>
+             <!-- Lead Source Info -->
           <td>
-            Source Type: N/A <br>
-            <span class="d-block text-muted">Source Name: ABC</span>
-            Refferal Name: Ankit<br>
-            <span>Source Medium: N/A</span>
-
+            Source Type: {{ lead.lead_source|default:"N/A" }}<br>
+            <span class="d-block text-muted">Source Name: {{ lead.previous_policy_source|default:"N/A" }}</span>
+            Refferal Name: {{ lead.referral_name|default:"-" }}<br>
+          <span>Source Medium: {{ lead.lead_source_medium|default:"N/A" }}</span>
           </td>
+            <!-- Lead Allocation -->
           <td>
-            Allocated user: N/A <br>
-            <span class="d-block text-muted">Allocation Date: 5-5-2025</span>
+            Allocated user: {{ lead.sales_manager|default:"N/A" }}<br>
+            <span class="d-block text-muted">
+            Allocation Date: {{ lead.updated_at|date:"d-m-Y" }}
+          </span>
           </td>
             <!-- Status -->
           <!-- <td class="text-center">
@@ -85,11 +90,12 @@
           <!-- <td class="text-center">
             {{ lead.sales_manager|default:"Un-Allocated" }}
           </td> -->
+            <!-- Status -->
           <td>
-            Create : 8-5-2025 <br>
-            <span class="d-block text-muted">Quote: N/A</span>
-            Booking: 7-5-2025 <br>
-            Issued: 8-5-2025
+            Create : {{ lead.created_at|date:"d-m-Y" }}<br>
+            <span class="d-block text-muted">Quote: {{ lead.quote_date|default:"N/A" }}</span>
+            Booking: {{ lead.policy_date|date:"d-m-Y"|default:"-" }}<br>
+            Issued: {{ lead.policy_end_date|date:"d-m-Y"|default:"-" }}
           </td>
           <!--Action-->
           <td> 
@@ -102,7 +108,7 @@
                   </a>
                 </li>-->
                 {% if lead.lead_id %}
-                <a class="dropdown-item" href="{% url 'view-lead' lead_id=lead.lead_id %}">
+                <a class="dropdown-item" href="{% url 'lead-view' lead_id=lead.lead_id %}">
                   <i class="bi bi-eye mr-2"></i> View
                 </a>
               {% else %}

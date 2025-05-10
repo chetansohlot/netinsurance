@@ -1522,4 +1522,4 @@ def view_lead(request, lead_id):
         return redirect('login')
         
     lead = get_object_or_404(Leads, lead_id=lead_id)
-    return render(request, 'leads/view-lead.html', {'lead': lead})
+    return render(request, 'leads/lead-view.html', {'lead': lead})

@@ -62,72 +62,41 @@
                                     <img src="{% static 'dist/img/svg/profile-avatar-male.svg' %}" alt="Default Profile" class="card-profile-img">
                                 {% endif %} -->
                                 
-                                <h3 class="profile-username text-center">Vinod (Male)</h3>
-                                <div class="d-flex justify-content-center mt-2">
-                                    <span class="text-muted">Customer Since: 2002</span>
-                                </div>  
-                                <div class="d-flex justify-content-center mt-2">
-                                    <a href="#" class="breadcrump-addbtn">Dispose the lead </a>
-                                </div>
-                                <div class="profile-info-divider my-3"></div>
-                                <ul class="member-detail-list">
-                                    
+                                <h3 class="profile-username text-center">
+                                    {{ lead.name_as_per_pan }}
+                                    {% if lead.lead_customer_gender == 1 %}
+                                    <span class="text-muted ml-1">(Male)</span>
+                                  {% elif lead.lead_customer_gender == 2 %}
+                                  <span class="text-muted ml-1">(Female)</span>
+                                    {% else %}
                                   
-                                    <li>
-                                        <span class="list">Lead Id / Status</span>
-                                        <span class="list-output">1010 / Pending</span>
-                                    </li>
-                                    <li>
-                                        <span class="list">Email</span>
-                                        <span class="list-output">
-                                            vinod.kumar@netleafinfosoft.com
-                                        </span>
-                                    </li>
-                                    <li>
-                                        <span class="list">Mobile </span>
-                                        <span class="list-output">9876543210</span>
-                                    </li>
-                                    <li>
-                                        <span class="list">PANCARD</span>
-                                        <span class="list-output text-uppercase"> baxpk1234K</span>
-                                    </li>
-                                    <li>
-                                        <span class="list">Insurance Type</span>
-                                        <span class="list-output">N/A</span>
-                                    </li>
-                                    <li>
-                                        <span class="list">Product Category</span>
-                                        <span class="list-output">N/A</span>
-                                    </li>
-                                    <li>
-                                        <span class="list">Product Name</span>
-                                        <span class="list-output">N/A</span>
-                                    </li>
-                                    <li>
-                                        <span class="list">Lead Source Type</span>
-                                        <span class="list-output">N/A</span>
-                                    </li>
-                                    <li>
-                                        <span class="list">Lead Source Name</span>
-                                        <span class="list-output">N/A</span>
-                                    </li>
-                                    <li>
-                                        <span class="list">Referral Name</span>
-                                        <span class="list-output">N/A</span>
-                                    </li>
-                                    <li>
-                                        <span class="list">Source Medium</span>
-                                        <span class="list-output">N/A</span>
-                                    </li>
-                                    <li>
-                                        <span class="list">Assigned BY</span>
-                                        <span class="list-output">N/A</span>
-                                    </li>
-                                    <li>
-                                        <span class="list">Assigned To</span>
-                                        <span class="list-output">N/A</span>
-                                    </li>
+                                  {% endif %}
+                                </h3>
+                                
+                                <div class="d-flex justify-content-center mt-2">
+                                    <span class="text-muted">Customer Since: {{ lead.created_at|date:"Y" }}</span>
+                                </div>
+                                
+                                <div class="d-flex justify-content-center mt-2">
+                                    <a href="#" class="breadcrump-addbtn">Dispose the lead</a>
+                                </div>
+                                
+                                <ul class="member-detail-list">
+                                    <li><span class="list">Lead Id / Status</span><span class="list-output">{{ lead.lead_id }} / {{ lead.status }}</span></li>
+                                    <li><span class="list">Email</span><span class="list-output">{{ lead.email_address }}</span></li>
+                                    <li><span class="list">Mobile</span><span class="list-output">{{ lead.mobile_number }}</span></li>
+                                    <li><span class="list">PANCARD</span><span class="list-output text-uppercase">{{ lead.pan_card_number }}</span></li>
+                                    <li><span class="list">Insurance Type</span><span class="list-output">{{ lead.lead_type|default:"N/A" }}</span></li>
+                                    <li><span class="list">Product Category</span><span class="list-output">{{ lead.product_category|default:"N/A" }}</span></li>
+                                    <li><span class="list">Product Name</span><span class="list-output">{{ lead.make_and_model|default:"N/A" }}</span></li>
+                                    <li><span class="list">Lead Source Type</span><span class="list-output">{{ lead.lead_source|default:"N/A" }}</span></li>
+                                    <li><span class="list">Lead Source Name</span><span class="list-output">{{ lead.lead_source_medium|default:"N/A" }}</span></li>
+                                    <li><span class="list">Referral Name</span><span class="list-output">{{ lead.referral_name|default:"N/A" }}</span></li>
+                                    <li><span class="list">Source Medium</span><span class="list-output">{{ lead.lead_source_medium|default:"N/A" }}</span></li>
+                                    <li><span class="list">Assigned BY</span><span class="list-output">{{ lead.created_by|default:"N/A" }}</span></li>
+                                    <li><span class="list">Assigned To</span><span class="list-output">{{ lead.assigned_to|default:"N/A" }}</span></li>
                                 </ul>
+                                
                                 
                             </div>
                         </div>
