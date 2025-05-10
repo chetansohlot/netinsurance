@@ -444,7 +444,7 @@
             <div class="card">
               <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                  <h5 class="card-hding pb-0 mb-0">Business Summary Insurer Wise</h5>
+                  <h5 id="summary-heading" class="card-hding pb-0 mb-0">Business Summary Insurer Wise</h5>
                   <div class="d-flex align-items-center ms-auto gap-2">
                     <div>
                       <select name="insurer_wise" class="form-field" id="insurer_wise">
@@ -558,16 +558,25 @@
             </div>
           </div>
           
-          
           <script>
             document.addEventListener("DOMContentLoaded", function () {
               const dropdown = document.getElementById("insurer_wise");
+              const heading = document.getElementById("summary-heading");
+          
+              const headingMap = {
+                "1": "Business Summary Insurer Wise",
+                "2": "Business Summary Referral Wise",
+                "3": "Business Summary Branch Wise",
+                "4": "Business Summary POS Wise"
+              };
           
               function toggleTableView(selectedId) {
                 for (let i = 1; i <= 4; i++) {
                   const wrapper = document.getElementById(`table-wrapper-${i}`);
                   wrapper.style.display = (parseInt(selectedId) === i) ? "block" : "none";
                 }
+                // Update the heading
+                heading.textContent = headingMap[selectedId] || "Business Summary";
               }
           
               // Initial visibility
@@ -579,6 +588,7 @@
               });
             });
           </script>
+          
           
           
           <!-- <div class="col-sm-12 col-md-12">  
