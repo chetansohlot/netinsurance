@@ -158,10 +158,9 @@ urlpatterns = [
     path('lead/basic_info/', leads.basic_info, name='basic-info'),
     path('leads/lead-source',leads.lead_source, name='lead-source'),
     path('leads/lead-locationn',leads.lead_location, name='lead-location'),
-    
     path('leads/assignment', leads.assignment, name='lead-assignment'),
     path('leads/previous-policy-info', leads.previous_policy_info, name='leads-previous-policy-info'),
-
+    path('leads/<str:lead_id>/', leads.view_lead, name='view_lead'),
 
     #Insurance
     path('insurance/', insurance.insurance_list, name='insurance_index'),

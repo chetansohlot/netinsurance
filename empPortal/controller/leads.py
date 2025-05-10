@@ -1170,4 +1170,7 @@ def assignment(request):
     return render(request, "leads/create-assignment.html")
 def previous_policy_info(request):
     return render(request, "leads/create.html")
-    
+
+def view_lead(request, lead_id):
+    lead = get_object_or_404(Leads, lead_id=lead_id)
+    return render(request, 'leads/view_lead.html', {'lead': lead})

@@ -96,11 +96,18 @@
             <div class="dropdown">
               <img src="/static/dist/img/svg/menu-dot-vr.svg" alt="" class="table-doticon" data-toggle="dropdown" aria-expanded="false">
               <ul class="dropdown-menu table-dropdown-menu" style="">
-                <li>
+                <!--<li>
                   <a class="dropdown-item" href="#">
                     <i class="bi bi-eye mr-2"></i> View
                   </a>
-                </li>
+                </li>-->
+                {% if lead.lead_id %}
+                <a class="dropdown-item" href="{% url 'view_lead' lead_id=lead.lead_id %}">
+                  <i class="bi bi-eye mr-2"></i> View
+                </a>
+              {% else %}
+                <span class="dropdown-item text-muted">Invalid Lead ID</span>
+              {% endif %}
                 <li>
                   <a href="#" class="dropdown-item">
                     <i class="bi bi-person-plus mr-2"></i> Allocation
