@@ -285,21 +285,25 @@ def business_summary_insurer_chart(request):
 
     with connection.cursor() as cursor:
         cursor.execute(f"""
-            SELECT 
-                insurance_provider, 
-                COUNT(*) AS policies_sold, 
-                SUM(sum_insured) AS total_sum_insured
-            FROM 
-                policydocument
-            WHERE 
-                status = 6
-                {filters}
-            GROUP BY 
-                insurance_provider
-            ORDER BY 
-                policies_sold DESC
-            LIMIT 8;
-        """)
+                SELECT 
+                    pd.insurance_provider, 
+                    COUNT(*) AS policies_sold, 
+                    SUM(pi.gross_premium) AS total_sum_insured
+                FROM 
+                    policydocument pd
+                LEFT JOIN 
+                    policy_info pi 
+                    ON pd.id = pi.policy_id AND pd.policy_number = pi.policy_number
+                WHERE 
+                    pd.status = 6
+                    {filters}
+                GROUP BY 
+                    pd.insurance_provider
+                ORDER BY 
+                    policies_sold DESC
+                LIMIT 8;
+            """)
+
         result = cursor.fetchall()
 
     provider_summary = []
@@ -361,19 +365,22 @@ def business_summary_insurer_chartajax(request):
     with connection.cursor() as cursor:
         cursor.execute(f"""
             SELECT 
-                insurance_provider, 
-                COUNT(*) AS policies_sold, 
-                SUM(sum_insured) AS total_sum_insured
-            FROM 
-                policydocument
-            WHERE 
-                status = 6
-                {filters}
-            GROUP BY 
-                insurance_provider
-            ORDER BY 
-                policies_sold DESC
-            LIMIT 8;
+                    pd.insurance_provider, 
+                    COUNT(*) AS policies_sold, 
+                    SUM(pi.gross_premium) AS total_sum_insured
+                FROM 
+                    policydocument pd
+                LEFT JOIN 
+                    policy_info pi 
+                    ON pd.id = pi.policy_id AND pd.policy_number = pi.policy_number
+                WHERE 
+                    pd.status = 6
+                    {filters}
+                GROUP BY 
+                    pd.insurance_provider
+                ORDER BY 
+                    policies_sold DESC
+                LIMIT 8;
         """)
         result = cursor.fetchall()
 
@@ -402,52 +409,63 @@ def business_consolidated_ajax(request):
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
 
-    filters = "status = 6"
+    # Default filter
+    filters = "pd.status = 6"
 
+    # Apply filter based on user selection
     if filter_type == "2":  # Today
-        filters += " AND DATE(created_at) = CURDATE()"
+        filters += " AND DATE(pd.created_at) = CURDATE()"
     elif filter_type == "3" and month:  # MTD
-        filters += f" AND MONTH(created_at) = {int(month)} AND YEAR(created_at) = YEAR(CURDATE())"
-    elif filter_type == "4" and start_date and end_date:  # Custom
-        filters += f" AND DATE(created_at) BETWEEN '{start_date}' AND '{end_date}'"
-    else:
-        filters += " AND created_at >= CURDATE() - INTERVAL 6 MONTH"
+        filters += f" AND MONTH(pd.created_at) = {int(month)} AND YEAR(pd.created_at) = YEAR(CURDATE())"
+    elif filter_type == "4" and start_date and end_date:  # Custom Range
+        filters += f" AND DATE(pd.created_at) BETWEEN '{start_date}' AND '{end_date}'"
+    else:  # Last 6 months by default
+        filters += " AND pd.created_at >= CURDATE() - INTERVAL 6 MONTH"
+
+    query = f"""
+        WITH RECURSIVE month_series AS (
+            SELECT DATE_FORMAT(CURDATE(), '%Y-%m-01') AS month_start  -- Start from the current month (May)
+            UNION ALL
+            SELECT DATE_FORMAT(DATE_ADD(month_start, INTERVAL -1 MONTH), '%Y-%m-01')
+            FROM month_series
+            WHERE month_start > DATE_FORMAT(CURDATE(), '%Y-%m-01') - INTERVAL 6 MONTH  -- Generate 6 months back
+        )
+        SELECT 
+            DATE_FORMAT(ms.month_start, '%b') AS month_name,
+            COALESCE(COUNT(pd.id), 0) AS document_count,
+            COALESCE(SUM(CAST(pi.gross_premium AS DECIMAL(10,2))), 0.00) AS total_sum_insured
+        FROM 
+            month_series ms
+        LEFT JOIN 
+            policydocument pd 
+            ON DATE_FORMAT(pd.created_at, '%Y-%m') = DATE_FORMAT(ms.month_start, '%Y-%m')
+        LEFT JOIN 
+            policy_info pi 
+            ON pd.id = pi.policy_id AND pd.policy_number = pi.policy_number
+            AND pd.status = 6
+        WHERE 
+            ms.month_start >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 5 MONTH), '%Y-%m-01')  -- Ensure we include the last 6 months
+        GROUP BY 
+            ms.month_start
+        ORDER BY 
+            ms.month_start;
+    """
+
+
+
 
     with connection.cursor() as cursor:
-        cursor.execute(f"""
-            WITH RECURSIVE month_series AS (
-                SELECT DATE_FORMAT(CURDATE() - INTERVAL 5 MONTH, '%Y-%m-01') AS month_start
-                UNION ALL
-                SELECT DATE_FORMAT(DATE_ADD(month_start, INTERVAL 1 MONTH), '%Y-%m-01')
-                FROM month_series
-                WHERE month_start < DATE_FORMAT(CURDATE(), '%Y-%m-01')
-            )
-            SELECT 
-                DATE_FORMAT(ms.month_start, '%b') AS month_name,
-                COUNT(pd.id) AS document_count,
-                COALESCE(SUM(pd.sum_insured), 0) AS total_sum_insured
-            FROM 
-                month_series ms
-            LEFT JOIN 
-                policydocument pd 
-                ON DATE_FORMAT(pd.created_at, '%Y-%m') = DATE_FORMAT(ms.month_start, '%Y-%m')
-                AND {filters}
-            GROUP BY 
-                ms.month_start
-            ORDER BY 
-                ms.month_start;
-        """)
+        cursor.execute(query)
         result = cursor.fetchall()
 
-    # Prepare the results for rendering
     monthly_data = [
-        (row[0], row[1], row[2]) for row in result if row[0] and row[1] is not None
-    ]  # Format as (month_name, document_count, total_sum_insured)
+        (row[0], row[1], float(row[2]) if row[2] is not None else 0.0)
+        for row in result if row[0]
+    ]
     
-    # The last 6 months' labels
     consolidated_month_labels = [row[0] for row in monthly_data]
-    consolidated_month_counts = [row[1] for row in monthly_data]  # Document counts
-    consolidated_sum_insured = [row[2] for row in monthly_data]  # Sum insured values
+    consolidated_month_counts = [row[1] for row in monthly_data]
+    consolidated_sum_insured = [row[2] for row in monthly_data]
 
     return JsonResponse({
         'monthly_data': monthly_data,
@@ -455,6 +473,7 @@ def business_consolidated_ajax(request):
         'consolidated_month_counts': consolidated_month_counts,
         'consolidated_sum_insured': consolidated_sum_insured
     })
+
 
 
 
