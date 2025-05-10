@@ -219,7 +219,7 @@
                                     <div class="userdetail-group">
                                         <p class="userdetail-lbl">Lead ID</p>
                                         <p class="userdetail-highligt">
-                                            10110
+                                            {{ lead.lead_id }}
                                         </p>
                                     </div>  
                                   </div>
@@ -227,7 +227,7 @@
                                     <div class="userdetail-group">
                                         <p class="userdetail-lbl">Customer Name</p>
                                         <p class="userdetail-highligt">
-                                            Vinod Kumar
+                                            {{ lead.name_as_per_pan|default:"-" }}
                                         </p>
                                     </div>  
                                   </div>
@@ -235,7 +235,7 @@
                                     <div class="userdetail-group">
                                         <p class="userdetail-lbl">Mobile Number</p>
                                         <p class="userdetail-highligt">
-                                            9876543210
+                                            {{lead.mobile_number}}
                                         </p>
                                     </div>  
                                   </div>
@@ -244,7 +244,13 @@
                                     <div class="userdetail-group">
                                         <p class="userdetail-lbl">Gender</p>
                                         <p class="userdetail-highligt">
-                                            Male
+                                            {% if lead.lead_customer_gender == 1 %}
+                                    <span class="text-muted ml-1">(Male)</span>
+                                        {% elif lead.lead_customer_gender == 2 %}
+                                        <span class="text-muted ml-1">(Female)</span>
+                                        {% else %}
+                  
+                                        {% endif %}
                                         </p>
                                     </div>  
                                   </div>
@@ -252,7 +258,7 @@
                                     <div class="userdetail-group">
                                         <p class="userdetail-lbl">Date of Birth</p>
                                         <p class="userdetail-highligt">
-                                            15-12-1986
+                                            {{lead.date_of_birth}}
                                         </p>
                                     </div>  
                                   </div>
@@ -260,7 +266,7 @@
                                     <div class="userdetail-group">
                                         <p class="userdetail-lbl">PAN/Aadhaar</p>
                                         <p class="userdetail-highligt text-uppercase">
-                                            baxkp1234k
+                                            {{lead.pan_card_number}}
                                         </p>
                                     </div>  
                                   </div>
@@ -268,7 +274,7 @@
                                     <div class="userdetail-group">
                                         <p class="userdetail-lbl">Email ID</p>
                                         <p class="userdetail-highligt">
-                                            vinod.kumar@netleafinfosoft.com
+                                            {{lead.email_address}}
                                         </p>
                                     </div>  
                                   </div>
@@ -288,7 +294,7 @@
                                     <div class="userdetail-group">
                                         <p class="userdetail-lbl">Lead Source Name</p>
                                         <p class="userdetail-highligt">
-                                            N/A
+                                            {{lead.lead_source}}
                                         </p>
                                     </div>  
                                   </div>
@@ -296,7 +302,7 @@
                                     <div class="userdetail-group">
                                         <p class="userdetail-lbl">Referral Name</p>
                                         <p class="userdetail-highligt">
-                                            Ankit
+                                            {{lead.referral_name}}
                                         </p>
                                     </div>  
                                   </div>
@@ -304,7 +310,7 @@
                                     <div class="userdetail-group">
                                         <p class="userdetail-lbl">Source Medium</p>
                                         <p class="userdetail-highligt">
-                                            Facebook
+                                            
                                         </p>
                                     </div>  
                                   </div>
@@ -316,7 +322,7 @@
                                     <div class="userdetail-group">
                                         <p class="userdetail-lbl">State</p>
                                         <p class="userdetail-highligt">
-                                            Haryana
+                                            {{lead.state}}
                                         </p>
                                     </div>  
                                   </div>
@@ -324,7 +330,7 @@
                                     <div class="userdetail-group">
                                         <p class="userdetail-lbl">City</p>
                                         <p class="userdetail-highligt">
-                                            Gurugram                                        
+                                            {{lead.city}}                                       
                                         </p>
                                     </div>  
                                   </div>
@@ -332,7 +338,7 @@
                                     <div class="userdetail-group">
                                         <p class="userdetail-lbl">Pin Code</p>
                                         <p class="userdetail-highligt">
-                                            121001                                       
+                                            {{lead.pincode}}                                      
                                         </p>
                                     </div>  
                                   </div>
