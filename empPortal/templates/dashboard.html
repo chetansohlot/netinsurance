@@ -764,9 +764,9 @@
               yAxisID: 'y1'
             },
             {
-              label: 'Sum Insured (₹)',
-              data: sumInsuredData, // Sum insured values
-              backgroundColor: "#ABEBC6",  // Blue color for sum insured
+              label: 'Gross Premium (₹)',
+              data: sumInsuredData, // Gross Premium values
+              backgroundColor: "#ABEBC6",  // Blue color for Gross Premium
               borderColor: '#ABEBC6',      // Blue border
               yAxisID: 'y2'
             }
@@ -798,12 +798,12 @@
             },
             y2: {
               beginAtZero: true,
-              title: { display: true, text: 'Sum Insured (₹)' },
+              title: { display: true, text: 'Gross Premium (₹)' },
               position: 'right',
               ticks: {
                 beginAtZero: true,
                 callback: function(value) {
-                  // Format tick labels for the sum insured values
+                  // Format tick labels for the Gross Premium values
                   return '₹' + formatNumber(value);
                 }
               }
@@ -877,7 +877,7 @@
                 // Show both policies sold and sum insured in the tooltip
                 const policiesSold = counts[tooltipItem.dataIndex];
                 const sumInsured = insurer_sum_insured[tooltipItem.dataIndex];
-                return `Policies Sold: ${policiesSold} | Sum Insured: ₹${sumInsured.toLocaleString()}`;
+                return `Policies Sold: ${policiesSold} | Gross Premium: ₹${sumInsured.toLocaleString()}`;
               }
             }
           },

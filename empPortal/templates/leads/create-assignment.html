@@ -67,7 +67,7 @@
                 <div class="card box-shadow-none p-md-4 p-3">
                   <div class="card-body px-0 pb-0 pt-0">
                       
-                    <form autocomplete="off" id="leadForm" name="leadForm" action="{% url 'save-lead-assignment-info' %}" method="post">
+                    <form autocomplete="off" id="leadAssignmentForm" name="leadAssignmentForm" action="{% url 'save-lead-assignment-info' %}" method="post">
                       {% csrf_token %}
                       <input type="hidden" id="lead_ref_id" name="lead_ref_id" value="{{lead_ref_id}}">
 

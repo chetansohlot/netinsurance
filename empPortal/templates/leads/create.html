@@ -66,7 +66,7 @@
                 <div class="card box-shadow-none p-md-4 p-3">
                   <div class="card-body px-0 pb-0 pt-0">
                       
-                    <form autocomplete="off" id="leadForm" name="leadForm" action="{% url 'save-lead-previous-policy-info' %}" method="post">
+                    <form autocomplete="off" id="leadPreviousPolicyForm" name="leadPreviousPolicyForm" action="{% url 'save-lead-previous-policy-info' %}" method="post">
                       {% csrf_token %}
 
                       <input type="hidden" id="lead_ref_id" name="lead_ref_id" value="{{lead_ref_id}}">
@@ -103,22 +103,22 @@
                             <input type="date" class="form-field datepicker_common" name="policy_date" id="policy_date" placeholder="Enter Policy Start Date" >
                           </div>
                           <div class="form-group col-md-4">
-                            <label class="form-lbl" for="policy_date">Policy End Date</label>
+                            <label class="form-lbl" for="policy_end_date">Policy End Date</label>
                             <input type="date" class="form-field datepicker_common" name="policy_end_date" id="policy_end_date" placeholder="Enter Policy End Date" >
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Expiry Status</label>
                             <select class="form-field" name="expiry_status" id="expiry_status">
                                 <option value="">Select</option>
-                                <option>Expired</option>
-                                <option>Active</option>                                
-                                <option>Grace Perio</option>                                
+                                <option value="1">Expired</option>
+                                <option value="2">Active</option>                                
+                                <option value="3">Grace Period</option>                                
                             </select>
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">No Claim Bonus (NCB)</label>
                             <select class="form-field" name="ncb" id="ncb">
-                                <option value="">0%</option>
+                                <option value="1">0%</option>
                                 <option value="1">20%</option>
                                 <option value="1">25%</option>                                
                                 <option value="1">35%</option>                                
@@ -128,11 +128,11 @@
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Previous IDV (for Motor)</label>
-                            <input type="text" class="form-field" name="previous_idv_amount" id="previous_idv_amount" placeholder="Enter IDV Amount" >
+                            <input type="text" class="form-field number" name="previous_idv_amount" id="previous_idv_amount" placeholder="Enter IDV Amount" >
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Previous Sum Insured (for Health)</label>
-                            <input type="text" class="form-field" name="previous_sum_insured" id="previous_sum_insured" placeholder="Enter Amount" >
+                            <input type="text" class="form-field number" name="previous_sum_insured" id="previous_sum_insured" placeholder="Enter Amount" >
                           </div>
 
                           <div class="form-group col-md-4">
@@ -145,7 +145,7 @@
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Claim Amount (optional)</label>
-                            <input type="text" class="form-field" name="claim_amount" id="claim_amount" placeholder="Enter Amount" >
+                            <input type="text" class="form-field number" name="claim_amount" id="claim_amount" placeholder="Enter Amount" >
                           </div>
 
                           <div class="form-group col-md-4">
@@ -218,16 +218,7 @@
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Sum Insured (if Health/Life)</label>
-                            <input type="text" class="form-field" name="sum_insured" id="sum_insured" placeholder="Amount" >
-                          </div>
-                          <div class="form-group col-md-4">
-                            <label class="form-lbl">Policy Type</label>
-                            <select class="form-field" name="policy_type" id="policy_type">
-                                <option value="">Select</option>
-                                <option value="1">Comprehensive</option>
-                                <option value="1">Third Party</option>
-                                <option value="1">OD</option>
-                            </select>
+                            <input type="text" class="form-field number" name="sum_insured" id="sum_insured" placeholder="Amount" >
                           </div>
                         <script>
                             

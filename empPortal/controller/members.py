@@ -8,7 +8,7 @@ from ..models import Commission, ExamResult,Users, DocumentUpload, Branch,BqpMas
 from empPortal.model import BankDetails
 from django.utils.timezone import localtime
 from datetime import datetime
-
+from empPortal.util.context_processors import company_constants
 from ..forms import DocumentUploadForm
 from django.core.mail import send_mail
 from django.core.mail import EmailMessage
@@ -586,15 +586,20 @@ def posTrainingCertificate(request, user_id):
     else:
         profile_image_url = os.path.join(settings.BASE_DIR, getattr(settings, 'DEFAULT_POS_IMAGE', 'empPortal/static/dist/img/default-image-pos.jpg'))
 
+    docs = DocumentUpload.objects.filter(user_id=user_id).first()
+
     context = {
         "partner": partner,
+        "docs": docs,
         "customer": customer,
-        "logo_url": os.path.join(settings.BASE_DIR, getattr(settings, 'GLOBAL_FILE_LOGO', 'empPortal/static/dist/img/logo2.png')),
+        "logo_url": os.path.join(settings.BASE_DIR, getattr(settings, 'LOGO_WITH_EMP_PORTAL', 'empPortal/static/dist/img/logo2.png')),
         "signature_elevate": os.path.join(settings.BASE_DIR, getattr(settings, 'SIGNATURE_ELEVATE', 'empPortal/static/dist/img/elevate-signature.png')),
         "default_image_pos": profile_image_url,
         "signature_pos": os.path.join(settings.BASE_DIR, getattr(settings, 'SIGNATURE_POS', 'empPortal/static/dist/img/signature-pos.webp')),
     }
 
+    # 🔥 Add this to manually include context processor variables
+    context.update(company_constants(request))
     html_content = render_to_string("members/download-training-certificate.html", context)
 
     options = {
@@ -637,11 +642,12 @@ def posCertificate(request, user_id):
         "customer": customer,
         "passed_date": passed_date,
         "docs": docs,
-        "logo_url": os.path.join(settings.BASE_DIR, getattr(settings, 'GLOBAL_FILE_LOGO', 'empPortal/static/dist/img/logo2.png')),
+        "logo_url": os.path.join(settings.BASE_DIR, getattr(settings, 'LOGO_WITH_EMP_PORTAL', 'empPortal/static/dist/img/logo2.png')),
         "signature_elevate": os.path.join(settings.BASE_DIR, getattr(settings, 'SIGNATURE_ELEVATE', 'empPortal/static/dist/img/elevate-signature.png')),
         "profile_image_url": profile_image_url,
         "signature_pos": os.path.join(settings.BASE_DIR, getattr(settings, 'SIGNATURE_POS', 'empPortal/static/dist/img/signature-pos.webp')),
     }
+    context.update(company_constants(request))
 
     html_content = render_to_string("members/download-certificate.html", context)
 

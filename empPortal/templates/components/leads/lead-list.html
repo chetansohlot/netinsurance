@@ -107,9 +107,11 @@
                   </a>
                 </li>
                 <li>
-                  <a href="{% url 'leads-mgt-edit' lead_id=lead.id %}" class="dropdown-item">
-                    <i class="bi bi-pencil-square mr-2"></i> Edit
-                  </a>
+                  {% if lead.lead_id %}
+                    <a href="{% url 'edit-lead-init' lead_id=lead.lead_id %}" class="dropdown-item">
+                      <i class="bi bi-pencil-square mr-2"></i> Edit
+                    </a>  
+                  {% endif %}
                 </li>
               </ul>
             </div>
