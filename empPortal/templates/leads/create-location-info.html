@@ -405,41 +405,5 @@
         });
     });
 </script>
-<!-- jQuery for AJAX -->
-<!--<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-  $(document).ready(function () {
-
-    stateId = $('#state_id').val()
-    fetchCityList(stateId)
-    
-    function fetchCityList(stateId=null){
-      city_id = $('#city_id').val()
-      if (stateId) {
-        $.ajax({
-          url: "{% url 'get_cities' %}",
-          data: {
-            'state_id': stateId
-          },
-          success: function (data) {
-            $('#city').empty();
-            $('#city').append('<option value="">Select City</option>');
-            $.each(data.cities, function (index, city) {
-              let selected = (String(city_id) === String(city.id)) ? ' selected' : '';
-              $('#city').append('<option value="' + city.id + '"' + selected + '>' + city.city + '</option>');
-            });
-          }
-        });
-      } else {
-        $('#city').empty().append('<option value="">Select City</option>');
-      }
-    }
-    
-    $('#state').change(function () {
-      var stateId = $(this).val();
-      fetchCityList(stateId)
-    });
-  });
-</script>-->
 </body>
 {% endblock %}
