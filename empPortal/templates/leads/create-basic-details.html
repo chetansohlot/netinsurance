@@ -66,10 +66,9 @@
                 <div class="card box-shadow-none p-md-4 p-3">
                   <div class="card-body px-0 pb-0 pt-0">
                       
-                    <form autocomplete="off" id="leadForm" name="leadForm"
-                        action=""
-                        method="post">
+                    <form autocomplete="off" id="leadForm" name="leadForm" action="{% url 'save-lead-basic-info' %}" method="post">
                       {% csrf_token %}
+                      <input type="hidden" id="lead_id" name="lead_id" value="{{lead_id}}">
 
                       <div class="row">
                           <div class="col-md-12">
@@ -81,12 +80,11 @@
                           </div>-->
                           <div class="form-group col-md-4">
                             <label class="form-lbl" >Customer Name</label>
-                            <input type="text" class="form-field" placeholder="Enter Customer Name" value="">
+                            <input type="text" class="form-field" placeholder="Enter Customer Name" name="customer_name" id="customer_name" value="">
                           </div>
                           <div class="form-group col-md-4">
                               <label class="form-lbl" for="mobile_number">Mobile Number</label>
-                              <input type="tel" class="form-field" name="mobile_number" id="mobile_number" pattern="[0-9]{10}"
-                                    placeholder="Enter Mobile Number" value="{{ lead.mobile_number|default_if_none:'' }}">
+                              <input type="tel" class="form-field" name="mobile_number" id="mobile_number" pattern="[0-9]{10}" placeholder="Enter Mobile Number" value="{{ lead.mobile_number|default_if_none:'' }}">
                           </div>
 
                           <div class="form-group col-md-4">
@@ -96,20 +94,21 @@
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Gender</label>
-                            <select class="form-field">
-                                <option>Male</option>
-                                <option>Female</option>
-                                <option>Other</option>
+                            <select class="form-field" name="gender" id="gender">
+                                <option value="1">Male</option>
+                                <option value="2">Female</option>
+                                <option value="3">Other</option>
                             </select>
                           </div>
+
                           <div class="form-group col-md-4">
                             <label class="form-lbl" for="date_of_birth">Date of Birth</label>
-                            <input type="text" class="form-field dob_datepicker" name="date_of_birth" id="date_of_birth"
+                            <input type="date" class="form-field dob_datepicker" name="date_of_birth" id="date_of_birth"
                                   value="{{ lead.date_of_birth|date:'Y-m-d' }}">
                           </div>
                           <div class="form-group col-md-4">
-                            <label class="form-lbl" for="date_of_birth">PAN/Aadhaar (Optional)</label>
-                            <input type="text" class="form-field" maxlength="12">
+                            <label class="form-lbl" for="identity_no">PAN/Aadhaar (Optional)</label>
+                            <input type="text" class="form-field" maxlength="12" name="identity_no" id="identity_no">
                           </div>
 
 
@@ -141,7 +140,6 @@
                         
                       </div>
                       <div class="d-flex justify-content-end">
-                        <a href="{% url 'lead-source' %}"  class="btn btn-success mt-3">Next Step</a>
 
                         <button type="submit" class="form-submit-btn mt-3">
                             {% if lead %}Update Lead{% else %}Add Lead{% endif %}

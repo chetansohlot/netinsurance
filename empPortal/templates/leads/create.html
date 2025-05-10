@@ -66,10 +66,10 @@
                 <div class="card box-shadow-none p-md-4 p-3">
                   <div class="card-body px-0 pb-0 pt-0">
                       
-                    <form autocomplete="off" id="leadForm" name="leadForm"
-                        action=""
-                        method="post">
+                    <form autocomplete="off" id="leadForm" name="leadForm" action="{% url 'save-lead-previous-policy-info' %}" method="post">
                       {% csrf_token %}
+
+                      <input type="hidden" id="lead_ref_id" name="lead_ref_id" value="{{lead_ref_id}}">
 
                       <div class="row">
                           <div class="col-md-12">
@@ -77,36 +77,38 @@
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Previous Insurer Name</label>
-                            <select class="form-field">
+                            <select class="form-field" name="previous_insurer_name" id="previous_insurer_name">
                                 <option value="">Select</option>
-                                <option>ICICI Lombard</option>
-                                <option>HDFC Ergo</option>                                
+                                <option value="1">ICICI Lombard</option>
+                                <option value="2">HDFC Ergo</option>                                
                             </select>
                           </div>
+                          
                           <div class="form-group col-md-4">
                             <label class="form-lbl" for="policy_number">Policy Number</label>
                             <input type="text" class="form-field" name="policy_number" id="policy_number" placeholder="Enter Policy Number" >
                           </div>
+
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Policy Type</label>
-                            <select class="form-field">
+                            <select class="form-field" name="policy_type" id="policy_type">
                                 <option value="">Select</option>
-                                <option>Comprehensive</option>
-                                <option>Third Party</option>                                
-                                <option>OD Only</option>                                
+                                <option value="1">Comprehensive</option>
+                                <option value="1">Third Party</option>                                
+                                <option value="1">OD Only</option>                                
                             </select>
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl" for="policy_date">Policy Start Date</label>
-                            <input type="text" class="form-field datepicker_common" name="policy_date" id="policy_date" placeholder="Enter Policy Start Date" >
+                            <input type="date" class="form-field datepicker_common" name="policy_date" id="policy_date" placeholder="Enter Policy Start Date" >
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl" for="policy_date">Policy End Date</label>
-                            <input type="text" class="form-field datepicker_common" name="policy_end_date" id="policy_end_date" placeholder="Enter Policy End Date" >
+                            <input type="date" class="form-field datepicker_common" name="policy_end_date" id="policy_end_date" placeholder="Enter Policy End Date" >
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Expiry Status</label>
-                            <select class="form-field">
+                            <select class="form-field" name="expiry_status" id="expiry_status">
                                 <option value="">Select</option>
                                 <option>Expired</option>
                                 <option>Active</option>                                
@@ -115,88 +117,84 @@
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">No Claim Bonus (NCB)</label>
-                            <select class="form-field">
+                            <select class="form-field" name="ncb" id="ncb">
                                 <option value="">0%</option>
-                                <option>20%</option>
-                                <option>25%</option>                                
-                                <option>35%</option>                                
-                                <option>45%</option>                                
-                                <option>50%</option>                                
+                                <option value="1">20%</option>
+                                <option value="1">25%</option>                                
+                                <option value="1">35%</option>                                
+                                <option value="1">45%</option>                                
+                                <option value="1">50%</option>                                
                             </select>
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Previous IDV (for Motor)</label>
-                            <input type="text" class="form-field" placeholder="Enter IDV Amount" >
+                            <input type="text" class="form-field" name="previous_idv_amount" id="previous_idv_amount" placeholder="Enter IDV Amount" >
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Previous Sum Insured (for Health)</label>
-                            <input type="text" class="form-field" placeholder="Enter Amount" >
+                            <input type="text" class="form-field" name="previous_sum_insured" id="previous_sum_insured" placeholder="Enter Amount" >
                           </div>
 
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Claims Made</label>
-                            <select class="form-field">
+                            <select class="form-field" name="claim_made" id="claim_made">
                                 <!-- <option value="">Select</option> -->
-                                <option value="">Yes</option>
-                                <option value="">No</option>
+                                <option value="1">Yes</option>
+                                <option value="2">No</option>
                             </select>
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Claim Amount (optional)</label>
-                            <input type="text" class="form-field" placeholder="Enter Amount" >
-                          </div>
-                          <div class="form-group col-md-4">
-                            <label class="form-lbl">Copy of Previous Policy</label>
-                            <input type="file" class="form-field" >
+                            <input type="text" class="form-field" name="claim_amount" id="claim_amount" placeholder="Enter Amount" >
                           </div>
 
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Previous Policy Source</label>
-                            <select class="form-field">
+                            <select class="form-field" name="previous_policy_source" id="previous_policy_source">
                                 <option value="">Select</option>
-                                <option value="">Agent</option>
-                                <option value="">Online</option>
-                                <option value="">Dealer</option>
-                                <option value="">Direct</option>
-                                <option value="">Aggregator</option>
+                                <option value="1">Agent</option>
+                                <option value="1">Online</option>
+                                <option value="1">Dealer</option>
+                                <option value="1">Direct</option>
+                                <option value="1">Aggregator</option>
                             </select>
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Vehicle Type</label>
-                            <select class="form-field">
+                            <select class="form-field" name="vehicle_type" id="vehicle_type">
                                 <option value="">Select</option>
-                                <option value="">Private</option>
-                                <option value="">Commercial</option>
-                                <option value="">Other</option>
+                                <option value="2">Private</option>
+                                <option value="2">Commercial</option>
+                                <option value="2">Other</option>
                             </select>
                           </div> 
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Vehicle Class</label>
-                            <select class="form-field">
+                            <select class="form-field" name="vehicle_class" id="vehicle_class">
                                 <option value="">Select</option>
-                                <option value="">Two-Wheeler</option>
-                                <option value="">Four-Wheeler</option>
-                                <option value="">Other</option>
+                                <option value="1">Two-Wheeler</option>
+                                <option value="1">Four-Wheeler</option>
+                                <option value="1">Other</option>
                             </select>
                           </div> 
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Insurance Type</label>
-                            <select class="form-field">
+                            <select class="form-field" name="insurance_type" id="insurance_type">
                                 <option value="">Select</option>
-                                <option value="">Motor</option>
-                                <option value="">Health</option>
-                                <option value="">Life</option>
-                                <option value="">Travel</option>
-                                <option value="">General</option>
+                                <option value="2">Motor</option>
+                                <option value="2">Health</option>
+                                <option value="2">Life</option>
+                                <option value="2">Travel</option>
+                                <option value="2">General</option>
                             </select>
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Product Category</label>
-                            <select class="form-field">
+                            <select class="form-field" name="product_category" id="product_category">
                                 <option value="">Select</option>
-                                <option value="">Private Car</option>
-                                <option value="">Mediclaim</option>
-                                <option value="">Term Life</option>
+                                <option value="1">Private Car</option>
+                                <option value="1">Mediclaim</option>
+                                <option value="1">Term Life</option>
                             </select>
                           </div>
                           <div class="col-sm-12">
@@ -204,31 +202,31 @@
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Registration No</label>
-                            <input type="text" class="form-field" placeholder="Registration No" >
+                            <input type="text" class="form-field" name="vehicle_reg_no" id="vehicle_reg_no" placeholder="Registration No" >
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Make</label>
-                            <input type="text" class="form-field" placeholder="Make" >
+                            <input type="text" class="form-field" name="vehicle_make" id="vehicle_make" placeholder="Make" >
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Model</label>
-                            <input type="text" class="form-field" placeholder="Model" >
+                            <input type="text" class="form-field" name="vehicle_model" id="vehicle_model" placeholder="Model" >
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Year</label>
-                            <input type="text" class="form-field" placeholder="Year" >
+                            <input type="text" class="form-field" name="mgf_year" id="mgf_year" placeholder="Year" >
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Sum Insured (if Health/Life)</label>
-                            <input type="text" class="form-field" placeholder="Amount" >
+                            <input type="text" class="form-field" name="sum_insured" id="sum_insured" placeholder="Amount" >
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Policy Type</label>
-                            <select class="form-field">
+                            <select class="form-field" name="policy_type" id="policy_type">
                                 <option value="">Select</option>
-                                <option value="">Comprehensive</option>
-                                <option value="">Third Party</option>
-                                <option value="">OD</option>
+                                <option value="1">Comprehensive</option>
+                                <option value="1">Third Party</option>
+                                <option value="1">OD</option>
                             </select>
                           </div>
                         <script>
@@ -259,7 +257,6 @@
                         
                       </div>
                       <div class="d-flex justify-content-end">
-                        <a href="{% url 'lead-assignment' %}" class="btn btn-secondary mt-3 me-2">Back</a><br>
                         <button type="submit" class="form-submit-btn mt-3">
                             {% if lead %}Update Lead{% else %}Add Lead{% endif %}
                         </button>
