@@ -500,6 +500,13 @@ class PolicyInfo(models.Model):
             return int((end.year - start.year) + ((end.month - start.month) / 12))
         except (ValueError,TypeError):
             return None
+        
+    @property
+    def payment_date(self):
+        try:
+           return datetime.strptime(self.policy_issue_date, "%Y-%m-%d %H:%M:%S").strftime("%Y-%m-%d")
+        except (ValueError,TypeError):
+            return None
 
 class AgentPaymentDetails(models.Model):
     policy = models.ForeignKey(PolicyDocument, on_delete=models.CASCADE, related_name='policy_agent_info')
