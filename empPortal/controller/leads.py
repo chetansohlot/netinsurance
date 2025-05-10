@@ -1185,7 +1185,12 @@ def basic_info(request,lead_id):
         messages.error(request,'Sorry Lead Id is missing')
         return redirect('leads-mgt')
     
-    return render(request, "leads/create-basic-details.html", {'lead_id': lead_id})
+    lead_data = Leads.objects.filter(lead_id=lead_id).first()
+    if not lead_data:
+        messages.error(request,'Sorry Lead Data is missing')
+        return redirect('leads-mgt')
+    
+    return render(request, "leads/create-basic-details.html", {'lead_data': lead_data})
     
 def lead_source(request,lead_id):
     if not request.user.is_authenticated and request.user.is_active!=1:
@@ -1196,7 +1201,12 @@ def lead_source(request,lead_id):
         messages.error(request,'Sorry Lead Id is missing')
         return redirect('leads-mgt')
     
-    return render(request, "leads/create-lead-source-info.html",{"lead_ref_id":lead_id})
+    lead_data = Leads.objects.filter(lead_id=lead_id).first()
+    if not lead_data:
+        messages.error(request,'Sorry Lead Data is missing')
+        return redirect('leads-mgt')
+    
+    return render(request, "leads/create-lead-source-info.html",{"lead_data":lead_data})
 
 def lead_location(request,lead_id):
     if not request.user.is_authenticated and request.user.is_active!=1:
@@ -1207,7 +1217,14 @@ def lead_location(request,lead_id):
         messages.error(request,'Sorry Lead Id is missing')
         return redirect('leads-mgt')
     
-    return render(request, "leads/create-location-info.html",{"lead_ref_id":lead_id})
+    lead_data = Leads.objects.filter(lead_id=lead_id).first()
+    if not lead_data:
+        messages.error(request,'Sorry Lead Data is missing')
+        return redirect('leads-mgt')
+    
+    states = State.objects.all()
+    
+    return render(request, "leads/create-location-info.html",{"lead_data":lead_data,"states":states})
 
 def assignment(request,lead_id):
     if not request.user.is_authenticated and request.user.is_active!=1:
@@ -1218,10 +1235,14 @@ def assignment(request,lead_id):
         messages.error(request,'Sorry Lead Id is missing')
         return redirect('leads-mgt')
     
-    return render(request, "leads/create-assignment.html",{"lead_ref_id":lead_id})
-
-def clean(val):
-    return val.strip() if isinstance(val, str) and val.strip() else None
+    lead_data = Leads.objects.filter(lead_id=lead_id).first()
+    if not lead_data:
+        messages.error(request,'Sorry Lead Data is missing')
+        return redirect('leads-mgt')
+    
+    branches = Branch.objects.filter(status='Active') 
+    
+    return render(request, "leads/create-assignment.html",{"lead_data":lead_data,"branches":branches})
 
 def previous_policy_info(request,lead_id):
     if not request.user.is_authenticated and request.user.is_active!=1:
@@ -1232,8 +1253,15 @@ def previous_policy_info(request,lead_id):
         messages.error(request,'Sorry Lead Id is missing')
         return redirect('leads-mgt')
     
-    return render(request, "leads/create.html",{"lead_ref_id":lead_id})
+    lead_data = Leads.objects.filter(lead_id=lead_id).first()
+    if not lead_data:
+        messages.error(request,'Sorry Lead Data is missing')
+        return redirect('leads-mgt')
+    
+    return render(request, "leads/create.html",{"lead_data":lead_data})
 
+def clean(val):
+    return val.strip() if isinstance(val, str) and val.strip() else None
 
 def save_leads_insurance_info(request):
     if not request.user.is_authenticated and request.user.is_active != 1:
@@ -1315,7 +1343,7 @@ def update_leads_insurance_info(request):
     
     lead_id = lead_data.lead_id
     messages.success(request,f"Saved Succesfully")
-    return redirect('lead-source',lead_id=lead_id)
+    return redirect('basic-info',lead_id=lead_id)
         
     # except Exception as e:
     #     logger.error(f"Error in update_leads_insurance_info error: {str(e)}")

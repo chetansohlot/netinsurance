@@ -68,7 +68,7 @@
                       
                     <form autocomplete="off" id="leadSourceForm" name="leadSourceForm" action="{% url 'save-lead-source-info' %}" method="post">
                       {% csrf_token %}
-                      <input type="hidden" name="lead_ref_id" id="lead_ref_id" value="{{lead_ref_id}}">
+                      <input type="hidden" name="lead_ref_id" id="lead_ref_id" value="{{lead_data.lead_id}}">
                       <div class="row">
                           <div class="col-md-12">
                             <h2 class="admin-title border-bottom pb-2 mb-4">Lead Source Info</h2>
@@ -77,47 +77,47 @@
                             <label class="form-lbl">Lead Source Type</label>
                             <select class="form-field" name="lead_source_type" id="lead_source_type">
                                 <option value="">Select</option>
-                                <option value="1">Website</option>
-                                <option value="2">POSP</option>
-                                <option value="3">Call Center</option>
-                                <option value="4">Referral</option>
-                                <option value="5">Campaign</option>
-                                <option value="6">Landing  Page</option>
+                                <option value="1" {% if lead_data.lead_source == 1 %} selected{% endif %}>Website</option>
+                                <option value="2" {% if lead_data.lead_source == 2 %} selected{% endif %}>POSP</option>
+                                <option value="3" {% if lead_data.lead_source == 3 %} selected{% endif %}>Call Center</option>
+                                <option value="4" {% if lead_data.lead_source == 4 %} selected{% endif %}>Referral</option>
+                                <option value="5" {% if lead_data.lead_source == 5 %} selected{% endif %}>Campaign</option>
+                                <option value="6" {% if lead_data.lead_source == 6 %} selected{% endif %}>Landing  Page</option>
                             </select>
                           </div>
 
                           <div class="form-group col-md-4">
                             <label class="form-lbl" >Lead Source Name (Optional)</label>
-                            <input type="text" class="form-field" name="lead_source_name" id="lead_source_name" placeholder="Enter Lead Source Name"  value="">
+                            <input type="text" class="form-field" name="lead_source_name" id="lead_source_name" placeholder="Enter Lead Source Name"  value="{{lead_data.lead_source}}">
                           </div>
 
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Refered By</label>
                             <select class="form-field" name="refered_by" id="refered_by">
                                 <option value="">Select</option>
-                                <option value="1">referal 1</option>
-                                <option value="2">referal 2</option>
-                                <option value="3">referal 3</option>
+                                <option value="1" {% if lead_data.referral_by == "1" %} selected {% endif %}>referal 1</option>
+                                <option value="2" {% if lead_data.referral_by == "2" %} selected {% endif %}>referal 2</option>
+                                <option value="3" {% if lead_data.referral_by == "3" %} selected {% endif %}>referal 3</option>
                             </select>
                           </div>
 
                           <div class="form-group col-md-4">
                               <label class="form-lbl" for="referral_name">Referral Name</label>
-                              <input type="text" class="form-field" name="referral_name" id="referral_name" placeholder="Enter Referral Name">
+                              <input type="text" class="form-field" name="referral_name" id="referral_name" value="{{lead_data.referral_name }}" placeholder="Enter Referral Name">
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl" for="referral_mobile_number">Referral Mobile Number</label>
-                            <input type="text" class="form-field mobile" name="referral_mobile_number" id="referral_mobile_number" placeholder="Enter Referral Mobile Number">
+                            <input type="text" class="form-field mobile" name="referral_mobile_number" id="referral_mobile_number" value="{{lead_data.referral_mobile_no }}" placeholder="Enter Referral Mobile Number">
                         </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Source Medium</label>
                             <select class="form-field" name="source_medium" id="source_medium">
                                 <option value="">Select</option>
-                                <option value="1">Facebook</option>
-                                <option value="2">Google</option>
-                                <option value="3">WhatsApp</option>
-                                <option value="4">Walk-in</option>
-                                <option value="5">Embedded Partner</option>
+                                <option value="1" {% if lead_data.lead_source_medium == 1 %} selected {% endif %}>Facebook</option>
+                                <option value="2" {% if lead_data.lead_source_medium == 2 %} selected {% endif %}>Google</option>
+                                <option value="3" {% if lead_data.lead_source_medium == 3 %} selected {% endif %}>WhatsApp</option>
+                                <option value="4" {% if lead_data.lead_source_medium == 4 %} selected {% endif %}>Walk-in</option>
+                                <option value="5" {% if lead_data.lead_source_medium == 5 %} selected {% endif %}>Embedded Partner</option>
                             </select>
                           </div>
 

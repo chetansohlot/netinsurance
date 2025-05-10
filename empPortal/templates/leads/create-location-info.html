@@ -69,7 +69,7 @@
                     <form autocomplete="off" id="leadForm" name="leadForm" action="{% url 'save-lead-location-info' %}" method="post">
                       {% csrf_token %}
 
-                      <input type="hidden" id="lead_ref_id" name="lead_ref_id" value="{{lead_ref_id}}">
+                      <input type="hidden" id="lead_ref_id" name="lead_ref_id" value="{{lead_data.lead_id}}">
                       <div class="row">
                           <div class="col-md-12">
                             <h2 class="admin-title border-bottom pb-2 mb-4">Location Info</h2>
@@ -84,16 +84,16 @@
                                     </option>
                                 {% endfor %}
                             </select>-->
+                            <input type="hidden" name="state_id" id="state_id" value="{{lead_data.state}}">
                             <select class="form-field" name="state" id="state">
                               <option value="">Select State</option>
-                              <option value="1">State 1</option>
-                              <option value="2">State 2</option>
-                              <option value="3">State 3</option>
-                              <!-- {% for state in states %}
-                                <option value="{{ state.id }}">{{ state.name }}</option>
-                              {% endfor %} -->
+                              {% for state in states %}
+                                <option value="{{ state.id }}" {% if state.id|stringformat:"s" == lead_data.state|stringformat:"s" %}selected{% endif %}>{{ state.name }}</option>
+                              {% endfor %}
                             </select>
                           </div>
+
+                          <input type="hidden" name="city_id" id="city_id" value="{{lead_data.city}}">
                           <div class="form-group col-md-4">
                             <label class="form-lbl" for="city">City</label>
                             <!--<select class="form-field" name="city" id="city">
@@ -113,7 +113,7 @@
                           <div class="form-group col-md-4">
                             <label class="form-lbl" for="pincode">Pincode</label>
                             <input type="text" class="form-field number" name="pincode" id="pincode" maxlength="6" pattern="[0-9]{6}"
-                                  placeholder="Enter Pincode" value="{{ lead.pincode|default_if_none:'' }}">
+                                  placeholder="Enter Pincode" value="{{ lead_data.pincode|default_if_none:'' }}">
                           </div>
                           
                         
@@ -409,8 +409,12 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
   $(document).ready(function () {
-    $('#state').change(function () {
-      var stateId = $(this).val();
+
+    stateId = $('#state_id').val()
+    fetchCityList(stateId)
+    
+    function fetchCityList(stateId=null){
+      city_id = $('#city_id').val()
       if (stateId) {
         $.ajax({
           url: "{% url 'get_cities' %}",
@@ -421,13 +425,19 @@
             $('#city').empty();
             $('#city').append('<option value="">Select City</option>');
             $.each(data.cities, function (index, city) {
-              $('#city').append('<option value="' + city.id + '">' + city.city + '</option>');
+              let selected = (String(city_id) === String(city.id)) ? ' selected' : '';
+              $('#city').append('<option value="' + city.id + '"' + selected + '>' + city.city + '</option>');
             });
           }
         });
       } else {
         $('#city').empty().append('<option value="">Select City</option>');
       }
+    }
+    
+    $('#state').change(function () {
+      var stateId = $(this).val();
+      fetchCityList(stateId)
     });
   });
 </script>
