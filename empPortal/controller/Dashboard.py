@@ -68,9 +68,10 @@ def dashboard(request):
 
         # Group by insurance_provider with safe annotations
         provider_summary = (
-            aggregation_qs.values('insurance_provider')
+            aggregation_qs
+            .values('insurance_provider')  # Group by insurance_provider
             .annotate(
-                policies_sold=Count('id'),
+                policies_sold=Count('id', distinct=True),  # Use distinct count for policies
                 policy_income=Sum(Cast('policy_premium', output_field=FloatField())),
                 total_net_premium=Sum(Cast('policy_info__net_premium', FloatField())),
                 total_gross_premium=Sum(Cast('policy_info__gross_premium', FloatField())),
