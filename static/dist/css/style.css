@@ -2438,7 +2438,7 @@ a:hover .dr-pdficon {
 .navbar-profile-list li:first-child a {padding-left: 0px;}
 .quote-table-w {width: 1800px;}
 /* Step flow */
-.new-stepflow { display: flex; flex-direction: row; justify-content: center; flex-wrap: wrap; margin: 15px 0 15px; padding: 0;  counter-reset: section 0; /*counter-reset: section -1*/; }
+.new-stepflow { display: flex; flex-direction: row; justify-content: center; flex-wrap: wrap; margin: 8px 0 15px; padding: 0;  counter-reset: section 0; /*counter-reset: section -1*/; }
 .new-stepflow li { flex-grow: 1; list-style: none; font-size: 13px; color:#8d8d8d; letter-spacing: 1px; flex-grow: 1; display: flex; justify-content: center; position: relative; padding-bottom: 20px; transition: width .6s ease; }
 .new-stepflow li a {width: 24px; height: 24px; position: absolute;}
 .new-stepflow li:before { content: counter(section); counter-increment: section; position: absolute; bottom: 0; left: 0; right: 0; bottom: -3px; margin:auto; width:24px; height: 24px;  border-radius: 50%; background: #fff; box-shadow: 0px 0px 8px #ddd; display: flex; align-items: center; justify-content: center; font-weight: 500; z-index: 1; }
@@ -2471,7 +2471,7 @@ a:hover .dr-pdficon {
 .stepflow-text {display: flex; flex-direction: row; justify-content: center; flex-wrap: wrap; margin: 0px 0 0px; }
 .stepflow-text li {  list-style: none; font-size: 13px; color:#8d8d8d; letter-spacing: 1px; flex-grow: 1; display: flex; justify-content: center; }
 .stepflow-text li.active {color: #E63A27;}
-.stepflow-text li a {text-decoration: none; color: #8D8D8D;}
+.stepflow-text li a {text-decoration: none; color: #8D8D8D; font-size:10px;}
 @media (max-width: 767px) {
   .stepflow-text {display: none;}
 }
