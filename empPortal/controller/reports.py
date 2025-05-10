@@ -19,156 +19,67 @@ def commission_report(request):
     if not request.user.is_authenticated or request.user.is_active != 1:
         messages.error(request, "Please Login First")
         return redirect('login')
-
+    
     # Pagination setup
-    per_page = request.GET.get("per_page", 20)
+    per_page = request.GET.get("per_page", 20)  # Default: 20 records per page
     page_number = request.GET.get('page', 1)
+
     try:
         per_page = int(per_page)
     except ValueError:
         per_page = 10
-
+    
     user_id = request.user.id
     role_id = request.user.role_id
-
+    
     if role_id != 1 and str(request.user.department_id) not in ["3", "5"]:
         policies = PolicyDocument.objects.filter(status=6, rm_id=user_id).exclude(rm_id__isnull=True)
     else:
         policies = PolicyDocument.objects.filter(status=6).exclude(rm_id__isnull=True)
 
-    q_filters = Q()
+    base_q = Q()
 
-    # Branch filter
-    branch_id = request.GET.get('branch_name', '').strip()
+    branch_id = request.GET.get('branch_name', '')
+    referral_id = request.GET.get('referred_by', '')
+    pos_id = request.GET.get('pos_name', '')
     if branch_id:
-        q_filters &= Q(policy_info__branch_name=branch_id)
-
-    # Referral filter
-    referral_id = request.GET.get('referred_by', '').strip()
+        base_q &= Q(policy_info__branch_name=branch_id)
     if referral_id:
-        q_filters &= Q(policy_agent_info__referral_id=str(referral_id))
-
-    # POS filter
-    pos_id = request.GET.get('pos_name', '').strip()
+        base_q &= Q(policy_agent_info__referral_id=str(referral_id))
     if pos_id:
-        q_filters &= Q(policy_agent_info__agent_name=str(pos_id))
+        base_q &= Q(policy_agent_info__agent_name=str(pos_id))
 
-    # BQP filter (assuming it's stored as agent_bqp or similar field)
-    bqp = request.GET.get('bqp', '').strip()
-    if bqp:
-        q_filters &= Q(policy_agent_info__agent_bqp__icontains=bqp)
-
-    # Apply DB field filters
-    policy_number = request.GET.get('policy_number', '').strip().lower()
-    if policy_number:
-        policies = policies.filter(policy_number__icontains=policy_number)
-
-    policy_type = request.GET.get('policy_type', '').strip().lower()
-    if policy_type:
-        q_filters &= Q(policy_type__iexact=policy_type)
-
-    vehicle_number = request.GET.get('vehicle_number', '').strip().lower()
-    if vehicle_number:
-        q_filters &= Q(vehicle_number__icontains=vehicle_number)
-
-    vehicle_type = request.GET.get('vehicle_type', '').strip().lower()
-    if vehicle_type:
-        q_filters &= Q(vehicle_type__iexact=vehicle_type)
-
-    holder_name = request.GET.get('policy_holder_name', '').strip().lower()
-    if holder_name:
-        q_filters &= Q(holder_name__icontains=holder_name)
-
-    insurer = request.GET.get('insurance_provider', '').strip().lower()
-    if insurer:
-        q_filters &= Q(insurance_provider__icontains=insurer)
-
-    start_date = request.GET.get('start_date', '').strip()
-    if start_date:
-        try:
-            start_dt = datetime.strptime(start_date, '%Y-%m-%d')
-            q_filters &= Q(created_at__gte=start_dt)
-        except:
-            pass
-
-    end_date = request.GET.get('end_date', '').strip()
-    if end_date:
-        try:
-            end_dt = datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1)
-            q_filters &= Q(created_at__lt=end_dt)
-        except:
-            pass
-
-    # Apply DB-level filters
-    policies = policies.filter(q_filters).prefetch_related(
+    policies = policies.filter(base_q).prefetch_related(
         'policy_agent_info', 'policy_franchise_info', 'policy_info', 'policy_insurer_info'
     )
+    
 
-    # JSON field filters
-    json_filters = []
-    mobile = request.GET.get('mobile_number', '').strip().lower()
-    if mobile:
-        json_filters.append(lambda d: mobile in d.get('mobile_number', '').lower())
+    filters = get_common_filters(request)
+    filtered_policies = apply_policy_filters(policies, filters)
 
-    engine = request.GET.get('engine_number', '').strip().lower()
-    if engine:
-        json_filters.append(lambda d: engine in d.get('engine_number', '').lower())
-
-    chassis = request.GET.get('chassis_number', '').strip().lower()
-    if chassis:
-        json_filters.append(lambda d: chassis in d.get('chassis_number', '').lower())
-
-    fuel = request.GET.get('fuel_type', '').strip().lower()
-    if fuel:
-        json_filters.append(lambda d: fuel in d.get('fuel_type', '').lower())
-
-    # GVW / CC range filters
-    gvw_from = request.GET.get('gvw_from', '').strip()
-    if gvw_from.isdigit():
-        json_filters.append(lambda d: int(d.get('cubic_capacity', '0')) >= int(gvw_from))
-
-    gvw_to = request.GET.get('gvw_to', '').strip()
-    if gvw_to.isdigit():
-        json_filters.append(lambda d: int(d.get('cubic_capacity', '0')) <= int(gvw_to))
-
-    # Manufacturing year range
-    mfg_year_from = request.GET.get('manufacturing_year_from', '').strip()
-    if mfg_year_from.isdigit():
-        json_filters.append(lambda d: int(d.get('manufacturing_year', '0')) >= int(mfg_year_from))
-
-    mfg_year_to = request.GET.get('manufacturing_year_to', '').strip()
-    if mfg_year_to.isdigit():
-        json_filters.append(lambda d: int(d.get('manufacturing_year', '0')) <= int(mfg_year_to))
-
-    # Apply JSON filters
-    final_list = []
-    for policy in policies:
-        try:
-            data = policy.extracted_text if isinstance(policy.extracted_text, dict) else json.loads(policy.extracted_text or '{}')
-        except:
-            continue
-
-        if all(cond(data) for cond in json_filters):
-            policy.json_data = data
-            final_list.append(policy)
-
-    # Pagination
-    paginator = Paginator(final_list, per_page)
+    # Pagination for filtered policies
+    paginator = Paginator(filtered_policies, per_page)
     page_obj = paginator.get_page(page_number)
-
-    # Prepare data
+    
+    # Prepare data for rendering
     policy_data = []
     for policy in page_obj:
+        policy_infos = policy.policy_info.first()
+        policy_vehicle_info = policy.policy_vehicle_info.first()
+        policy_agent_info = policy.policy_agent_info.first()
+        policy_franchise_info = policy.policy_franchise_info.first()
+        policy_insurer_info = policy.policy_insurer_info.first()
+
         policy_data.append({
             'policy': policy,
-            'policy_infos': policy.policy_info.first(),
-            'policy_vehicle_info': policy.policy_vehicle_info.first(),
-            'policy_agent_info': policy.policy_agent_info.first(),
-            'policy_franchise_info': policy.policy_franchise_info.first(),
-            'policy_insurer_info': policy.policy_insurer_info.first()
+            'policy_infos': policy_infos,
+            'policy_vehicle_info': policy_vehicle_info,
+            'policy_agent_info': policy_agent_info,
+            'policy_franchise_info': policy_franchise_info,
+            'policy_insurer_info': policy_insurer_info
         })
 
-    # Extra data for form
+    # Additional data for the template
     branches = Branch.objects.all().order_by('branch_name')
     referrals = Referral.objects.all().order_by('name')
     bqpList = BqpMaster.objects.all().order_by('bqp_fname')
@@ -176,13 +87,12 @@ def commission_report(request):
 
     return render(request, 'reports/commission-report.html', {
         'policy_data': policy_data,
-        'branches': branches,
-        'referrals': referrals,
-        'bqpList': bqpList,
-        'partners': partners,
-        'page_obj': page_obj
+        "branches": branches,
+        "referrals": referrals,
+        "bqpList": bqpList,
+        "partners": partners,
+        'page_obj': page_obj  # Pass paginated object to template
     })
-
     
 def agent_business_report(request):
     if not request.user.is_authenticated or request.user.is_active != 1:
