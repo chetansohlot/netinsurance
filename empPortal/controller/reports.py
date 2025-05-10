@@ -496,7 +496,7 @@ def get_filter_conditions(filters):
             db_filters &= Q(referral__name__icontains=val)
 
         # Handle filters for JSON fields
-        elif key in ['insurance_company', 'mobile_number', 'engine_number', 'chassis_number', 'fuel_type']:
+        elif key in ['mobile_number', 'engine_number', 'chassis_number', 'fuel_type']:
             json_filters.append(lambda data, k=key, v=val: v in data.get(k, '').lower())
 
 
