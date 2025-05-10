@@ -565,7 +565,7 @@ def get_common_filters(request):
         key: request.GET.get(key, '').strip() for key in [
             'policy_number', 'policy_type', 'vehicle_number', 'engine_number', 'chassis_number',
             'vehicle_type', 'policy_holder_name', 'mobile_number',
-            'insurance_provider', 'insurance_company', 'start_date',
+            'insurance_provider', 'start_date',
             'end_date', 'manufacturing_year_from', 'manufacturing_year_to',
             'fuel_type', 'gvw_from', 'gvw_to', 'branch_name', 'referred_by', 'pos_name', 'bqp'
         ]
