@@ -242,12 +242,16 @@ def business_summary_insurer_chartajax(request):
         result = cursor.fetchall()
 
     insurer_motor_counts = [row[1] for row in result]
-    insurer_provider_labels = [row[0] for row in result]
+    insurer_provider_labels = [
+        ''.join(word[0] for word in row[0].split() if word).upper() if row[0] else ''
+        for row in result
+    ]
 
     return JsonResponse({
         'insurer_motor_counts': insurer_motor_counts,
         'insurer_provider_labels': insurer_provider_labels
     })
+
 
 def business_consolidated_ajax(request):
     filter_type = request.GET.get('filter')
