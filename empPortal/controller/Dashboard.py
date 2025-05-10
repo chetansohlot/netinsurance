@@ -62,45 +62,35 @@ def dashboard(request):
         else:
             base_qs = PolicyDocument.objects.filter(status=6)
 
-        base_qs = base_qs.prefetch_related(
-            'policy_agent_info', 'policy_franchise_info', 'policy_insurer_info'
-        )
-        base_qs = base_qs.filter(policy_info__isnull=False)
+        # For aggregation, do NOT prefetch to avoid duplication
+        aggregation_qs = base_qs.filter(policy_info__isnull=False)
 
-        # Group by insurance_provider
+        # Group by insurance_provider with safe annotations
         provider_summary = (
-            base_qs.values('insurance_provider')
+            aggregation_qs.values('insurance_provider')
             .annotate(
                 policies_sold=Count('id'),
-                policy_income=Sum(
-                    # convert policy_premium to float before aggregation
-                    Cast('policy_premium', output_field=FloatField())),
-                total_net_premium=Sum(
-                    # convert policy_net_premium to float before aggregation
-                    Cast('policy_info__net_premium', FloatField())),
-                total_gross_premium=Sum(
-                    # convert policy_gross_premium to float before aggregation
-                    Cast('policy_info__gross_premium', FloatField())),
+                policy_income=Sum(Cast('policy_premium', output_field=FloatField())),
+                total_net_premium=Sum(Cast('policy_info__net_premium', FloatField())),
+                total_gross_premium=Sum(Cast('policy_info__gross_premium', FloatField())),
             )
-            .order_by('-policy_income','-policies_sold')
+            .order_by('-policy_income', '-policies_sold')
         )
 
-        total_policies = base_qs.count()
-        total_revenue = base_qs.aggregate(
+        total_policies = aggregation_qs.count()
+        total_revenue = aggregation_qs.aggregate(
             total=Sum(Cast('policy_premium', output_field=FloatField()))
         )['total'] or 0
 
-        total_net_premium = base_qs.aggregate(
+        total_net_premium = aggregation_qs.aggregate(
             total=Sum(Cast('policy_info__net_premium', FloatField()))
         )['total'] or 0
 
-        total_gross_premium = base_qs.aggregate(
+        total_gross_premium = aggregation_qs.aggregate(
             total=Sum(Cast('policy_info__gross_premium', FloatField()))
         )['total'] or 0
-        
-        current_year = datetime.now().year
 
-        # Raw SQL query to get document count for the last 6 months
+        # Monthly data for last 6 months
         with connection.cursor() as cursor:
             cursor.execute("""
                 WITH RECURSIVE month_series AS (
@@ -111,7 +101,7 @@ def dashboard(request):
                     WHERE month_start < DATE_FORMAT(CURDATE(), '%Y-%m-01')
                 )
                 SELECT 
-                    DATE_FORMAT(ms.month_start, '%b') AS month_name,  -- 3-letter month name
+                    DATE_FORMAT(ms.month_start, '%b') AS month_name,
                     COUNT(pd.id) AS document_count
                 FROM 
                     month_series ms
@@ -119,6 +109,7 @@ def dashboard(request):
                     policydocument pd 
                     ON DATE_FORMAT(pd.created_at, '%Y-%m') = DATE_FORMAT(ms.month_start, '%Y-%m')
                     AND pd.created_at >= CURDATE() - INTERVAL 6 MONTH
+                    AND pd.status = 6
                 GROUP BY 
                     ms.month_start
                 ORDER BY 
@@ -126,19 +117,13 @@ def dashboard(request):
             """)
             result = cursor.fetchall()
 
-        print(result)
-
-
-        # Prepare the results for rendering
-        monthly_data = [(row[0], row[1]) for row in result]  # Format as (month_name, document_count)
-        
-        # The last 6 months' labels
+        monthly_data = [(row[0], row[1]) for row in result]
         consolidated_month_labels = [row[0] for row in monthly_data]
         consolidated_month_counts = [row[1] for row in monthly_data]
 
-        # Extracting data for chart
+        # Extract data for chart
         provider_labels = [entry['insurance_provider'] for entry in provider_summary]
-        motor_counts = [entry['policies_sold'] for entry in provider_summary]  
+        motor_counts = [entry['policies_sold'] for entry in provider_summary]
         insurer_motor_counts, insurer_provider_labels = business_summary_insurer_chart(request)
         policies_insurer_wise = insurer_wise_date(request)
         referral_agent_labels, referral_counts = referral_summary_chart(request)
@@ -151,7 +136,7 @@ def dashboard(request):
             'consolidated_month_counts': consolidated_month_counts,
             'insurer_motor_counts': insurer_motor_counts,
             'insurer_provider_labels': insurer_provider_labels,
-            'referral_counts' : referral_counts,
+            'referral_counts': referral_counts,
             'referral_agent_labels': referral_agent_labels,
             'provider_labels': provider_labels,
             'motor_counts': motor_counts,
@@ -162,6 +147,7 @@ def dashboard(request):
         })
     else:
         return redirect('login')
+
 
 def insurer_wise_date(request):
     
