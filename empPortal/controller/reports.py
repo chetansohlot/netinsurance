@@ -65,10 +65,10 @@ def commission_report(request):
     policy_data = []
     for policy in page_obj:
         policy_infos = policy.policy_info.order_by('-created_at').first()
-        policy_vehicle_info = policy.policy_vehicle_info.first()
-        policy_agent_info = policy.policy_agent_info.first()
-        policy_franchise_info = policy.policy_franchise_info.first()
-        policy_insurer_info = policy.policy_insurer_info.first()
+        policy_vehicle_info = policy.policy_vehicle_info.order_by('-created_at').first()
+        policy_agent_info = policy.policy_agent_info.order_by('-created_at').first()
+        policy_franchise_info = policy.policy_franchise_info.order_by('-created_at').first()
+        policy_insurer_info = policy.policy_insurer_info.order_by('-created_at').first()
 
         policy_data.append({
             'policy': policy,
@@ -156,11 +156,11 @@ def agent_business_report(request):
     # Prepare data for rendering
     policy_data = []
     for policy in page_obj:
-        policy_infos = policy.policy_info.first()
-        policy_vehicle_info = policy.policy_vehicle_info.first()
-        policy_agent_info = policy.policy_agent_info.first()
-        policy_franchise_info = policy.policy_franchise_info.first()
-        policy_insurer_info = policy.policy_insurer_info.first()
+        policy_infos = policy.policy_info.order_by('-created_at').first()
+        policy_vehicle_info = policy.policy_vehicle_info.order_by('-created_at').first()
+        policy_agent_info = policy.policy_agent_info.order_by('-created_at').first()
+        policy_franchise_info = policy.policy_franchise_info.order_by('-created_at').first()
+        policy_insurer_info = policy.policy_insurer_info.order_by('-created_at').first()
 
         policy_data.append({
             'policy': policy,
@@ -247,11 +247,11 @@ def franchisees_business_report(request):
     # Prepare data for rendering
     policy_data = []
     for policy in page_obj:
-        policy_infos = policy.policy_info.first()
-        policy_vehicle_info = policy.policy_vehicle_info.first()
-        policy_agent_info = policy.policy_agent_info.first()
-        policy_franchise_info = policy.policy_franchise_info.first()
-        policy_insurer_info = policy.policy_insurer_info.first()
+        policy_infos = policy.policy_info.order_by('-created_at').first()
+        policy_vehicle_info = policy.policy_vehicle_info.order_by('-created_at').first()
+        policy_agent_info = policy.policy_agent_info.order_by('-created_at').first()
+        policy_franchise_info = policy.policy_franchise_info.order_by('-created_at').first()
+        policy_insurer_info = policy.policy_insurer_info.order_by('-created_at').first()
 
         policy_data.append({
             'policy': policy,
@@ -340,11 +340,11 @@ def insurer_business_report(request):
     # Prepare data for rendering
     policy_data = []
     for policy in page_obj:
-        policy_infos = policy.policy_info.first()
-        policy_vehicle_info = policy.policy_vehicle_info.first()
-        policy_agent_info = policy.policy_agent_info.first()
-        policy_franchise_info = policy.policy_franchise_info.first()
-        policy_insurer_info = policy.policy_insurer_info.first()
+        policy_infos = policy.policy_info.order_by('-created_at').first()
+        policy_vehicle_info = policy.policy_vehicle_info.order_by('-created_at').first()
+        policy_agent_info = policy.policy_agent_info.order_by('-created_at').first()
+        policy_franchise_info = policy.policy_franchise_info.order_by('-created_at').first()
+        policy_insurer_info = policy.policy_insurer_info.order_by('-created_at').first()
 
         policy_data.append({
             'policy': policy,
@@ -431,11 +431,11 @@ def sales_manager_business_report(request):
     # Prepare data for rendering
     policy_data = []
     for policy in page_obj:
-        policy_infos = policy.policy_info.first()
-        policy_vehicle_info = policy.policy_vehicle_info.first()
-        policy_agent_info = policy.policy_agent_info.first()
-        policy_franchise_info = policy.policy_franchise_info.first()
-        policy_insurer_info = policy.policy_insurer_info.first()
+        policy_infos = policy.policy_info.order_by('-created_at').first()
+        policy_vehicle_info = policy.policy_vehicle_info.order_by('-created_at').first()
+        policy_agent_info = policy.policy_agent_info.order_by('-created_at').first()
+        policy_franchise_info = policy.policy_franchise_info.order_by('-created_at').first()
+        policy_insurer_info = policy.policy_insurer_info.order_by('-created_at').first()
 
         policy_data.append({
             'policy': policy,
