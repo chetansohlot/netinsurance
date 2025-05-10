@@ -102,11 +102,11 @@
                   </a>
                 </li>-->
                 {% if lead.lead_id %}
-                <a class="dropdown-item" href="{% url 'view_lead' lead_id=lead.lead_id %}">
+                <a class="dropdown-item" href="{% url 'view-lead' lead_id=lead.lead_id %}">
                   <i class="bi bi-eye mr-2"></i> View
                 </a>
               {% else %}
-                <span class="dropdown-item text-muted">Invalid Lead ID</span>
+                
               {% endif %}
                 <li>
                   <a href="#" class="dropdown-item">
