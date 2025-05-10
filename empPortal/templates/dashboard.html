@@ -445,74 +445,140 @@
               <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center mb-2">
                   <h5 class="card-hding pb-0 mb-0">Business Summary Insurer Wise</h5>
-                  
                   <div class="d-flex align-items-center ms-auto gap-2">
                     <div>
                       <select name="insurer_wise" class="form-field" id="insurer_wise">
-                        <option value="1">All</option>
-                        <option value="2">Today</option>
-                        <option value="3">MTD</option>
-                        <option value="4">Custom Date</option>
+                        <option value="1" selected>Insurer Wise</option>
+                        <option value="2">Referral Wise</option>
+                        <option value="3">Branch Wise</option>
+                        <option value="4">POS Wise</option>
                       </select>
-                    </div>
-                
-                    <div style="display: none;" id="month_filter">
-                      <select name="summary_partner_month" class="form-field" id="insurer_wise_month">
-                        <option value="1">Jan</option>
-                        <option value="2">Feb</option>
-                        <option value="3">March</option>
-                        <option value="4">Apr</option>
-                        <option value="5">May</option>
-                        <option value="6">June</option>
-                        <option value="7">July</option>
-                        <option value="8">Aug</option>
-                        <option value="9">Sept</option>
-                        <option value="10">Oct</option>
-                        <option value="11">Nov</option>
-                        <option value="12">Dec</option>
-                      </select>
-                    </div>
-                
-                    <div style="display: none;" id="from_date_filter">
-                      <input type="text" name="insurer_wiser_from_date" class="datepicker_common" id="insurer_wise_from_date" placeholder="From Date" autocomplete="off">
-                      <span class="error insurer_wise_date_err"></span>
-                    </div>
-                
-                    <div style="display: none;" id="to_date_filter">
-                      <input type="text" name="insurer_wise_to_date" class="datepicker_common" id="insurer_wise_to_date" placeholder="To Date" autocomplete="off">
-                      <span class="error summary_partner_to_date_err"></span>
                     </div>
                   </div>
                 </div>
+          
                 <div class="table-responsive">
-                  <table class="table table-design table-trlink">
-                    <thead class="table-thead-bg-light table-header-fix">
-                      <tr>
-                        <th>Insurer</th>
-                        <th>Policy Sold</th>
-                        {% comment %} <th>Total Revenue</th> {% endcomment %}
-                        <th>Net Premium</th>
-                        <th>Gross Premium</th>
-
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {% for provider in provider_summary %}
-                          <tr>
-                              <td>{{ provider.insurance_provider|default:"N/A" }}</td>
-                              <td>{{ provider.policies_sold }}</td>
-                              {% comment %} <td>₹{{ provider.policy_income|floatformat:2|default:"0" }}</td> {% endcomment %}
-                              <td>₹{{ provider.total_net_premium|floatformat:2|default:"0" }}</td>
-                              <td>₹{{ provider.total_gross_premium|floatformat:2|default:"0" }}</td>
-                          </tr>
-                      {% endfor %}
-                    </tbody>
-                  </table>
+                  <!-- INSURER WISE -->
+                  <div id="table-wrapper-1">
+                    <table id="insurer-wise-table" class="table table-design table-trlink">
+                      <thead class="table-thead-bg-light table-header-fix">
+                        <tr>
+                          <th>Insurer</th>
+                          <th>Policy Sold</th>
+                          <th>Net Premium</th>
+                          <th>Gross Premium</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for provider in provider_summary %}
+                        <tr>
+                          <td>{{ provider.insurance_provider|default:"N/A" }}</td>
+                          <td>{{ provider.policies_sold }}</td>
+                          <td>₹{{ provider.total_net_premium|floatformat:2|default:"0" }}</td>
+                          <td>₹{{ provider.total_gross_premium|floatformat:2|default:"0" }}</td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+          
+                  <!-- REFERRAL WISE -->
+                  <div id="table-wrapper-2">
+                    <table id="referral-wise-table" class="table table-design table-trlink">
+                      <thead class="table-thead-bg-light table-header-fix">
+                        <tr>
+                          <th>Referral</th>
+                          <th>Policy Sold</th>
+                          <th>Net Premium</th>
+                          <th>Gross Premium</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for referral in referral_summary %}
+                        <tr>
+                          <td>{{ referral.referral_name|default:"N/A" }}</td>
+                          <td>{{ referral.policies_sold }}</td>
+                          <td>₹{{ referral.total_net_premium|floatformat:2|default:"0" }}</td>
+                          <td>₹{{ referral.total_gross_premium|floatformat:2|default:"0" }}</td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+          
+                  <!-- BRANCH WISE -->
+                  <div id="table-wrapper-3">
+                    <table id="branch-wise-table" class="table table-design table-trlink">
+                      <thead class="table-thead-bg-light table-header-fix">
+                        <tr>
+                          <th>Branch</th>
+                          <th>Policy Sold</th>
+                          <th>Net Premium</th>
+                          <th>Gross Premium</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for branch in branch_summary %}
+                        <tr>
+                          <td>{{ branch.branch_name|default:"N/A" }}</td>
+                          <td>{{ branch.policies_sold }}</td>
+                          <td>₹{{ branch.total_net_premium|floatformat:2|default:"0" }}</td>
+                          <td>₹{{ branch.total_gross_premium|floatformat:2|default:"0" }}</td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+          
+                  <!-- POS WISE -->
+                  <div id="table-wrapper-4">
+                    <table id="pos-wise-table" class="table table-design table-trlink">
+                      <thead class="table-thead-bg-light table-header-fix">
+                        <tr>
+                          <th>POS</th>
+                          <th>Policy Sold</th>
+                          <th>Net Premium</th>
+                          <th>Gross Premium</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for pos_agent in formatted_pos_summary %}
+                        <tr>
+                          <td>{{ pos_agent.pos_name|default:"N/A" }}</td>
+                          <td>{{ pos_agent.policies_sold }}</td>
+                          <td>₹{{ pos_agent.total_net_premium|floatformat:2|default:"0" }}</td>
+                          <td>₹{{ pos_agent.total_gross_premium|floatformat:2|default:"0" }}</td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
-                
               </div>
             </div>
           </div>
+          
+          
+          <script>
+            document.addEventListener("DOMContentLoaded", function () {
+              const dropdown = document.getElementById("insurer_wise");
+          
+              function toggleTableView(selectedId) {
+                for (let i = 1; i <= 4; i++) {
+                  const wrapper = document.getElementById(`table-wrapper-${i}`);
+                  wrapper.style.display = (parseInt(selectedId) === i) ? "block" : "none";
+                }
+              }
+          
+              // Initial visibility
+              toggleTableView(dropdown.value);
+          
+              // Listen for dropdown change
+              dropdown.addEventListener("change", function () {
+                toggleTableView(this.value);
+              });
+            });
+          </script>
           
           
           <!-- <div class="col-sm-12 col-md-12">  
@@ -646,13 +712,27 @@
 
   // Hold the chart instance in a scoped variable
   let consolidatedBarChart = null;
-
-  function consolidated_bar_chart_open(monthLabels, motorData) {
+  
+  
+  function consolidated_bar_chart_open(monthLabels, motorData, sumInsuredData) {
     // If a chart already exists, destroy it before creating a new one
     if (consolidatedBarChart) {
       consolidatedBarChart.destroy();
     }
-
+  
+    // Function to format large numbers into K, M, B for readability
+    function formatNumber(value) {
+      if (value >= 1000000000) {
+        return (value / 1000000000).toFixed(1) + 'B';  // Billions
+      } else if (value >= 1000000) {
+        return (value / 1000000).toFixed(1) + 'M';  // Millions
+      } else if (value >= 1000) {
+        return (value / 1000).toFixed(1) + 'K';  // Thousands
+      } else {
+        return value;  // No format needed for smaller values
+      }
+    }
+  
     // Create the new chart and save its instance
     consolidatedBarChart = new Chart(
       document.getElementById("consolidated_bar_chart"),
@@ -660,12 +740,22 @@
         type: 'bar',
         data: {
           labels: monthLabels,
-          datasets: [{
-            label: 'Motor',
-            data: motorData,
-            backgroundColor: "#ff751d",
-            borderColor: '#ff751d'
-          }]
+          datasets: [
+            {
+              label: 'Motor Count',
+              data: motorData, // Document counts
+              backgroundColor: "#FFAB91",  // Orange color for count
+              borderColor: '#FFAB91',      // Orange border
+              yAxisID: 'y1'
+            },
+            {
+              label: 'Sum Insured (₹)',
+              data: sumInsuredData, // Sum insured values
+              backgroundColor: "#ABEBC6",  // Blue color for sum insured
+              borderColor: '#ABEBC6',      // Blue border
+              yAxisID: 'y2'
+            }
+          ]
         },
         options: {
           responsive: true,
@@ -679,13 +769,29 @@
               align: 'middle',
               color: '#000',
               font: { weight: 'bold' },
-              formatter: v => v
+              formatter: v => formatNumber(v)  // Apply number formatting to data labels
             }
           },
           scales: {
-            y: {
+            y1: {
               beginAtZero: true,
-              title: { display: true, text: 'Policy Count' }
+              title: { display: true, text: 'Policy Count' },
+              position: 'left',
+              ticks: {
+                beginAtZero: true
+              }
+            },
+            y2: {
+              beginAtZero: true,
+              title: { display: true, text: 'Sum Insured (₹)' },
+              position: 'right',
+              ticks: {
+                beginAtZero: true,
+                callback: function(value) {
+                  // Format tick labels for the sum insured values
+                  return '₹' + formatNumber(value);
+                }
+              }
             },
             x: {
               title: { display: true, text: 'Month' }
@@ -695,6 +801,9 @@
       }
     );
   }
+  
+  
+  
 
   // Example: run on DOM ready
   document.addEventListener('DOMContentLoaded', function() {
@@ -714,13 +823,14 @@
 
   // 2) Hold the chart instance in a variable
   let insurerBarChart = null;
-
-  function insurer_bar_chart_open(counts, labels) {
+  function insurer_bar_chart_open(counts, labels, insurer_sum_insured) {
     // 3) If we already drew one, destroy it
     if (insurerBarChart) {
       insurerBarChart.destroy();
     }
+  
     const ctx = document.getElementById("insurer_bar_chart").getContext("2d");
+  
     insurerBarChart = new Chart(ctx, {
       type: 'bar',
       data: {
@@ -735,11 +845,23 @@
       },
       options: {
         responsive: true,
-        
         plugins: {
           legend: {
             labels: { padding: 20, font: { size: 11 } },
             position: 'top'
+          },
+          tooltip: {
+            callbacks: {
+              title: function(tooltipItem) {
+                return tooltipItem[0].label; // Show the label (insurance provider name)
+              },
+              label: function(tooltipItem) {
+                // Show both policies sold and sum insured in the tooltip
+                const policiesSold = counts[tooltipItem.dataIndex];
+                const sumInsured = insurer_sum_insured[tooltipItem.dataIndex];
+                return `Policies Sold: ${policiesSold} | Sum Insured: ₹${sumInsured.toLocaleString()}`;
+              }
+            }
           },
           datalabels: {
             anchor: 'middle',
@@ -752,9 +874,10 @@
       }
     });
   }
+  
 
   document.addEventListener('DOMContentLoaded', () => {
-    insurer_bar_chart_open(insurerMotorCounts, insurerProviderLabels);
+    insurer_bar_chart_open(insurerMotorCounts, insurerProviderLabels, insurer_sum_insured);
   });
 </script>
 
@@ -1053,7 +1176,8 @@
           success: function(response) {
               console.log("Counts:", response.insurer_motor_counts);
               console.log("Provider:", response.insurer_provider_labels);
-              insurer_bar_chart_open(response.insurer_motor_counts, response.insurer_provider_labels);
+              console.log("Provider:", response.insurer_sum_insured);
+              insurer_bar_chart_open(response.insurer_motor_counts, response.insurer_provider_labels, response.insurer_sum_insured);
           },
           error: function(xhr, status, error) {
               console.error('AJAX Error: ' + error);
@@ -1196,32 +1320,40 @@
 
 <script>
   let consolidatedChart = null;
-
   function fetchAndRenderConsolidatedChart() {
     const filter = document.getElementById("business_consolidated_by").value;
     const month = document.getElementById("business_consolidated_by_month").value;
     const fromDate = document.getElementById("business_consolidated_from_date").value;
     const toDate = document.getElementById("business_consolidated_to_date").value;
-
+  
+    // Initialize the URL with the selected filter type
     let url = `/business_consolidated_ajax?filter=${filter}`;
-
+  
+    // Append parameters based on the selected filter type
     if (filter === "3") {
       url += `&month=${month}`;
     } else if (filter === "4") {
       url += `&start_date=${fromDate}&end_date=${toDate}`;
-      }
+    }
   
-
+    // Fetch data from the backend
     fetch(url)
       .then(response => response.json())
       .then(data => {
         console.log("AJAX payload:", data);
-        consolidated_bar_chart_open(data.consolidated_month_labels, data.consolidated_month_counts);
+  
+        // Call the chart rendering function with both counts and sum insured data
+        consolidated_bar_chart_open(
+          data.consolidated_month_labels, 
+          data.consolidated_month_counts,  // Document counts
+          data.consolidated_sum_insured    // Sum insured values
+        );
       })
       .catch(error => {
         console.error("Chart fetch error:", error);
       });
   }
+  
 
   document.addEventListener("DOMContentLoaded", function () {
     const consolidatedBy = document.getElementById("business_consolidated_by");
@@ -1284,7 +1416,7 @@
       .then(data => {
 
          console.log("AJAX payload:", data);
-         insurer_bar_chart_open(data.insurer_motor_counts, data.insurer_provider_labels);
+         insurer_bar_chart_open(data.insurer_motor_counts, data.insurer_provider_labels, data.insurer_sum_insured);
       })
       .catch(error => {
         console.error("Chart fetch error:", error);
