@@ -78,6 +78,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'empPortal.global_var.cache_buster',
+                'empPortal.util.context_processors.company_constants',
             ],
         },
     },
@@ -202,6 +203,61 @@ else:  # Linux (Production with Nginx)
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# ___________________________________________________________
+
+# Logos
+GLOBAL_BIG_LOGO = os.getenv('GLOBAL_BIG_LOGO', 'home/assets/image/logo.png')
+SIDEBAR_LOGO = os.getenv('SIDEBAR_LOGO', 'dist/img/logo.png')
+GLOBAL_FILE_LOGO = os.getenv('GLOBAL_FILE_LOGO', 'dist/img/logo2.png')  # <-- Added
+SIDEBAR_MINI_LOGO = os.getenv('SIDEBAR_MINI_LOGO', 'dist/img/admin-logo-mini.png')
+FAVICON_LOGO = os.getenv('FAVICON_LOGO', 'home/assets/image/favicon.png')
+
+
+# Email & SMS
+GLOBAL_DEFAULT_IMG = os.getenv('GLOBAL_DEFAULT_IMG', 'empPortal/static/dist/img/default-image-pos.jpg')
+LOGO_WITH_EMP_PORTAL = os.getenv('LOGO_WITH_EMP_PORTAL', 'empPortal/static/dist/img/logo2.png')
+ELEVATE_SIGNATURE_WITH_EMP_PORTAL = os.getenv('ELEVATE_SIGNATURE_WITH_EMP_PORTAL', 'empPortal/static/dist/img/elevate-signature.png')
+PRINCIPAL_SIGNATURE_WITH_EMP_PORTAL = os.getenv('PRINCIPAL_SIGNATURE_WITH_EMP_PORTAL', 'empPortal/static/dist/img/signature-pos.webp')
+
+
+
+
+# Contact Info
+SUPPORT_EMAIL = os.getenv('SUPPORT_EMAIL', 'support@elevateinsurance.in')
+COMPANY_EMAIL = os.getenv('COMPANY_EMAIL', 'Info@elevateinsurance.in')
+COMPANY_TEL = os.getenv('COMPANY_TEL', '+91-9990724365')
+SUPPORT_PARTNER_PHONE = os.getenv('SUPPORT_PARTNER_PHONE', '+918887779999')
+SUPPORT_PHONE = os.getenv('SUPPORT_PHONE', '')
+
+# Signatures & Images
+HEAD_SIGNATURE = os.getenv('HEAD_SIGNATURE', '')
+DEFAULT_IMAGE_POS = os.getenv('DEFAULT_IMAGE_POS', '')
+SIGNATURE_POS = os.getenv('SIGNATURE_POS', '')
+
+# URLs
+EMP_PORTAL_PATH = os.getenv('EMP_PORTAL_PATH', 'https://pos.elevateinsurance.in/empPortal/')
+COMPANY_WEBSITE = os.getenv('COMPANY_WEBSITE', 'https://pos.elevateinsurance.in/')  # <-- Added
+SUB_BROKER_TEST_URL = os.getenv('SUB_BROKER_TEST_URL', 'https://pos.elevateinsurance.in/')  # <-- Added
+TRAINING_PDF_PATH = os.getenv('TRAINING_PDF_PATH', 'training/Training_Material_Elevate_Insurance_V1.0.pdf')  # <-- Added
+
+# Company Info
+COMPANY_ADDRESS = os.getenv('COMPANY_ADDRESS', 'Ground Floor Shop No. 56, Ganpat Market, Agroha Dham, Agroha, Hisar, Hisar, Haryana, India, 125047')
+COMPANY_NAME = os.getenv('COMPANY_NAME', 'Elevate Insurance Brokers Private Limited')
+COMPANY_SHORT_NAME = os.getenv('COMPANY_SHORT_NAME', 'Elevate Insurance')
+COMPANY_FIRST_NAME = os.getenv('COMPANY_FIRST_NAME', 'Elevate')
+CIN_NO = os.getenv('CIN_NO', 'U66220HR2024PTC121704')
+IRDAI_LICENSE_NO = os.getenv('IRDAI_LICENSE_NO', '1026')
+VALID_TILL = os.getenv('VALID_TILL', '27/01/2028')
+COMPANY_REGISTRATION_NO = os.getenv('COMPANY_REGISTRATION_NO', '1026')
+COMPANY_REGISTRATION_CODE_NO = os.getenv('COMPANY_REGISTRATION_CODE_NO', 'IRDA/DB1155/2024')
+PRINCIPAL_OFFICER = os.getenv('PRINCIPAL_OFFICER', 'Mr. Subhash Chander Bishnoi')
+LICENSE_CATEGORY = os.getenv('LICENSE_CATEGORY', 'DIRECT LIFE AND GENERAL')
+
+
+# ___________________________________________________________
+
 
 
 AUTHENTICATION_BACKENDS = ['empPortal.authentication.EmailAuthBackend']

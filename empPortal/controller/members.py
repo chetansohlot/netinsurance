@@ -572,28 +572,27 @@ def posTrainingCertificate(request, user_id):
     if not request.user.is_authenticated:
         return redirect('login')
 
-    wkhtml_path = os.getenv('WKHTML_PATH', r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
+    # Get wkhtmltopdf binary path from environment or settings
+    wkhtml_path = os.getenv('WKHTML_PATH', getattr(settings, 'WKHTML_PATH', r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'))
     config = pdfkit.configuration(wkhtmltopdf=wkhtml_path)
 
     customer = get_object_or_404(Users, id=user_id)
     partner = get_object_or_404(Partner, user_id=user_id)
 
-
-    # Determine which image to use for the certificate
+    # Resolve profile image path or default image
     if customer.profile_image:
-        # Get the real file path of the profile image
         profile_image_path = default_storage.path(customer.profile_image.name)
-        profile_image_url = profile_image_path if os.path.exists(profile_image_path) else os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/default-image-pos.jpg')
+        profile_image_url = profile_image_path if os.path.exists(profile_image_path) else os.path.join(settings.BASE_DIR, getattr(settings, 'DEFAULT_POS_IMAGE', 'empPortal/static/dist/img/default-image-pos.jpg'))
     else:
-        profile_image_url = os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/default-image-pos.jpg')
+        profile_image_url = os.path.join(settings.BASE_DIR, getattr(settings, 'DEFAULT_POS_IMAGE', 'empPortal/static/dist/img/default-image-pos.jpg'))
 
     context = {
         "partner": partner,
         "customer": customer,
-        "logo_url": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/logo2.png'),
-        "signature_elevate": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/elevate-signature.png'),
+        "logo_url": os.path.join(settings.BASE_DIR, getattr(settings, 'GLOBAL_FILE_LOGO', 'empPortal/static/dist/img/logo2.png')),
+        "signature_elevate": os.path.join(settings.BASE_DIR, getattr(settings, 'SIGNATURE_ELEVATE', 'empPortal/static/dist/img/elevate-signature.png')),
         "default_image_pos": profile_image_url,
-        "signature_pos": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/signature-pos.webp'),
+        "signature_pos": os.path.join(settings.BASE_DIR, getattr(settings, 'SIGNATURE_POS', 'empPortal/static/dist/img/signature-pos.webp')),
     }
 
     html_content = render_to_string("members/download-training-certificate.html", context)
@@ -611,6 +610,7 @@ def posTrainingCertificate(request, user_id):
 
     return response
 
+
 from django.core.files.storage import default_storage
 from django.conf import settings
 import os
@@ -619,30 +619,28 @@ def posCertificate(request, user_id):
     if not request.user.is_authenticated:
         return redirect('login')
 
-    wkhtml_path = os.getenv('WKHTML_PATH', r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
+    wkhtml_path = os.getenv('WKHTML_PATH', getattr(settings, 'WKHTML_PATH', r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'))
     config = pdfkit.configuration(wkhtmltopdf=wkhtml_path)
 
     customer = get_object_or_404(Users, id=user_id)
     docs = DocumentUpload.objects.filter(user_id=user_id).first()
+    passed_date = customer.examRes.created_at if hasattr(customer, 'examRes') else None
 
-    passed_date = customer.examRes.created_at
-
-    # Determine which image to use for the certificate
+    # Determine profile image path or fallback to default
     if customer.profile_image:
-        # Get the real file path of the profile image
         profile_image_path = default_storage.path(customer.profile_image.name)
-        profile_image_url = profile_image_path if os.path.exists(profile_image_path) else os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/default-image-pos.jpg')
+        profile_image_url = profile_image_path if os.path.exists(profile_image_path) else os.path.join(settings.BASE_DIR, getattr(settings, 'DEFAULT_POS_IMAGE', 'empPortal/static/dist/img/default-image-pos.jpg'))
     else:
-        profile_image_url = os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/default-image-pos.jpg')
+        profile_image_url = os.path.join(settings.BASE_DIR, getattr(settings, 'DEFAULT_POS_IMAGE', 'empPortal/static/dist/img/default-image-pos.jpg'))
 
     context = {
         "customer": customer,
         "passed_date": passed_date,
         "docs": docs,
-        "logo_url": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/logo2.png'),
-        "signature_elevate": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/elevate-signature.png'),
-        "profile_image_url": profile_image_url,  # Pass the real image path here
-        "signature_pos": os.path.join(settings.BASE_DIR, 'empPortal/static/dist/img/signature-pos.webp'),
+        "logo_url": os.path.join(settings.BASE_DIR, getattr(settings, 'GLOBAL_FILE_LOGO', 'empPortal/static/dist/img/logo2.png')),
+        "signature_elevate": os.path.join(settings.BASE_DIR, getattr(settings, 'SIGNATURE_ELEVATE', 'empPortal/static/dist/img/elevate-signature.png')),
+        "profile_image_url": profile_image_url,
+        "signature_pos": os.path.join(settings.BASE_DIR, getattr(settings, 'SIGNATURE_POS', 'empPortal/static/dist/img/signature-pos.webp')),
     }
 
     html_content = render_to_string("members/download-certificate.html", context)
@@ -659,6 +657,7 @@ def posCertificate(request, user_id):
     response['Content-Disposition'] = f'attachment; filename="pos_certificate_20250{user_id}.pdf"'
 
     return response
+
 
 
 
@@ -1696,23 +1695,24 @@ def get_rm_list(request):
 # LATEST CODE  
 from django.templatetags.static import static  # ✅ Import static
 
-def activationPdf(request,user_id):
+def activationPdf(request, user_id):
     """Generate a PDF for the user and return the file path."""
-    wkhtml_path = os.getenv('WKHTML_PATH', r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
+    wkhtml_path = os.getenv('WKHTML_PATH', getattr(settings, 'WKHTML_PATH', r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'))
     config = pdfkit.configuration(wkhtmltopdf=wkhtml_path)
-    customer = Users.objects.get(id=user_id)
 
-    training_pdf_path = os.path.join(settings.MEDIA_ROOT, f'training/Training_Material_Elevate_Insurance_V1.0.pdf')
+    customer = get_object_or_404(Users, id=user_id)
+
+    training_pdf_path = os.path.join(settings.MEDIA_ROOT, 'training/Training_Material_Elevate_Insurance_V1.0.pdf')
 
     context = {
         "user": customer,
-        "support_email": "support@elevateinsurance.in",
-        "company_website": "https://pos.elevateinsurance.in/",
-        "sub_broker_test_url": "https://pos.elevateinsurance.in/",
-        "terms_conditions_url": "https://pos.elevateinsurance.in/empPortal/media/terms/Terms_And_Conditions.pdf",
+        "support_email": getattr(settings, 'SUPPORT_EMAIL', 'support@elevateinsurance.in'),
+        "company_website": getattr(settings, 'COMPANY_WEBSITE', 'https://pos.elevateinsurance.in/'),
+        "sub_broker_test_url": getattr(settings, 'SUB_BROKER_TEST_URL', 'https://pos.elevateinsurance.in/'),
+        "terms_conditions_url": getattr(settings, 'TERMS_URL', 'https://pos.elevateinsurance.in/empPortal/media/terms/Terms_And_Conditions.pdf'),
         "training_material_url": training_pdf_path,
-        "support_number": +918887779999,
-        "logo_url": request.build_absolute_uri(static('dist/img/logo2.png'))
+        "support_number": getattr(settings, 'SUPPORT_NUMBER', '+918887779999'),
+        "logo_url": request.build_absolute_uri(static('dist/img/logo2.png')),
     }
 
     html_content = render_to_string("members/activation-pdf.html", context)
@@ -1729,17 +1729,18 @@ def activationPdf(request,user_id):
         pdfkit.from_string(html_content, pdf_path, configuration=config, options=options)
         return pdf_path
     except Exception as e:
-        print(f"PDF generation failed: {e}")
-        return None  # Return None if PDF generation fails
+        logger.error(f"PDF generation failed for user {user_id}: {e}")
+        return None
+
+
+
 
 def activateUser(request, user_id):
     if not request.user.is_authenticated:
         return redirect('login')
 
-    # Fetch user documents
     docs = DocumentUpload.objects.filter(user_id=user_id).first()
 
-    # Ensure all required documents are approved before activating the user
     if docs and all([
         docs.aadhaar_card_front_status == 'Approved',
         docs.aadhaar_card_back_status == 'Approved',
@@ -1748,54 +1749,41 @@ def activateUser(request, user_id):
         docs.tenth_marksheet_status == 'Approved'
     ]):
         try:
-            # Update user activation status in the database
             with connection.cursor() as cursor:
                 cursor.execute(
-                    "UPDATE users SET  user_active = %s, activation_status = %s WHERE id = %s",
-                    ['1','1', user_id]
+                    "UPDATE users SET user_active = %s, activation_status = %s WHERE id = %s",
+                    ['1', '1', user_id]
                 )
 
             user = get_object_or_404(Users, id=user_id)
             user_email = user.email
-            training_pdf_path = os.path.join(settings.MEDIA_ROOT, f'training/Training_Material_Elevate_Insurance_V1.0.pdf')
-            training_pdf_path = os.path.join(settings.MEDIA_ROOT, 'training/Training_Material_Elevate_Insurance_V1.0.pdf')
 
-            training_material_url = request.build_absolute_uri(settings.MEDIA_URL + 'training/Training_Material_Elevate_Insurance_V1.0.pdf')
+            training_file_name = getattr(settings, 'TRAINING_PDF_PATH', 'training/Training_Material_Elevate_Insurance_V1.0.pdf')
+            training_pdf_path = os.path.join(settings.MEDIA_ROOT, training_file_name)
+            training_material_url = request.build_absolute_uri(settings.MEDIA_URL + training_file_name)
 
-            # Render email HTML template
             email_body = render_to_string('members/activation-email.html', {
                 'user': user,
-                "logo_url": request.build_absolute_uri(static('dist/img/logo2.png')),
-                "support_email": "support@elevateinsurance.in",
-                "terms_conditions_url": "https://pos.elevateinsurance.in/empPortal/media/terms/Terms_And_Conditions.pdf",
-                "company_website": "https://pos.elevateinsurance.in/",
-                "sub_broker_test_url": "https://pos.elevateinsurance.in/",
-                "training_material_url": training_material_url,
-                "support_number": +918887779999,
+                'logo_url': request.build_absolute_uri(static(getattr(settings, 'GLOBAL_FILE_LOGO', 'dist/img/logo2.png'))),
+                'support_email': getattr(settings, 'SUPPORT_EMAIL', 'support@elevateinsurance.in'),
+                'terms_conditions_url': request.build_absolute_uri(settings.MEDIA_URL + 'terms/Terms_And_Conditions.pdf'),
+                'company_website': getattr(settings, 'COMPANY_WEBSITE', 'https://pos.elevateinsurance.in/'),
+                'sub_broker_test_url': getattr(settings, 'SUB_BROKER_TEST_URL', 'https://pos.elevateinsurance.in/'),
+                'training_material_url': training_material_url,
+                'support_number': getattr(settings, 'SUPPORT_PARTNER_PHONE', '+918887779999'),
             })
 
-            # Prepare and send activation confirmation email
             subject = 'Account Activated Successfully'
             from_email = settings.DEFAULT_FROM_EMAIL
             recipient_list = [user_email]
 
             email = EmailMessage(subject, email_body, from_email, recipient_list)
-            email.content_subtype = "html"  # Set content type to HTML
+            email.content_subtype = "html"
 
-
-
-            # Attach file if it exists
             if os.path.exists(training_pdf_path):
                 email.attach_file(training_pdf_path)
             else:
                 logger.error(f"Training PDF not found: {training_pdf_path}")
-                
-            # Generate and attach PDF
-            # pdf_path = activationPdf(request, user_id)
-            # if pdf_path and os.path.exists(pdf_path):
-            #     email.attach_file(pdf_path)
-            # else:
-            #     logger.error("PDF generation failed or file not found. Skipping attachment.")
 
             email.send()
             messages.success(request, "User account has been activated successfully!")
@@ -1806,9 +1794,6 @@ def activateUser(request, user_id):
     else:
         messages.error(request, "User cannot be activated. Please ensure all required documents are approved.")
 
-    # Redirect to the member view page
-
-    
     return redirect('member-view', user_id=user_id)
 
 
@@ -1887,47 +1872,39 @@ def deactivateUser(request, user_id):
 
         user = get_object_or_404(Users, id=user_id)
         user_email = user.email
-        
-        training_material_url = request.build_absolute_uri(settings.MEDIA_URL + 'training/Training_Material_Elevate_Insurance_V1.0.pdf')
+
+        training_file_name = getattr(settings, 'TRAINING_PDF_PATH', 'training/Training_Material_Elevate_Insurance_V1.0.pdf')
+        training_material_url = request.build_absolute_uri(settings.MEDIA_URL + training_file_name)
 
         # Render email HTML template
         email_body = render_to_string('members/activation-email.html', {
             'user': user,
-            "logo_url": request.build_absolute_uri(static('dist/img/logo2.png')),
-            "support_email": "support@elevateinsurance.in",
-            "terms_conditions_url": "https://pos.elevateinsurance.in/empPortal/media/terms/Terms_And_Conditions.pdf",
-            "company_website": "https://pos.elevateinsurance.in/",
-            "sub_broker_test_url": "https://pos.elevateinsurance.in/",
-            "training_material_url": training_material_url,
-            "support_number": +918887779999,
+            'logo_url': request.build_absolute_uri(static(getattr(settings, 'GLOBAL_FILE_LOGO', 'dist/img/logo2.png'))),
+            'support_email': getattr(settings, 'SUPPORT_EMAIL', 'support@elevateinsurance.in'),
+            'terms_conditions_url': request.build_absolute_uri(settings.MEDIA_URL + 'terms/Terms_And_Conditions.pdf'),
+            'company_website': getattr(settings, 'COMPANY_WEBSITE', 'https://pos.elevateinsurance.in/'),
+            'sub_broker_test_url': getattr(settings, 'SUB_BROKER_TEST_URL', 'https://pos.elevateinsurance.in/'),
+            'training_material_url': training_material_url,
+            'support_number': getattr(settings, 'SUPPORT_PARTNER_PHONE', '+918887779999'),
         })
 
-        # Prepare and send activation confirmation email
-        subject = 'Account Activated Successfully'
+        subject = 'Account Deactivated'
         from_email = settings.DEFAULT_FROM_EMAIL
         recipient_list = [user_email]
 
         email = EmailMessage(subject, email_body, from_email, recipient_list)
-        email.content_subtype = "html"  # Set content type to HTML
+        email.content_subtype = "html"
 
-            
-        # Generate and attach PDF
-        # pdf_path = activationPdf(request, user_id)
-        # if pdf_path and os.path.exists(pdf_path):
-        #     email.attach_file(pdf_path)
-        # else:
-        #     logger.error("PDF generation failed or file not found. Skipping attachment.")
-
+        # Uncomment if email should be sent during deactivation
         # email.send()
+
         messages.success(request, "User account has been deactivated successfully!")
 
     except Exception as e:
-        logger.error(f"Error activating user: {e}")
+        logger.error(f"Error deactivating user: {e}")
         messages.error(request, "An error occurred during deactivation.")
 
-    # Redirect to the member view page
     return redirect('member-view', user_id=user_id)
-
 
 def loginActivateUser(request, user_id):
     if not request.user.is_authenticated:
@@ -1943,22 +1920,22 @@ def loginActivateUser(request, user_id):
 
         user = get_object_or_404(Users, id=user_id)
         user_email = user.email
-        
-        training_material_url = request.build_absolute_uri(settings.MEDIA_URL + 'training/Training_Material_Elevate_Insurance_V1.0.pdf')
+
+        training_file_name = getattr(settings, 'TRAINING_PDF_PATH', 'training/Training_Material_Elevate_Insurance_V1.0.pdf')
+        training_material_url = request.build_absolute_uri(settings.MEDIA_URL + training_file_name)
 
         # Render email HTML template
         email_body = render_to_string('members/activation-email.html', {
             'user': user,
-            "logo_url": request.build_absolute_uri(static('dist/img/logo2.png')),
-            "support_email": "support@elevateinsurance.in",
-            "terms_conditions_url": "https://pos.elevateinsurance.in/empPortal/media/terms/Terms_And_Conditions.pdf",
-            "company_website": "https://pos.elevateinsurance.in/",
-            "sub_broker_test_url": "https://pos.elevateinsurance.in/",
-            "training_material_url": training_material_url,
-            "support_number": +918887779999,
+            'logo_url': request.build_absolute_uri(static(getattr(settings, 'GLOBAL_FILE_LOGO', 'dist/img/logo2.png'))),
+            'support_email': getattr(settings, 'SUPPORT_EMAIL', 'support@elevateinsurance.in'),
+            'terms_conditions_url': request.build_absolute_uri(settings.MEDIA_URL + 'terms/Terms_And_Conditions.pdf'),
+            'company_website': getattr(settings, 'COMPANY_WEBSITE', 'https://pos.elevateinsurance.in/'),
+            'sub_broker_test_url': getattr(settings, 'SUB_BROKER_TEST_URL', 'https://pos.elevateinsurance.in/'),
+            'training_material_url': training_material_url,
+            'support_number': getattr(settings, 'SUPPORT_PARTNER_PHONE', '+918887779999'),
         })
 
-        # Prepare and send activation confirmation email
         subject = 'Account Activated Successfully'
         from_email = settings.DEFAULT_FROM_EMAIL
         recipient_list = [user_email]
@@ -1966,23 +1943,22 @@ def loginActivateUser(request, user_id):
         email = EmailMessage(subject, email_body, from_email, recipient_list)
         email.content_subtype = "html"  # Set content type to HTML
 
-            
-        # Generate and attach PDF
+        # Optional: Attach PDF if needed
         # pdf_path = activationPdf(request, user_id)
         # if pdf_path and os.path.exists(pdf_path):
         #     email.attach_file(pdf_path)
-        # else:
-        #     logger.error("PDF generation failed or file not found. Skipping attachment.")
 
+        # Optional: Send email
         # email.send()
+
         messages.success(request, "User account has been activated successfully!")
 
     except Exception as e:
         logger.error(f"Error activating user: {e}")
         messages.error(request, "An error occurred during activation.")
 
-    # Redirect to the member view page
     return redirect('member-view', user_id=user_id)
+
 
 
 
@@ -2140,23 +2116,22 @@ def deleteMember(request, user_id):
     messages.success(request, "Memeber Deleted successfully!")
     return redirect(request.META.get('HTTP_REFERER', 'members'))
 
-    
-
+ 
 def requestForDoc(request, user_id):
     if not request.user.is_authenticated:
         return redirect('login')
 
     user = get_object_or_404(Users, id=user_id)
     partner = get_object_or_404(Partner, user_id=user_id)
-    
+
     try:
         if user and user.email:
             email_body = render_to_string('members/request-doc-email.html', {
                 'user': user,
-                "logo_url": request.build_absolute_uri(static('dist/img/logo2.png')),
-                "support_email": "support@elevateinsurance.in",
-                "company_website": "https://pos.elevateinsurance.in/",
-                "support_number": "+918887779999",
+                'logo_url': request.build_absolute_uri(static(getattr(settings, 'GLOBAL_FILE_LOGO', 'dist/img/logo2.png'))),
+                'support_email': getattr(settings, 'SUPPORT_EMAIL', 'support@elevateinsurance.in'),
+                'company_website': getattr(settings, 'COMPANY_WEBSITE', 'https://pos.elevateinsurance.in/'),
+                'support_number': getattr(settings, 'SUPPORT_PARTNER_PHONE', '+918887779999'),
             })
 
             subject = 'Action Required: Please Upload Your Documents'
@@ -2169,46 +2144,41 @@ def requestForDoc(request, user_id):
 
     except Exception as e:
         logger.error(f"Error requesting document for user {user_id}: {e}")
-    
+
     messages.success(request, "Request sent successfully!")
     return redirect(request.META.get('HTTP_REFERER', 'members'))
 
 
+
 def send_training_mail(request, user_id):
-    # Ensure the user is authenticated
-    
     if not request.user.is_authenticated:
         return redirect('login')
 
     try:
-        # Fetch the user based on user_id
         user = get_object_or_404(Users, id=user_id)
         user_email = user.email
 
-        # Path to the training PDF
-        training_pdf_path = os.path.join(settings.MEDIA_ROOT, 'training/Training_Material_Elevate_Insurance_V1.0.pdf')
-        training_material_url = request.build_absolute_uri(settings.MEDIA_URL + 'training/Training_Material_Elevate_Insurance_V1.0.pdf')
+        training_filename = getattr(settings, 'TRAINING_MATERIAL_FILE', 'training/Training_Material_Elevate_Insurance_V1.0.pdf')
+        training_pdf_path = os.path.join(settings.MEDIA_ROOT, training_filename)
+        training_material_url = request.build_absolute_uri(settings.MEDIA_URL + training_filename)
 
-        # Render email HTML template
         email_body = render_to_string('members/training-email.html', {
             'user': user,
-            "logo_url": request.build_absolute_uri(static('dist/img/logo2.png')),
-            "support_email": "support@elevateinsurance.in",
-            "terms_conditions_url": "https://pos.elevateinsurance.in/empPortal/media/terms/Terms_And_Conditions.pdf",
-            "company_website": "https://pos.elevateinsurance.in/",
-            "training_material_url": training_material_url,
-            "support_number": "+918887779999",
+            'logo_url': request.build_absolute_uri(static(getattr(settings, 'GLOBAL_FILE_LOGO', 'dist/img/logo2.png'))),
+            'support_email': getattr(settings, 'SUPPORT_EMAIL', 'support@elevateinsurance.in'),
+            'terms_conditions_url': getattr(settings, 'TERMS_CONDITIONS_URL', 'https://pos.elevateinsurance.in/empPortal/media/terms/Terms_And_Conditions.pdf'),
+            'company_website': getattr(settings, 'COMPANY_WEBSITE', 'https://pos.elevateinsurance.in/'),
+            'training_material_url': training_material_url,
+            'support_number': getattr(settings, 'SUPPORT_PARTNER_PHONE', '+918887779999'),
         })
 
-        # Prepare and send training email
         subject = 'Training Material for Your Account'
         from_email = settings.DEFAULT_FROM_EMAIL
         recipient_list = [user_email]
 
         email = EmailMessage(subject, email_body, from_email, recipient_list)
-        email.content_subtype = "html"  # Set content type to HTML
+        email.content_subtype = "html"
 
-        # Attach file if it exists
         if os.path.exists(training_pdf_path):
             email.attach_file(training_pdf_path)
         else:
@@ -2219,6 +2189,7 @@ def send_training_mail(request, user_id):
 
     except Exception as e:
         logger.error(f"Error sending training email to user {user_id}: {e}")
+
 
 def updateUserStatus(doc_id, user_id):
     document = get_object_or_404(DocumentUpload, id=doc_id)

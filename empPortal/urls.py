@@ -60,8 +60,9 @@ urlpatterns = [
     path('user-and-roles/', views.userAndRoles, name='user-and-roles'),
     path('', homeManagement.index, name='home-index'),
     path('dashboard/', Dashboard.dashboard, name='dashboard'),
-    path('business_summary_insurer_chartajax', Dashboard.business_summary_insurer_chartajax, name='business_summary_insurer_chartajax'),
+    path('business_summary_insurer_chartajax/', Dashboard.business_summary_insurer_chartajax, name='business_summary_insurer_chartajax'),
     path('business_consolidated_ajax/', Dashboard.business_consolidated_ajax, name='business_consolidated_ajax'),
+    path('referral_summary_chartajax', Dashboard.referral_summary_chartajax, name='referral_summary_chartajax'),
 
 
 
@@ -218,7 +219,7 @@ urlpatterns = [
     # REPORTS 
     path('report/commission-report/', export.commission_report, name='commission-report-v0'),
     path('report/a-business-report/', export.agent_business_report, name='agent-business-report-v0'),
-    path('report/sm-business-report/', export.sales_manager_business_report, name='sales-manager-business-report'),
+    path('report/sm-business-report/', export.sales_manager_business_report, name='sales-manager-business-report-v0'),
     path('report/f-business-report/', export.franchisees_business_report, name='franchisees-business-report-v0'),
     path('report/i-business-report/', export.insurer_business_report, name='insurer-business-report-v0'),
     
@@ -226,6 +227,7 @@ urlpatterns = [
     path('report/v1/a-business-report/', reports.agent_business_report, name='agent-business-report'),
     path('report/v1/f-business-report/', reports.franchisees_business_report, name='franchisees-business-report'),
     path('report/v1/i-business-report/', reports.insurer_business_report, name='insurer-business-report'),
+    path('report/v1/sm-business-report/', reports.sales_manager_business_report, name='sales-manager-business-report'),
     
     
     path('report/pending-insurer-commission-report/', reports.pending_insurer_commission_report, name='pending-insurer-commission-report'),
@@ -236,6 +238,10 @@ urlpatterns = [
     # EXPORT
     path('export-commission-report/', export.export_commission_data, name='export-commission-report-v0'),
     path('v1/export-comparison-report/', export.export_commission_data_v1, name='export-commission-report'),
+    path('v1/export-sales-manager-business-report/', export.export_sales_manager_business_report, name='export-sales-manager-business-report'),
+    path('v1/export-agent-business-report/', export.export_agent_business_report, name='export-agent-business-report'),
+    path('v1/export-franchise-business-report/', export.export_franchise_business_report, name='export-franchise-business-report'),
+    path('v1/export-insurer-business-report/', export.export_insurer_business_report, name='export-insurer-business-report'),
 
 
     # POLICY-COMMISION 

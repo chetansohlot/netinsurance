@@ -1,7 +1,7 @@
 {% extends 'master.html' %}
 
 {% block title %}
-  Franchise Commission Report
+  Franchise Business Report
 {% endblock %}
 
 {% block content %}
@@ -23,12 +23,12 @@
         <div class="row py-2">
           <div class="col-sm-6">
             <div class="d-flex align-items-center">
-              <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Franchise Commission Report</a>
+              <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Franchise Business Report</a>
             </div>
             <ul class="breadcrump">
               <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
               <li> <a href="#">Reports</a> <i class="fas fa-chevron-right"></i></li>
-              <li>Franchise Commission Report</li>
+              <li>Franchise Business Report</li>
             </ul>
           </div>
           <div class="col-sm-6">
@@ -57,10 +57,6 @@
             <div class="card box-shadow-none">
               <div class="card-body px-0 pb-0 pt-0">
                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                  <!-- <a class="nav-item nav-link active" id="tab1-tab" data-toggle="tab" href="#tab1" role="tab"
-                     aria-controls="tab1" aria-selected="true">Report</a> -->
-                  <!-- <a class="nav-item nav-link" id="tab2-tab" data-toggle="tab" href="#tab2" role="tab"
-                    aria-controls="tab2" aria-selected="false">Roles</a> -->
                 </div>
                 <div>
                 
@@ -278,9 +274,9 @@
     <div class="modal-content">
       <div class="modal-body">
         <button type="button" class="close" data-dismiss="modal" >&times;</button>
-        <h2 class="form-title font-weight-bold">Export Comparison Report</h2>
+        <h2 class="form-title font-weight-bold">Export Franchise Business Report</h2>
         <p class="pb-2">Export is limited to a single month only.</p>
-        <form action="{% url 'export-commission-report' %}" method="post" id="export-commission-report">
+        <form action="{% url 'export-franchise-business-report' %}" method="post" id="export-franchise-business-report">
           {% csrf_token %}
           <div class="row">
             <div class="col-md-6">
@@ -310,7 +306,7 @@
 
 {% include 'footer-script.html' %}
 <script>
-  $('#export-commission-report').on('submit', function(e) {
+  $('#export-franchise-business-report').on('submit', function(e) {
     e.preventDefault();
 
     const form = $(this);
@@ -344,7 +340,7 @@
         const downloadUrl = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = downloadUrl;
-        a.download = "comparison_report.xlsx";
+        a.download = "franchise_business_report.xlsx";
         document.body.appendChild(a);
         a.click();
         a.remove();

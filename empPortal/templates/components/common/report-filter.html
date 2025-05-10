@@ -1,4 +1,4 @@
-{% url 'commission-report' as commission_url %}
+{% url 'commission-report' as comparision_url %}
 {% url 'sales-manager-business-report' as sm_business_url %}
 {% url 'agent-business-report' as agent_business_url %}
 {% url 'franchisees-business-report' as franchise_business_url %}
@@ -16,11 +16,11 @@
   
       <!-- Existing Fields -->
       <div class="col-sm-2 form-group">
-        <input type="text" placeholder="Insurer Name" name="insurer_name" class="form-field" value="{{ request.GET.insurer_name }}">
+        <input type="text" placeholder="Insurer Name" name="insurance_provider" class="form-field" value="{{ request.GET.insurance_provider }}">
       </div>
   
       <div class="col-sm-2 form-group">
-        <input type="text" placeholder="Policy No" name="policy_no" class="form-field" value="{{ request.GET.policy_no }}">
+        <input type="text" placeholder="Policy No" name="policy_number" class="form-field" value="{{ request.GET.policy_number }}">
       </div>
   
   
@@ -32,15 +32,15 @@
         <input type="text" placeholder="Vehicle Type" name="vehicle_type" class="form-field" value="{{ request.GET.vehicle_type }}">
       </div>
       <div class="col-sm-2 form-group">
-        <input type="text" placeholder="Vehicle Registration Number" name="vehicle_reg_no" class="form-field" value="{{ request.GET.vehicle_reg_no }}">
+        <input type="text" placeholder="Vehicle Registration Number" name="vehicle_number" class="form-field" value="{{ request.GET.vehicle_number }}">
       </div>
   
       <div class="col-sm-2 form-group">
-        <input type="date" placeholder="Policy Start Date" name="policy_start_date" class="form-field" value="{{ request.GET.policy_start_date }}">
+        <input type="date" placeholder="Policy Start Date" name="start_date" class="form-field" value="{{ request.GET.start_date }}">
       </div>
   
       <div class="col-sm-2 form-group">
-        <input type="date" placeholder="Policy End Date" name="policy_end_date" class="form-field" value="{{ request.GET.policy_end_date }}">
+        <input type="date" placeholder="Policy End Date" name="end_date" class="form-field" value="{{ request.GET.end_date }}">
       </div>
   
       <!-- Additional Merged Fields -->
@@ -133,10 +133,14 @@
             <input type="submit" name="submit_filter" class="filter-search-btn" value="Apply">
           </div>
           <div class="col-auto">
-            {% if request.path == commission_url %}
+            {% if request.path == comparision_url %}
               <a href="{% url 'commission-report' %}" class="filter-search-btn bg-dark">Clear</a>
             {% elif request.path == agent_business_url %}
               <a href="{% url 'agent-business-report' %}" class="filter-search-btn bg-dark">Clear</a>
+            {% elif request.path == franchise_business_url %}
+              <a href="{% url 'franchisees-business-report' %}" class="filter-search-btn bg-dark">Clear</a>
+            {% elif request.path == sm_business_url %}
+              <a href="{% url 'sales-manager-business-report' %}" class="filter-search-btn bg-dark">Clear</a>
             {% elif request.path == franchise_business_url %}
               <a href="{% url 'franchisees-business-report' %}" class="filter-search-btn bg-dark">Clear</a>
             {% endif %}

@@ -1,7 +1,7 @@
 {% extends 'master.html' %}
 
 {% block title %}
-  Insurer Commission Report
+  Insurer Business Report
 {% endblock %}
 
 {% block content %}
@@ -23,12 +23,12 @@
         <div class="row py-2">
           <div class="col-sm-6">
             <div class="d-flex align-items-center">
-              <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Insurer Commission Report</a>
+              <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Insurer Business Report</a>
             </div>
             <ul class="breadcrump">
               <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
               <li> <a href="#">Reports</a> <i class="fas fa-chevron-right"></i></li>
-              <li>Insurer Commission Report</li>
+              <li>Insurer Business Report</li>
             </ul>
           </div>
           <div class="col-sm-6">
@@ -128,11 +128,11 @@
                             <tr>
                               <td>{{ data.policy_infos.policy_month_year|default:"-" }}</td>
                               <td>{{ data.policy_infos.branch.branch_name|default:"-" }}</td>
-                              <td>Booking ID</td>
+                              <td>-</td>
                               <td>{{ data.policy_infos.insurance_company|default:"-" }}</td>
-                              <td>{{ data.policy_infos.insurer_name|default:"-" }}</td>
-                              <td>Service Provider</td>
-                              <td>Portal Id</td>
+                              <td>{{ data.policy_infos.insurance_company|default:"-" }}</td>
+                              <td>{{ data.policy_infos.insurance_company|default:"-" }}</td>
+                              <td>-</td>
                               <td>{{ data.policy_infos.insured_name|default:"-" }}</td>
                               <td>{{ data.policy_vehicle_info.registration_number|default:"-" }}</td>
                               <td>{{ data.policy_infos.policy_number|default:"-" }}</td>
@@ -258,9 +258,9 @@
     <div class="modal-content">
       <div class="modal-body">
         <button type="button" class="close" data-dismiss="modal" >&times;</button>
-        <h2 class="form-title font-weight-bold">Export Comparison Report</h2>
+        <h2 class="form-title font-weight-bold">Export Insurer Business Report</h2>
         <p class="pb-2">Export is limited to a single month only.</p>
-        <form action="{% url 'export-commission-report' %}" method="post" id="export-commission-report">
+        <form action="{% url 'export-insurer-business-report' %}" method="post" id="export-insurer-business-report">
           {% csrf_token %}
           <div class="row">
             <div class="col-md-6">
@@ -290,7 +290,7 @@
 
 {% include 'footer-script.html' %}
 <script>
-  $('#export-commission-report').on('submit', function(e) {
+  $('#export-insurer-business-report').on('submit', function(e) {
     e.preventDefault();
 
     const form = $(this);
@@ -324,7 +324,7 @@
         const downloadUrl = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = downloadUrl;
-        a.download = "comparison_report.xlsx";
+        a.download = "insurer_business_report.xlsx";
         document.body.appendChild(a);
         a.click();
         a.remove();

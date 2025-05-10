@@ -4,7 +4,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.template import loader
-from ..models import Roles,Users, Department,PolicyDocument,BulkPolicyLog, PolicyInfo, Branch, UserFiles,UnprocessedPolicyFiles, Commission, Branch, FileAnalysis, ExtractedFile, ChatGPTLog
+from ..models import Roles,Users, Department,PolicyDocument,BulkPolicyLog, PolicyInfo, Branch, UserFiles,UnprocessedPolicyFiles, Commission, Branch, FileAnalysis, ExtractedFile, ChatGPTLog, AgentPaymentDetails
 from django.contrib.auth import authenticate, login ,logout
 from django.core.files.storage import FileSystemStorage
 import re, logging
@@ -45,6 +45,8 @@ app = FastAPI()
 from django.db.models import Count, Sum, F
 from django.db.models.functions import Cast
 from django.db.models import FloatField, Sum
+from django.db.models import OuterRef, Subquery, Count
+
 
 from django.utils.timezone import make_naive
 from django.db import connection
@@ -61,6 +63,8 @@ def dashboard(request):
             base_qs = PolicyDocument.objects.filter(status=6)
 
         base_qs = base_qs.prefetch_related('policy_info')    
+        
+        base_qs = base_qs.filter(policy_info__isnull=False)
 
         # Group by insurance_provider
         provider_summary = (
@@ -77,7 +81,7 @@ def dashboard(request):
                     # convert policy_gross_premium to float before aggregation
                     Cast('policy_info__gross_premium', FloatField())),
             )
-            .order_by('-policy_income','-policies_sold')[:4]
+            .order_by('-policy_income','-policies_sold')
         )
 
         total_policies = base_qs.count()
@@ -135,13 +139,19 @@ def dashboard(request):
         provider_labels = [entry['insurance_provider'] for entry in provider_summary]
         motor_counts = [entry['policies_sold'] for entry in provider_summary]  
         insurer_motor_counts, insurer_provider_labels = business_summary_insurer_chart(request)
+        policies_insurer_wise = insurer_wise_date(request)
+        referral_agent_labels, referral_counts = referral_summary_chart(request)
+
         return render(request, 'dashboard.html', {
             'user': user,
             'provider_summary': provider_summary,
+            'policies_insurer_wise': policies_insurer_wise,
             'consolidated_month_labels': consolidated_month_labels,
             'consolidated_month_counts': consolidated_month_counts,
             'insurer_motor_counts': insurer_motor_counts,
             'insurer_provider_labels': insurer_provider_labels,
+            'referral_counts' : referral_counts,
+            'referral_agent_labels': referral_agent_labels,
             'provider_labels': provider_labels,
             'motor_counts': motor_counts,
             'policy_count': total_policies,
@@ -151,16 +161,16 @@ def dashboard(request):
         })
     else:
         return redirect('login')
-        print(result)
 
 def insurer_wise_date(request):
     
     insurance_company =request.GET.get('insurance_company')
 
-    policies = PolicyInfo.objects.filter(insurance_company=insurance_company)
+    policies = PolicyInfo.objects.filter(active='1').values(
+        'policy_number','insurance_company','net_premium','gross_premium','created_at',
+        'pos_name','policy_id')[:5]
 
-
-    return render(request, 'dashboard.html', {'policies': policies})
+    return policies
 
 
 def business_summary_insurer_chart(request):
@@ -295,8 +305,79 @@ def business_consolidated_ajax(request):
         'monthly_data': monthly_data,
         'consolidated_month_labels': consolidated_month_labels,
         'consolidated_month_counts': consolidated_month_counts
+    }) 
+
+def referral_summary_chart(request):
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT users.first_name, COUNT(*) AS total_referrals
+            FROM users 
+            LEFT JOIN agent_payment_details 
+            ON agent_payment_details.agent_name = users.id 
+            GROUP BY users.first_name
+            ORDER BY total_referrals DESC
+            LIMIT 5;
+        """)
+        rows = cursor.fetchall()
+
+    referral_counts = []
+    referral_agent_labels = []
+
+    for first_name, total_referrals in rows:
+        referral_counts.append(total_referrals)
+        referral_agent_labels.append(first_name)
+    
+    return referral_agent_labels, referral_counts
+
+
+
+def referral_summary_chartajax(request):
+    filter_type = request.GET.get('filter')
+    month = request.GET.get('month')
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    filters = "status = 6"
+
+    if filter_type == "2":  # Today
+        filters += " AND DATE(created_at) = CURDATE()"
+    elif filter_type == "3" and month:  # MTD
+        filters += f" AND MONTH(created_at) = {int(month)} AND YEAR(created_at) = YEAR(CURDATE())"
+    elif filter_type == "4" and start_date and end_date:  # Custom
+        filters += f" AND DATE(created_at) BETWEEN '{start_date}' AND '{end_date}'"
+
+     # Write your raw SQL query here
+    query = f"""
+        SELECT apd.agent_name, u.first_name, COUNT(apd.id) AS total_referrals
+        FROM agent_payment_details apd
+        LEFT JOIN users u ON apd.agent_name = u.id
+        WHERE {filters}
+        GROUP BY apd.agent_name, u.first_name
+    """
+    
+    # Execute the query
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        result = cursor.fetchall()
+
+        print(result)
+
+    # Process the result
+    referral_counts = [row[2] for row in result]  # total_referrals is in the 3rd column (index 2)
+    referral_agent_labels = [
+        row[1] if row[1] else f"Agent {row[0]}"  # first_name is in the 2nd column (index 1)
+        for row in result
+    ]
+
+    print("Referral Counts:", referral_counts)
+    print("Referral Agent Labels:", referral_agent_labels)
+
+
+    return JsonResponse({
+        'referral_counts': referral_counts,
+        'referral_agent_labels': referral_agent_labels
     })
- 
+
 
 
 # def get_chart_data(request):
