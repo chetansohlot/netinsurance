@@ -79,6 +79,62 @@ def dashboard(request):
         )
         .order_by('-policy_income', '-policies_sold')
     )
+    
+    # referral 
+    # Step 1: Get policies with referrals via AgentPaymentDetails
+    referral_qs = AgentPaymentDetails.objects.filter(
+        policy__in=aggregation_qs,
+        referral__isnull=False
+    ).values('referral_id').annotate(
+        policies_sold=Count('policy_id', distinct=True),
+        policy_income=Sum(Cast('policy__policy_premium', FloatField())),
+        total_net_premium=Sum(Cast('policy__policy_info__net_premium', FloatField())),
+        total_gross_premium=Sum(Cast('policy__policy_info__gross_premium', FloatField())),
+    ).order_by('-policy_income', '-policies_sold')
+
+    # Step 2: Map referral IDs to names
+    referral_map = {
+        ref.id: ref.name for ref in Referral.objects.filter(id__in=[r['referral_id'] for r in referral_qs])
+    }
+
+    # Step 3: Convert to list and attach referral name
+    referral_summary = list(referral_qs)
+    referral_summary[:] = [
+        {**item, 'referral_name': referral_map.get(item['referral_id'])}
+        for item in referral_summary
+        if referral_map.get(item['referral_id'])  # Skip if name not found
+    ]
+
+    # referral 
+            
+        # Step 1: Summary grouped by policy_info.branch_name
+    branch_summary = (
+        aggregation_qs
+        .exclude(policy_info__branch_name__isnull=True)
+        .values('policy_info__branch_name')
+        .annotate(
+            policies_sold=Count('id', distinct=True),
+            policy_income=Sum(Cast('policy_premium', output_field=FloatField())),
+            total_net_premium=Sum(Cast('policy_info__net_premium', output_field=FloatField())),
+            total_gross_premium=Sum(Cast('policy_info__gross_premium', output_field=FloatField())),
+        )
+        .order_by('-policy_income', '-policies_sold')
+    )
+
+    # Step 2: Map branch_name (which holds ID as string) to actual Branch name
+    branch_map = {
+        str(branch.id): branch.branch_name
+        for branch in Branch.objects.all()
+    }
+
+    branch_summary = list(branch_summary)  # ✅ Convert QuerySet to list
+
+    branch_summary[:] = [
+        {**item, 'branch_name': branch_map[item['policy_info__branch_name']]}
+        for item in branch_summary
+        if branch_map.get(item['policy_info__branch_name'])
+    ]
+
 
     # Totals
     total_policies = aggregation_qs.count()
@@ -143,6 +199,8 @@ def dashboard(request):
     return render(request, 'dashboard.html', {
         'user': user,
         'provider_summary': provider_summary,
+        'branch_summary': branch_summary,
+        'referral_summary': referral_summary,
         'policies_insurer_wise': policies_insurer_wise,
         'consolidated_month_labels': consolidated_month_labels,
         'consolidated_month_counts': consolidated_month_counts,

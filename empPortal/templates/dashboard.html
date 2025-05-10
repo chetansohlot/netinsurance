@@ -445,74 +445,140 @@
               <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center mb-2">
                   <h5 class="card-hding pb-0 mb-0">Business Summary Insurer Wise</h5>
-                  
                   <div class="d-flex align-items-center ms-auto gap-2">
                     <div>
                       <select name="insurer_wise" class="form-field" id="insurer_wise">
-                        <option value="1">All</option>
-                        <option value="2">Today</option>
-                        <option value="3">MTD</option>
-                        <option value="4">Custom Date</option>
+                        <option value="1" selected>Insurer Wise</option>
+                        <option value="2">Referral Wise</option>
+                        <option value="3">Branch Wise</option>
+                        <option value="4">POS Wise</option>
                       </select>
-                    </div>
-                
-                    <div style="display: none;" id="month_filter">
-                      <select name="summary_partner_month" class="form-field" id="insurer_wise_month">
-                        <option value="1">Jan</option>
-                        <option value="2">Feb</option>
-                        <option value="3">March</option>
-                        <option value="4">Apr</option>
-                        <option value="5">May</option>
-                        <option value="6">June</option>
-                        <option value="7">July</option>
-                        <option value="8">Aug</option>
-                        <option value="9">Sept</option>
-                        <option value="10">Oct</option>
-                        <option value="11">Nov</option>
-                        <option value="12">Dec</option>
-                      </select>
-                    </div>
-                
-                    <div style="display: none;" id="from_date_filter">
-                      <input type="text" name="insurer_wiser_from_date" class="datepicker_common" id="insurer_wise_from_date" placeholder="From Date" autocomplete="off">
-                      <span class="error insurer_wise_date_err"></span>
-                    </div>
-                
-                    <div style="display: none;" id="to_date_filter">
-                      <input type="text" name="insurer_wise_to_date" class="datepicker_common" id="insurer_wise_to_date" placeholder="To Date" autocomplete="off">
-                      <span class="error summary_partner_to_date_err"></span>
                     </div>
                   </div>
                 </div>
+          
                 <div class="table-responsive">
-                  <table class="table table-design table-trlink">
-                    <thead class="table-thead-bg-light table-header-fix">
-                      <tr>
-                        <th>Insurer</th>
-                        <th>Policy Sold</th>
-                        {% comment %} <th>Total Revenue</th> {% endcomment %}
-                        <th>Net Premium</th>
-                        <th>Gross Premium</th>
-
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {% for provider in provider_summary %}
-                          <tr>
-                              <td>{{ provider.insurance_provider|default:"N/A" }}</td>
-                              <td>{{ provider.policies_sold }}</td>
-                              {% comment %} <td>₹{{ provider.policy_income|floatformat:2|default:"0" }}</td> {% endcomment %}
-                              <td>₹{{ provider.total_net_premium|floatformat:2|default:"0" }}</td>
-                              <td>₹{{ provider.total_gross_premium|floatformat:2|default:"0" }}</td>
-                          </tr>
-                      {% endfor %}
-                    </tbody>
-                  </table>
+                  <!-- INSURER WISE -->
+                  <div id="table-wrapper-1">
+                    <table id="insurer-wise-table" class="table table-design table-trlink">
+                      <thead class="table-thead-bg-light table-header-fix">
+                        <tr>
+                          <th>Insurer</th>
+                          <th>Policy Sold</th>
+                          <th>Net Premium</th>
+                          <th>Gross Premium</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for provider in provider_summary %}
+                        <tr>
+                          <td>{{ provider.insurance_provider|default:"N/A" }}</td>
+                          <td>{{ provider.policies_sold }}</td>
+                          <td>₹{{ provider.total_net_premium|floatformat:2|default:"0" }}</td>
+                          <td>₹{{ provider.total_gross_premium|floatformat:2|default:"0" }}</td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+          
+                  <!-- REFERRAL WISE -->
+                  <div id="table-wrapper-2">
+                    <table id="referral-wise-table" class="table table-design table-trlink">
+                      <thead class="table-thead-bg-light table-header-fix">
+                        <tr>
+                          <th>Referral</th>
+                          <th>Policy Sold</th>
+                          <th>Net Premium</th>
+                          <th>Gross Premium</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for referral in referral_summary %}
+                        <tr>
+                          <td>{{ referral.referral_name|default:"N/A" }}</td>
+                          <td>{{ referral.policies_sold }}</td>
+                          <td>₹{{ referral.total_net_premium|floatformat:2|default:"0" }}</td>
+                          <td>₹{{ referral.total_gross_premium|floatformat:2|default:"0" }}</td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+          
+                  <!-- BRANCH WISE -->
+                  <div id="table-wrapper-3">
+                    <table id="branch-wise-table" class="table table-design table-trlink">
+                      <thead class="table-thead-bg-light table-header-fix">
+                        <tr>
+                          <th>Branch</th>
+                          <th>Policy Sold</th>
+                          <th>Net Premium</th>
+                          <th>Gross Premium</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for branch in branch_summary %}
+                        <tr>
+                          <td>{{ branch.branch_name|default:"N/A" }}</td>
+                          <td>{{ branch.policies_sold }}</td>
+                          <td>₹{{ branch.total_net_premium|floatformat:2|default:"0" }}</td>
+                          <td>₹{{ branch.total_gross_premium|floatformat:2|default:"0" }}</td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+          
+                  <!-- POS WISE -->
+                  <div id="table-wrapper-4">
+                    <table id="pos-wise-table" class="table table-design table-trlink">
+                      <thead class="table-thead-bg-light table-header-fix">
+                        <tr>
+                          <th>POS</th>
+                          <th>Policy Sold</th>
+                          <th>Net Premium</th>
+                          <th>Gross Premium</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for provider in provider_summary %}
+                        <tr>
+                          <td>{{ provider.insurance_provider|default:"N/A" }}</td>
+                          <td>{{ provider.policies_sold }}</td>
+                          <td>₹{{ provider.total_net_premium|floatformat:2|default:"0" }}</td>
+                          <td>₹{{ provider.total_gross_premium|floatformat:2|default:"0" }}</td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
-                
               </div>
             </div>
           </div>
+          
+          
+          <script>
+            document.addEventListener("DOMContentLoaded", function () {
+              const dropdown = document.getElementById("insurer_wise");
+          
+              function toggleTableView(selectedId) {
+                for (let i = 1; i <= 4; i++) {
+                  const wrapper = document.getElementById(`table-wrapper-${i}`);
+                  wrapper.style.display = (parseInt(selectedId) === i) ? "block" : "none";
+                }
+              }
+          
+              // Initial visibility
+              toggleTableView(dropdown.value);
+          
+              // Listen for dropdown change
+              dropdown.addEventListener("change", function () {
+                toggleTableView(this.value);
+              });
+            });
+          </script>
           
           
           <!-- <div class="col-sm-12 col-md-12">  
