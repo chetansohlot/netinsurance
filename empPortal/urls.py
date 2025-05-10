@@ -155,14 +155,20 @@ urlpatterns = [
     path('leads/product-info/lead-init/', leads.lead_init_view, name='lead-init'),
     path('leads/product-info/load-categories/', leads.load_categories, name='load-categories'),
     path('leads/product-info/load-products/', leads.load_products, name='load-products'),
-    path('lead/basic_info/', leads.basic_info, name='basic-info'),
-    path('leads/lead-source',leads.lead_source, name='lead-source'),
-    path('leads/lead-locationn',leads.lead_location, name='lead-location'),
-    
-    path('leads/assignment', leads.assignment, name='lead-assignment'),
-    path('leads/previous-policy-info', leads.previous_policy_info, name='leads-previous-policy-info'),
+    path('lead/basic_info/<str:lead_id>', leads.basic_info, name='basic-info'),
+    path('leads/lead-source/<str:lead_id>',leads.lead_source, name='lead-source'),
+    path('leads/lead-location/<str:lead_id>',leads.lead_location, name='lead-location'),
+    path('leads/assignment/<str:lead_id>', leads.assignment, name='lead-assignment'),
+    path('leads/previous-policy-info/<str:lead_id>', leads.previous_policy_info, name='leads-previous-policy-info'),
 
 
+    #save lead steps 
+    path('leads/v1/save-lead-insurance-info',leads.save_leads_insurance_info,name="save-lead-insurance-info"), 
+    path('leads/v1/save-lead-basic-info',leads.save_leads_basic_info,name="save-lead-basic-info"), 
+    path('leads/v1/save-lead-source-info',leads.save_leads_source_info,name="save-lead-source-info"), 
+    path('leads/v1/save-lead-location-info',leads.save_leads_location_info,name="save-lead-location-info"), 
+    path('leads/v1/save-lead-assignment-info',leads.save_leads_assignment_info,name="save-lead-assignment-info"), 
+    path('leads/v1/save-lead-previous-policy-info',leads.save_leads_previous_policy_info,name="save-lead-previous-policy-info"), 
     #Insurance
     path('insurance/', insurance.insurance_list, name='insurance_index'),
     path('create-insurance/', insurance.insurance_create, name='create_insurance'),

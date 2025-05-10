@@ -67,10 +67,9 @@
                 <div class="card box-shadow-none p-md-4 p-3">
                   <div class="card-body px-0 pb-0 pt-0">
                       
-                    <form autocomplete="off" id="leadForm" name="leadForm"
-                        action=""
-                        method="post">
+                    <form autocomplete="off" id="leadForm" name="leadForm" action="{% url 'save-lead-assignment-info' %}" method="post">
                       {% csrf_token %}
+                      <input type="hidden" id="lead_ref_id" name="lead_ref_id" value="{{lead_ref_id}}">
 
                       <div class="row">
                           <div class="col-md-12">
@@ -78,39 +77,39 @@
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Assigned To</label>
-                            <select class="form-field">
+                            <select class="form-field" name="assigned_to" id="assigned_to">
                                 <option value="">Select</option>
-                                <option>Sales Agent</option>
-                                <option>Team Lead</option>
+                                <option value="1">Sales Agent</option>
+                                <option value="2">Team Lead</option>
                             </select>
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Branch</label>
-                            <select class="form-field">
+                            <select class="form-field" name="branch" id="branch">
                                 <option value="">Select</option>
+                                <option value="1">Branch</option>
                             </select>
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Lead Status Type</label>
-                            <select class="form-field">
-                                <!-- <option value="">Select</option> -->
-                                <option value="">New</option>
-                                <option value="">Follow-up</option>
-                                <option value="">Quoted</option>
-                                <option value="">Booked</option>
-                                <option value="">Closed</option>
+                            <select class="form-field" name="lead_status_type" id="lead_status_type">
+                                <option value="1">New</option>
+                                <option value="2">Follow-up</option>
+                                <option value="3">Quoted</option>
+                                <option value="4">Booked</option>
+                                <option value="5">Closed</option>
                             </select>
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Lead Tag</label>
-                            <select class="form-field">
+                            <select class="form-field" name="lead_tag" id="lead_tag">
                                 <option value="">Select</option>
-                                <option value="">Hot</option>
-                                <option value="">Warm</option>
-                                <option value="">Cold</option>
-                                <option value="">Renewal</option>
-                                <option value="">Break-in</option>
-                                <option value="">etc.</option>
+                                <option value="1">Hot</option>
+                                <option value="2">Warm</option>
+                                <option value="3">Cold</option>
+                                <option value="4">Renewal</option>
+                                <option value="5">Break-in</option>
+                                <option value="6">etc.</option>
                             </select>
                           </div>
                         
@@ -137,12 +136,8 @@
                         });
                         </script>
                         
-                          
-                        
                       </div>
                       <div class="d-flex justify-content-end">
-                        <a href="{% url 'lead-location' %}" class="btn btn-secondary mt-3 me-2">Back</a><br>
-                        <a href="{% url 'leads-previous-policy-info' %}"  class="btn btn-success mt-3">Next Step</a>
                         <button type="submit" class="form-submit-btn mt-3">
                             {% if lead %}Update Lead{% else %}Add Lead{% endif %}
                         </button>

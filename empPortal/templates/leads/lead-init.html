@@ -24,7 +24,7 @@
               </div>
               <ul class="breadcrump">
                 <li><a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
-                <li><a href="{% url 'basic-info' %}">Leads</a> <i class="fas fa-chevron-right"></i></li>
+                <li><a href="#">Leads</a> <i class="fas fa-chevron-right"></i></li>
                 <li>Add Lead</li>
               </ul>
             </div>
@@ -57,8 +57,7 @@
          
               <div class="card box-shadow-none p-md-5 p-3">
                 <div class="card-body px-0 pb-0 pt-0">
-                  
-                  <form action="#" id="leadForm" autocomplete="off">
+                  <form action="{% url 'save-lead-insurance-info' %}" id="leadForm" method="POST" autocomplete="off">
                     {% csrf_token %}
                     <div class="row">
                       <div class="form-group col-md-4">
@@ -106,7 +105,6 @@
                   
                      
                     </div>
-                  <a href="{% url 'basic-info' %}"  class="btn btn-success mt-3">Next Step</a>
                     <button type="submit" class="btn btn-primary mt-3">Next</button>
                     
                   </form>
