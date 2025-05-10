@@ -45,7 +45,7 @@
                 <li><a href="#">Assignment</a></li>
                 <li><a href="#">Previous Policy Information</a></li>
               </ul>
-              <ul class="new-stepflow mb-2">
+              <ul class="new-stepflow mb-3">
                 <li></li>
                 <li></li>
                 <li></li>
@@ -60,9 +60,12 @@
                   <form action="{% url 'save-lead-insurance-info' %}" id="leadInitForm" method="POST" autocomplete="off">
                     {% csrf_token %}
                     <div class="row">
+                      <div class="col-md-12">
+                        <h2 class="admin-title border-bottom pb-2 mb-4">Insurance Info</h2>
+                      </div>
                       <div class="form-group col-md-4">
                         <label for="insurance_type" class="form-lbl">Insurance Type</label>
-                        <select id="insurance_type" name="insurance_type" class="form-control custom-dropdown">
+                        <select id="insurance_type" name="insurance_type" class="form-field custom-dropdown">
                             <option value="">Select Insurance Type</option>
                             {% for type in types %}
                                 <option value="{{ type.id }}">{{ type.name }}</option>
@@ -72,40 +75,42 @@
                     
                     <div class="form-group col-md-4">
                         <label for="insurance_category" class="form-lbl">Insurance Category</label>
-                        <select id="insurance_category" name="insurance_category" class="form-control custom-dropdown" disabled>
+                        <select id="insurance_category" name="insurance_category" class="form-field custom-dropdown" disabled>
                             <option value="">Select Insurance Category</option>
                         </select>
                     </div>
                     
                     <div class="form-group col-md-4">
                         <label for="insurance_product" class="form-lbl">Insurance Product</label>
-                        <select id="insurance_product" name="insurance_product" class="form-control custom-dropdown" disabled>
+                        <select id="insurance_product" name="insurance_product" class="form-field custom-dropdown" disabled>
                             <option value="">Select Insurance Product</option>
                         </select>
                     </div>
                     
-                      <div class="form-group col-md-6">
-                        <label>First Name:</label>
-                        <input type="text" name="first_name name" class="form-control" id="first_name" placeholder="First Name" maxlength="50">
+                      <div class="form-group col-md-4">
+                        <label>First Name</label>
+                        <input type="text" name="first_name name" class="form-field" id="first_name" placeholder="First Name" maxlength="50">
                         <small class="text-danger error-msg" id="error-first_name"></small>
                       </div>
                       
-                      <div class="form-group col-md-6">
-                        <label>Last Name:</label>
-                        <input type="text" name="last_name name" class="form-control" id="last_name" placeholder="Last Name" maxlength="50">
+                      <div class="form-group col-md-4">
+                        <label>Last Name</label>
+                        <input type="text" name="last_name name" class="form-field" id="last_name" placeholder="Last Name" maxlength="50">
                         <small class="text-danger error-msg" id="error-last_name"></small>
                       </div>
                       
-                      <div class="form-group col-md-6">
-                        <label>Mobile Number:</label>
-                        <input type="text" name="mobile" class="form-control mobile" id="mobile" pattern="[0-9]{10}" placeholder="Mobile Number" maxlength="10">
+                      <div class="form-group col-md-4">
+                        <label>Mobile Number</label>
+                        <input type="text" name="mobile" class="form-field mobile" id="mobile" pattern="[0-9]{10}" placeholder="Mobile Number" maxlength="10">
                         <small class="text-danger error-msg" id="error-mobile"></small>
                       </div>
                       
                   
                      
                     </div>
-                    <button type="submit" class="btn btn-primary mt-3">Next</button>
+                    <div class="d-flex justify-content-end">
+                      <button type="submit" class="form-submit-btn mt-3">Next</button>
+                    </div>  
                     
                   </form>
                   
@@ -125,7 +130,7 @@
           </div>
         </div>
       </div>
-
+    </div>  
     
 
     {% include "footer.html" %}

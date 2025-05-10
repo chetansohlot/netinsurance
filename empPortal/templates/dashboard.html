@@ -263,19 +263,20 @@
                         </select>
                     </div>
                     <div class="col" style="display: none;">
-                        <input type="text" name="business_consolidated_from_date" class="datepicker_common" id="business_consolidated_from_date" placeholder="From Date" autocomplete="off">
+                        <input type="text" name="business_consolidated_from_date" class="form-field datepicker_common" id="business_consolidated_from_date" placeholder="From Date" autocomplete="off">
                         <span class="error consolidated_from_date_err"></span>
                     </div>
                     <div class="col" style="display: none;">
-                        <input type="text" name="business_consolidated_to_date" class="datepicker_common" id="business_consolidated_to_date" placeholder="To Date" autocomplete="off">
+                        <input type="text" name="business_consolidated_to_date" class="form-field datepicker_common" id="business_consolidated_to_date" placeholder="To Date" autocomplete="off">
                         <span class="error business_consolidated_to_date_err"></span>
                     </div>
                   </div>
                 </div>  
                   
                 <hr class="my-2">
-                <canvas id="consolidated_bar_chart" style="width:100%; height: 140px;"></canvas>
-                
+                <div style="position: relative; height: 400px; max-height: 300px;">
+                  <canvas id="consolidated_bar_chart"></canvas>
+                </div>
               </div>
             </div>
           </div>
@@ -321,7 +322,9 @@
                 </div>
           
                 <hr class="my-2">
-                <canvas id="insurer_bar_chart" style="width:100%; height: 322px;"></canvas>
+                <div style="position: relative; height: 400px; max-height: 300px;">
+                  <canvas id="insurer_bar_chart"></canvas>
+                </div>
               </div>
             </div>
           </div>
@@ -381,11 +384,11 @@
                         </select>
                     </div>
                     <div class="col" style="display: none;">
-                        <input type="text" name="summary_referal_from_date" class="datepicker_common" id="summary_referal_from_date" placeholder="From Date" autocomplete="off">
+                        <input type="text" name="summary_referal_from_date" class="form-field datepicker_common" id="summary_referal_from_date" placeholder="From Date" autocomplete="off">
                         <span class="error consolidated_from_date_err"></span>
                     </div>
                     <div class="col" style="display: none;">
-                        <input type="text" name="summary_referal_to_date" class="datepicker_common" id="summary_referal_to_date" placeholder="To Date" autocomplete="off">
+                        <input type="text" name="summary_referal_to_date" class="form-field datepicker_common" id="summary_referal_to_date" placeholder="To Date" autocomplete="off">
                         <span class="error summary_referal_to_date_err"></span>
                     </div>
                   </div>
@@ -840,11 +843,14 @@
           data: counts,
           backgroundColor: "#4593dd",
           borderColor: '#4593dd',
-          fill: false
+          fill: false,
+          barThickness: 80,       // Fixed bar width in pixels
+          maxBarThickness: 90,
         }]
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
           legend: {
             labels: { padding: 20, font: { size: 11 } },
@@ -869,6 +875,18 @@
             color: '#000',
             font: { weight: 'bold' },
             formatter: v => v
+          }
+        },
+        scales: {
+          x: {
+            ticks: {
+              maxRotation: 45,
+              minRotation: 45,
+              autoSkip: false
+            }
+          },
+          y: {
+            beginAtZero: true
           }
         }
       }
@@ -1026,6 +1044,8 @@
         },
         options: {
             responsive: true,
+           maintainAspectRatio: false, 
+            
             indexAxis: 'y',
             plugins: {
                 legend: {
@@ -1049,6 +1069,7 @@
                     }
                 }
             }
+             
         }
     });
 
