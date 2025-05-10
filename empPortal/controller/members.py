@@ -8,7 +8,7 @@ from ..models import Commission, ExamResult,Users, DocumentUpload, Branch,BqpMas
 from empPortal.model import BankDetails
 from django.utils.timezone import localtime
 from datetime import datetime
-
+from empPortal.util.context_processors import company_constants
 from ..forms import DocumentUploadForm
 from django.core.mail import send_mail
 from django.core.mail import EmailMessage
@@ -595,6 +595,8 @@ def posTrainingCertificate(request, user_id):
         "signature_pos": os.path.join(settings.BASE_DIR, getattr(settings, 'SIGNATURE_POS', 'empPortal/static/dist/img/signature-pos.webp')),
     }
 
+    # 🔥 Add this to manually include context processor variables
+    context.update(company_constants(request))
     html_content = render_to_string("members/download-training-certificate.html", context)
 
     options = {
