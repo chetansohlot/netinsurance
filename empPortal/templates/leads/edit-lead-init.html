@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-    Add Lead
+    Edit Lead
 {% endblock %}
 
 {% block content %}
@@ -20,12 +20,12 @@
           <div class="row py-2">
             <div class="col-sm-6">
               <div class="d-flex align-items-center">
-                <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Add Lead</a>
+                <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Edit Lead</a>
               </div>
               <ul class="breadcrump">
                 <li><a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
                 <li><a href="#">Leads</a> <i class="fas fa-chevron-right"></i></li>
-                <li>Add Lead</li>
+                <li>Edit Lead : <strong>#{{lead_data.lead_id|default:"-"}}</strong></li>
               </ul>
             </div>
           </div>
@@ -57,8 +57,9 @@
          
               <div class="card box-shadow-none p-md-5 p-3">
                 <div class="card-body px-0 pb-0 pt-0">
-                  <form action="{% url 'save-lead-insurance-info' %}" id="leadInitForm" method="POST" autocomplete="off">
+                  <form action="{% url 'udpate-lead-insurance-info' %}" id="leadInitForm" method="POST" autocomplete="off">
                     {% csrf_token %}
+                    <input type="hidden" name="lead_ref_id" id="lead_ref_id" value="{{lead_data.lead_id}}">
                     <div class="row">
                       <div class="col-md-12">
                         <h2 class="admin-title border-bottom pb-2 mb-4">Insurance Info</h2>
@@ -68,11 +69,14 @@
                         <select id="insurance_type" name="insurance_type" class="form-field custom-dropdown">
                             <option value="">Select Insurance Type</option>
                             {% for type in types %}
-                                <option value="{{ type.id }}">{{ type.name }}</option>
+                                <option value="{{ type.id }}" {% if lead_data.lead_insurance_type_id|stringformat:"s" == type.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ type.name }}
+                                </option>
                             {% endfor %}
                         </select>
                     </div>
                     
+                    <input type="hidden" name="insurance_category_id" id="insurance_category_id" value="{{lead_data.lead_insurance_category_id}}">
                     <div class="form-group col-md-4">
                         <label for="insurance_category" class="form-lbl">Insurance Category</label>
                         <select id="insurance_category" name="insurance_category" class="form-field custom-dropdown" disabled>
@@ -80,6 +84,7 @@
                         </select>
                     </div>
                     
+                    <input type="hidden" name="insurance_product_id" id="insurance_product_id" value="{{lead_data.lead_insurance_product_id}}">
                     <div class="form-group col-md-4">
                         <label for="insurance_product" class="form-lbl">Insurance Product</label>
                         <select id="insurance_product" name="insurance_product" class="form-field custom-dropdown" disabled>
@@ -88,25 +93,23 @@
                     </div>
                     
                       <div class="form-group col-md-4">
-                        <label>First Name</label>
-                        <input type="text" name="first_name name" class="form-field" id="first_name" placeholder="First Name" maxlength="50">
+                        <label>First Name:</label>
+                        <input type="text" name="first_name" class="form-field" id="first_name" placeholder="First Name" maxlength="50" value="{{lead_data.lead_first_name}}">
                         <small class="text-danger error-msg" id="error-first_name"></small>
                       </div>
                       
                       <div class="form-group col-md-4">
-                        <label>Last Name</label>
-                        <input type="text" name="last_name name" class="form-field" id="last_name" placeholder="Last Name" maxlength="50">
+                        <label>Last Name:</label>
+                        <input type="text" name="last_name" class="form-field" id="last_name" placeholder="Last Name" maxlength="50" value="{{lead_data.lead_last_name}}">
                         <small class="text-danger error-msg" id="error-last_name"></small>
                       </div>
                       
                       <div class="form-group col-md-4">
-                        <label>Mobile Number</label>
-                        <input type="text" name="mobile" class="form-field mobile" id="mobile" pattern="[0-9]{10}" placeholder="Mobile Number" maxlength="10">
+                        <label>Mobile Number:</label>
+                        <input type="text" name="mobile" class="form-field mobile" id="mobile" pattern="[0-9]{10}" placeholder="Mobile Number" maxlength="10" value="{{lead_data.mobile_number}}">
                         <small class="text-danger error-msg" id="error-mobile"></small>
                       </div>
                       
-                  
-                     
                     </div>
                     <div class="d-flex justify-content-end">
                       <button type="submit" class="form-submit-btn mt-3">Next</button>
@@ -136,12 +139,15 @@
     {% include "footer.html" %}
     {% include "footer-script.html" %}
     <script>
-        // Dynamic category/Product loading
-        $('#insurance_type').on('change', function () {
-            var insuranceTypeId = $(this).val();
-            $('#insurance_category').empty().append('<option value="">Select Insurance Category</option>');
-            $('#insurance_product').empty().append('<option value="">Select Insurance Product</option>').prop('disabled', true);
+        $(document).ready(function(){
+            insuranceTypeId = $('#insurance_type').val();
+            getInsuranceCategoryList(insuranceTypeId)
+            categoryId = $('#insurance_category_id').val();
+            getInsuranceProductList(categoryId)
+        });
 
+        function getInsuranceCategoryList(insuranceTypeId=null){
+            insurance_category_id = $('#insurance_category_id').val();
             if (insuranceTypeId) {
                 $.ajax({
                     url: "{% url 'load-categories' %}",
@@ -152,7 +158,8 @@
                         if (data.length > 0) {
                             $('#insurance_category').prop('disabled', false);
                             $.each(data, function (index, category) {
-                                $('#insurance_category').append('<option value="' + category.id + '">' + category.name + '</option>');
+                                let selected = (String(insurance_category_id) === String(category.id)) ? ' selected' : '';
+                                $('#insurance_category').append('<option value="' + category.id + '"' + selected + '>' + category.name + '</option>');
                             });
                         } else {
                             $('#insurance_category').prop('disabled', true);
@@ -162,12 +169,10 @@
             } else {
                 $('#insurance_category').prop('disabled', true);
             }
-        });
+        }
 
-        // Load products on insurance category change
-        $('#insurance_category').on('change', function () {
-            var categoryId = $(this).val();
-            $('#insurance_product').empty().append('<option value="">Select Insurance Product</option>');
+        function getInsuranceProductList(categoryId=null){
+            insurance_product_id = $('#insurance_product_id').val();
 
             if (categoryId) {
                 $.ajax({
@@ -179,7 +184,8 @@
                         if (data.length > 0) {
                             $('#insurance_product').prop('disabled', false);
                             $.each(data, function (index, product) {
-                                $('#insurance_product').append('<option value="' + product.id + '">' + product.name + '</option>');
+                                let selected = (String(insurance_product_id) === String(product.id)) ? ' selected' : '';
+                                $('#insurance_product').append('<option value="' + product.id + '"' + selected + '>' +  product.name + '</option>');
                             });
                         } else {
                             $('#insurance_product').prop('disabled', true);
@@ -189,6 +195,21 @@
             } else {
                 $('#insurance_product').prop('disabled', true);
             }
+        }
+
+        // Dynamic category/Product loading
+        $('#insurance_type').on('change', function () {
+            var insuranceTypeId = $(this).val();
+            $('#insurance_category').empty().append('<option value="">Select Insurance Category</option>');
+            $('#insurance_product').empty().append('<option value="">Select Insurance Product</option>').prop('disabled', true);
+            getInsuranceCategoryList(insuranceTypeId);
+        });
+
+        // Load products on insurance category change
+        $('#insurance_category').on('change', function () {
+            var categoryId = $(this).val();
+            $('#insurance_product').empty().append('<option value="">Select Insurance Product</option>');
+            getInsuranceProductList(categoryId);
         });
 
         $(document).ready(function () {

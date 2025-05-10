@@ -188,14 +188,14 @@
                                   <div class="col-sm-6">
                                     <div class="form-group">
                                       <label class="form-lbl">Transaction ID / Check Number</label>
-                                      <input type="text" class="form-field" name="transaction_id" value="{{ agent_payment.transaction_id }}" placeholder="Transaction Id / Check Number   (if None pass 0)">
+                                      <input type="text" class="form-field" name="transaction_id" value="{{ agent_payment.transaction_id  }}" placeholder="Transaction Id / Check Number   (if None pass 0)">
                                     </div>
                                   </div>
 
                                   <div class="col-sm-6">
                                     <div class="form-group">
                                       <label class="form-lbl">Agent Payment Date</label>
-                                      <input type="date" class="form-field" name="agent_payment_date" value="{{ agent_payment.agent_payment_date }}">
+                                      <input type="date" class="form-field" name="agent_payment_date" value="{{ agent_payment.agent_payment_date|default:policy.payment_date }}">
                                     </div>
                                   </div>
 

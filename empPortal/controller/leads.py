@@ -581,10 +581,6 @@ def termlead(request):
     else:
         return redirect('login')
 
-def lead_init_view(request):
-    types = InsuranceType.objects.all()
-    return render(request, 'leads/lead-init.html', {'types': types})
-
 # For AJAX - Load categories
 def load_categories(request):
     type_id = request.GET.get('insurance_type')
@@ -1157,6 +1153,29 @@ def bulk_upload_leads(request):
     return render(request, "leads/bulk_upload.html")
 
 #for ctraye lead step by step
+def lead_init_view(request):
+    if not request.user.is_authenticated and request.user.is_active!=1:
+        messages.error(request,'Please Login First')
+        return redirect('login')
+    
+    types = InsuranceType.objects.all()
+    return render(request, 'leads/lead-init.html', {'types': types})
+
+def lead_init_edit(request,lead_id):
+    if not request.user.is_authenticated and request.user.is_active!=1: 
+        messages.error(request,'Please Login First')
+        return redirect('login')
+    
+    types = InsuranceType.objects.all()
+    
+    lead_data =  Leads.objects.filter(lead_id=lead_id).first()
+    if not lead_data:
+        messages.error(request,'This lead is not found in our data')
+        return redirect('leads-mgt')
+    
+    return render(request, 'leads/edit-lead-init.html', {'types': types,'lead_data':lead_data})
+
+
 def basic_info(request,lead_id):
     if not request.user.is_authenticated and request.user.is_active!=1:
         messages.error(request,'Please Login First')
@@ -1201,6 +1220,9 @@ def assignment(request,lead_id):
     
     return render(request, "leads/create-assignment.html",{"lead_ref_id":lead_id})
 
+def clean(val):
+    return val.strip() if isinstance(val, str) and val.strip() else None
+
 def previous_policy_info(request,lead_id):
     if not request.user.is_authenticated and request.user.is_active!=1:
         messages.error(request,'Please Login First')
@@ -1218,12 +1240,20 @@ def save_leads_insurance_info(request):
         messages.error(request,'Please Login First')
         return redirect('login')
     
-    lead_insurance_type_id = request.POST.get('insurance_type').strip()
-    lead_insurance_category_id = request.POST.get('insurance_category').strip()
-    lead_insurance_product_id = request.POST.get('insurance_product').strip()
-    lead_first_name = request.POST.get('first_name').strip()
-    lead_last_name = request.POST.get('last_name').strip()
-    mobile_number = request.POST.get('mobile').strip()
+    lead_insurance_type_id = request.POST.get('insurance_type') or None
+    lead_insurance_category_id = request.POST.get('insurance_category') or None
+    lead_insurance_product_id = request.POST.get('insurance_product') or None
+    lead_first_name = request.POST.get('first_name') or None
+    lead_last_name = request.POST.get('last_name') or None
+    mobile_number = request.POST.get('mobile') or None
+    
+    # Apply cleaning
+    lead_insurance_type_id = clean(lead_insurance_type_id)
+    lead_insurance_category_id = clean(lead_insurance_category_id)
+    lead_insurance_product_id = clean(lead_insurance_product_id)
+    lead_first_name = clean(lead_first_name)
+    lead_last_name = clean(lead_last_name)
+    mobile_number = clean(mobile_number)
     
     try:
         leads_insert = Leads.objects.create(
@@ -1233,7 +1263,8 @@ def save_leads_insurance_info(request):
             lead_insurance_product_id = lead_insurance_product_id,
             lead_first_name = lead_first_name,
             lead_last_name = lead_last_name,
-            mobile_number = mobile_number
+            mobile_number = mobile_number,
+            created_by = request.user.id
         )
         
         lead_ref_id = leads_insert.lead_id
@@ -1246,18 +1277,62 @@ def save_leads_insurance_info(request):
         messages.error(request,'Something Went Wrong Please Try After Sometime')
         return redirect('leads-mgt')
     
+def update_leads_insurance_info(request):
+    if not request.user.is_authenticated and request.user.is_active != 1:
+        messages.error(request,'Please Login First')
+        return redirect('login')
+    
+    lead_id = request.POST.get('lead_ref_id') or None
+    lead_insurance_type_id = request.POST.get('insurance_type') or None
+    lead_insurance_category_id = request.POST.get('insurance_category') or None
+    lead_insurance_product_id = request.POST.get('insurance_product') or None
+    lead_first_name = request.POST.get('first_name') or None
+    lead_last_name = request.POST.get('last_name') or None
+    mobile_number = request.POST.get('mobile') or None
+    
+    # Apply cleaning
+    lead_insurance_type_id = clean(lead_insurance_type_id)
+    lead_insurance_category_id = clean(lead_insurance_category_id)
+    lead_insurance_product_id = clean(lead_insurance_product_id)
+    lead_first_name = clean(lead_first_name)
+    lead_last_name = clean(lead_last_name)
+    mobile_number = clean(mobile_number)
+    
+    if not lead_id or lead_id == 0:
+        messages.error(request,'Lead Id is not found') 
+        return redirect('leads-mgt')
+    
+    lead_data = Leads.objects.filter(lead_id = lead_id).first()
+    
+    # try:
+    lead_data.lead_insurance_type_id = int(lead_insurance_type_id)
+    lead_data.lead_insurance_category_id = int(lead_insurance_category_id)
+    lead_data.lead_insurance_product_id = int(lead_insurance_product_id)
+    lead_data.lead_first_name = lead_first_name
+    lead_data.lead_last_name = lead_last_name
+    lead_data.mobile_number = mobile_number
+    lead_data.save()
+    
+    lead_id = lead_data.lead_id
+    messages.success(request,f"Saved Succesfully")
+    return redirect('lead-source',lead_id=lead_id)
+        
+    # except Exception as e:
+    #     logger.error(f"Error in update_leads_insurance_info error: {str(e)}")
+    #     messages.error(request,'Something Went Wrong Please Try After Sometime')
+    #     return redirect('leads-mgt')
+    
 def save_leads_basic_info(request):
     if not request.user.is_authenticated and request.user.is_active != 1:
         messages.error(request,'Please Login First')
         return redirect('login')
     
-    lead_id = request.POST.get('lead_id').strip()
-    customer_name = request.POST.get('customer_name').strip()
-    mobile_number = request.POST.get('mobile_number').strip()
-    email_address = request.POST.get('email_address').strip()
-    gender = request.POST.get('gender').strip()
-    date_of_birth = request.POST.get('date_of_birth').strip()
-    identity_no = request.POST.get('identity_no').strip()
+    lead_id = request.POST.get('lead_id') or None
+    customer_name = request.POST.get('customer_name') or None
+    email_address = request.POST.get('email_address') or None
+    gender = request.POST.get('gender') or None
+    date_of_birth = request.POST.get('date_of_birth') or None
+    identity_no = request.POST.get('identity_no') or None
     
     if not lead_id or lead_id == 0:
         messages.error(request,'Lead Id is not found') 
@@ -1265,12 +1340,11 @@ def save_leads_basic_info(request):
     
     lead_data = Leads.objects.filter(lead_id = lead_id).first()
     try:
-        lead_data.name_as_per_pan = customer_name
-        lead_data.mobile_number = mobile_number
-        lead_data.email_address = email_address
-        lead_data.lead_customer_gender = gender
-        lead_data.date_of_birth = date_of_birth
-        lead_data.lead_customer_identity_no = identity_no
+        lead_data.name_as_per_pan = clean(customer_name)
+        lead_data.email_address = clean(email_address)
+        lead_data.lead_customer_gender = clean(gender)
+        lead_data.date_of_birth = clean(date_of_birth)
+        lead_data.lead_customer_identity_no = clean(identity_no)
         lead_data.save()
         
         lead_id = lead_data.lead_id
@@ -1287,12 +1361,12 @@ def save_leads_source_info(request):
         messages.error(request,'Please Login First')
         return redirect('login')
     
-    lead_id = request.POST.get('lead_ref_id').strip()
-    lead_source = request.POST.get('lead_source_name').strip()
-    refered_by = request.POST.get('refered_by').strip()
-    referral_name = request.POST.get('referral_name').strip()
-    referral_mobile_number = request.POST.get('referral_mobile_number').strip()
-    source_medium = request.POST.get('source_medium').strip()
+    lead_id = request.POST.get('lead_ref_id') or None
+    lead_source = request.POST.get('lead_source_name') or None
+    refered_by = request.POST.get('refered_by') or None
+    referral_name = request.POST.get('referral_name') or None
+    referral_mobile_number = request.POST.get('referral_mobile_number') or None
+    source_medium = request.POST.get('source_medium') or None
     
     if not lead_id or lead_id == 0:
         messages.error(request,'Lead Id is not found') 
@@ -1300,11 +1374,11 @@ def save_leads_source_info(request):
     
     lead_data = Leads.objects.filter(lead_id = lead_id).first()
     try:
-        lead_data.lead_source = lead_source
-        lead_data.referral_by = refered_by
-        lead_data.referral_name = referral_name
-        lead_data.referral_mobile_no = referral_mobile_number
-        lead_data.lead_source_medium = source_medium
+        lead_data.lead_source = clean(lead_source)
+        lead_data.referral_by = clean(refered_by)
+        lead_data.referral_name = clean(referral_name)
+        lead_data.referral_mobile_no = clean(referral_mobile_number)
+        lead_data.lead_source_medium = clean(source_medium)
         lead_data.save()
         
         lead_ref_id = lead_data.lead_id
@@ -1321,10 +1395,10 @@ def save_leads_location_info(request):
         messages.error(request,'Please Login First')
         return redirect('login')
     
-    lead_id = request.POST.get('lead_ref_id').strip()
-    state = request.POST.get('state').strip()
-    city = request.POST.get('city').strip()
-    pincode = request.POST.get('pincode').strip()
+    lead_id = request.POST.get('lead_ref_id') or None
+    state = request.POST.get('state') or None
+    city = request.POST.get('city') or None
+    pincode = request.POST.get('pincode') or None
     
     if not lead_id or lead_id == 0:
         messages.error(request,'Lead Id is not found') 
@@ -1332,9 +1406,9 @@ def save_leads_location_info(request):
     
     lead_data = Leads.objects.filter(lead_id = lead_id).first()
     try:
-        lead_data.state = state
-        lead_data.city = city
-        lead_data.pincode = pincode
+        lead_data.state = clean(state)
+        lead_data.city = clean(city)
+        lead_data.pincode = clean(pincode)
         lead_data.save()
         
         lead_ref_id = lead_data.lead_id
@@ -1351,11 +1425,11 @@ def save_leads_assignment_info(request):
         messages.error(request,'Please Login First')
         return redirect('login')
     
-    lead_id = request.POST.get('lead_ref_id').strip()
-    assigned_to = request.POST.get('assigned_to').strip()
-    branch = request.POST.get('branch').strip()
-    lead_status_type = request.POST.get('lead_status_type').strip()
-    lead_tag = request.POST.get('lead_tag').strip()
+    lead_id = request.POST.get('lead_ref_id') or None
+    assigned_to = request.POST.get('assigned_to') or None
+    branch = request.POST.get('branch') or None
+    lead_status_type = request.POST.get('lead_status_type') or None
+    lead_tag = request.POST.get('lead_tag') or None
     
     if not lead_id or lead_id == 0:
         messages.error(request,'Lead Id is not found') 
@@ -1363,10 +1437,10 @@ def save_leads_assignment_info(request):
     
     lead_data = Leads.objects.filter(lead_id = lead_id).first()
     try:
-        lead_data.assigned_to = assigned_to
-        lead_data.branch_id = branch
-        lead_data.lead_status_type = lead_status_type
-        lead_data.lead_tag = lead_tag
+        lead_data.assigned_to = clean(assigned_to)
+        lead_data.branch_id = clean(branch)
+        lead_data.lead_status_type = clean(lead_status_type)
+        lead_data.lead_tag = clean(lead_tag)
         lead_data.save()
             
         lead_ref_id = lead_data.lead_id
@@ -1383,28 +1457,28 @@ def save_leads_previous_policy_info(request):
         messages.error(request,'Please Login First')
         return redirect('login')
     
-    lead_id = request.POST.get('lead_ref_id').strip()
-    previous_insurer_name = request.POST.get('previous_insurer_name').strip()
-    policy_number = request.POST.get('policy_number').strip()
-    policy_type = request.POST.get('policy_type').strip()
-    policy_date = request.POST.get('policy_date').strip()
-    policy_end_date = request.POST.get('policy_end_date').strip()
-    expiry_status = request.POST.get('expiry_status').strip()
-    ncb = request.POST.get('ncb').strip()
-    previous_idv_amount = request.POST.get('previous_idv_amount').strip()
-    previous_sum_insured = request.POST.get('previous_sum_insured').strip()
-    claim_made = request.POST.get('claim_made').strip()
-    claim_amount = request.POST.get('claim_amount').strip()
-    previous_policy_source = request.POST.get('previous_policy_source').strip()
-    vehicle_type = request.POST.get('vehicle_type').strip()
-    vehicle_class = request.POST.get('vehicle_class').strip()
-    insurance_type = request.POST.get('insurance_type').strip()
-    product_category = request.POST.get('product_category').strip()
-    vehicle_reg_no = request.POST.get('vehicle_reg_no').strip()
-    vehicle_make = request.POST.get('vehicle_make').strip()
-    vehicle_model = request.POST.get('vehicle_model').strip()
-    mgf_year = request.POST.get('mgf_year').strip()
-    sum_insured = request.POST.get('sum_insured').strip()
+    lead_id = request.POST.get('lead_ref_id') or None
+    previous_insurer_name = request.POST.get('previous_insurer_name') or None
+    policy_number = request.POST.get('policy_number') or None
+    policy_type = request.POST.get('policy_type') or None
+    policy_date = request.POST.get('policy_date') or None
+    policy_end_date = request.POST.get('policy_end_date') or None
+    expiry_status = request.POST.get('expiry_status') or None
+    ncb = request.POST.get('ncb') or None
+    previous_idv_amount = request.POST.get('previous_idv_amount') or None
+    previous_sum_insured = request.POST.get('previous_sum_insured') or None
+    claim_made = request.POST.get('claim_made') or None
+    claim_amount = request.POST.get('claim_amount') or None
+    previous_policy_source = request.POST.get('previous_policy_source') or None
+    vehicle_type = request.POST.get('vehicle_type') or None
+    vehicle_class = request.POST.get('vehicle_class') or None
+    insurance_type = request.POST.get('insurance_type') or None
+    product_category = request.POST.get('product_category') or None
+    vehicle_reg_no = request.POST.get('vehicle_reg_no') or None
+    vehicle_make = request.POST.get('vehicle_make') or None
+    vehicle_model = request.POST.get('vehicle_model') or None
+    mgf_year = request.POST.get('mgf_year') or None
+    sum_insured = request.POST.get('sum_insured') or None
     
     if not lead_id or lead_id == 0:
         messages.error(request,'Lead Id is not found') 
@@ -1412,27 +1486,27 @@ def save_leads_previous_policy_info(request):
     
     lead_data = Leads.objects.filter(lead_id = lead_id).first()
     try:
-        lead_data.previous_insurer_name = previous_insurer_name
-        lead_data.policy_number = policy_number
-        lead_data.policy_type = policy_type
-        lead_data.policy_date = policy_date
-        lead_data.policy_end_date = policy_end_date
-        lead_data.expiry_status = expiry_status
-        lead_data.ncb = ncb
-        lead_data.previous_idv_amount = previous_idv_amount
-        lead_data.previous_sum_insured = previous_sum_insured
-        lead_data.claim_made = claim_made
-        lead_data.claim_amount = claim_amount
-        lead_data.previous_policy_source = previous_policy_source
-        lead_data.vehicle_type = vehicle_type
-        lead_data.vehicle_class = vehicle_class
-        lead_data.insurance_type = insurance_type
-        lead_data.product_category = product_category
-        lead_data.vehicle_reg_no = vehicle_reg_no
-        lead_data.vehicle_make = vehicle_make
-        lead_data.vehicle_model = vehicle_model
-        lead_data.mgf_year = mgf_year
-        lead_data.sum_insured = sum_insured
+        lead_data.previous_insurer_name = clean(previous_insurer_name)
+        lead_data.policy_number = clean(policy_number)
+        lead_data.policy_type = clean(policy_type)
+        lead_data.policy_date = clean(policy_date)
+        lead_data.policy_end_date = clean(policy_end_date)
+        lead_data.expiry_status = clean(expiry_status)
+        lead_data.ncb = clean(ncb)
+        lead_data.previous_idv_amount = clean(previous_idv_amount)
+        lead_data.previous_sum_insured = clean(previous_sum_insured)
+        lead_data.claim_made = clean(claim_made)
+        lead_data.claim_amount = clean(claim_amount)
+        lead_data.previous_policy_source = clean(previous_policy_source)
+        lead_data.vehicle_type = clean(vehicle_type)
+        lead_data.vehicle_class = clean(vehicle_class)
+        lead_data.insurance_type = clean(insurance_type)
+        lead_data.product_category = clean(product_category)
+        lead_data.vehicle_reg_no = clean(vehicle_reg_no)
+        lead_data.vehicle_make = clean(vehicle_make)
+        lead_data.vehicle_model = clean(vehicle_model)
+        lead_data.mgf_year = clean(mgf_year)
+        lead_data.sum_insured = clean(sum_insured)
         lead_data.save()
             
         messages.success(request,f"Saved Succesfully")

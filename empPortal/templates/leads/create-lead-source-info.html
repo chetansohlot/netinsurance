@@ -66,7 +66,7 @@
                 <div class="card box-shadow-none p-md-4 p-3">
                   <div class="card-body px-0 pb-0 pt-0">
                       
-                    <form autocomplete="off" id="leadForm" name="leadForm" action="{% url 'save-lead-source-info' %}" method="post">
+                    <form autocomplete="off" id="leadSourceForm" name="leadSourceForm" action="{% url 'save-lead-source-info' %}" method="post">
                       {% csrf_token %}
                       <input type="hidden" name="lead_ref_id" id="lead_ref_id" value="{{lead_ref_id}}">
                       <div class="row">
@@ -76,7 +76,7 @@
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Lead Source Type</label>
                             <select class="form-field" name="lead_source_type" id="lead_source_type">
-                                <option>Select</option>
+                                <option value="">Select</option>
                                 <option value="1">Website</option>
                                 <option value="2">POSP</option>
                                 <option value="3">Call Center</option>
@@ -94,7 +94,7 @@
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Refered By</label>
                             <select class="form-field" name="refered_by" id="refered_by">
-                                <option>Select</option>
+                                <option value="">Select</option>
                                 <option value="1">referal 1</option>
                                 <option value="2">referal 2</option>
                                 <option value="3">referal 3</option>
@@ -107,12 +107,12 @@
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl" for="referral_mobile_number">Referral Mobile Number</label>
-                            <input type="text" class="form-field" name="referral_mobile_number" id="referral_mobile_number" placeholder="Enter Referral Mobile Number">
+                            <input type="text" class="form-field mobile" name="referral_mobile_number" id="referral_mobile_number" placeholder="Enter Referral Mobile Number">
                         </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Source Medium</label>
                             <select class="form-field" name="source_medium" id="source_medium">
-                                <option>Select</option>
+                                <option value="">Select</option>
                                 <option value="1">Facebook</option>
                                 <option value="2">Google</option>
                                 <option value="3">WhatsApp</option>
@@ -194,9 +194,7 @@
       window.onload = handleLeadTypeChange;
   </script>
     <script>
-      document.getElementById("myForm").addEventListener("submit", function() {
-          document.getElementById("loader").style.display = "flex";
-      });
+     
       
 
       document.addEventListener("DOMContentLoaded", function () {

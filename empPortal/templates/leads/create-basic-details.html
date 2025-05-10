@@ -66,7 +66,7 @@
                 <div class="card box-shadow-none p-md-4 p-3">
                   <div class="card-body px-0 pb-0 pt-0">
                       
-                    <form autocomplete="off" id="leadForm" name="leadForm" action="{% url 'save-lead-basic-info' %}" method="post">
+                    <form autocomplete="off" id="leadBasicInfo" name="leadBasicInfo" action="{% url 'save-lead-basic-info' %}" method="post">
                       {% csrf_token %}
                       <input type="hidden" id="lead_id" name="lead_id" value="{{lead_id}}">
 
@@ -82,14 +82,10 @@
                             <label class="form-lbl" >Customer Name</label>
                             <input type="text" class="form-field" placeholder="Enter Customer Name" name="customer_name" id="customer_name" value="">
                           </div>
-                          <div class="form-group col-md-4">
-                              <label class="form-lbl" for="mobile_number">Mobile Number</label>
-                              <input type="tel" class="form-field" name="mobile_number" id="mobile_number" pattern="[0-9]{10}" placeholder="Enter Mobile Number" value="{{ lead.mobile_number|default_if_none:'' }}">
-                          </div>
 
                           <div class="form-group col-md-4">
                               <label class="form-lbl" for="email_address">Email ID</label>
-                              <input type="email" class="form-field" name="email_address" id="email_address"
+                              <input type="email" class="form-field email" name="email_address" id="email_address"
                                     placeholder="Enter Email" value="{{ lead.email_address|default_if_none:'' }}">
                           </div>
                           <div class="form-group col-md-4">
@@ -110,34 +106,29 @@
                             <label class="form-lbl" for="identity_no">PAN/Aadhaar (Optional)</label>
                             <input type="text" class="form-field" maxlength="12" name="identity_no" id="identity_no">
                           </div>
-
-
                         
                         <script>
-                        function toggleReferralBy() {
-                            var leadSource = document.getElementById("lead_source").value;
-                            var referralDiv = document.getElementById("referral_by_div");
-                            var posPartnerDiv = document.getElementById("pos_partner_div");
-                            if (leadSource === "referral_partner") {
-                                referralDiv.style.display = "block";
-                                posPartnerDiv.style.display = "none";
-                            }else if (leadSource === "pos_partner") {
-                                posPartnerDiv.style.display = "block";
-                                referralDiv.style.display = "none";
-                            } else {
-                                posPartnerDiv.style.display = "none";
-                                referralDiv.style.display = "none";
-                            }
-                        }
-                        
-                        // Run once on page load in case of pre-selected value
-                        document.addEventListener("DOMContentLoaded", function() {
-                            toggleReferralBy();
-                        });
-                        </script>
-                        
+                          function toggleReferralBy() {
+                              var leadSource = document.getElementById("lead_source").value;
+                              var referralDiv = document.getElementById("referral_by_div");
+                              var posPartnerDiv = document.getElementById("pos_partner_div");
+                              if (leadSource === "referral_partner") {
+                                  referralDiv.style.display = "block";
+                                  posPartnerDiv.style.display = "none";
+                              }else if (leadSource === "pos_partner") {
+                                  posPartnerDiv.style.display = "block";
+                                  referralDiv.style.display = "none";
+                              } else {
+                                  posPartnerDiv.style.display = "none";
+                                  referralDiv.style.display = "none";
+                              }
+                          }
                           
-                        
+                          // Run once on page load in case of pre-selected value
+                          document.addEventListener("DOMContentLoaded", function() {
+                              toggleReferralBy();
+                          });
+                        </script>
                       </div>
                       <div class="d-flex justify-content-end">
 
@@ -184,7 +175,7 @@
       }
       // Call it on page load to ensure correct initial state
       window.onload = handleLeadTypeChange;
-  </script>
+    </script>
     <script>
       document.getElementById("myForm").addEventListener("submit", function() {
           document.getElementById("loader").style.display = "flex";
@@ -325,61 +316,32 @@
            $("#policy_date").val("");
        }
        
-     </script> 
-  <script>
-    $(document).ready(function () {
-        const registrationNumber = $("#registration_number_input").val();
-        const isEditMode = "{{ lead.id|default:'' }}" !== "";  // Adjust based on how you're passing lead
+    </script> 
+    <script>
+      $(document).ready(function () {
+          const registrationNumber = $("#registration_number_input").val();
+          const isEditMode = "{{ lead.id|default:'' }}" !== "";  // Adjust based on how you're passing lead
+    
+          if (isEditMode && registrationNumber !== "") {
+              fetchPolicyDetails();  // Auto-fetch in edit mode
+          }
+      });
+    </script>
   
-        if (isEditMode && registrationNumber !== "") {
-            fetchPolicyDetails();  // Auto-fetch in edit mode
-        }
-    });
-  </script>
-  
-  
-  <script>
-  $('#state').change(function () {
-    var stateName = $(this).val();  // changed to state name
-    $('#city').html('<option value="">Loading...</option>');
-    if (stateName) {
-        $.ajax({
-            url: "{% url 'get_cities' %}",
-            data: {
-                'state_id': stateName  // this is now state name
-            },
-            success: function (data) {
-                var options = '<option value="">Select City</option>';
-                data.forEach(function(city) {
-                    options += <option value="${city.city}">${city.city}</option>;
-                });
-                $('#city').html(options);
-            }
-        });
-    } else {
-        $('#city').html('<option value="">Select City</option>');
-    }
-});
-</script>
-
-
-  <script>
-    function loadCities(stateName, selectedCity = null) {
-        $('#city').html('<option value="">Loading cities...</option>');
+    <script>
+      $('#state').change(function () {
+        var stateName = $(this).val();  // changed to state name
+        $('#city').html('<option value="">Loading...</option>');
         if (stateName) {
             $.ajax({
                 url: "{% url 'get_cities' %}",
                 data: {
-                    'state_id': stateName
+                    'state_id': stateName  // this is now state name
                 },
                 success: function (data) {
-                    let options = '<option value="">Select City</option>';
+                    var options = '<option value="">Select City</option>';
                     data.forEach(function(city) {
-                        if (selectedCity && city.city === selectedCity) {
-                            options += <option value="${city.city}" selected>${city.city}</option>;
-                        } else {
-                            options += <option value="${city.city}">${city.city}</option>;
-                        }
+                        options += <option value="${city.city}">${city.city}</option>;
                     });
                     $('#city').html(options);
                 }
@@ -387,23 +349,52 @@
         } else {
             $('#city').html('<option value="">Select City</option>');
         }
-    }
-
-    $(document).ready(function () {
-        const selectedState = $('#state').val();
-        const selectedCity = "{{ lead.city|default:''|escapejs }}";
-
-        // Always load cities if state is selected (even if city is not)
-        if (selectedState) {
-            loadCities(selectedState, selectedCity);
-        }
-
-        $('#state').change(function () {
-            const stateName = $(this).val();
-            loadCities(stateName);
-        });
     });
-</script>
+    </script>
+
+    <script>
+      function loadCities(stateName, selectedCity = null) {
+          $('#city').html('<option value="">Loading cities...</option>');
+          if (stateName) {
+              $.ajax({
+                  url: "{% url 'get_cities' %}",
+                  data: {
+                      'state_id': stateName
+                  },
+                  success: function (data) {
+                      let options = '<option value="">Select City</option>';
+                      data.forEach(function(city) {
+                          if (selectedCity && city.city === selectedCity) {
+                              options += <option value="${city.city}" selected>${city.city}</option>;
+                          } else {
+                              options += <option value="${city.city}">${city.city}</option>;
+                          }
+                      });
+                      $('#city').html(options);
+                  }
+              });
+          } else {
+              $('#city').html('<option value="">Select City</option>');
+          }
+      }
+
+      $(document).ready(function () {
+          const selectedState = $('#state').val();
+          const selectedCity = "{{ lead.city|default:''|escapejs }}";
+
+          // Always load cities if state is selected (even if city is not)
+          if (selectedState) {
+              loadCities(selectedState, selectedCity);
+          }
+
+          $('#state').change(function () {
+              const stateName = $(this).val();
+              loadCities(stateName);
+          });
+      });
+
+      
+    </script>
 
 
 
