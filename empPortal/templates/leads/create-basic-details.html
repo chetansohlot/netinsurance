@@ -68,8 +68,7 @@
                       
                     <form autocomplete="off" id="leadBasicInfo" name="leadBasicInfo" action="{% url 'save-lead-basic-info' %}" method="post">
                       {% csrf_token %}
-                      <input type="hidden" id="lead_id" name="lead_id" value="{{lead_id}}">
-
+                      <input type="hidden" id="lead_id" name="lead_id" value="{{ lead_data.lead_id }}">
                       <div class="row">
                           <div class="col-md-12">
                             <h2 class="admin-title border-bottom pb-2 mb-4">Basic Details</h2>
@@ -80,31 +79,30 @@
                           </div>-->
                           <div class="form-group col-md-4">
                             <label class="form-lbl" >Customer Name</label>
-                            <input type="text" class="form-field" placeholder="Enter Customer Name" name="customer_name" id="customer_name" value="">
+                            <input type="text" class="form-field" name="customer_name" id="customer_name" value="{{ lead_data.name_as_per_pan }}" placeholder="Enter Customer Name">
                           </div>
 
                           <div class="form-group col-md-4">
                               <label class="form-lbl" for="email_address">Email ID</label>
-                              <input type="email" class="form-field email" name="email_address" id="email_address"
-                                    placeholder="Enter Email" value="{{ lead.email_address|default_if_none:'' }}">
+                              <input type="email" class="form-field email" name="email_address" id="email_address"  placeholder="Enter Email" value="{{ lead_data.email_address|default_if_none:'' }}">
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Gender</label>
                             <select class="form-field" name="gender" id="gender">
-                                <option value="1">Male</option>
-                                <option value="2">Female</option>
-                                <option value="3">Other</option>
+                                <option value="1" {% if lead_data.lead_customer_gender == 1  %} selected {% endif %}>Male</option>
+                                <option value="2" {% if lead_data.lead_customer_gender == 2  %} selected {% endif %}>Female</option>
+                                <option value="3" {% if lead_data.lead_customer_gender == 3  %} selected {% endif %}>Other</option>
                             </select>
                           </div>
 
                           <div class="form-group col-md-4">
                             <label class="form-lbl" for="date_of_birth">Date of Birth</label>
                             <input type="date" class="form-field dob_datepicker" name="date_of_birth" id="date_of_birth"
-                                  value="{{ lead.date_of_birth|date:'Y-m-d' }}">
+                                  value="{{ lead_data.date_of_birth|date:'Y-m-d' }}">
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl" for="identity_no">PAN/Aadhaar (Optional)</label>
-                            <input type="text" class="form-field" maxlength="12" name="identity_no" id="identity_no">
+                            <input type="text" class="form-field" maxlength="12" name="identity_no" id="identity_no" value="{{lead_data.lead_customer_identity_no|default:"" }}" placeholder="Enter Indentity No.">
                           </div>
                         
                         <script>

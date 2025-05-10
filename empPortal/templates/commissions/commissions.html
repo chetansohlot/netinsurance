@@ -45,7 +45,7 @@ Commissions
                             <p class="card-text">
                               Total Commission
                             </p>
-                            <h5 class="card-title card-number">14</h5>
+                            <h5 class="card-title card-number">{{ total_count }}</h5>
                           </div>
                         </div>
                       </div>
@@ -62,7 +62,7 @@ Commissions
                             <p class="card-text">
                               Active Commission
                             </p>
-                            <h5 class="card-title card-number">6</h5>
+                            <h5 class="card-title card-number">{{ active_count }}</h5>
                           </div>
                         </div>
                       </div>
@@ -79,14 +79,14 @@ Commissions
                             <p class="card-text">
                               Inactive Commission
                             </p>
-                            <h5 class="card-title card-number">3</h5>
+                            <h5 class="card-title card-number">{{ inactive_count }}</h5>
                           </div>
                         </div>
                       </div>
                     </div>
                   </a>  
                 </div>  
-                <div class="col-xs-6 col-sm-4 col-md-3">
+                {% comment %} <div class="col-xs-6 col-sm-4 col-md-3">
                   <a href="#">
                     <div class="card counter-img-card counter-pending-card ">
                       <div class="card-body">
@@ -102,7 +102,7 @@ Commissions
                       </div>
                     </div>
                   </a>  
-                </div>  
+                </div>   {% endcomment %}
               </div>
       
             </div>
@@ -216,11 +216,11 @@ Commissions
                                 </tr>
                                 {% endfor %}
                             </tbody>
-                        </table>
+                          </table>
                         </div>
                       </div>
                     </div>
-                    <div class="bottom-fix-pagination">
+                    {% comment %} <div class="bottom-fix-pagination">
                       <div class="d-flex">
                         <ul class="pagination">
                           <li class="page-item">
@@ -246,7 +246,7 @@ Commissions
                           <option>100 / Page</option>
                         </select>
                       </div>  
-                    </div>  
+                    </div>   {% endcomment %}
                   </div>
                 </div>
               </div>  

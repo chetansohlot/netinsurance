@@ -69,7 +69,7 @@
                     <form autocomplete="off" id="leadPreviousPolicyForm" name="leadPreviousPolicyForm" action="{% url 'save-lead-previous-policy-info' %}" method="post">
                       {% csrf_token %}
 
-                      <input type="hidden" id="lead_ref_id" name="lead_ref_id" value="{{lead_ref_id}}">
+                      <input type="hidden" id="lead_ref_id" name="lead_ref_id" value="{{lead_data.lead_id}}">
 
                       <div class="row">
                           <div class="col-md-12">
@@ -79,122 +79,122 @@
                             <label class="form-lbl">Previous Insurer Name</label>
                             <select class="form-field" name="previous_insurer_name" id="previous_insurer_name">
                                 <option value="">Select</option>
-                                <option value="1">ICICI Lombard</option>
-                                <option value="2">HDFC Ergo</option>                                
+                                <option value="1" {% if lead_data.previous_insurer_name == "1" %} selected {% endif %}>ICICI Lombard</option>
+                                <option value="2" {% if lead_data.previous_insurer_name == "2" %} selected {% endif %}>HDFC Ergo</option>                                
                             </select>
                           </div>
                           
                           <div class="form-group col-md-4">
                             <label class="form-lbl" for="policy_number">Policy Number</label>
-                            <input type="text" class="form-field" name="policy_number" id="policy_number" placeholder="Enter Policy Number" >
+                            <input type="text" class="form-field" name="policy_number" id="policy_number" placeholder="Enter Policy Number" value="{{ lead_data.policy_number }}">
                           </div>
 
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Policy Type</label>
                             <select class="form-field" name="policy_type" id="policy_type">
                                 <option value="">Select</option>
-                                <option value="1">Comprehensive</option>
-                                <option value="1">Third Party</option>                                
-                                <option value="1">OD Only</option>                                
+                                <option value="1" {% if lead_data.policy_type == "1" %}selected{% endif %}>Comprehensive</option>
+                                <option value="2" {% if lead_data.policy_type == "2" %}selected{% endif %}>Third Party</option>                                
+                                <option value="3" {% if lead_data.policy_type == "3" %}selected{% endif %}>OD Only</option>                                
                             </select>
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl" for="policy_date">Policy Start Date</label>
-                            <input type="date" class="form-field datepicker_common" name="policy_date" id="policy_date" placeholder="Enter Policy Start Date" >
+                            <input type="date" class="form-field datepicker_common" name="policy_date" id="policy_date" placeholder="Enter Policy Start Date" value="{{lead_data.policy_date}}">
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl" for="policy_end_date">Policy End Date</label>
-                            <input type="date" class="form-field datepicker_common" name="policy_end_date" id="policy_end_date" placeholder="Enter Policy End Date" >
+                            <input type="date" class="form-field datepicker_common" name="policy_end_date" id="policy_end_date" placeholder="Enter Policy End Date" value="{{lead_data.policy_end_date}}" >
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Expiry Status</label>
                             <select class="form-field" name="expiry_status" id="expiry_status">
                                 <option value="">Select</option>
-                                <option value="1">Expired</option>
-                                <option value="2">Active</option>                                
-                                <option value="3">Grace Period</option>                                
+                                <option value="Expired" {% if lead_data.expiry_status == "Expired" %}selected{% endif %}>Expired</option>
+                                <option value="Active" {% if lead_data.expiry_status == "Active" %}selected{% endif %}>Active</option>                                
+                                <option value="Grace" {% if lead_data.expiry_status == "Grace" %}selected{% endif %}>Grace Period</option>                                
                             </select>
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">No Claim Bonus (NCB)</label>
                             <select class="form-field" name="ncb" id="ncb">
-                                <option value="1">0%</option>
-                                <option value="1">20%</option>
-                                <option value="1">25%</option>                                
-                                <option value="1">35%</option>                                
-                                <option value="1">45%</option>                                
-                                <option value="1">50%</option>                                
+                                <option value="1" {% if lead_data.ncb == "1" %}selected{% endif %}>0%</option>
+                                <option value="2" {% if lead_data.ncb == "2" %}selected{% endif %}>20%</option>
+                                <option value="3" {% if lead_data.ncb == "3" %}selected{% endif %}>25%</option>                                
+                                <option value="4" {% if lead_data.ncb == "4" %}selected{% endif %}>35%</option>                                
+                                <option value="5" {% if lead_data.ncb == "5" %}selected{% endif %}>45%</option>                                
+                                <option value="6" {% if lead_data.ncb == "6" %}selected{% endif %}>50%</option>                                
                             </select>
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Previous IDV (for Motor)</label>
-                            <input type="text" class="form-field number" name="previous_idv_amount" id="previous_idv_amount" placeholder="Enter IDV Amount" >
+                            <input type="text" class="form-field number" name="previous_idv_amount" id="previous_idv_amount" placeholder="Enter IDV Amount" value="{{lead_data.previous_idv_amount}}">
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Previous Sum Insured (for Health)</label>
-                            <input type="text" class="form-field number" name="previous_sum_insured" id="previous_sum_insured" placeholder="Enter Amount" >
+                            <input type="text" class="form-field number" name="previous_sum_insured" id="previous_sum_insured" placeholder="Enter Amount" value="{{lead_data.previous_sum_insured}}">
                           </div>
 
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Claims Made</label>
                             <select class="form-field" name="claim_made" id="claim_made">
                                 <!-- <option value="">Select</option> -->
-                                <option value="1">Yes</option>
-                                <option value="2">No</option>
+                                <option value="1" {% if lead_data.claim_made == "1" %}selected{% endif %}>Yes</option>
+                                <option value="2" {% if lead_data.claim_made == "2" %}selected{% endif %}>No</option>
                             </select>
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Claim Amount (optional)</label>
-                            <input type="text" class="form-field number" name="claim_amount" id="claim_amount" placeholder="Enter Amount" >
+                            <input type="text" class="form-field number" name="claim_amount" id="claim_amount" placeholder="Enter Amount" value="{{lead_data.claim_amount}}">
                           </div>
 
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Previous Policy Source</label>
                             <select class="form-field" name="previous_policy_source" id="previous_policy_source">
                                 <option value="">Select</option>
-                                <option value="1">Agent</option>
-                                <option value="1">Online</option>
-                                <option value="1">Dealer</option>
-                                <option value="1">Direct</option>
-                                <option value="1">Aggregator</option>
+                                <option value="1" {% if lead_data.previous_policy_source == "1" %}selected{%endif%}>Agent</option>
+                                <option value="2" {% if lead_data.previous_policy_source == "2" %}selected{%endif%}>Online</option>
+                                <option value="3" {% if lead_data.previous_policy_source == "3" %}selected{%endif%}>Dealer</option>
+                                <option value="4" {% if lead_data.previous_policy_source == "4" %}selected{%endif%}>Direct</option>
+                                <option value="5" {% if lead_data.previous_policy_source == "5" %}selected{%endif%}>Aggregator</option>
                             </select>
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Vehicle Type</label>
                             <select class="form-field" name="vehicle_type" id="vehicle_type">
                                 <option value="">Select</option>
-                                <option value="2">Private</option>
-                                <option value="2">Commercial</option>
-                                <option value="2">Other</option>
+                                <option value="1" {% if lead_data.vehicle_type == "1" %}selected{% endif %}>Private</option>
+                                <option value="2" {% if lead_data.vehicle_type == "2" %}selected{% endif %}>Commercial</option>
+                                <option value="3" {% if lead_data.vehicle_type == "3" %}selected{% endif %}>Other</option>
                             </select>
                           </div> 
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Vehicle Class</label>
                             <select class="form-field" name="vehicle_class" id="vehicle_class">
                                 <option value="">Select</option>
-                                <option value="1">Two-Wheeler</option>
-                                <option value="1">Four-Wheeler</option>
-                                <option value="1">Other</option>
+                                <option value="1" {% if lead_data.vehicle_class == "1" %}selected{% endif %}>Two-Wheeler</option>
+                                <option value="2" {% if lead_data.vehicle_class == "2" %}selected{% endif %}>Four-Wheeler</option>
+                                <option value="3" {% if lead_data.vehicle_class == "3" %}selected{% endif %}>Other</option>
                             </select>
                           </div> 
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Insurance Type</label>
                             <select class="form-field" name="insurance_type" id="insurance_type">
                                 <option value="">Select</option>
-                                <option value="2">Motor</option>
-                                <option value="2">Health</option>
-                                <option value="2">Life</option>
-                                <option value="2">Travel</option>
-                                <option value="2">General</option>
+                                <option value="1" {% if lead_data.insurance_type == "1" %} selected {%endif%}>Motor</option>
+                                <option value="2" {% if lead_data.insurance_type == "2" %} selected {%endif%}>Health</option>
+                                <option value="3" {% if lead_data.insurance_type == "3" %} selected {%endif%}>Life</option>
+                                <option value="4" {% if lead_data.insurance_type == "4" %} selected {%endif%}>Travel</option>
+                                <option value="5" {% if lead_data.insurance_type == "5" %} selected {%endif%}>General</option>
                             </select>
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Product Category</label>
                             <select class="form-field" name="product_category" id="product_category">
                                 <option value="">Select</option>
-                                <option value="1">Private Car</option>
-                                <option value="1">Mediclaim</option>
-                                <option value="1">Term Life</option>
+                                <option value="1" {% if lead_data.product_category == "1" %}selected{% endif %}>Private Car</option>
+                                <option value="2" {% if lead_data.product_category == "2" %}selected{% endif %}>Mediclaim</option>
+                                <option value="3" {% if lead_data.product_category == "3" %}selected{% endif %}>Term Life</option>
                             </select>
                           </div>
                           <div class="col-sm-12">
@@ -202,23 +202,23 @@
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Registration No</label>
-                            <input type="text" class="form-field" name="vehicle_reg_no" id="vehicle_reg_no" placeholder="Registration No" >
+                            <input type="text" class="form-field" name="vehicle_reg_no" id="vehicle_reg_no" placeholder="Registration No" value="{{lead_data.vehicle_reg_no}}">
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Make</label>
-                            <input type="text" class="form-field" name="vehicle_make" id="vehicle_make" placeholder="Make" >
+                            <input type="text" class="form-field" name="vehicle_make" id="vehicle_make" placeholder="Make" value="{{lead_data.vehicle_make}}">
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Model</label>
-                            <input type="text" class="form-field" name="vehicle_model" id="vehicle_model" placeholder="Model" >
+                            <input type="text" class="form-field" name="vehicle_model" id="vehicle_model" placeholder="Model" value="{{lead_data.vehicle_model}}">
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Year</label>
-                            <input type="text" class="form-field" name="mgf_year" id="mgf_year" placeholder="Year" >
+                            <input type="text" class="form-field" name="mgf_year" id="mgf_year" placeholder="Year" value="{{lead_data.mgf_year}}">
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Sum Insured (if Health/Life)</label>
-                            <input type="text" class="form-field number" name="sum_insured" id="sum_insured" placeholder="Amount" >
+                            <input type="text" class="form-field number" name="sum_insured" id="sum_insured" placeholder="Amount" value="{{lead_data.sum_insured}}">
                           </div>
                         <script>
                             
