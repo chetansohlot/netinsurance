@@ -64,7 +64,7 @@ def commission_report(request):
     # Prepare data for rendering
     policy_data = []
     for policy in page_obj:
-        policy_infos = policy.policy_info.first()
+        policy_infos = policy.policy_info.order_by('-created_at').first()
         policy_vehicle_info = policy.policy_vehicle_info.first()
         policy_agent_info = policy.policy_agent_info.first()
         policy_franchise_info = policy.policy_franchise_info.first()
