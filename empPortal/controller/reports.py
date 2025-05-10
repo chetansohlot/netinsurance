@@ -100,18 +100,18 @@ def agent_business_report(request):
         return redirect('login')
     
     # Get filter values from GET parameters
-    filters = {
-        'policy_no': request.GET.get("policy_no", None),
-        'insurer_name': request.GET.get("insurer_name", None),
-        'service_provider': request.GET.get("service_provider", None),
-        'insurance_company': request.GET.get("insurance_company", None),
-        'policy_type': request.GET.get("policy_type", None),
-        'vehicle_type': request.GET.get("vehicle_type", None),
-        'referral_name': request.GET.get("referral_name", None),
-        'vehicle_reg_no': request.GET.get("vehicle_reg_no", None),
-        'policy_start_date': request.GET.get("policy_start_date", None),
-        'policy_end_date': request.GET.get("policy_end_date", None),
-    }
+    # filters = {
+    #     'policy_no': request.GET.get("policy_no", None),
+    #     'insurer_name': request.GET.get("insurer_name", None),
+    #     'service_provider': request.GET.get("service_provider", None),
+    #     'insurance_company': request.GET.get("insurance_company", None),
+    #     'policy_type': request.GET.get("policy_type", None),
+    #     'vehicle_type': request.GET.get("vehicle_type", None),
+    #     'referral_name': request.GET.get("referral_name", None),
+    #     'vehicle_reg_no': request.GET.get("vehicle_reg_no", None),
+    #     'policy_start_date': request.GET.get("policy_start_date", None),
+    #     'policy_end_date': request.GET.get("policy_end_date", None),
+    # }
     
     # Pagination setup
     per_page = request.GET.get("per_page", 20)  # Default: 20 records per page
@@ -192,18 +192,18 @@ def franchisees_business_report(request):
         return redirect('login')
     
     # Get filter values from GET parameters
-    filters = {
-        'policy_no': request.GET.get("policy_no", None),
-        'insurer_name': request.GET.get("insurer_name", None),
-        'service_provider': request.GET.get("service_provider", None),
-        'insurance_company': request.GET.get("insurance_company", None),
-        'policy_type': request.GET.get("policy_type", None),
-        'vehicle_type': request.GET.get("vehicle_type", None),
-        'referral_name': request.GET.get("referral_name", None),
-        'vehicle_reg_no': request.GET.get("vehicle_reg_no", None),
-        'policy_start_date': request.GET.get("policy_start_date", None),
-        'policy_end_date': request.GET.get("policy_end_date", None),
-    }
+    # filters = {
+    #     'policy_no': request.GET.get("policy_no", None),
+    #     'insurer_name': request.GET.get("insurer_name", None),
+    #     'service_provider': request.GET.get("service_provider", None),
+    #     'insurance_company': request.GET.get("insurance_company", None),
+    #     'policy_type': request.GET.get("policy_type", None),
+    #     'vehicle_type': request.GET.get("vehicle_type", None),
+    #     'referral_name': request.GET.get("referral_name", None),
+    #     'vehicle_reg_no': request.GET.get("vehicle_reg_no", None),
+    #     'policy_start_date': request.GET.get("policy_start_date", None),
+    #     'policy_end_date': request.GET.get("policy_end_date", None),
+    # }
     
     # Pagination setup
     per_page = request.GET.get("per_page", 20)  # Default: 20 records per page
@@ -283,18 +283,18 @@ def insurer_business_report(request):
         return redirect('login')
     
     # Get filter values from GET parameters
-    filters = {
-        'policy_no': request.GET.get("policy_no", None),
-        'insurer_name': request.GET.get("insurer_name", None),
-        'service_provider': request.GET.get("service_provider", None),
-        'insurance_company': request.GET.get("insurance_company", None),
-        'policy_type': request.GET.get("policy_type", None),
-        'vehicle_type': request.GET.get("vehicle_type", None),
-        'referral_name': request.GET.get("referral_name", None),
-        'vehicle_reg_no': request.GET.get("vehicle_reg_no", None),
-        'policy_start_date': request.GET.get("policy_start_date", None),
-        'policy_end_date': request.GET.get("policy_end_date", None),
-    }
+    # filters = {
+    #     'policy_no': request.GET.get("policy_no", None),
+    #     'insurer_name': request.GET.get("insurer_name", None),
+    #     'service_provider': request.GET.get("service_provider", None),
+    #     'insurance_company': request.GET.get("insurance_company", None),
+    #     'policy_type': request.GET.get("policy_type", None),
+    #     'vehicle_type': request.GET.get("vehicle_type", None),
+    #     'referral_name': request.GET.get("referral_name", None),
+    #     'vehicle_reg_no': request.GET.get("vehicle_reg_no", None),
+    #     'policy_start_date': request.GET.get("policy_start_date", None),
+    #     'policy_end_date': request.GET.get("policy_end_date", None),
+    # }
     
     # Pagination setup
     per_page = request.GET.get("per_page", 20)  # Default: 20 records per page
@@ -376,18 +376,18 @@ def sales_manager_business_report(request):
         return redirect('login')
     
     # Get filter values from GET parameters
-    filters = {
-        'policy_no': request.GET.get("policy_no", None),
-        'insurer_name': request.GET.get("insurer_name", None),
-        'service_provider': request.GET.get("service_provider", None),
-        'insurance_company': request.GET.get("insurance_company", None),
-        'policy_type': request.GET.get("policy_type", None),
-        'vehicle_type': request.GET.get("vehicle_type", None),
-        'referral_name': request.GET.get("referral_name", None),
-        'vehicle_reg_no': request.GET.get("vehicle_reg_no", None),
-        'policy_start_date': request.GET.get("policy_start_date", None),
-        'policy_end_date': request.GET.get("policy_end_date", None),
-    }
+    # filters = {
+    #     'policy_no': request.GET.get("policy_no", None),
+    #     'insurer_name': request.GET.get("insurer_name", None),
+    #     'service_provider': request.GET.get("service_provider", None),
+    #     'insurance_company': request.GET.get("insurance_company", None),
+    #     'policy_type': request.GET.get("policy_type", None),
+    #     'vehicle_type': request.GET.get("vehicle_type", None),
+    #     'referral_name': request.GET.get("referral_name", None),
+    #     'vehicle_reg_no': request.GET.get("vehicle_reg_no", None),
+    #     'policy_start_date': request.GET.get("policy_start_date", None),
+    #     'policy_end_date': request.GET.get("policy_end_date", None),
+    # }
     
     # Pagination setup
     per_page = request.GET.get("per_page", 20)  # Default: 20 records per page
