@@ -1298,7 +1298,7 @@ def save_leads_insurance_info(request):
         lead_ref_id = leads_insert.lead_id
         
         messages.success(request,f"Saved Succesfully")
-        return redirect('basic-info',lead_data=leads_insert)
+        return redirect('basic-info',lead_id=lead_ref_id)
         
     except Exception as e:
         logger.error(f"Error in save_leads_insurance_info error: {str(e)}")
