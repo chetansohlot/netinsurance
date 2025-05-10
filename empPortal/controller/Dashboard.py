@@ -62,8 +62,9 @@ def dashboard(request):
         else:
             base_qs = PolicyDocument.objects.filter(status=6)
 
-        base_qs = base_qs.prefetch_related('policy_info')    
-        
+        base_qs = base_qs.prefetch_related(
+            'policy_agent_info', 'policy_franchise_info', 'policy_insurer_info'
+        )
         base_qs = base_qs.filter(policy_info__isnull=False)
 
         # Group by insurance_provider
