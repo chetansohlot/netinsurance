@@ -581,10 +581,6 @@ def termlead(request):
     else:
         return redirect('login')
 
-def lead_init_view(request):
-    types = InsuranceType.objects.all()
-    return render(request, 'leads/lead-init.html', {'types': types})
-
 # For AJAX - Load categories
 def load_categories(request):
     type_id = request.GET.get('insurance_type')
@@ -1157,6 +1153,15 @@ def bulk_upload_leads(request):
     return render(request, "leads/bulk_upload.html")
 
 #for ctraye lead step by step
+def lead_init_view(request):
+    if not request.user.is_authenticated and request.user.is_active!=1:
+        messages.error(request,'Please Login First')
+        return redirect('login')
+    
+    types = InsuranceType.objects.all()
+    return render(request, 'leads/lead-init.html', {'types': types})
+
+
 def basic_info(request,lead_id):
     if not request.user.is_authenticated and request.user.is_active!=1:
         messages.error(request,'Please Login First')
@@ -1218,33 +1223,34 @@ def save_leads_insurance_info(request):
         messages.error(request,'Please Login First')
         return redirect('login')
     
-    lead_insurance_type_id = request.POST.get('insurance_type').strip()
-    lead_insurance_category_id = request.POST.get('insurance_category').strip()
-    lead_insurance_product_id = request.POST.get('insurance_product').strip()
-    lead_first_name = request.POST.get('first_name').strip()
-    lead_last_name = request.POST.get('last_name').strip()
-    mobile_number = request.POST.get('mobile').strip()
+    lead_insurance_type_id = request.POST.get('insurance_type', '').strip()
+    lead_insurance_category_id = request.POST.get('insurance_category', '').strip()
+    lead_insurance_product_id = request.POST.get('insurance_product', '').strip()
+    lead_first_name = request.POST.get('first_name', '').strip()
+    lead_last_name = request.POST.get('last_name', '').strip()
+    mobile_number = request.POST.get('mobile', '').strip()
     
-    try:
-        leads_insert = Leads.objects.create(
-            lead_id = int(time.time()),
-            lead_insurance_type_id = lead_insurance_type_id,
-            lead_insurance_category_id = lead_insurance_category_id,
-            lead_insurance_product_id = lead_insurance_product_id,
-            lead_first_name = lead_first_name,
-            lead_last_name = lead_last_name,
-            mobile_number = mobile_number
-        )
+    # try:
+    leads_insert = Leads.objects.create(
+        lead_id = int(time.time()),
+        lead_insurance_type_id = lead_insurance_type_id,
+        lead_insurance_category_id = lead_insurance_category_id,
+        lead_insurance_product_id = lead_insurance_product_id,
+        lead_first_name = lead_first_name,
+        lead_last_name = lead_last_name,
+        mobile_number = mobile_number,
+        created_by = request.user.id
+    )
+    
+    lead_ref_id = leads_insert.lead_id
+    
+    messages.success(request,f"Saved Succesfully")
+    return redirect('basic-info',lead_id=lead_ref_id)
         
-        lead_ref_id = leads_insert.lead_id
-        
-        messages.success(request,f"Saved Succesfully")
-        return redirect('basic-info',lead_id=lead_ref_id)
-        
-    except Exception as e:
-        logger.error(f"Error in save_leads_insurance_info error: {str(e)}")
-        messages.error(request,'Something Went Wrong Please Try After Sometime')
-        return redirect('leads-mgt')
+    # except Exception as e:
+    #     logger.error(f"Error in save_leads_insurance_info error: {str(e)}")
+    #     messages.error(request,'Something Went Wrong Please Try After Sometime')
+    #     return redirect('leads-mgt')
     
 def save_leads_basic_info(request):
     if not request.user.is_authenticated and request.user.is_active != 1:

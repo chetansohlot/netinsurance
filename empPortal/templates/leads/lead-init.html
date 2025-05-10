@@ -57,7 +57,7 @@
          
               <div class="card box-shadow-none p-md-5 p-3">
                 <div class="card-body px-0 pb-0 pt-0">
-                  <form action="{% url 'save-lead-insurance-info' %}" id="leadForm" method="POST" autocomplete="off">
+                  <form action="{% url 'save-lead-insurance-info' %}" id="leadInitForm" method="POST" autocomplete="off">
                     {% csrf_token %}
                     <div class="row">
                       <div class="form-group col-md-4">
@@ -86,19 +86,19 @@
                     
                       <div class="form-group col-md-6">
                         <label>First Name:</label>
-                        <input type="text" name="first_name" class="form-control" id="first_name" placeholder="First Name" maxlength="50">
+                        <input type="text" name="first_name name" class="form-control" id="first_name" placeholder="First Name" maxlength="50">
                         <small class="text-danger error-msg" id="error-first_name"></small>
                       </div>
                       
                       <div class="form-group col-md-6">
                         <label>Last Name:</label>
-                        <input type="text" name="last_name" class="form-control" id="last_name" placeholder="Last Name" maxlength="50">
+                        <input type="text" name="last_name name" class="form-control" id="last_name" placeholder="Last Name" maxlength="50">
                         <small class="text-danger error-msg" id="error-last_name"></small>
                       </div>
                       
                       <div class="form-group col-md-6">
                         <label>Mobile Number:</label>
-                        <input type="text" name="mobile" class="form-control" id="mobile" pattern="[0-9]{10}" placeholder="Mobile Number" maxlength="10">
+                        <input type="text" name="mobile" class="form-control mobile" id="mobile" pattern="[0-9]{10}" placeholder="Mobile Number" maxlength="10">
                         <small class="text-danger error-msg" id="error-mobile"></small>
                       </div>
                       
@@ -131,11 +131,6 @@
     {% include "footer.html" %}
     {% include "footer-script.html" %}
     <script>
-        // Show loader when form submits
-        document.getElementById("leadForm").addEventListener("submit", function() {
-          document.getElementById("loader").style.display = "flex";
-        });
-  
         // Dynamic category/Product loading
         $('#insurance_type').on('change', function () {
             var insuranceTypeId = $(this).val();
@@ -190,6 +185,69 @@
                 $('#insurance_product').prop('disabled', true);
             }
         });
+
+        $(document).ready(function () {
+          $("#leadInitForm").validate({
+            rules: {
+                insurance_type:{
+                 required: true,
+                },
+                insurance_category:{
+                  required: true,
+                },
+                insurance_product:{
+                  required: true,
+                },
+                first_name:{
+                  required: true,
+                  minlength:3
+                },
+                last_name:{
+                  required: true,
+                  minlength:3
+                },
+                mobile:{
+                  required: true,
+                  digits: true,
+                  minlength: 10,
+                  maxlength: 10
+                },
+            },
+            messages: {
+                insurance_type: {
+                    required: "Insurance Type is required"
+                },
+                insurance_category: {
+                    required: "Insurance Category is required"
+                },
+                insurance_product: {
+                    required: "Insurance Product is required"
+                },
+                first_name: {
+                    required: "First Name is required",
+                    minlength: "Name must be at least 3 characters long"
+                },
+                last_name: {
+                    required: "Last Name is required",
+                    minlength: "Name must be at least 3 characters long"
+                },
+                mobile: {
+                    required: "Please enter Mobile Number",
+                    minlength: "Mobile Number must be 10 characters long",
+                    maxlength: "Mobile Number must be 10 characters long",
+                }
+            },
+            errorElement: "div",
+            errorPlacement: function (error, element) {
+                error.addClass("text-danger");
+                error.insertAfter(element);
+            },
+            submitHandler: function (form) {
+                $("#loader").show();
+                form.submit();
+            }
+        });
+    });
       </script>
   </div>
 </body>

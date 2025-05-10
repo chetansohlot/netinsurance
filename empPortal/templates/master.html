@@ -1331,7 +1331,181 @@
             }
         });
     });
-    </script>
+
+    $(document).ready(function () {
+        $("#leadBasicInfo").validate({
+            rules: {
+                customer_name:{
+
+                },
+                mobile_number:{
+
+                },
+                email_address:{
+
+                },
+                gender:{
+
+                },
+                date_of_birth:{
+
+                },
+                identity_no:{
+
+                },
+            },
+            messages: {
+                customer_id: {
+                    required: "Please select a Customer ID"
+                },
+                mobile_number: {
+                    required: "Please enter a mobile number",
+                    digits: "Only numbers allowed",
+                    minlength: "Mobile number must be 10 digits",
+                    maxlength: "Mobile number must be 10 digits"
+                },
+                email_address: {
+                    required: "Please enter an email address",
+                    email: "Enter a valid email address"
+                },
+                quote_date: {
+                    required: "Please select a quote date"
+                },
+                name_as_per_pan: {
+                    required: "Please enter your name as per PAN",
+                    minlength: "Name must be at least 3 characters long"
+                },
+                pan_card_number: {
+                    required: "Please enter PAN number",
+                    minlength: "PAN must be 10 characters long",
+                    maxlength: "PAN must be 10 characters long",
+                    pattern: "Enter a valid PAN (e.g., ABCDE1234F)"
+                },
+                date_of_birth: {
+                    required: "Please enter Date of Birth"
+                },
+                state: {
+                    required: "Please enter State"
+                },
+                city: {
+                    required: "Please enter City"
+                },
+                pincode: {
+                    required: "Please enter Pincode",
+                    digits: "Only numbers allowed",
+                    minlength: "Pincode must be 6 digits",
+                    maxlength: "Pincode must be 6 digits"
+                },
+                address: {
+                    required: "Please enter Address",
+                    minlength: "Address must be at least 10 characters long"
+                },
+                lead_type: {
+                    required: "Please select Lead Type"
+                },
+                status: {
+                    required: "Please select Status"
+                }
+            },
+            errorElement: "div",
+            errorPlacement: function (error, element) {
+                error.addClass("text-danger");
+                error.insertAfter(element);
+            },
+            submitHandler: function (form) {
+                form.submit();
+            }
+        });
+    });
+
+    $(document).ready(function () {
+        $("#leadBasicInfo").validate({
+            rules: {
+                customer_name:{
+
+                },
+                mobile_number:{
+
+                },
+                email_address:{
+
+                },
+                gender:{
+
+                },
+                date_of_birth:{
+
+                },
+                identity_no:{
+
+                },
+            },
+            messages: {
+                customer_id: {
+                    required: "Please select a Customer ID"
+                },
+                mobile_number: {
+                    required: "Please enter a mobile number",
+                    digits: "Only numbers allowed",
+                    minlength: "Mobile number must be 10 digits",
+                    maxlength: "Mobile number must be 10 digits"
+                },
+                email_address: {
+                    required: "Please enter an email address",
+                    email: "Enter a valid email address"
+                },
+                quote_date: {
+                    required: "Please select a quote date"
+                },
+                name_as_per_pan: {
+                    required: "Please enter your name as per PAN",
+                    minlength: "Name must be at least 3 characters long"
+                },
+                pan_card_number: {
+                    required: "Please enter PAN number",
+                    minlength: "PAN must be 10 characters long",
+                    maxlength: "PAN must be 10 characters long",
+                    pattern: "Enter a valid PAN (e.g., ABCDE1234F)"
+                },
+                date_of_birth: {
+                    required: "Please enter Date of Birth"
+                },
+                state: {
+                    required: "Please enter State"
+                },
+                city: {
+                    required: "Please enter City"
+                },
+                pincode: {
+                    required: "Please enter Pincode",
+                    digits: "Only numbers allowed",
+                    minlength: "Pincode must be 6 digits",
+                    maxlength: "Pincode must be 6 digits"
+                },
+                address: {
+                    required: "Please enter Address",
+                    minlength: "Address must be at least 10 characters long"
+                },
+                lead_type: {
+                    required: "Please select Lead Type"
+                },
+                status: {
+                    required: "Please select Status"
+                }
+            },
+            errorElement: "div",
+            errorPlacement: function (error, element) {
+                error.addClass("text-danger");
+                error.insertAfter(element);
+            },
+            submitHandler: function (form) {
+                form.submit();
+            }
+        });
+    });
+
+    
+</script>
     
 <script>
     $(document).ready(function () {
