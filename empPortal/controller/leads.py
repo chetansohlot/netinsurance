@@ -1545,3 +1545,9 @@ def save_leads_previous_policy_info(request):
         messages.error(request,'Something Went Wrong Please Try After Sometime')
         return redirect('leads-mgt')
     
+def view_lead(request, lead_id):
+    if not request.user.is_authenticated and request.user.is_active != 1:
+        return redirect('login')
+        
+    lead = get_object_or_404(Leads, lead_id=lead_id)
+    return render(request, 'leads/lead-view.html', {'lead': lead})
