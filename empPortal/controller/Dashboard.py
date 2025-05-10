@@ -203,7 +203,6 @@ def business_summary_insurer_chart(request):
         policies_sold = row[1]
         initials = ''.join(word[0] for word in insurance_provider.split() if word).upper() if insurance_provider else ''
 
-
         provider_summary.append({
             'insurance_provider': insurance_provider,
             'policies_sold': policies_sold,
@@ -211,7 +210,8 @@ def business_summary_insurer_chart(request):
         })
 
         insurer_motor_counts.append(policies_sold)
-        insurer_provider_labels.append(insurance_provider)
+        insurer_provider_labels.append(initials)
+
 
     return insurer_motor_counts, insurer_provider_labels
 
