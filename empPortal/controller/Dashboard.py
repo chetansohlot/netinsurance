@@ -63,24 +63,20 @@ def dashboard(request):
             base_qs = PolicyDocument.objects.filter(status=6)
 
         # For aggregation, do NOT prefetch to avoid duplication
-        # aggregation_qs = base_qs.filter(policy_info__isnull=False)
-        # aggregation_qs = base_qs.filter(policy_info__isnull=False).distinct()
-
-        # Group by insurance_provider with safe annotations
         aggregation_qs = base_qs.filter(policy_info__isnull=False)
 
         provider_summary = (
             aggregation_qs
             .values('insurance_provider')
+            .distinct()  # Using distinct without field-specific 'id'
             .annotate(
-                policies_sold=Count('id', distinct=True),
-                policy_income=Sum(Cast('policy_premium', output_field=FloatField()), distinct=True),
-                total_net_premium=Sum(Cast('policy_info__net_premium', FloatField()), distinct=True),
-                total_gross_premium=Sum(Cast('policy_info__gross_premium', FloatField()), distinct=True),
+                policies_sold=Count('id'),
+                policy_income=Sum(Cast('policy_premium', output_field=FloatField())),
+                total_net_premium=Sum(Cast('policy_info__net_premium', FloatField())),
+                total_gross_premium=Sum(Cast('policy_info__gross_premium', FloatField())),
             )
             .order_by('-policy_income', '-policies_sold')
         )
-
 
         total_policies = aggregation_qs.count()
         total_revenue = aggregation_qs.aggregate(
@@ -152,6 +148,7 @@ def dashboard(request):
         })
     else:
         return redirect('login')
+
 
 
 def insurer_wise_date(request):
