@@ -161,8 +161,10 @@ urlpatterns = [
     path('leads/assignment/<str:lead_id>', leads.assignment, name='lead-assignment'),
     path('leads/previous-policy-info/<str:lead_id>', leads.previous_policy_info, name='leads-previous-policy-info'),
 
-
+    path('leads/product-info/lead-init/<str:lead_id>', leads.lead_init_edit, name='edit-lead-init'),
+    
     #save lead steps 
+    path('leads/v1/save-lead-insurance-info',leads.save_leads_insurance_info,name="save-lead-insurance-info"), 
     path('leads/v1/save-lead-insurance-info',leads.save_leads_insurance_info,name="save-lead-insurance-info"), 
     path('leads/v1/save-lead-basic-info',leads.save_leads_basic_info,name="save-lead-basic-info"), 
     path('leads/v1/save-lead-source-info',leads.save_leads_source_info,name="save-lead-source-info"), 
