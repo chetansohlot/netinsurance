@@ -819,15 +819,22 @@ def fetch_policy_details(request):
             return JsonResponse({'success': False, 'message': str(e)})
 
     return JsonResponse({'success': False, 'message': 'Invalid request'})
+#state
+def get_state(request):
+    states = State.objects.all()
+    return render(request, 'leads/create-location-info.html', {'states': states})
 
 def get_cities(request):
-    state_name = request.GET.get('state_id')
+    """state_name = request.GET.get('state_id')
     try:
         state = State.objects.get(name=state_name)
         cities = City.objects.filter(state=state).values('city')
         return JsonResponse(list(cities), safe=False)
     except State.DoesNotExist:
-        return JsonResponse([], safe=False)
+        return JsonResponse([], safe=False)"""
+    state_id = request.GET.get('state_id')
+    cities = City.objects.filter(state_id=state_id).values('id', 'city')
+    return JsonResponse({'cities': list(cities)})
 
 """def bulk_upload_leads(request):
     if request.method == 'POST':

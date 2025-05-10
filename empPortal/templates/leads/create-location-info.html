@@ -77,24 +77,34 @@
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl" for="state">State</label>
-                            <select class="form-field" name="state" id="state">
+                            <!--<select class="form-field" name="state" id="state">
                                 <option value="">Select State</option>
                                 {% for s in states %}
                                     <option value="{{ s.name }}" {% if lead and lead.state == s.name %}selected{% endif %}>
                                         {{ s.name }}
                                     </option>
                                 {% endfor %}
+                            </select>-->
+                            <select class="form-field" name="state" id="state">
+                              <option value="">Select State</option>
+                              {% for state in states %}
+                                <option value="{{ state.id }}">{{ state.name }}</option>
+                              {% endfor %}
                             </select>
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl" for="city">City</label>
-                            <select class="form-field" name="city" id="city">
+                            <!--<select class="form-field" name="city" id="city">
                                 {% if lead %}
                                     <option value="{{ lead.city }}" selected>{{ lead.city }}</option>
                                 {% else %}
                                     <option value="">Select City</option>
                                 {% endif %}
+                            </select>-->
+                            <select class="form-field" name="city" id="city">
+                              <option value="">Select City</option>
                             </select>
+                            
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl" for="pincode">Pincode</label>
@@ -330,7 +340,7 @@
   </script>
   
   
-  <script>
+  <!--<script>
   $('#state').change(function () {
     var stateName = $(this).val();  // changed to state name
     $('#city').html('<option value="">Loading...</option>');
@@ -395,9 +405,32 @@
             loadCities(stateName);
         });
     });
+</script>-->
+<!-- jQuery for AJAX -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  $(document).ready(function () {
+    $('#state').change(function () {
+      var stateId = $(this).val();
+      if (stateId) {
+        $.ajax({
+          url: "{% url 'get_cities' %}",
+          data: {
+            'state_id': stateId
+          },
+          success: function (data) {
+            $('#city').empty();
+            $('#city').append('<option value="">Select City</option>');
+            $.each(data.cities, function (index, city) {
+              $('#city').append('<option value="' + city.id + '">' + city.city + '</option>');
+            });
+          }
+        });
+      } else {
+        $('#city').empty().append('<option value="">Select City</option>');
+      }
+    });
+  });
 </script>
-
-
-
 </body>
 {% endblock %}

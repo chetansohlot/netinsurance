@@ -149,6 +149,7 @@ urlpatterns = [
     path('bulk-upload/', leads.bulk_upload_leads, name='bulk-upload-leads'),
     path('fetch-policy-details/', leads.fetch_policy_details, name='fetch-policy-details'),
     path('lead-mgt/export/', leads.export_leads_to_excel, name='lead_mgt_export'),
+    path('get-state/', leads.get_state, name='get_state'),
     path('get-cities/', leads.get_cities, name='get_cities'),
     path('leads/product-info/lead-init/', leads.lead_init_view, name='lead-init'),
     path('leads/product-info/load-categories/', leads.load_categories, name='load-categories'),
