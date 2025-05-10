@@ -108,7 +108,8 @@
 						<h3 class="training-certificate-title">THIS IS TO CERTIFY THAT MR./MS.</h3>
 						<h1 class="training-certificate-name">{{ customer.full_name|upper }}</h1>
 						<p class="training-certificate-prgh"> 
-							<strong>[Aadhaar No. XXXX XXXX 6128 | PAN No: {{ customer.pan_no }} ] </strong><br>
+							<strong>[Aadhaar No. {{ docs.aadhaar_number|mask_aadhaar }} | PAN No: {{ customer.pan_no|default:docs.pan_number }}
+								] </strong><br>
 							has successfully completed the prescribed training on 
 							 {% if partner.training_started_at %}
 								{{ partner.training_started_at|add_days_str:5|date:"d/M/Y" }}

@@ -106,12 +106,11 @@ def dashboard(request):
     ]
 
     # referral 
-            
-        # Step 1: Summary grouped by policy_info.branch_name
+       # Step 1: Summary grouped by branch foreign key
     branch_summary = (
         aggregation_qs
-        .exclude(policy_info__branch_name__isnull=True)
-        .values('policy_info__branch_name')
+        .exclude(policy_info__branch__isnull=True)
+        .values('policy_info__branch')  # use foreign key ID
         .annotate(
             policies_sold=Count('id', distinct=True),
             policy_income=Sum(Cast('policy_premium', output_field=FloatField())),
@@ -121,19 +120,22 @@ def dashboard(request):
         .order_by('-policy_income', '-policies_sold')
     )
 
-    # Step 2: Map branch_name (which holds ID as string) to actual Branch name
+    # Step 2: Map branch ID to branch name
     branch_map = {
-        str(branch.id): branch.branch_name
+        branch.id: branch.branch_name
         for branch in Branch.objects.all()
     }
 
-    branch_summary = list(branch_summary)  # ✅ Convert QuerySet to list
-
-    branch_summary[:] = [
-        {**item, 'branch_name': branch_map[item['policy_info__branch_name']]}
+    # Step 3: Replace ID with actual branch name in results
+    branch_summary = [
+        {
+            **item,
+            'branch_name': branch_map.get(item['policy_info__branch'], f"Branch ID {item['policy_info__branch']}")
+        }
         for item in branch_summary
-        if branch_map.get(item['policy_info__branch_name'])
+        if item['policy_info__branch'] in branch_map
     ]
+
 
 
     # Step 1: Get policies with POS (agent_name = user ID)

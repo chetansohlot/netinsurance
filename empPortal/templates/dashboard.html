@@ -235,43 +235,44 @@
           <div class="col-sm-6 col-md-6">  
             <div class="card">
               <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                  <h5 class="card-hding pb-0">Business Summary- Consolidated</h5>
-                  <div class="row">
+                <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap">
+                  <h5 class="card-hding pb-0">Business Summary - Consolidated</h5>
+                  <div class="d-flex flex-wrap gap-2 align-items-center">
                     <div class="col-auto">
-                        <select name="business_consolidated_by" class="form-field" id="business_consolidated_by">
-                            <option value="1">All</option>
-                            <option value="2">Today</option>
-                            <option value="3">MTD</option>
-                            <option value="4">Custom Date</option>
-                        </select>
+                      <select name="business_consolidated_by" class="form-field" id="business_consolidated_by">
+                        <option value="1">All</option>
+                        <option value="2">Today</option>
+                        <option value="3">MTD</option>
+                        <option value="4">Custom Date</option>
+                      </select>
                     </div>
-                    <div class="col-auto" style="display: none;">
-                        <select name="business_consolidated_by_month" class="form-field" id="business_consolidated_by_month">
-                            <option value="1">Jan</option>
-                            <option value="2">Feb</option>
-                            <option value="3">March</option>
-                            <option value="4">Apr</option>
-                            <option value="5">May</option>
-                            <option value="6">June</option>
-                            <option value="7">July</option>
-                            <option value="8">Aug</option>
-                            <option value="9">Sept</option>
-                            <option value="10">Oct</option>
-                            <option value="11">Nov</option>
-                            <option value="12">Dec</option>
-                        </select>
+                    <div class="col-auto" id="business_consolidated_by_month_wrapper" style="display: none;">
+                      <select name="business_consolidated_by_month" class="form-field" id="business_consolidated_by_month">
+                        <option value="1">Jan</option>
+                        <option value="2">Feb</option>
+                        <option value="3">March</option>
+                        <option value="4">Apr</option>
+                        <option value="5">May</option>
+                        <option value="6">June</option>
+                        <option value="7">July</option>
+                        <option value="8">Aug</option>
+                        <option value="9">Sept</option>
+                        <option value="10">Oct</option>
+                        <option value="11">Nov</option>
+                        <option value="12">Dec</option>
+                      </select>
                     </div>
-                    <div class="col" style="display: none;">
-                        <input type="text" name="business_consolidated_from_date" class="datepicker_common" id="business_consolidated_from_date" placeholder="From Date" autocomplete="off">
-                        <span class="error consolidated_from_date_err"></span>
+                    <div class="col-auto" id="business_consolidated_from_date_wrapper" style="display: none;">
+                      <input type="date" name="business_consolidated_from_date" class="form-field" id="business_consolidated_from_date" placeholder="From Date" autocomplete="off">
+                      <span class="error consolidated_from_date_err"></span>
                     </div>
-                    <div class="col" style="display: none;">
-                        <input type="text" name="business_consolidated_to_date" class="datepicker_common" id="business_consolidated_to_date" placeholder="To Date" autocomplete="off">
-                        <span class="error business_consolidated_to_date_err"></span>
+                    <div class="col-auto" id="business_consolidated_to_date_wrapper" style="display: none;">
+                      <input type="date" name="business_consolidated_to_date" class="form-field" id="business_consolidated_to_date" placeholder="To Date" autocomplete="off">
+                      <span class="error business_consolidated_to_date_err"></span>
                     </div>
                   </div>
-                </div>  
+                </div>
+                 
                   
                 <hr class="my-2">
                 <canvas id="consolidated_bar_chart" style="width:100%; height: 140px;"></canvas>
@@ -282,9 +283,9 @@
           <div class="col-sm-6 col-md-6">  
             <div class="card">
               <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-2">
+                <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap">
                   <h5 class="card-hding pb-0">Business Summary - Insurer</h5>
-                  <div class="row">
+                  <div class="d-flex flex-wrap gap-2 align-items-center">
                     <div class="col-auto">
                       <select name="summary_insurer" class="form-field" id="summary_insurer">
                         <option value="1">All</option>
@@ -293,7 +294,7 @@
                         <option value="4">Custom Date</option>
                       </select>
                     </div>
-                    <div class="col-auto" style="display: none;">
+                    <div class="col-auto" id="month_select_wrapper" style="display: none;">
                       <select name="summary_insurer_month" class="form-field" id="summary_insurer_month">
                         <option value="1">Jan</option>
                         <option value="2">Feb</option>
@@ -309,16 +310,17 @@
                         <option value="12">Dec</option>
                       </select>
                     </div>
-                    <div class="col" style="display: none;">
-                      <input type="text" name="summary_insurer_from_date" class="form-field " id="summary_insurer_from_date" placeholder="From Date" autocomplete="off">
+                    <div class="col-auto" id="from_date_wrapper" style="display: none;">
+                      <input type="date" name="summary_insurer_from_date" class="form-field" id="summary_insurer_from_date" placeholder="From Date" autocomplete="off">
                       <span class="error summary_insurer_from_date_err"></span>
                     </div>
-                    <div class="col" style="display: none;">
-                      <input type="text" name="summary_insurer_to_date" class="form-field " id="summary_insurer_to_date" placeholder="To Date" autocomplete="off">
+                    <div class="col-auto" id="to_date_wrapper" style="display: none;">
+                      <input type="date" name="summary_insurer_to_date" class="form-field" id="summary_insurer_to_date" placeholder="To Date" autocomplete="off">
                       <span class="error summary_insurer_to_date_err"></span>
                     </div>
                   </div>
                 </div>
+                
           
                 <hr class="my-2">
                 <canvas id="insurer_bar_chart" style="width:100%; height: 322px;"></canvas>
@@ -444,7 +446,7 @@
             <div class="card">
               <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                  <h5 class="card-hding pb-0 mb-0">Business Summary Insurer Wise</h5>
+                  <h5 id="summary-heading" class="card-hding pb-0 mb-0">Business Summary Insurer Wise</h5>
                   <div class="d-flex align-items-center ms-auto gap-2">
                     <div>
                       <select name="insurer_wise" class="form-field" id="insurer_wise">
@@ -558,16 +560,25 @@
             </div>
           </div>
           
-          
           <script>
             document.addEventListener("DOMContentLoaded", function () {
               const dropdown = document.getElementById("insurer_wise");
+              const heading = document.getElementById("summary-heading");
+          
+              const headingMap = {
+                "1": "Business Summary Insurer Wise",
+                "2": "Business Summary Referral Wise",
+                "3": "Business Summary Branch Wise",
+                "4": "Business Summary POS Wise"
+              };
           
               function toggleTableView(selectedId) {
                 for (let i = 1; i <= 4; i++) {
                   const wrapper = document.getElementById(`table-wrapper-${i}`);
                   wrapper.style.display = (parseInt(selectedId) === i) ? "block" : "none";
                 }
+                // Update the heading
+                heading.textContent = headingMap[selectedId] || "Business Summary";
               }
           
               // Initial visibility
@@ -579,6 +590,7 @@
               });
             });
           </script>
+          
           
           
           <!-- <div class="col-sm-12 col-md-12">  
