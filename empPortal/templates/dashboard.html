@@ -176,7 +176,7 @@
                     </a>  
                   </div> -->
 
-                  <div class="col-xs-6 col-sm-4 col-md-3">
+                  {% comment %} <div class="col-xs-6 col-sm-4 col-md-3">
                     <a href="#">
                       <div class="card counter-img-card counter-deactive-card ">
                         <div class="card-body">
@@ -191,7 +191,7 @@
                         </div>
                       </div>
                     </a>
-                  </div>  
+                  </div>   {% endcomment %}
                   
                   <div class="col-xs-6 col-sm-4 col-md-3">
                     <a href="#">
@@ -321,7 +321,7 @@
                 </div>
           
                 <hr class="my-2">
-                <canvas id="insurer_bar_chart" style="width:100%; height: 140px;"></canvas>
+                <canvas id="insurer_bar_chart" style="width:100%; height: 322px;"></canvas>
               </div>
             </div>
           </div>
@@ -490,7 +490,7 @@
                       <tr>
                         <th>Insurer</th>
                         <th>Policy Sold</th>
-                        <th>Total Revenue</th>
+                        {% comment %} <th>Total Revenue</th> {% endcomment %}
                         <th>Net Premium</th>
                         <th>Gross Premium</th>
 
@@ -501,7 +501,7 @@
                           <tr>
                               <td>{{ provider.insurance_provider|default:"N/A" }}</td>
                               <td>{{ provider.policies_sold }}</td>
-                              <td>₹{{ provider.policy_income|floatformat:2|default:"0" }}</td>
+                              {% comment %} <td>₹{{ provider.policy_income|floatformat:2|default:"0" }}</td> {% endcomment %}
                               <td>₹{{ provider.total_net_premium|floatformat:2|default:"0" }}</td>
                               <td>₹{{ provider.total_gross_premium|floatformat:2|default:"0" }}</td>
                           </tr>
@@ -735,6 +735,7 @@
       },
       options: {
         responsive: true,
+        
         plugins: {
           legend: {
             labels: { padding: 20, font: { size: 11 } },
