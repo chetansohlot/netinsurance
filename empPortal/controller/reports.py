@@ -20,20 +20,6 @@ def commission_report(request):
         messages.error(request, "Please Login First")
         return redirect('login')
     
-    # Get filter values from GET parameters
-    # filters = {
-    #     'policy_no': request.GET.get("policy_no", None),
-    #     'insurer_name': request.GET.get("insurer_name", None),
-    #     'service_provider': request.GET.get("service_provider", None),
-    #     'insurance_company': request.GET.get("insurance_company", None),
-    #     'policy_type': request.GET.get("policy_type", None),
-    #     'vehicle_type': request.GET.get("vehicle_type", None),
-    #     'referral_name': request.GET.get("referral_name", None),
-    #     'vehicle_reg_no': request.GET.get("vehicle_reg_no", None),
-    #     'policy_start_date': request.GET.get("policy_start_date", None),
-    #     'policy_end_date': request.GET.get("policy_end_date", None),
-    # }
-    
     # Pagination setup
     per_page = request.GET.get("per_page", 20)  # Default: 20 records per page
     page_number = request.GET.get('page', 1)
@@ -51,12 +37,23 @@ def commission_report(request):
     else:
         policies = PolicyDocument.objects.filter(status=6).exclude(rm_id__isnull=True)
 
-    # Apply filters
-    # filtered_policies = apply_policy_filters(policies, filters)
+    base_q = Q()
 
-    policies = policies.prefetch_related(
-        'policy_agent_info', 'policy_franchise_info', 'policy_insurer_info'
+    branch_id = request.GET.get('branch_name', '')
+    referral_id = request.GET.get('referred_by', '')
+    pos_id = request.GET.get('pos_name', '')
+    if branch_id:
+        base_q &= Q(policy_info__branch_name=branch_id)
+    if referral_id:
+        base_q &= Q(policy_agent_info__referral_id=str(referral_id))
+    if pos_id:
+        base_q &= Q(policy_agent_info__agent_name=str(pos_id))
+
+    policies = policies.filter(base_q).prefetch_related(
+        'policy_agent_info', 'policy_franchise_info', 'policy_info', 'policy_insurer_info'
     )
+    
+
     filters = get_common_filters(request)
     filtered_policies = apply_policy_filters(policies, filters)
 
@@ -134,8 +131,19 @@ def agent_business_report(request):
         policies = PolicyDocument.objects.filter(status=6).exclude(rm_id__isnull=True)
 
     # Apply filters
-    
-    policies = policies.prefetch_related(
+    base_q = Q()
+
+    branch_id = request.GET.get('branch_name', '')
+    referral_id = request.GET.get('referred_by', '')
+    pos_id = request.GET.get('pos_name', '')
+    if branch_id:
+        base_q &= Q(policy_info__branch_name=str(branch_id))
+    if referral_id:
+        base_q &= Q(policy_agent_info__referral_id=str(referral_id))
+    if pos_id:
+        base_q &= Q(policy_agent_info__agent_name=str(pos_id))
+
+    policies = policies.filter(base_q).prefetch_related(
         'policy_agent_info', 'policy_franchise_info', 'policy_insurer_info'
     )
     filters = get_common_filters(request)
@@ -214,8 +222,19 @@ def franchisees_business_report(request):
     else:
         policies = PolicyDocument.objects.filter(status=6).exclude(rm_id__isnull=True)
 
-    # Apply filters
-    policies = policies.prefetch_related(
+    base_q = Q()
+
+    branch_id = request.GET.get('branch_name', '')
+    referral_id = request.GET.get('referred_by', '')
+    pos_id = request.GET.get('pos_name', '')
+    if branch_id:
+        base_q &= Q(policy_info__branch_name=str(branch_id))
+    if referral_id:
+        base_q &= Q(policy_agent_info__referral_id=str(referral_id))
+    if pos_id:
+        base_q &= Q(policy_agent_info__agent_name=str(pos_id))
+
+    policies = policies.filter(base_q).prefetch_related(
         'policy_agent_info', 'policy_franchise_info', 'policy_insurer_info'
     )
     filters = get_common_filters(request)
@@ -296,7 +315,19 @@ def insurer_business_report(request):
 
     # Apply filters
     
-    policies = policies.prefetch_related(
+    base_q = Q()
+
+    branch_id = request.GET.get('branch_name', '')
+    referral_id = request.GET.get('referred_by', '')
+    pos_id = request.GET.get('pos_name', '')
+    if branch_id:
+        base_q &= Q(policy_info__branch_name=str(branch_id))
+    if referral_id:
+        base_q &= Q(policy_agent_info__referral_id=str(referral_id))
+    if pos_id:
+        base_q &= Q(policy_agent_info__agent_name=str(pos_id))
+
+    policies = policies.filter(base_q).prefetch_related(
         'policy_agent_info', 'policy_franchise_info', 'policy_insurer_info'
     )
     filters = get_common_filters(request)
@@ -375,8 +406,19 @@ def sales_manager_business_report(request):
     else:
         policies = PolicyDocument.objects.filter(status=6).exclude(rm_id__isnull=True)
 
-    # Apply filters
-    policies = policies.prefetch_related(
+    base_q = Q()
+
+    branch_id = request.GET.get('branch_name', '')
+    referral_id = request.GET.get('referred_by', '')
+    pos_id = request.GET.get('pos_name', '')
+    if branch_id:
+        base_q &= Q(policy_info__branch_name=str(branch_id))
+    if referral_id:
+        base_q &= Q(policy_agent_info__referral_id=str(referral_id))
+    if pos_id:
+        base_q &= Q(policy_agent_info__agent_name=str(pos_id))
+
+    policies = policies.filter(base_q).prefetch_related(
         'policy_agent_info', 'policy_franchise_info', 'policy_insurer_info'
     )
     filters = get_common_filters(request)
@@ -449,9 +491,6 @@ def get_filter_conditions(filters):
 
         elif key == 'insurance_provider':
             db_filters &= Q(insurance_provider__icontains=val)
-
-        elif key == 'branch_name':  # Assuming there's a ForeignKey to Branch model
-            db_filters &= Q(branch__branch_name__icontains=val)
 
         elif key == 'referred_by':  # Assuming there's a ForeignKey to Referral model
             db_filters &= Q(referral__name__icontains=val)
@@ -544,7 +583,7 @@ def pending_insurer_commission_report(request):
     referred_by = request.GET.get('referred_by', '').strip()
     
     # make filters firstly
-    filters_q = Q(status=6) & Q(policy_number__isnull=False) & ~Q(policy_number='')
+    filters_q = None
 
     if role_id != 1 and str(request.user.department_id) not in ["3", "5"]:
         filters_q &= Q(rm_id=user_id)
@@ -718,7 +757,7 @@ def pending_agent_commission_report(request):
     referred_by = request.GET.get('referred_by', '').strip()
     
     # make filters firstly
-    filters_q = Q(status=6) & Q(policy_number__isnull=False) & ~Q(policy_number='')
+    filters_q = None
 
     if role_id != 1 and str(request.user.department_id) not in ["3", "5"]:
         filters_q &= Q(rm_id=user_id)
