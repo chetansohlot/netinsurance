@@ -497,8 +497,8 @@
     }
 
     $(document).ready(function () {
-        const selectedState = $('#state').val();
-        const selectedCity = "{{ lead.city|default:''|escapejs }}";
+        let selectedState = $('#state').val();
+        let selectedCity = "{{ lead_data.city|default:''|escapejs }}";
 
         // Always load cities if state is selected (even if city is not)
         if (selectedState) {
@@ -506,7 +506,7 @@
         }
 
         $('#state').change(function () {
-            const stateName = $(this).val();
+            let stateName = $(this).val();
             loadCities(stateName);
         });
     });

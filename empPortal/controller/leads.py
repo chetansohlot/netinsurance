@@ -1291,6 +1291,7 @@ def save_leads_insurance_info(request):
             lead_insurance_product_id = lead_insurance_product_id,
             lead_first_name = lead_first_name,
             lead_last_name = lead_last_name,
+            name_as_per_pan = lead_first_name +' '+ lead_last_name,
             mobile_number = mobile_number,
             created_by = request.user.id
         )
