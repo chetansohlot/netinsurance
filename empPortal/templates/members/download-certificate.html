@@ -51,7 +51,7 @@
 						This is to confirm that you have successfully completed the prescribed training and have also passed the examination specified for Point of Sales examination conducted by <strong>{{ COMPANY_NAME }}</strong> under the Guidelines on Point of Sales Person for Non-life and Health Insurers. <br><br>
 
 						Aadhar No: <strong>{{ docs.aadhaar_number|mask_aadhaar }}</strong><br>
-						PAN No: <strong>{{ customer.pan_no }}</strong><br>
+						PAN No: <strong>{{ customer.pan_no|default:docs.pan_number }}</strong><br>
 						PoSP Id: <strong>{{ customer.user_gen_id }}</strong><br><br>
 
 						This letter authorizes you to act as Point of Sales Person for <strong>{{ COMPANY_NAME }}</strong> to market products categorized and identified under the POS Guidelines.<br><br>

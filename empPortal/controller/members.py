@@ -586,8 +586,11 @@ def posTrainingCertificate(request, user_id):
     else:
         profile_image_url = os.path.join(settings.BASE_DIR, getattr(settings, 'DEFAULT_POS_IMAGE', 'empPortal/static/dist/img/default-image-pos.jpg'))
 
+    docs = DocumentUpload.objects.filter(user_id=user_id).first()
+
     context = {
         "partner": partner,
+        "docs": docs,
         "customer": customer,
         "logo_url": os.path.join(settings.BASE_DIR, getattr(settings, 'LOGO_WITH_EMP_PORTAL', 'empPortal/static/dist/img/logo2.png')),
         "signature_elevate": os.path.join(settings.BASE_DIR, getattr(settings, 'SIGNATURE_ELEVATE', 'empPortal/static/dist/img/elevate-signature.png')),
