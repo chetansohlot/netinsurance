@@ -79,13 +79,14 @@
                           </div>-->
                           <div class="form-group col-md-4">
                             <label class="form-lbl" >Customer Name</label>
-                            <input type="text" class="form-field" name="customer_name" id="customer_name" value="{{ lead_data.name_as_per_pan }}" placeholder="Enter Customer Name">
+                            <input type="text" class="form-field" name="customer_name" id="customer_name" value="{{ lead_data.name_as_per_pan|default:'' }}" placeholder="Enter Customer Name">
                           </div>
 
                           <div class="form-group col-md-4">
                               <label class="form-lbl" for="email_address">Email ID</label>
                               <input type="email" class="form-field email" name="email_address" id="email_address"  placeholder="Enter Email" value="{{ lead_data.email_address|default_if_none:'' }}">
                           </div>
+
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Gender</label>
                             <select class="form-field" name="gender" id="gender">
@@ -102,7 +103,7 @@
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl" for="identity_no">PAN/Aadhaar (Optional)</label>
-                            <input type="text" class="form-field" maxlength="12" name="identity_no" id="identity_no" value="{{lead_data.lead_customer_identity_no|default:"" }}" placeholder="Enter Indentity No.">
+                            <input type="text" class="form-field" maxlength="12" name="identity_no" id="identity_no" value="{{lead_data.lead_customer_identity_no|default:'' }}" placeholder="Enter Indentity No.">
                           </div>
                         
                         <script>

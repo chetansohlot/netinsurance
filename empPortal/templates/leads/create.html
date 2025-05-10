@@ -86,7 +86,7 @@
                           
                           <div class="form-group col-md-4">
                             <label class="form-lbl" for="policy_number">Policy Number</label>
-                            <input type="text" class="form-field" name="policy_number" id="policy_number" placeholder="Enter Policy Number" value="{{ lead_data.policy_number }}">
+                            <input type="text" class="form-field" name="policy_number" id="policy_number" placeholder="Enter Policy Number" value="{{ lead_data.policy_number|default:'' }}">
                           </div>
 
                           <div class="form-group col-md-4">
@@ -100,11 +100,11 @@
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl" for="policy_date">Policy Start Date</label>
-                            <input type="date" class="form-field datepicker_common" name="policy_date" id="policy_date" placeholder="Enter Policy Start Date" value="{{lead_data.policy_date}}">
+                            <input type="date" class="form-field datepicker_common" name="policy_date" id="policy_date" placeholder="Enter Policy Start Date" value="{{lead_data.policy_date|default:''}}">
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl" for="policy_end_date">Policy End Date</label>
-                            <input type="date" class="form-field datepicker_common" name="policy_end_date" id="policy_end_date" placeholder="Enter Policy End Date" value="{{lead_data.policy_end_date}}" >
+                            <input type="date" class="form-field datepicker_common" name="policy_end_date" id="policy_end_date" placeholder="Enter Policy End Date" value="{{lead_data.policy_end_date|default:''}}" >
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Expiry Status</label>
@@ -128,11 +128,11 @@
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Previous IDV (for Motor)</label>
-                            <input type="text" class="form-field number" name="previous_idv_amount" id="previous_idv_amount" placeholder="Enter IDV Amount" value="{{lead_data.previous_idv_amount}}">
+                            <input type="text" class="form-field number" name="previous_idv_amount" id="previous_idv_amount" placeholder="Enter IDV Amount" value="{{lead_data.previous_idv_amount|default:''}}">
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Previous Sum Insured (for Health)</label>
-                            <input type="text" class="form-field number" name="previous_sum_insured" id="previous_sum_insured" placeholder="Enter Amount" value="{{lead_data.previous_sum_insured}}">
+                            <input type="text" class="form-field number" name="previous_sum_insured" id="previous_sum_insured" placeholder="Enter Amount" value="{{lead_data.previous_sum_insured|default:''}}">
                           </div>
 
                           <div class="form-group col-md-4">
@@ -145,7 +145,7 @@
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Claim Amount (optional)</label>
-                            <input type="text" class="form-field number" name="claim_amount" id="claim_amount" placeholder="Enter Amount" value="{{lead_data.claim_amount}}">
+                            <input type="text" class="form-field number" name="claim_amount" id="claim_amount" placeholder="Enter Amount" value="{{lead_data.claim_amount|default:''}}">
                           </div>
 
                           <div class="form-group col-md-4">
@@ -202,23 +202,23 @@
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Registration No</label>
-                            <input type="text" class="form-field" name="vehicle_reg_no" id="vehicle_reg_no" placeholder="Registration No" value="{{lead_data.vehicle_reg_no}}">
+                            <input type="text" class="form-field" name="vehicle_reg_no" id="vehicle_reg_no" placeholder="Registration No" value="{{lead_data.vehicle_reg_no|default:''}}">
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Make</label>
-                            <input type="text" class="form-field" name="vehicle_make" id="vehicle_make" placeholder="Make" value="{{lead_data.vehicle_make}}">
+                            <input type="text" class="form-field" name="vehicle_make" id="vehicle_make" placeholder="Make" value="{{lead_data.vehicle_make|default:''}}">
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Model</label>
-                            <input type="text" class="form-field" name="vehicle_model" id="vehicle_model" placeholder="Model" value="{{lead_data.vehicle_model}}">
+                            <input type="text" class="form-field" name="vehicle_model" id="vehicle_model" placeholder="Model" value="{{lead_data.vehicle_model|default:''}}">
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Year</label>
-                            <input type="text" class="form-field" name="mgf_year" id="mgf_year" placeholder="Year" value="{{lead_data.mgf_year}}">
+                            <input type="text" class="form-field" name="mgf_year" id="mgf_year" placeholder="Year" value="{{lead_data.mgf_year|default:''}}">
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl">Sum Insured (if Health/Life)</label>
-                            <input type="text" class="form-field number" name="sum_insured" id="sum_insured" placeholder="Amount" value="{{lead_data.sum_insured}}">
+                            <input type="text" class="form-field number" name="sum_insured" id="sum_insured" placeholder="Amount" value="{{lead_data.sum_insured|default:''}}">
                           </div>
                         <script>
                             
@@ -497,8 +497,8 @@
     }
 
     $(document).ready(function () {
-        const selectedState = $('#state').val();
-        const selectedCity = "{{ lead.city|default:''|escapejs }}";
+        let selectedState = $('#state').val();
+        let selectedCity = "{{ lead_data.city|default:''|escapejs }}";
 
         // Always load cities if state is selected (even if city is not)
         if (selectedState) {
@@ -506,7 +506,7 @@
         }
 
         $('#state').change(function () {
-            const stateName = $(this).val();
+            let stateName = $(this).val();
             loadCities(stateName);
         });
     });
