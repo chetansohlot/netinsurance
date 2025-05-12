@@ -52,58 +52,46 @@
                   </a>   
                 </div>  
                 <div class="col-xs-6 col-sm-4 col-md-3">
-                  <a href="#">
-                    <div class="card counter-img-card counter-active-card ">
+                  <a href="{% url 'leads-mgt' %}">
+                    <div class="card counter-img-card counter-active-card">
                       <div class="card-body">
                         <div class="row">
                           <div class="col">
-                            
-                            <p class="card-text">
-                              Motor Lead
-                            </p>
+                            <p class="card-text">Motor Lead</p>
                             <h5 class="card-title card-number">{{ motor_leads }}</h5>
                           </div>
-                          
                         </div>
                       </div>
                     </div>
-                  </a>  
+                  </a>
                 </div>  
                 <div class="col-xs-6 col-sm-4 col-md-3">
-                  <a href="#">
-                    <div class="card counter-img-card counter-deactive-card ">
+                  <a href="{% url 'health-lead' %}">
+                    <div class="card counter-img-card counter-deactive-card">
                       <div class="card-body">
                         <div class="row">
                           <div class="col">
-                            
-                            <p class="card-text">
-                              Health Lead
-                            </p>
+                            <p class="card-text">Health Lead</p>
                             <h5 class="card-title card-number">{{ health_leads }}</h5>
                           </div>
-                          
                         </div>
                       </div>
                     </div>
-                  </a>  
+                  </a>
                 </div>  
                 <div class="col-xs-6 col-sm-4 col-md-3">
-                  <a href="#">
-                    <div class="card counter-img-card counter-pending-card ">
+                  <a href="{% url 'term-lead' %}">
+                    <div class="card counter-img-card counter-pending-card">
                       <div class="card-body">
                         <div class="row">
                           <div class="col">
-                            
-                            <p class="card-text">
-                              Term Lead
-                            </p>
+                            <p class="card-text">Term Lead</p>
                             <h5 class="card-title card-number">{{ term_leads }}</h5>
                           </div>
-                          
                         </div>
                       </div>
                     </div>
-                  </a>  
+                  </a>
                 </div>  
               </div>
       
@@ -664,7 +652,6 @@
         color: initial;
       }
     </style>
-
     
       
   </body>
