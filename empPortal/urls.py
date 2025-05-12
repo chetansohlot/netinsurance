@@ -86,7 +86,14 @@ urlpatterns = [
 
 
     path('employee-management/', Employee.index, name='employee-management'),
-    path('employee-management/create-employee', Employee.create_or_edit, name='employee-management-create'),
+    path('employee-management/create-employee', Employee.save_or_update_employee, name='employee-management-create'),
+    path('employee-management/update-employee/<str:employee_id>/', Employee.save_or_update_employee, name='employee-management-update'),
+    path('employee-management/update-address/<str:employee_id>/', Employee.save_or_update_address, name='employee-management-update-address'),
+    path('employee-management/family-details/<str:employee_id>/', Employee.save_or_update_family_details, name='employee-management-family-details'),
+    path('employee-management/employment-info/<str:employee_id>/', Employee.save_or_update_employment_info, name='employee-management-employment-info'),
+    path('employee-management/update-refrences/<str:employee_id>/', Employee.save_or_update_refrences, name='employee-management-update-refrences'),
+    path('employee-management/update-allocation/<str:employee_id>/', Employee.update_allocation, name='employee-management-update-allocation'),
+
     path('employee-management/<str:employee_id>/', Employee.create_or_edit, name='employee-management-edit'),
     path('employee-management/employee-allocation-employee/<str:employee_id>', Employee.create_or_edit_allocation, name='employee-allocation-update'),
      

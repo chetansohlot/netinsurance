@@ -12,3 +12,9 @@ from .insurance_info import InsuranceType
 from .insurance_info import InsuranceCategory
 from .insurance_info import InsuranceProduct
 from .EmployeeDetails import EmployeeDetails
+
+from .Employees import Employees
+from .Employees import Address
+from .Employees import FamilyDetail
+from .Employees import EmploymentInfo
+from .Employees import EmployeeReference

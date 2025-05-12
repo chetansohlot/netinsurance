@@ -734,6 +734,7 @@ class Users(AbstractBaseUser):
     exam_eligibility = models.PositiveSmallIntegerField(null=True, blank=True, default=0) 
     exam_attempt = models.PositiveSmallIntegerField(null=True, blank=True, default=0) 
     exam_pass = models.PositiveSmallIntegerField(null=True, blank=True, default=0) 
+    branch_head = models.PositiveSmallIntegerField(null=True, blank=True, default=0) 
     exam_last_attempted_on = models.DateTimeField(null=True)
     dob = models.CharField(max_length=255)
     state = models.CharField(max_length=255)
@@ -806,6 +807,14 @@ class Users(AbstractBaseUser):
         try:
             return Partner.objects.get(user_id=self.id)
         except Partner.DoesNotExist:
+            return None   
+        
+    @property
+    def employee(self):
+        from empPortal.model import Employees  # Lazy import inside the method to avoid circular import
+        try:
+            return Employees.objects.get(user_id=self.id)
+        except Employees.DoesNotExist:
             return None  
           
     @property

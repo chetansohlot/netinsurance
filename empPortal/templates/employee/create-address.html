@@ -3,7 +3,7 @@
 {% load static %}
 
 {% block title %}
-Add Employee
+Add Address
 {% endblock %}
 
 {% block content %}
@@ -22,12 +22,12 @@ Add Employee
             <div class="row py-2">
               <div class="col-sm-6">
                 <div class="d-flex align-items-center">
-                  <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Add Employee</a>
+                  <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Add Address</a>
                 </div>
                 <ul class="breadcrump">
                   <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
                   <li> <a href="#">Employee</a> <i class="fas fa-chevron-right"></i></li>
-                  <li>Add Employee</li>
+                  <li>Add Address</li>
                 </ul>
               </div>
             </div>
@@ -41,58 +41,77 @@ Add Employee
             <div class="row">
               
               <div class="col-sm-12">  
-                
-                <ul class="stepflow-text">
-                    <li class="active"><a href="#link1"><span>Basic Details </span></a></li>
-                    <li><a href="#link2"><span>Address</span></a></li>
-                    <li><a href="#link2"><span>Family Details</span></a></li>
-                    <li><a href="#link2"><span>Employment Info </span></a></li>
-                    <li><a href="#link2"><span>References</span></a></li>
-                </ul>
-                <ul class="new-stepflow">
-                    <li class="active"><a href="#"></a></li>
-                    <li><a href="#"></a></li>
-                    <li><a href="#"></a></li>
-                    <li><a href="#"></a></li>
-                    <li><a href="#"></a></li>
-                </ul>
+                  {% include 'employee/common-link.html' with step=2 %}
+
                 <div class="card box-shadow-none p-md-5 p-3">
                   <div class="card-body px-0 pb-0 pt-0">
 
                     <form autocomplete="off" id="employeeForm" name="employeeForm"
-                        action="{% if employee %}{% url 'employee-management-edit' employee.id %}{% else %}{% url 'employee-management-create' %}{% endif %}"
-                        method="post">
-                        {% csrf_token %}
-                        <div class="row">
-                            
-                            <div class="col-md-12">
-                              <h2 class="admin-title border-bottom pb-2 mb-4">Address</h2>
-                            </div>
-                            <div class="form-group col-sm-12 col-md-12">
-                                <label class="form-lbl" >Permanent  Address </label>
-                                <textarea rows="3" class="form-field" placeholder="Permanent Address"></textarea>
-                            </div>
+                        action="{% url 'employee-management-update-address' employee.employee_id %}" method="post">
+                      {% csrf_token %}
+                      <div class="row">
+                          <div class="col-md-12">
+                              <h2 class="admin-title border-bottom pb-2 mb-4">Permanent Address</h2>
+                          </div>
 
-                            <div class="form-group col-sm-6 col-md-4">
-                                <label class="form-lbl" >State</label>
-                                <input type="text" class="form-field" placeholder="State Name">
-                            </div>
+                          <div class="form-group col-sm-12">
+                              <label class="form-lbl">Permanent Address</label>
+                              <textarea rows="3" name="permanent_address" class="form-field"
+                                        placeholder="Permanent Address">{{ permanent.address }}</textarea>
+                          </div>
 
-                            <div class="form-group col-sm-6 col-md-4">
-                                <label class="form-lbl">City</label>
-                                <input type="text" class="form-field" placeholder="City Name">
-                            </div>
-                            <div class="form-group col-sm-6 col-md-4">
-                                <label class="form-lbl">Pincode</label>
-                                <input type="text" class="form-field" placeholder="Pincode">
-                            </div>
-                            
-                            
-                        </div>
-                        <div class="d-flex justify-content-end">
-                          <button type="submit" class="form-submit-btn">{% if employee %}Update Employee{% else %}Save Employee{% endif %}</button>
-                        </div>  
-                    </form>
+                          <div class="form-group col-sm-6 col-md-4">
+                              <label class="form-lbl">State</label>
+                              <input type="text" name="permanent_state" class="form-field" placeholder="State Name"
+                                    value="{{ permanent.state }}">
+                          </div>
+
+                          <div class="form-group col-sm-6 col-md-4">
+                              <label class="form-lbl">City</label>
+                              <input type="text" name="permanent_city" class="form-field" placeholder="City Name"
+                                    value="{{ permanent.city }}">
+                          </div>
+
+                          <div class="form-group col-sm-6 col-md-4">
+                              <label class="form-lbl">Pincode</label>
+                              <input type="text" name="permanent_pincode" class="form-field" placeholder="Pincode"
+                                    value="{{ permanent.pincode }}">
+                          </div>
+
+                          <div class="col-md-12 mt-5">
+                              <h2 class="admin-title border-bottom pb-2 mb-4">Correspondence Address</h2>
+                          </div>
+
+                          <div class="form-group col-sm-12">
+                              <label class="form-lbl">Correspondence Address</label>
+                              <textarea rows="3" name="correspondence_address" class="form-field"
+                                        placeholder="Correspondence Address">{{ correspondence.address }}</textarea>
+                          </div>
+
+                          <div class="form-group col-sm-6 col-md-4">
+                              <label class="form-lbl">State</label>
+                              <input type="text" name="correspondence_state" class="form-field" placeholder="State Name"
+                                    value="{{ correspondence.state }}">
+                          </div>
+
+                          <div class="form-group col-sm-6 col-md-4">
+                              <label class="form-lbl">City</label>
+                              <input type="text" name="correspondence_city" class="form-field" placeholder="City Name"
+                                    value="{{ correspondence.city }}">
+                          </div>
+
+                          <div class="form-group col-sm-6 col-md-4">
+                              <label class="form-lbl">Pincode</label>
+                              <input type="text" name="correspondence_pincode" class="form-field" placeholder="Pincode"
+                                    value="{{ correspondence.pincode }}">
+                          </div>
+                      </div>
+
+                      <div class="d-flex justify-content-end">
+                          <button type="submit" class="form-submit-btn">Update Addresses</button>
+                      </div>
+                  </form>
+
 
                   </div>
                 </div>

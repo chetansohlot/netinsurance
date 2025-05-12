@@ -60,7 +60,7 @@ Add Employee
                   <div class="card-body px-0 pb-0 pt-0">
 
                     <form autocomplete="off" id="employeeForm" name="employeeForm"
-                        action="{% if employee %}{% url 'employee-management-edit' employee.id %}{% else %}{% url 'employee-management-create' %}{% endif %}"
+                        action="{% if employee %}{% url 'employee-management-update' employee.id %}{% else %}{% url 'employee-management-create' %}{% endif %}"
                         method="post">
                         {% csrf_token %}
                         <div class="row">
