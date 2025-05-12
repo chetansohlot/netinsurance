@@ -22,6 +22,15 @@ from django.core.paginator import Paginator
 from django.contrib.auth.hashers import make_password
 import re
 from django.http import JsonResponse
+from empPortal.model import EmployeeDetails
+
+from empPortal.model import Employees
+from empPortal.model import Address
+from empPortal.model import FamilyDetail
+from empPortal.model import EmploymentInfo
+from empPortal.model import EmployeeReference
+from django.utils import timezone
+import logging
 
 
 def dictfetchall(cursor):
@@ -30,6 +39,7 @@ def dictfetchall(cursor):
     return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
 
+from django.db.models import Exists, OuterRef
 
 def index(request):
     if not request.user.is_authenticated:
@@ -38,17 +48,36 @@ def index(request):
     per_page = request.GET.get('per_page', 10)
     search_field = request.GET.get('search_field', '')
     search_query = request.GET.get('search_query', '')
-    sort_by = request.GET.get('sort_by','') # Sort Criteria
+    sort_by = request.GET.get('sort_by', '')  # Sort Criteria
 
     try:
         per_page = int(per_page)
     except ValueError:
         per_page = 10  
 
-    # Fetch all employees (Active & Role not in [1, 4])
-    employees = Users.objects.filter(status=1).exclude(role_id__in=[1, 4]) \
-        .select_related('role') \
-        .order_by('-created_at')
+    # Fetch all users with associated employees, ensuring only those with employees are included
+    users_with_employees = Users.objects.annotate(
+        has_employee=Exists(Employees.objects.filter(user_id=OuterRef('id')))
+    ).filter(has_employee=True, status=1).exclude(role_id__in=[1, 4])
+
+    # Apply filtering if search query is provided
+    if search_field and search_query:
+        filter_args = {f"{search_field}__icontains": search_query}
+        users_with_employees = users_with_employees.filter(**filter_args)
+
+    # Sort Criteria
+    if sort_by == 'name-a_z':
+        users_with_employees = users_with_employees.order_by('first_name')
+    elif sort_by == 'name-z_a':
+        users_with_employees = users_with_employees.order_by('-first_name')
+    elif sort_by == 'recently_activated':
+        users_with_employees = users_with_employees.order_by('-created_at')  # latest first
+    elif sort_by == 'recently_deactivated':
+        users_with_employees = users_with_employees.order_by('-updated_at')  # Latest Updated first
+    else:
+        users_with_employees = users_with_employees.order_by('-created_at')  # Default Sorting  
+
+    total_count = users_with_employees.count()
 
     # Fetch branch names separately
     branches = {str(branch.id): branch.branch_name for branch in Branch.objects.all()}
@@ -56,27 +85,8 @@ def index(request):
     # Fetch all users in a dictionary for supervisor lookup
     all_users = {str(user.id): user for user in Users.objects.all()}
 
-    # Apply filtering
-    if search_field and search_query:
-        filter_args = {f"{search_field}__icontains": search_query}
-        employees = employees.filter(**filter_args)
-
-    ## Sort Criteria ##
-    if sort_by == 'name-a_z':
-        employees = employees.order_by('first_name')
-    elif sort_by == 'name-z_a':
-        employees = employees.order_by('-first_name')
-    elif sort_by == 'recently_activated':
-        employees = employees.order_by('-created_at') # latest first
-    elif sort_by == 'recently_deactivated':
-        employees = employees.order_by('-updated_at') # Latest Updated first
-    else:
-        employees = employees.order_by('-created_at')  # Default Sorting          
-
-    total_count = employees.count()
-
     # Pagination
-    paginator = Paginator(employees, per_page)
+    paginator = Paginator(users_with_employees, per_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -88,9 +98,8 @@ def index(request):
         'per_page': per_page,
         'branches': branches,
         'all_users': all_users,  # Pass all users for supervisor lookup
-        'sort_by' : sort_by,  ## Sort Criteria
+        'sort_by': sort_by,  ## Sort Criteria
     })
-
 
 
 
@@ -116,6 +125,329 @@ def check_branch_email(request):
 
     return JsonResponse({"error": "Invalid request"}, status=400)
 
+def save_or_update_employee(request, employee_id=None):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    user_instance = None
+    employee_instance = None
+
+    if employee_id:
+        user_instance = get_object_or_404(Users, id=employee_id)
+        employee_instance = get_object_or_404(Employees, user_id=user_instance.id)
+    else:
+        user_instance = None
+
+    if request.user.role_id != 1:
+        messages.error(request, "You do not have permission to add or edit employees.")
+        return redirect('employee-management')
+
+    if request.method == "POST":
+        pan_no = request.POST.get("pan_no", "").strip()
+        first_name = request.POST.get("first_name", "").strip()
+        last_name = request.POST.get("last_name", "").strip()
+        email = request.POST.get("email", "").strip()
+        phone = request.POST.get("phone", "").strip()
+        password = request.POST.get("password", "").strip()
+
+        dob = request.POST.get("dob", "").strip()
+        gender = request.POST.get("gender", "").strip()
+        blood_group = request.POST.get("blood_group", "").strip()
+        marital_status = request.POST.get("marital_status", "").strip()
+        aadhaar_card = request.POST.get("aadhaar_card", "").strip()
+
+        try:
+            dob_date = datetime.strptime(dob, "%Y-%m-%d").date() if dob else None
+        except ValueError:
+            messages.error(request, "Invalid date format in DOB fields")
+            return redirect(request.META.get('HTTP_REFERER', '/'))
+
+        gender_map = {'Male': 1, 'Female': 2}
+        user_gender = gender_map.get(gender, None)
+
+        if not first_name or not email or not phone or not dob_date or not gender or not pan_no:
+            messages.error(request, "Please fill all required fields.")
+            return redirect(request.META.get('HTTP_REFERER', '/'))
+
+        if user_instance:
+            user_instance.first_name = first_name
+            user_instance.last_name = last_name
+            user_instance.email = email
+            user_instance.phone = phone
+            user_instance.pan_no = pan_no
+            user_instance.dob = dob
+            user_instance.gender = user_gender
+            user_instance.updated_at = timezone.now()
+            if password:
+                user_instance.password = make_password(password)
+            user_instance.save()
+        else:
+            last_user = Users.objects.order_by('-id').first()
+            new_gen_id = "UR-0001"
+            if last_user and last_user.user_gen_id.startswith('UR-'):
+                last_num = int(last_user.user_gen_id.split('-')[1])
+                new_gen_id = f"UR-{last_num+1:04d}"
+
+            user_instance = Users.objects.create(
+                user_gen_id=new_gen_id,
+                first_name=first_name,
+                last_name=last_name,
+                email=email,
+                phone=phone,
+                pan_no=pan_no,
+                dob=dob,
+                gender=user_gender,
+                password=make_password(password),
+                status=1,
+                role_id=request.user.role_id,
+                created_at=timezone.now()
+            )
+
+        employee_obj, created = Employees.objects.get_or_create(user_id=user_instance.id)
+        employee_obj.first_name = first_name
+        employee_obj.last_name = last_name
+        employee_obj.date_of_birth = dob_date
+        employee_obj.gender = gender
+        employee_obj.pan_card = pan_no
+        employee_obj.aadhaar_card = aadhaar_card
+        employee_obj.mobile_number = str(phone)
+        employee_obj.email_address = email
+        employee_obj.blood_group = blood_group
+        employee_obj.marital_status = marital_status
+        employee_obj.updated_at = timezone.now()
+        if created:
+            employee_obj.created_at = timezone.now()
+
+        employee_obj.save()
+
+        messages.success(request, f"Employee {'created' if created else 'updated'} successfully!")
+        return redirect('employee-management-update-address', employee_id=employee_obj.employee_id)
+
+    else:
+        return render(request, 'employee/create.html', {
+            'employee': employee_instance,
+            'user': user_instance
+        })
+
+
+def save_or_update_address(request, employee_id):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    employee = get_object_or_404(Employees, employee_id=employee_id)
+
+    if request.user.role_id != 1:
+        messages.error(request, "You do not have permission to edit employee address.")
+        return redirect('employee-management')
+
+    if request.method == "POST":
+        for address_type in ["permanent", "correspondence"]:
+            addr = request.POST.get(f"{address_type}_address", "").strip()
+            state = request.POST.get(f"{address_type}_state", "").strip()
+            city = request.POST.get(f"{address_type}_city", "").strip()
+            pincode = request.POST.get(f"{address_type}_pincode", "").strip()
+
+            # Basic validation
+            if not addr:
+                messages.error(request, f"{address_type.capitalize()} Address is required")
+            if not state:
+                messages.error(request, f"{address_type.capitalize()} State is required")
+            if not city:
+                messages.error(request, f"{address_type.capitalize()} City is required")
+            if not pincode or not pincode.isdigit() or len(pincode) != 6:
+                messages.error(request, f"Invalid {address_type.capitalize()} Pincode")
+
+        if messages.get_messages(request):
+            return redirect(request.META.get('HTTP_REFERER', '/'))
+
+        for address_type in ["permanent", "correspondence"]:
+            addr, state, city, pincode = (
+                request.POST.get(f"{address_type}_address", "").strip(),
+                request.POST.get(f"{address_type}_state", "").strip(),
+                request.POST.get(f"{address_type}_city", "").strip(),
+                request.POST.get(f"{address_type}_pincode", "").strip()
+            )
+
+            address_obj, created = Address.objects.get_or_create(
+                employee_id=employee.employee_id, 
+                type=address_type
+            )
+            address_obj.address = addr
+            address_obj.state = state
+            address_obj.city = city
+            address_obj.pincode = pincode
+            address_obj.updated_at = now()
+            address_obj.active = True
+            address_obj.save()
+
+        messages.success(request, "Employee addresses updated successfully.")
+        return redirect('employee-management-family-details', employee_id=employee.employee_id)
+
+    # Pre-fill data
+    permanent_address = Address.objects.filter(employee_id=employee.employee_id, type="permanent").first()
+    correspondence_address = Address.objects.filter(employee_id=employee.employee_id, type="correspondence").first()
+
+    return render(request, 'employee/create-address.html', {
+        'employee': employee,
+        'permanent': permanent_address,
+        'correspondence': correspondence_address
+    })
+
+def save_or_update_family_details(request, employee_id):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    if request.user.role_id != 1:
+        messages.error(request, "You do not have permission to modify family details.")
+        return redirect('employee-management')
+
+    if request.method == "POST":
+        relations = ['Father', 'Mother', 'Spouse']
+        has_errors = False
+
+        for relation in relations:
+            first_name = request.POST.get(f"{relation.lower()}_first_name", "").strip()
+            last_name = request.POST.get(f"{relation.lower()}_last_name", "").strip()
+            dob = request.POST.get(f"{relation.lower()}_dob", "").strip()
+
+            if not first_name or not last_name or not dob:
+                continue  # Skip if incomplete
+
+            try:
+                dob_date = datetime.strptime(dob, "%Y-%m-%d").date()
+            except ValueError:
+                messages.error(request, f"Invalid {relation} DOB format. Use YYYY-MM-DD")
+                has_errors = True
+                continue
+
+            family_record, created = FamilyDetail.objects.get_or_create(
+                employee_id=employee_id,
+                relation=relation,
+                defaults={
+                    'first_name': first_name,
+                    'last_name': last_name,
+                    'date_of_birth': dob_date
+                }
+            )
+            if not created:
+                family_record.first_name = first_name
+                family_record.last_name = last_name
+                family_record.date_of_birth = dob_date
+                family_record.save()
+
+        if has_errors:
+            return redirect(request.META.get('HTTP_REFERER', '/'))
+
+        messages.success(request, f"Family details updated for Employee ID: {employee_id}")
+        return redirect('employee-management-employment-info', employee_id=employee_id)
+
+    # Preload existing family data
+    family_qs = FamilyDetail.objects.filter(employee_id=employee_id, active=True)
+    family_data = {fd.relation: fd for fd in family_qs}
+
+    return render(request, 'employee/create-family-details.html', {
+        'employee_id': employee_id,
+        'family': family_data
+    })
+
+def save_or_update_employment_info(request, employee_id):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    if request.user.role_id != 1:
+        messages.error(request, "You do not have permission to update employment info.")
+        return redirect('employee-management')
+
+    # Try to get existing employment info or initialize a new one
+    employment, created = EmploymentInfo.objects.get_or_create(employee_id=employee_id)
+
+    if request.method == "POST":
+        employee_code = request.POST.get("employee_code", "").strip()
+        department = request.POST.get("department", "").strip()
+        date_of_joining = request.POST.get("date_of_joining", "").strip()
+
+        if date_of_joining:
+            try:
+                doj = datetime.strptime(date_of_joining, "%Y-%m-%d").date()
+            except ValueError:
+                messages.error(request, "Invalid Date of Joining. Use format YYYY-MM-DD.")
+                return redirect(request.META.get('HTTP_REFERER', '/'))
+        else:
+            doj = None
+
+        # Update model fields
+        employment.employee_code = employee_code
+        employment.designation = department  # Assuming 'department' maps to 'designation'
+        employment.date_of_joining = doj
+        employment.save()
+
+        messages.success(request, "Employment information updated successfully.")
+        return redirect('employee-management-update-refrences', employee_id=employee_id)
+
+    return render(request, 'employee/create-employee-info.html', {'employment': employment})
+
+
+
+def save_or_update_refrences(request, employee_id):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    if request.user.role_id != 1:
+        messages.error(request, "You do not have permission to modify references.")
+        return redirect('employee-management')
+
+    if request.method == "POST":
+        # Reference 1
+        ref1_data = {
+            'relation': request.POST.get("reference1_relation_type", "").strip(),
+            'first_name': request.POST.get("reference1_first_name", "").strip(),
+            'last_name': request.POST.get("reference1_last_name", "").strip(),
+            'mobile_number': request.POST.get("reference1_mobile_number", "").strip(),
+            'email_address': request.POST.get("reference1_email_address", "").strip(),
+        }
+
+        # Reference 2
+        ref2_data = {
+            'relation': request.POST.get("reference2_relation_type", "").strip(),
+            'first_name': request.POST.get("reference2_first_name", "").strip(),
+            'last_name': request.POST.get("reference2_last_name", "").strip(),
+            'mobile_number': request.POST.get("reference2_mobile_number", "").strip(),
+            'email_address': request.POST.get("reference2_email_address", "").strip(),
+        }
+
+        if ref1_data['relation']:
+            EmployeeReference.objects.update_or_create(
+                employee_id=employee_id,
+                relation=ref1_data['relation'],
+                defaults={**ref1_data, 'employee_id': employee_id}
+            )
+
+        if ref2_data['relation']:
+            EmployeeReference.objects.update_or_create(
+                employee_id=employee_id,
+                relation=ref2_data['relation'],
+                defaults={**ref2_data, 'employee_id': employee_id}
+            )
+
+        messages.success(request, f"References updated for Employee ID: {employee_id}")
+        employee_instance = get_object_or_404(Employees, employee_id=employee_id)
+        return redirect('employee-management-update-allocation', employee_id=employee_instance.user_id)
+
+    # GET request – fetch references by order (or relation name if preferred)
+    references = EmployeeReference.objects.filter(employee_id=employee_id, active=True).order_by('reference_id')
+    reference1 = references[0] if references.count() > 0 else None
+    reference2 = references[1] if references.count() > 1 else None
+
+    relation_choices = ["Husband", "Wife", "Son", "Daughter"]
+
+    context = {
+        'employee_id': employee_id,
+        'reference1': reference1,
+        'reference2': reference2,
+        'relation_choices': relation_choices,
+    }
+
+    return render(request, 'employee/create-reference.html', context)
 
 def create_or_edit(request, employee_id=None):
     if not request.user.is_authenticated:
@@ -337,6 +669,127 @@ def create_or_edit_allocation(request, employee_id=None):
         'tl_list': tl_list,
         'senior_details': senior_details,
     })
+
+
+    
+    
+def update_allocation(request, employee_id=None):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    if request.method == "POST":
+        department_id = request.POST.get('department', '').strip()
+        branch_id = request.POST.get('branch', '').strip()
+        role_id = request.POST.get('role', '').strip()
+        senior_id = request.POST.get('senior', '').strip()
+        team_leader = request.POST.get('team_leader', '').strip()
+        team_leader_insert = request.POST.get('team_leader_insert', '').strip()
+        is_branch_head = request.POST.get('branch_head', '0')  # Get branch_head value
+
+        has_error = False
+
+        # Validate required fields
+        if not branch_id:
+            messages.error(request, 'Branch is required.')
+            has_error = True
+
+        if not role_id and is_branch_head == '0':  # Only validate role if branch_head is not selected
+            messages.error(request, 'Role is required.')
+            has_error = True
+
+        if not department_id and is_branch_head == '0':  # Only validate department if branch_head is not selected
+            messages.error(request, 'Department is required.')
+            has_error = True
+
+        # Prevent assigning the Admin role
+        if role_id == '1':
+            messages.error(request, "You cannot assign the Admin role.")
+            has_error = True
+
+        # Role-based validation
+        if role_id == '5':
+            if not team_leader:
+                messages.error(request, "Manager selection is required for Role 5.")
+                has_error = True
+            else:
+                senior_id = team_leader
+
+        elif role_id == '6':
+            if not team_leader_insert:
+                messages.error(request, "Team Leader selection is required for Role 6.")
+                has_error = True
+            else:
+                senior_id = team_leader_insert
+
+        if has_error:
+            return redirect(request.META.get('HTTP_REFERER', '/'))
+
+        # Fetch user for update
+        user_data = Users.objects.filter(id=employee_id).first()
+        if user_data:
+            user_data.department_id = department_id
+            user_data.branch_id = branch_id
+            user_data.role_id = role_id
+            user_data.senior_id = senior_id
+            user_data.branch_head = 1 if is_branch_head == '1' else 0  # Set branch_head based on checkbox value
+            user_data.save()
+            messages.success(request, "User allocation updated successfully.")
+        else:
+            messages.error(request, "User not found.")
+
+        return redirect('employee-management')
+
+    # GET method - Load data for the allocation form
+    departments = Department.objects.all().order_by('name')
+    branches = Branch.objects.filter(status='Active').order_by('-created_at')
+    roles = Roles.objects.exclude(id__in=[1, 4])
+    senior_users = Users.objects.filter(role_id=2).values('id', 'first_name', 'last_name', 'senior_id')
+
+    employee = Users.objects.filter(id=employee_id).first() if employee_id else None
+    senior_details = None
+    manager_list = []
+    tl_list = []
+    manager_id = None
+    manager_details = None
+    if employee:
+        if employee.role_id == 5 and employee.senior_id:
+            # Get TL details
+            tl_details = Users.objects.filter(id=employee.senior_id).values('id', 'first_name', 'last_name', 'senior_id').first()
+            if tl_details:
+                senior_id = tl_details.get('senior_id')
+                if senior_id:
+                    senior_details = Users.objects.filter(id=senior_id).values('id', 'first_name', 'last_name').first()
+                    manager_list = list(Users.objects.filter(senior_id=senior_id).values('id', 'first_name', 'last_name', 'role_id'))
+
+        elif employee.role_id == 6 and employee.senior_id:
+            # Get TL and their manager
+            tl_details = Users.objects.filter(id=employee.senior_id).values('id', 'first_name', 'last_name', 'senior_id').first()
+            if tl_details:
+                manager_id = tl_details.get('senior_id')
+                manager_details = Users.objects.filter(id=manager_id).values('id', 'first_name', 'last_name', 'senior_id').first()
+                head_id = manager_details.get('senior_id')
+
+                if manager_id:
+                    tl_list = list(Users.objects.filter(senior_id=manager_id).values('id', 'first_name', 'last_name', 'role_id'))
+                    manager_list = list(Users.objects.filter(senior_id=head_id).values('id', 'first_name', 'last_name', 'role_id'))
+                    senior_details = Users.objects.filter(id=head_id).values('id', 'first_name', 'last_name').first()
+
+        elif employee.senior_id:
+            senior_details = Users.objects.filter(id=employee.senior_id).values('id', 'first_name', 'last_name', 'senior_id').first()
+
+    return render(request, 'employee/create-allocation.html', {
+        'employee': employee,
+        'departments': departments,
+        'branches': branches,
+        'roles': roles,
+        'senior_users': senior_users,
+        'manager_id': manager_id,
+        'manager_list': manager_list,
+        'manager_details': manager_details,
+        'tl_list': tl_list,
+        'senior_details': senior_details,
+    })
+
 
 
 
