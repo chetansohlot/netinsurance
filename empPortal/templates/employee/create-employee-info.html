@@ -3,7 +3,7 @@
 {% load static %}
 
 {% block title %}
-Add Employee
+Add Employment Info
 {% endblock %}
 
 {% block content %}
@@ -22,12 +22,12 @@ Add Employee
             <div class="row py-2">
               <div class="col-sm-6">
                 <div class="d-flex align-items-center">
-                  <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Add Employee</a>
+                  <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Add Employment Info</a>
                 </div>
                 <ul class="breadcrump">
                   <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
                   <li> <a href="#">Employee</a> <i class="fas fa-chevron-right"></i></li>
-                  <li>Add Employee</li>
+                  <li>Add Employment Info</li>
                 </ul>
               </div>
             </div>
@@ -41,58 +41,50 @@ Add Employee
             <div class="row">
               
               <div class="col-sm-12">  
-                
-                <ul class="stepflow-text">
-                    <li class="active"><a href="#link1"><span>Basic Details </span></a></li>
-                    <li class="active"><a href="#link2"><span>Address</span></a></li>
-                    <li class="active"><a href="#link2"><span>Family Details</span></a></li>
-                    <li><a href="#link2"><span>Employment Info </span></a></li>
-                    <li><a href="#link2"><span>References</span></a></li>
-                </ul>
-                <ul class="new-stepflow">
-                    <li class="active"><a href="#"></a></li>
-                    <li class="active"><a href="#"></a></li>
-                    <li class="active"><a href="#"></a></li>
-                    <li><a href="#"></a></li>
-                    <li><a href="#"></a></li>
-                </ul>
+                  {% include 'employee/common-link.html' with step=4 %}
+
                 <div class="card box-shadow-none p-md-5 p-3">
                   <div class="card-body px-0 pb-0 pt-0">
 
                     <form autocomplete="off" id="employeeForm" name="employeeForm"
-                        action="{% if employee %}{% url 'employee-management-edit' employee.id %}{% else %}{% url 'employee-management-create' %}{% endif %}"
-                        method="post">
-                        {% csrf_token %}
-                        <div class="row">
-                            
-                            <div class="col-md-12">
-                              <h2 class="admin-title border-bottom pb-2 mb-4">Employment Info</h2>
-                            </div>
-
-                            <div class="form-group col-sm-6 col-md-4">
-                                <label class="form-lbl" >Employee Code</label>
-                                <input type="text" class="form-field" placeholder="Employee Code">
-                            </div>
-                            <div class="form-group col-sm-6 col-md-4">
-                                <label class="form-lbl" >Department</label>
-                                <select class="form-field">
-                                    <option>Select Department</option>
-                                    <option>Private</option>
-                                    <option>Government</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-sm-6 col-md-4">
-                                <label class="form-lbl">Date of Joning</label>
-                                <input type="text" class="form-field datepicker_common" placeholder="DD-MM-YYYY">
-                            </div>
-                            
-                            
-                            
+                      action="{% url 'employee-management-employment-info' employment.employee_id %}"
+                      method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h2 class="admin-title border-bottom pb-2 mb-4">Employment Info</h2>
                         </div>
-                        <div class="d-flex justify-content-end">
-                          <button type="submit" class="form-submit-btn">{% if employee %}Update Employee{% else %}Save Employee{% endif %}</button>
-                        </div>  
-                    </form>
+
+                        <div class="form-group col-sm-6 col-md-4">
+                            <label class="form-lbl">Employee Code</label>
+                            <input type="text" class="form-field" name="employee_code" placeholder="Employee Code"
+                                  value="{{ employment.employee_code|default:'' }}">
+                        </div>
+
+                        <div class="form-group col-sm-6 col-md-4">
+                            <label class="form-lbl">Designation</label>
+                            <select class="form-field" name="department">
+                                <option value="">Select Designation</option>
+                                <option value="Private" {% if employment.designation == "Private" %}selected{% endif %}>Private</option>
+                                <option value="Government" {% if employment.designation == "Government" %}selected{% endif %}>Government</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group col-sm-6 col-md-4">
+                            <label class="form-lbl">Date of Joining</label>
+                            <input type="date" class="form-field" name="date_of_joining"
+                                  value="{{ employment.date_of_joining|date:'Y-m-d' }}">
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="form-submit-btn">
+                            {% if employment %}Update Employee{% else %}Save Employee{% endif %}
+                        </button>
+                    </div>
+                </form>
+
+
 
                   </div>
                 </div>

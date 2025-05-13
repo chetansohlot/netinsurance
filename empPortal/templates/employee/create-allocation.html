@@ -1,0 +1,262 @@
+{% extends 'master.html' %}
+
+{% load static %}
+
+{% block title %}
+Update Allocation
+{% endblock %}
+
+{% block content %}
+
+<body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+    
+        {% include "navbar.html" %}
+        {% include "sidebar.html" %}
+    
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <div class="content-header breadcrump-bg">
+          <div class="container-fluid">
+            <div class="row py-2">
+              <div class="col-sm-6">
+                <div class="d-flex align-items-center">
+                  <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Update Allocation</a>
+                </div>
+                <ul class="breadcrump">
+                  <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
+                  <li> <a href="#">Employee</a> <i class="fas fa-chevron-right"></i></li>
+                  <li>Update Allocation</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /.content-header -->
+    
+        <!-- Main content -->
+        <div class="content">
+          <div class="container-fluid">
+            <div class="row">
+              
+              <div class="col-sm-12">  
+                
+                  {% include 'employee/common-link.html' with step=6 %}
+                
+                <div class="card box-shadow-none p-md-5 p-3">
+                  <div class="card-body px-0 pb-0 pt-0">
+                    <form autocomplete="off" id="employeeForm" name="employeeForm"
+                        action="{% url 'employee-management-update-allocation' employee.id %}" method="post">
+                        {% csrf_token %}
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h2 class="admin-title border-bottom pb-2 mb-4">Employee Allocation</h2>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <!-- Branch -->
+                            <div class="form-group col-sm-6 col-md-4">
+                                <label class="form-lbl" for="branch">Branch</label>
+                                <select class="form-field" name="branch" id="branch">
+                                    <option value="">Select Branch</option>
+                                    {% for branch in branches %}
+                                        <option value="{{ branch.id }}" {% if branch.id|stringformat:"s" == employee.branch_id|stringformat:"s" %}selected{% endif %}>
+                                            {{ branch.branch_name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- Is Branch Head (Checkbox) -->
+                            <div class="form-group col-sm-6 col-md-4 d-flex align-items-center mt-4">
+                                <input type="checkbox" id="is_branch_head" name="is_branch_head" value="1"
+                                    {% if employee.branch_head %}checked{% endif %}>
+                                <label class="ml-2 mb-0" for="is_branch_head">Is Branch Head</label>
+                            </div>
+
+                            <!-- Department -->
+                            <div class="form-group col-sm-6 col-md-4">
+                                <label class="form-lbl" for="department">Department</label>
+                                <select class="form-field" name="department" id="department">
+                                    <option value="">Select Department</option>
+                                    {% for department in departments %}
+                                        <option value="{{ department.id }}" {% if department.id|stringformat:"s" == employee.department_id|stringformat:"s" %}selected{% endif %}>
+                                            {{ department.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- Role -->
+                            <div class="form-group col-sm-6 col-md-4">
+                                <label class="form-lbl" for="role">Role</label>
+                                <select class="form-field" name="role" id="role">
+                                    <option value="">Select Role</option>
+                                    {% for role in roles %}
+                                        <option value="{{ role.id }}" {% if role.id|stringformat:"s" == employee.role_id|stringformat:"s" %}selected{% endif %}>
+                                            {{ role.roleName }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- Senior -->
+                            <div class="form-group col-sm-6 col-md-4">
+                                <label class="form-lbl" for="senior">Select Head</label>
+                                <select class="form-field" name="senior" id="senior">
+                                    <option value="">Select Head</option>
+                                    {% for senior in senior_users %}
+                                        <option value="{{ senior.id }}"
+                                            {% if employee.role_id|stringformat:"s" == "5" and senior_details and senior.id|stringformat:"s" == senior_details.id|stringformat:"s" %}
+                                                selected
+                                            {% elif employee.role_id|stringformat:"s" == "6" and senior_details and senior.id|stringformat:"s" == senior_details.id|stringformat:"s" %}
+                                                selected
+                                            {% elif senior.id|stringformat:"s" == employee.senior_id|stringformat:"s" %}
+                                                selected
+                                            {% endif %}>
+                                            {{ senior.first_name }} {{ senior.last_name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- Sales Manager -->
+                            <div class="form-group col-sm-6 col-md-4" id="salesManagerContainer"
+                                style="{% if manager_list %}display:block;{% else %}display:none;{% endif %};">
+                                <label class="form-lbl" for="sales_manager">Select Manager</label>
+                                <select class="form-field" name="team_leader" id="sales_manager">
+                                    <option value="">Select Manager</option>
+                                    {% if manager_list %}
+                                        {% for manager in manager_list %}
+                                            <option value="{{ manager.id }}"
+                                                {% if employee.role_id|stringformat:"s" == "6" and manager_id and manager.id|stringformat:"s" == manager_id|stringformat:"s" %}
+                                                    selected
+                                                {% elif manager.id|stringformat:"s" == employee.senior_id|stringformat:"s" %}
+                                                    selected
+                                                {% endif %}>
+                                                {{ manager.first_name }} {{ manager.last_name }}
+                                            </option>
+                                        {% endfor %}
+                                    {% endif %}
+                                </select>
+                            </div>
+
+                            <!-- Team Leader -->
+                            <div class="form-group col-sm-6 col-md-4" id="tlManagerContainer"
+                                style="{% if tl_list %}display:block;{% else %}display:none;{% endif %};">
+                                <label class="form-lbl" for="tl_manager">Select Team Leader</label>
+                                <select class="form-field" name="team_leader_insert" id="tl_manager">
+                                    <option value="">Select Team Leader</option>
+                                    {% if tl_list %}
+                                        {% for tl in tl_list %}
+                                            <option value="{{ tl.id }}" {% if employee.senior_id|stringformat:"s" == tl.id|stringformat:"s" %}selected{% endif %}>
+                                                {{ tl.first_name }} {{ tl.last_name }}
+                                            </option>
+                                        {% endfor %}
+                                    {% endif %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end mt-4">
+                            <button type="submit" class="form-submit-btn">
+                                {% if employee %}Update Employee{% else %}Save Employee{% endif %}
+                            </button>
+                        </div>
+                    </form>
+
+
+
+
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>  
+        </div>
+      </div>
+        
+    </div>
+    
+    {% include "footer.html" %}
+    {% include "footer-script.html" %}
+    <script>
+      document.getElementById("myForm").addEventListener("submit", function() {
+          document.getElementById("loader").style.display = "flex";
+      });
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('#role').change(function() {
+                var roleId = $(this).val();
+                var userSelect = $('#senior');
+
+                if (roleId) {
+                    $.ajax({
+                        url: "{% url 'get_users_by_role' %}",
+                        type: 'GET',
+                        data: { 'role_id': roleId },
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                        success: function(response) {
+                            userSelect.empty();
+                            userSelect.append('<option value="">Select User</option>');
+                            if (response.users && response.users.length > 0) {
+                                $.each(response.users, function(index, user) {
+                                    userSelect.append(
+                                        `<option value="${user.id}">${user.full_name}</option>`
+                                    );
+                                });
+                            } else {
+                                userSelect.append('<option value="">No users available</option>');
+                            }
+                        },
+                        error: function() {
+                            alert('Error fetching users');
+                        }
+                    });
+                } else {
+                    userSelect.empty().append('<option value="">Select User</option>');
+                }
+            });
+        });
+</script>
+<script>
+  $(document).ready(function () {
+    function toggleFields() {
+      if ($('#is_branch_head').is(':checked')) {
+        // Hide all fields except branch and checkbox
+        $('#department').closest('.form-group').hide();
+        $('#role').closest('.form-group').hide();
+        $('#senior').closest('.form-group').hide();
+        $('#salesManagerContainer').hide();
+        $('#tlManagerContainer').hide();
+      } else {
+        // Show all fields
+        $('#department').closest('.form-group').show();
+        $('#role').closest('.form-group').show();
+        $('#senior').closest('.form-group').show();
+        if ($('#salesManagerContainer option').length > 1) {
+          $('#salesManagerContainer').show();
+        }
+        if ($('#tlManagerContainer option').length > 1) {
+          $('#tlManagerContainer').show();
+        }
+      }
+    }
+
+    // Initial check on page load
+    toggleFields();
+
+    // Bind change event
+    $('#is_branch_head').change(function () {
+      toggleFields();
+    });
+  });
+</script>
+
+</body>
+{% endblock %}

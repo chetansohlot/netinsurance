@@ -3,7 +3,7 @@
 {% load static %}
 
 {% block title %}
-Add Employee
+Add Reference
 {% endblock %}
 
 {% block content %}
@@ -22,12 +22,12 @@ Add Employee
             <div class="row py-2">
               <div class="col-sm-6">
                 <div class="d-flex align-items-center">
-                  <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Add Employee</a>
+                  <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Add Reference</a>
                 </div>
                 <ul class="breadcrump">
                   <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
                   <li> <a href="#">Employee</a> <i class="fas fa-chevron-right"></i></li>
-                  <li>Add Employee</li>
+                  <li>Add Reference</li>
                 </ul>
               </div>
             </div>
@@ -42,60 +42,94 @@ Add Employee
               
               <div class="col-sm-12">  
                 
-                <ul class="stepflow-text">
-                    <li class="active"><a href="#link1"><span>Basic Details </span></a></li>
-                    <li class="active"><a href="#link2"><span>Address</span></a></li>
-                    <li class="active"><a href="#link2"><span>Family Details</span></a></li>
-                    <li class="active"><a href="#link2"><span>Employment Info </span></a></li>
-                    <li><a href="#link2"><span>References</span></a></li>
-                </ul>
-                <ul class="new-stepflow">
-                    <li class="active"><a href="#"></a></li>
-                    <li class="active"><a href="#"></a></li>
-                    <li class="active"><a href="#"></a></li>
-                    <li class="active"><a href="#"></a></li>
-                    <li><a href="#"></a></li>
-                </ul>
+                  {% include 'employee/common-link.html' with step=5 %}
+                
                 <div class="card box-shadow-none p-md-5 p-3">
                   <div class="card-body px-0 pb-0 pt-0">
-
+                    
+                    
                     <form autocomplete="off" id="employeeForm" name="employeeForm"
-                        action="{% if employee %}{% url 'employee-management-edit' employee.id %}{% else %}{% url 'employee-management-create' %}{% endif %}"
-                        method="post">
-                        {% csrf_token %}
-                        <div class="row">
-                            
-                            <div class="col-md-12">
+                        action="{% url 'employee-management-update-refrences' employee_id=employee_id %}" method="post">
+                      {% csrf_token %}
+                      <div class="row">
+                          <div class="col-md-12">
                               <h2 class="admin-title border-bottom pb-2 mb-4">References</h2>
-                            </div>
+                          </div>
+                      </div>
 
-                            
-                            <div class="form-group col-sm-6 col-md-4">
-                                <label class="form-lbl" >Relation</label>
-                                <select class="form-field">
-                                    <option>Select Department</option>
-                                    <option>Hushband</option>
-                                    <option>Wife</option>
-                                    <option>Son</option>
-                                    <option>Daughter</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-sm-6 col-md-4">
-                                <label class="form-lbl" >First Name</label>
-                                <input type="text" class="form-field" placeholder="First Name">
-                            </div>
-                            <div class="form-group col-sm-6 col-md-4">
-                                <label class="form-lbl">Last Name</label>
-                                <input type="text" class="form-field" placeholder="Last Name">
-                            </div>
-                            
-                            
-                            
-                        </div>
-                        <div class="d-flex justify-content-end">
-                          <button type="submit" class="form-submit-btn">{% if employee %}Update Employee{% else %}Save Employee{% endif %}</button>
-                        </div>  
+                      <!-- Reference 1 -->
+                      <div class="row">
+                          <div class="form-group col-sm-6 col-md-4">
+                              <label class="form-lbl">Relation</label>
+                              <select name="reference1_relation_type" class="form-field">
+                                  <option value="">Select Relation</option>
+                                  {% for rel in relation_choices %}
+                                      <option value="{{ rel }}" {% if reference1 and reference1.relation == rel %}selected{% endif %}>{{ rel }}</option>
+                                  {% endfor %}
+                              </select>
+                          </div>
+                          <div class="form-group col-sm-6 col-md-4">
+                              <label class="form-lbl">First Name</label>
+                              <input type="text" name="reference1_first_name" class="form-field" placeholder="First Name"
+                                    value="{% if reference1 %}{{ reference1.first_name }}{% endif %}">
+                          </div>
+                          <div class="form-group col-sm-6 col-md-4">
+                              <label class="form-lbl">Last Name</label>
+                              <input type="text" name="reference1_last_name" class="form-field" placeholder="Last Name"
+                                    value="{% if reference1 %}{{ reference1.last_name }}{% endif %}">
+                          </div>
+                          <div class="form-group col-sm-6 col-md-4">
+                              <label class="form-lbl">Mobile Number</label>
+                              <input type="text" name="reference1_mobile_number" class="form-field" placeholder="Mobile Number"
+                                    value="{% if reference1 %}{{ reference1.mobile_number }}{% endif %}">
+                          </div>
+                          <div class="form-group col-sm-6 col-md-4">
+                              <label class="form-lbl">Email Address</label>
+                              <input type="email" name="reference1_email_address" class="form-field" placeholder="Email"
+                                    value="{% if reference1 %}{{ reference1.email_address }}{% endif %}">
+                          </div>
+                      </div>
+
+                      <!-- Reference 2 -->
+                      <div class="row mt-4">
+                          <div class="form-group col-sm-6 col-md-4">
+                              <label class="form-lbl">Relation</label>
+                              <select name="reference2_relation_type" class="form-field">
+                                  <option value="">Select Relation</option>
+                                  {% for rel in relation_choices %}
+                                      <option value="{{ rel }}" {% if reference2 and reference2.relation == rel %}selected{% endif %}>{{ rel }}</option>
+                                  {% endfor %}
+                              </select>
+                          </div>
+                          <div class="form-group col-sm-6 col-md-4">
+                              <label class="form-lbl">First Name</label>
+                              <input type="text" name="reference2_first_name" class="form-field" placeholder="First Name"
+                                    value="{% if reference2 %}{{ reference2.first_name }}{% endif %}">
+                          </div>
+                          <div class="form-group col-sm-6 col-md-4">
+                              <label class="form-lbl">Last Name</label>
+                              <input type="text" name="reference2_last_name" class="form-field" placeholder="Last Name"
+                                    value="{% if reference2 %}{{ reference2.last_name }}{% endif %}">
+                          </div>
+                          <div class="form-group col-sm-6 col-md-4">
+                              <label class="form-lbl">Mobile Number</label>
+                              <input type="text" name="reference2_mobile_number" class="form-field" placeholder="Mobile Number"
+                                    value="{% if reference2 %}{{ reference2.mobile_number }}{% endif %}">
+                          </div>
+                          <div class="form-group col-sm-6 col-md-4">
+                              <label class="form-lbl">Email Address</label>
+                              <input type="email" name="reference2_email_address" class="form-field" placeholder="Email"
+                                    value="{% if reference2 %}{{ reference2.email_address }}{% endif %}">
+                          </div>
+                      </div>
+
+                      <div class="d-flex justify-content-end">
+                          <button type="submit" class="form-submit-btn">Update References</button>
+                      </div>
                     </form>
+
+
+
 
                   </div>
                 </div>

@@ -42,32 +42,22 @@ Add Employee
               
               <div class="col-sm-12">  
                 
-                <ul class="stepflow-text">
-                    <li class=""><a href="#link1"><span>Basic Details </span></a></li>
-                    <li><a href="#link2"><span>Address</span></a></li>
-                    <li><a href="#link2"><span>Family Details</span></a></li>
-                    <li><a href="#link2"><span>Employment Info </span></a></li>
-                    <li><a href="#link2"><span>References</span></a></li>
-                </ul>
-                <ul class="new-stepflow">
-                    <li class=""><a href="#"></a></li>
-                    <li><a href="#"></a></li>
-                    <li><a href="#"></a></li>
-                    <li><a href="#"></a></li>
-                    <li><a href="#"></a></li>
-                </ul>
+                {% include 'employee/common-link.html' with step=1 %}
+
                 <div class="card box-shadow-none p-md-5 p-3">
                   <div class="card-body px-0 pb-0 pt-0">
 
                     <form autocomplete="off" id="employeeForm" name="employeeForm"
-                        action="{% if employee %}{% url 'employee-management-edit' employee.id %}{% else %}{% url 'employee-management-create' %}{% endif %}"
+                        action="{% if user %}{% url 'employee-management-update' employee_id=user.id %}{% else %}{% url 'employee-management-create' %}{% endif %}"
                         method="post">
                         {% csrf_token %}
+                        
                         <div class="row">
-                            
                             <div class="col-md-12">
-                              <h2 class="admin-title border-bottom pb-2 mb-4">Basic Details</h2>
+                                <h2 class="admin-title border-bottom pb-2 mb-4">Basic Details</h2>
                             </div>
+
+                            <!-- First Name -->
                             <div class="form-group col-sm-6 col-md-4">
                                 <label class="form-lbl" for="first_name">First Name</label>
                                 <input type="text" class="form-field" name="first_name" id="first_name" placeholder="First Name"
@@ -75,74 +65,92 @@ Add Employee
                                 <span class="error first_name_err"></span>
                             </div>
 
+                            <!-- Last Name -->
                             <div class="form-group col-sm-6 col-md-4">
                                 <label class="form-lbl" for="last_name">Last Name</label>
                                 <input type="text" class="form-field" name="last_name" id="last_name" placeholder="Last Name"
                                     value="{{ employee.last_name|default:'' }}">
                                 <span class="error last_name_err"></span>
                             </div>
-
+                            <!-- Date of Birth -->
                             <div class="form-group col-sm-6 col-md-4">
                                 <label class="form-lbl">Date of Birth</label>
-                                <input type="text" class="form-field dob_datepicker" placeholder="DD-MM-YYYY"
-                                    value="">
+                                <input type="date" name="dob" class="form-field dob_datepicker" placeholder="DD-MM-YYYY"
+                                    value="{{ employee.date_of_birth|date:"Y-m-d"|default:'' }}">
                             </div>
+
+
+                            <!-- Gender -->
                             <div class="form-group col-sm-6 col-md-4">
                                 <label class="form-lbl">Gender</label>
-                                <select class="form-field">
-                                  <option>Male</option>
-                                  <option>Female</option>
+                                <select class="form-field" name="gender" id="gender">
+                                    <option value="Male" {% if employee.gender == 'Male' %}selected{% endif %}>Male</option>
+                                    <option value="Female" {% if employee.gender == 'Female' %}selected{% endif %}>Female</option>
                                 </select>
                             </div>
+
+                            <!-- PAN Card -->
                             <div class="form-group col-sm-6 col-md-4">
                                 <label class="form-lbl" for="pan_no">PAN Card</label>
-                                <input type="text" class="form-field text-uppercase" maxlength="10" name="pan_no" id="pan_no" placeholder="Enter PAN No"
-                                    value="{{ employee.pan_no|default:'' }}">
+                                <input type="text" class="form-field text-uppercase" maxlength="10" name="pan_no" id="pan_no"
+                                    placeholder="Enter PAN No" value="{{ employee.pan_card|default:'' }}">
                                 <span class="error pan_no_err"></span>
                             </div>
+
+                            <!-- Aadhaar Card -->
                             <div class="form-group col-sm-6 col-md-4">
                                 <label class="form-lbl">Aadhaar Card</label>
-                                <input type="text" class="form-field" maxlength="12" placeholder="Aadhaar Number"
-                                    value="">
+                                <input type="text" class="form-field" maxlength="12" name="aadhaar_card" id="aadhaar_card"
+                                    placeholder="Aadhaar Number" value="{{ employee.aadhaar_card|default:'' }}">
                             </div>
+
+                            <!-- Mobile Number -->
                             <div class="form-group col-sm-6 col-md-4">
                                 <label class="form-lbl" for="phone">Mobile Number</label>
                                 <input type="text" class="form-field" name="phone" id="phone" placeholder="Mobile Number" maxlength="10"
-                                    value="{{ employee.phone|default:'' }}">
+                                    value="{{ employee.mobile_number|default:'' }}">
                                 <span class="error phone_err"></span>
                             </div>
+
+                            <!-- Email Address -->
                             <div class="form-group col-sm-6 col-md-4">
                                 <label class="form-lbl" for="email">Email Address</label>
                                 <input type="email" class="form-field" name="email" id="email" placeholder="Email"
-                                    value="{{ employee.email|default:'' }}">
+                                    value="{{ employee.email_address|default:'' }}">
                                 <span class="error email_err"></span>
                             </div>
+
+                            <!-- Blood Group -->
                             <div class="form-group col-sm-6 col-md-4">
                                 <label class="form-lbl">Blood Group</label>
-                                <select class="form-field">
-                                  <option>A+</option>
-                                  <option>A-</option>
-                                  <option>B+</option>
-                                  <option>B-</option>
-                                  <option>O+</option>
-                                  <option>O-</option>
-                                  <option>AB+</option>
-                                  <option>AB-</option>
+                                <select class="form-field" name="blood_group">
+                                    <option value="A+" {% if employee.blood_group == 'A+' %}selected{% endif %}>A+</option>
+                                    <option value="A-" {% if employee.blood_group == 'A-' %}selected{% endif %}>A-</option>
+                                    <option value="B+" {% if employee.blood_group == 'B+' %}selected{% endif %}>B+</option>
+                                    <option value="B-" {% if employee.blood_group == 'B-' %}selected{% endif %}>B-</option>
+                                    <option value="O+" {% if employee.blood_group == 'O+' %}selected{% endif %}>O+</option>
+                                    <option value="O-" {% if employee.blood_group == 'O-' %}selected{% endif %}>O-</option>
+                                    <option value="AB+" {% if employee.blood_group == 'AB+' %}selected{% endif %}>AB+</option>
+                                    <option value="AB-" {% if employee.blood_group == 'AB-' %}selected{% endif %}>AB-</option>
                                 </select>
                             </div>
+
+                            <!-- Marital Status -->
                             <div class="form-group col-sm-6 col-md-4">
                                 <label class="form-lbl">Marital status</label>
-                                <select class="form-field">
-                                  <option>Married</option>
-                                  <option>Unmarried</option>
+                                <select class="form-field" name="marital_status">
+                                    <option value="Married" {% if employee.marital_status == 'Married' %}selected{% endif %}>Married</option>
+                                    <option value="Unmarried" {% if employee.marital_status == 'Unmarried' %}selected{% endif %}>Unmarried</option>
                                 </select>
                             </div>
-                            
                         </div>
+
                         <div class="d-flex justify-content-end">
-                          <button type="submit" class="form-submit-btn">{% if employee %}Update Employee{% else %}Save Employee{% endif %}</button>
-                        </div>  
+                            <button type="submit" class="form-submit-btn">{% if user %}Update Employee{% else %}Save Employee{% endif %}</button>
+                        </div>
                     </form>
+
+
 
                   </div>
                 </div>

@@ -209,21 +209,27 @@ Employee Management
                                             <label for="check{{ employee.id }}"></label>
                                         </td>
                                         <td>
-                                            <a href="{% url 'employee-management-edit' employee_id=employee.id %}" class="trlink">
+                                            <a href="{% url 'employee-management-update' employee_id=employee.id %}" class="trlink">
                                                 {{ employee.full_name|default:"N/A" }}
                                                 <span class="text-gray d-block small">PAN#{{ employee.pan_no }}</span>
                                             </a>
                                         </td>
                                         
                                         <td>
-                                          <a href="{% url 'employee-management-edit' employee_id=employee.id %}" class="trlink">
-                                              {{ employee.role.roleName|default:"N/A" }}
-                                              <span class="text-gray d-block small">{{ employee.department.name }}</span>
+                                          <a href="{% url 'employee-management-update' employee_id=employee.id %}" class="trlink">
+                                              {% if employee.branch_head == 1 %}
+                                                  Branch Head
+                                              {% else %}
+                                                  {{ employee.role.roleName|default:"N/A" }}
+                                                  {% if employee.department %}
+                                                      <span class="text-gray d-block small">{{ employee.department.name }}</span>
+                                                  {% endif %}
+                                              {% endif %}
                                           </a>
                                         </td>
                                         
                                         <td>
-                                          <a href="{% url 'employee-management-edit' employee_id=employee.id %}" class="trlink">
+                                          <a href="{% url 'employee-management-update' employee_id=employee.id %}" class="trlink">
                                               {{ employee.phone|default:"-" }}
                                               <span class="text-gray d-block small">{{ employee.email|default:"-" }}</span>
                                           </a>
@@ -242,7 +248,7 @@ Employee Management
                                         
                                         <td>{{ branches|get_item:employee.branch_id|default:"-" }}</td>
                                         <td>
-                                            <a href="{% url 'employee-management-edit' employee_id=employee.id %}" class="btn btn-xs btn-warning">
+                                            <a href="{% url 'employee-management-update' employee_id=employee.id %}" class="btn btn-xs btn-warning">
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                         </td>

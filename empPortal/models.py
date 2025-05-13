@@ -9,7 +9,7 @@ from empPortal.model import Referral
 from empPortal.model import Partner
 from datetime import timedelta
 from django.utils import timezone
-
+from empPortal.model import InsuranceType
 from django.conf import settings
 
 class Roles(models.Model):
@@ -208,9 +208,7 @@ class Leads(models.Model):
     referral_name = models.CharField(max_length=255,null=True,blank=True)
     lead_source_medium = models.IntegerField(null=True, blank=True)
     
-    created_at = models.DateTimeField(auto_now_add=True)  # Timestamp when the lead was created
-    created_by = models.CharField(max_length=20, null=True, blank=True)  
-    updated_at = models.DateTimeField(auto_now=True)  # Timestamp when the lead was last updated
+    
     status = models.CharField(max_length=50, default='new')  # Status of the lead (new, contacted, converted, etc.)
     policy_date = models.DateField(null=True, blank=True)
     sales_manager = models.CharField(max_length=100, null=True, blank=True)
@@ -230,7 +228,8 @@ class Leads(models.Model):
     net_premium = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     gross_premium = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     risk_start_date = models.DateField(null=True, blank=True)
-    lead_insurance_type_id = models.IntegerField(null=True,blank=True)
+    
+    lead_insurance_type = models.ForeignKey(InsuranceType,on_delete=models.SET_NULL,null=True,blank=True)
     lead_insurance_category_id = models.IntegerField(null=True,blank=True)
     lead_insurance_product_id = models.IntegerField(null=True,blank=True)
     lead_first_name = models.CharField(max_length=255,null=True,blank=True)
@@ -282,9 +281,16 @@ class Leads(models.Model):
     # risk_start_date = models.DateField(null=True, blank=True)
     risk_start_date = models.CharField(max_length=255)
 
-
+    created_at = models.DateTimeField(auto_now_add=True) 
+    created_by =  created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+    updated_at = models.DateTimeField(auto_now=True)  
     class Meta:
-        db_table = 'leads'  # This defines the database table name
+        db_table = 'leads'  
 
     def __str__(self):
         return f"Lead - {self.name_as_per_pan}"
@@ -734,6 +740,7 @@ class Users(AbstractBaseUser):
     exam_eligibility = models.PositiveSmallIntegerField(null=True, blank=True, default=0) 
     exam_attempt = models.PositiveSmallIntegerField(null=True, blank=True, default=0) 
     exam_pass = models.PositiveSmallIntegerField(null=True, blank=True, default=0) 
+    branch_head = models.PositiveSmallIntegerField(null=True, blank=True, default=0) 
     exam_last_attempted_on = models.DateTimeField(null=True)
     dob = models.CharField(max_length=255)
     state = models.CharField(max_length=255)
@@ -806,6 +813,14 @@ class Users(AbstractBaseUser):
         try:
             return Partner.objects.get(user_id=self.id)
         except Partner.DoesNotExist:
+            return None   
+        
+    @property
+    def employee(self):
+        from empPortal.model import Employees  # Lazy import inside the method to avoid circular import
+        try:
+            return Employees.objects.get(user_id=self.id)
+        except Employees.DoesNotExist:
             return None  
           
     @property
