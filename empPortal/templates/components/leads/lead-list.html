@@ -33,7 +33,17 @@
               <!-- Lead ID + Date -->
               <td>
                 <span class="badge bg-secondary">{{ lead.lead_id }}</span><br>
-                <span class="d-block">Lead Age : {{ lead.created_at|timesince|cut:"minutes"|cut:"hours"|cut:"seconds" }}</span>
+                <span class="d-block">Lead Age :
+                    {% if lead.created_at.date == today %}
+                        <span class="badge bg-primary rounded-pill">Today</span>
+                    {% elif lead.created_at.date == yesterday %}
+                        <span class="badge bg-primary rounded-pill">Yesterday</span>
+                    {% else %}
+                        <span class="badge bg-primary rounded-pill">
+                            {{ lead.created_at|timesince }} ago
+                        </span>
+                    {% endif %}
+                </span>
                 <small class="text-muted">{{ lead.created_at|date:"d M Y h:i A" }}</small>
               </td>
                  <!-- Customer Info -->

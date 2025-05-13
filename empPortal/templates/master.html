@@ -2110,145 +2110,290 @@
   
   <script>
     $(document).ready(function () {
-            $("#leadPreviousPolicyForm").validate({
-              rules: {
-                previous_insurer_name:{
-                  required: true,
-                },
-                policy_number:{
-                  required: true,
-                },
-                policy_type:{
-                  required: true,
-                },
-                policy_date:{
-                  required: true,
-                },
-                expiry_status:{
-                  required: true,
-                },
-                policy_end_date:{
-                  required: true,
-                },
-                ncb:{
-                  required: true,
-                },
-                previous_idv_amount:{
-                  required: true,
-                },
-                previous_sum_insured:{
-                  required: true,
-                },
-                claim_made:{
-                  required: true,
-                },
-                claim_amount:{
-                  required: true,
-                },
-                previous_policy_source:{
-                  required: true,
-                },
-                vehicle_type:{
-                  required: true,
-                },
-                vehicle_class:{
-                  required: true,
-                },
-                insurance_type:{
-                  required: true,
-                },
-                product_category:{
-                  required: true,
-                },
-                vehicle_reg_no:{
-                  required: true,
-                },
-                vehicle_make:{
-                  required: true,
-                },
-                vehicle_model:{
-                  required: true,
-                },
-                mgf_year:{
-                  required: true,
-                },
-                sum_insured:{
-                  required: true,
-                },
-              },
-              messages: {
+        $("#leadPreviousPolicyForm1").validate({
+            rules: {
                 previous_insurer_name: {
-                    required: "This field is required"
+                    required: true
                 },
                 policy_number: {
-                    required: "This field is required"
+                    required: true
                 },
                 policy_type: {
-                    required: "This field is required"
-                },
-                policy_end_date: {
-                    required: "This field is required"
-                },
-                expiry_status: {
-                    required: "This field is required"
+                    required: true
                 },
                 policy_date: {
-                    required: "This field is required"
+                    required: true
+                },
+                expiry_status: {
+                    required: true
+                },
+                policy_end_date: {
+                    required: true
                 },
                 ncb: {
-                    required: "This field is required"
+                    required: true,
+                    number: true,
+                    maxlength: 4
                 },
                 previous_idv_amount: {
-                    required: "This field is required"
+                    required: true,
+                    number: true,
+                    maxlength: 10
                 },
                 previous_sum_insured: {
-                    required: "This field is required"
+                    required: true,
+                    number: true,
+                    maxlength: 10
                 },
                 claim_made: {
-                    required: "This field is required"
+                    required: true
+                },
+                claim_amount: {
+                    required: true,
+                    number: true,
+                    maxlength: 10
                 },
                 previous_policy_source: {
-                    required: "This field is required"
+                    required: true
                 },
                 vehicle_type: {
-                    required: "This field is required"
+                    required: true
                 },
                 vehicle_class: {
-                    required: "This field is required"
+                    required: true
                 },
                 insurance_type: {
-                    required: "This field is required"
+                    required: true
                 },
                 product_category: {
-                    required: "This field is required"
+                    required: true
                 },
                 vehicle_reg_no: {
-                    required: "This field is required"
+                    required: true
                 },
                 vehicle_make: {
-                    required: "This field is required"
+                    required: true
                 },
                 vehicle_model: {
-                    required: "This field is required"
+                    required: true
                 },
                 mgf_year: {
-                    required: "This field is required"
+                    required: true,
+                    number: true,
+                    maxlength: 4
                 },
                 sum_insured: {
-                    required: "This field is required"
+                    required: true,
+                    number: true,
+                    maxlength: 10
+                }
+            },
+            messages: {
+                previous_insurer_name: {
+                    required: "Please enter the previous insurer name"
                 },
-              },
-              errorElement: "div",
-              errorPlacement: function (error, element) {
-                  error.addClass("text-danger");
-                  error.insertAfter(element);
-              },
-              submitHandler: function (form) {
-                  $("#loader").show();
-                  form.submit();
-              }
-            });
-      });
+                policy_number: {
+                    required: "Please enter the policy number"
+                },
+                policy_type: {
+                    required: "Please select the policy type"
+                },
+                policy_date: {
+                    required: "Please select the policy start date"
+                },
+                expiry_status: {
+                    required: "Please select the expiry status"
+                },
+                policy_end_date: {
+                    required: "Please select the policy end date"
+                },
+                ncb: {
+                    required: "Please enter NCB value",
+                    number: "Only numeric values are allowed",
+                    maxlength: "Maximum 4 digits allowed"
+                },
+                previous_idv_amount: {
+                    required: "Please enter the previous IDV amount",
+                    number: "Only numeric values are allowed",
+                    maxlength: "Maximum 10 digits allowed"
+                },
+                previous_sum_insured: {
+                    required: "Please enter the previous sum insured",
+                    number: "Only numeric values are allowed",
+                    maxlength: "Maximum 10 digits allowed"
+                },
+                claim_made: {
+                    required: "Please select if a claim was made"
+                },
+                claim_amount: {
+                    required: "Please enter the claim amount",
+                    number: "Only numeric values are allowed",
+                    maxlength: "Maximum 10 digits allowed"
+                },
+                previous_policy_source: {
+                    required: "Please select the policy source"
+                },
+                vehicle_type: {
+                    required: "Please select the vehicle type"
+                },
+                vehicle_class: {
+                    required: "Please select the vehicle class"
+                },
+                insurance_type: {
+                    required: "Please select the insurance type"
+                },
+                product_category: {
+                    required: "Please select the product category"
+                },
+                vehicle_reg_no: {
+                    required: "Please enter the vehicle registration number"
+                },
+                vehicle_make: {
+                    required: "Please select the vehicle make"
+                },
+                vehicle_model: {
+                    required: "Please select the vehicle model"
+                },
+                mgf_year: {
+                    required: "Please enter the manufacturing year",
+                    number: "Only numeric values are allowed",
+                    maxlength: "Maximum 4 digits allowed"
+                },
+                sum_insured: {
+                    required: "Please enter the sum insured",
+                    number: "Only numeric values are allowed",
+                    maxlength: "Maximum 10 digits allowed"
+                }
+            },
+            errorElement: "div",
+            errorPlacement: function (error, element) {
+                error.addClass("text-danger");
+                error.insertAfter(element);
+            },
+            submitHandler: function (form) {
+                $("#loader").show();
+                form.submit();
+            }
+        });
+    });
+
+    $(document).ready(function () {
+        $("#leadPreviousPolicyForm").validate({
+            rules: {
+                ncb: {
+                    number: true,
+                    maxlength: 4
+                },
+                previous_idv_amount: {
+                    number: true,
+                    maxlength: 10
+                },
+                previous_sum_insured: {
+                    number: true,
+                    maxlength: 10
+                },
+                claim_amount: {
+                    number: true,
+                    maxlength: 10
+                },
+                mgf_year: {
+                    number: true,
+                    maxlength: 4
+                },
+                sum_insured: {
+                    number: true,
+                    maxlength: 10
+                }
+            },
+            messages: {
+                previous_insurer_name: {
+                    required: "Please enter the previous insurer name"
+                },
+                policy_number: {
+                    required: "Please enter the policy number"
+                },
+                policy_type: {
+                    required: "Please select the policy type"
+                },
+                policy_date: {
+                    required: "Please select the policy start date"
+                },
+                expiry_status: {
+                    required: "Please select the expiry status"
+                },
+                policy_end_date: {
+                    required: "Please select the policy end date"
+                },
+                ncb: {
+                    required: "Please enter NCB value",
+                    number: "Only numeric values are allowed",
+                    maxlength: "Maximum 4 digits allowed"
+                },
+                previous_idv_amount: {
+                    required: "Please enter the previous IDV amount",
+                    number: "Only numeric values are allowed",
+                    maxlength: "Maximum 10 digits allowed"
+                },
+                previous_sum_insured: {
+                    required: "Please enter the previous sum insured",
+                    number: "Only numeric values are allowed",
+                    maxlength: "Maximum 10 digits allowed"
+                },
+                claim_made: {
+                    required: "Please select if a claim was made"
+                },
+                claim_amount: {
+                    required: "Please enter the claim amount",
+                    number: "Only numeric values are allowed",
+                    maxlength: "Maximum 10 digits allowed"
+                },
+                previous_policy_source: {
+                    required: "Please select the policy source"
+                },
+                vehicle_type: {
+                    required: "Please select the vehicle type"
+                },
+                vehicle_class: {
+                    required: "Please select the vehicle class"
+                },
+                insurance_type: {
+                    required: "Please select the insurance type"
+                },
+                product_category: {
+                    required: "Please select the product category"
+                },
+                vehicle_reg_no: {
+                    required: "Please enter the vehicle registration number"
+                },
+                vehicle_make: {
+                    required: "Please select the vehicle make"
+                },
+                vehicle_model: {
+                    required: "Please select the vehicle model"
+                },
+                mgf_year: {
+                    required: "Please enter the manufacturing year",
+                    number: "Only numeric values are allowed",
+                    maxlength: "Maximum 4 digits allowed"
+                },
+                sum_insured: {
+                    required: "Please enter the sum insured",
+                    number: "Only numeric values are allowed",
+                    maxlength: "Maximum 10 digits allowed"
+                }
+            },
+            errorElement: "div",
+            errorPlacement: function (error, element) {
+                error.addClass("text-danger");
+                error.insertAfter(element);
+            },
+            submitHandler: function (form) {
+                $("#loader").show();
+                form.submit();
+            }
+        });
+    });
+
   </script>
   
   

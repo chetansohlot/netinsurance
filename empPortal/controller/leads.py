@@ -1438,8 +1438,8 @@ def save_leads_location_info(request):
     
     lead_data = Leads.objects.filter(lead_id = lead_id).first()
     try:
-        lead_data.state = clean(state)
-        lead_data.city = clean(city)
+        lead_data.state_id = clean(state)
+        lead_data.city_id = clean(city)
         lead_data.pincode = clean(pincode)
         lead_data.save()
         
