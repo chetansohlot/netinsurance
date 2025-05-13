@@ -1473,6 +1473,8 @@ def save_leads_assignment_info(request):
         lead_data.branch_id = clean(branch)
         lead_data.lead_status_type = clean(lead_status_type)
         lead_data.lead_tag = clean(lead_tag)
+        lead_data.save()
+        
         lead_ref_id = lead_data.lead_id
         messages.success(request,f"Saved Succesfully")
         return redirect('leads-previous-policy-info',lead_id=lead_ref_id)
