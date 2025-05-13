@@ -84,8 +84,6 @@
                                     <option value="{{assigner.id}}" {% if lead_data.assigned_to_id == assigner.id %}selected{% endif %}>{{assigner.full_name}}</option>
                                   {% endfor %}
                                 {% endif %}
-                                <option value="1" {% if lead_data.assigned_to == 1 %}selected{% endif %}>Sales Agent</option>
-                                <option value="2" {% if lead_data.assigned_to == 2 %}selected{% endif %}>Team Lead</option>
                             </select>
                           </div>
                           <div class="form-group col-md-4">

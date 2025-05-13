@@ -85,7 +85,7 @@
           </td>
             <!-- Lead Allocation -->
           <td>
-            Allocated user: {{ lead.sales_manager|default:"N/A" }}<br>
+            Allocated user: {{ lead.assigned_to.full_name|default:"N/A" }}<br>
             <span class="d-block text-muted">
             Allocation Date: {{ lead.updated_at|date:"d-m-Y" }}
           </span>
