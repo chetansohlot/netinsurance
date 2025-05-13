@@ -151,11 +151,9 @@ View Lead
                                     <li><span class="list">Lead Source Name</span><span class="list-output">{{ lead.lead_source_medium|default:"N/A" }}</span></li>
                                     <li><span class="list">Referral Name</span><span class="list-output">{{ lead.referral_name|default:"N/A" }}</span></li>
                                     <li><span class="list">Source Medium</span><span class="list-output">{{ lead.lead_source_medium|default:"N/A" }}</span></li>
-                                    <li><span class="list">Assigned BY</span><span class="list-output">{{ lead.created_by|default:"N/A" }}</span></li>
+                                    <li><span class="list">Assigned By</span><span class="list-output">{{ lead.created_by.full_name|default:"N/A" }}</span></li>
                                     <li><span class="list">Assigned To</span><span class="list-output">{{ lead.assigned_to|default:"N/A" }}</span></li>
                                 </ul>
-                                
-                                
                             </div>
                         </div>
                     </div>
