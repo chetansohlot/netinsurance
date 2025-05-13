@@ -128,7 +128,91 @@ Add Reference
                       </div>
                     </form>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.19.5/jquery.validate.min.js"></script>
+<script>
+  $(document).ready(function () {
+  $("#employeeForm").validate({
+    rules: {
+      reference1_relation_type: {
+        required: true
+      },
+      reference1_first_name: {
+        required: true
+      },
+      reference1_last_name: {
+        required: true
+      },
+      reference1_mobile_number: {
+        required: true,
+        digits: true,
+        minlength: 10,
+        maxlength: 10
+      },
+      reference1_email_address: {
+        required: true,
+        email: true
+      },
 
+      reference2_relation_type: {
+        required: true
+      },
+      reference2_first_name: {
+        required: true
+      },
+      reference2_last_name: {
+        required: true
+      },
+      reference2_mobile_number: {
+        required: true,
+        digits: true,
+        minlength: 10,
+        maxlength: 10
+      },
+      reference2_email_address: {
+        required: true,
+        email: true
+      }
+    },
+    messages: {
+      reference1_relation_type: "Please select a relation.",
+      reference1_first_name: "First name is required.",
+      reference1_last_name: "Last name is required.",
+      reference1_mobile_number: {
+        required: "Mobile number is required.",
+        digits: "Enter only digits.",
+        minlength: "Enter a valid 10-digit number.",
+        maxlength: "Enter a valid 10-digit number."
+      },
+      reference1_email_address: {
+        required: "Email is required.",
+        email: "Enter a valid email address."
+      },
+
+      reference2_relation_type: "Please select a relation.",
+      reference2_first_name: "First name is required.",
+      reference2_last_name: "Last name is required.",
+      reference2_mobile_number: {
+        required: "Mobile number is required.",
+        digits: "Enter only digits.",
+        minlength: "Enter a valid 10-digit number.",
+        maxlength: "Enter a valid 10-digit number."
+      },
+      reference2_email_address: {
+        required: "Email is required.",
+        email: "Enter a valid email address."
+      }
+    },
+    errorPlacement: function (error, element) {
+      error.insertAfter(element);
+    },
+    submitHandler: function (form) {
+      form.submit(); // normal submit
+    }
+  });
+});
+
+</script>
 
 
                   </div>

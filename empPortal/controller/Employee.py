@@ -9,6 +9,8 @@ from django.http import JsonResponse
 import pdfkit
 from empPortal.model import Partner
 import os
+from ..model import State, City
+
 from django.conf import settings
 import os
 from dotenv import load_dotenv
@@ -288,7 +290,6 @@ def save_or_update_employee(request, employee_id=None):
         })
 
 
-
 def save_or_update_address(request, employee_id):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -346,10 +347,21 @@ def save_or_update_address(request, employee_id):
     permanent_address = Address.objects.filter(employee_id=employee.employee_id, type="permanent").first()
     correspondence_address = Address.objects.filter(employee_id=employee.employee_id, type="correspondence").first()
 
+    states = State.objects.all()
+    permanent_state = permanent_address.state if permanent_address else None
+    correspondence_state = correspondence_address.state if correspondence_address else None
+
+    # Get cities by state
+    permanent_cities = City.objects.filter(state_id=permanent_state) if permanent_state else []
+    correspondence_cities = City.objects.filter(state_id=correspondence_state) if correspondence_state else []
+
     return render(request, 'employee/create-address.html', {
         'employee': employee,
         'permanent': permanent_address,
-        'correspondence': correspondence_address
+        'states': states,
+        'correspondence': correspondence_address,
+        'permanent_cities': permanent_cities,
+        'correspondence_cities': correspondence_cities
     })
 
 def save_or_update_family_details(request, employee_id):
@@ -360,8 +372,9 @@ def save_or_update_family_details(request, employee_id):
         messages.error(request, "You do not have permission to modify family details.")
         return redirect('employee-management')
 
+    relations = ['Father', 'Mother', 'Spouse']
+    
     if request.method == "POST":
-        relations = ['Father', 'Mother', 'Spouse']
         has_errors = False
 
         for relation in relations:
@@ -370,7 +383,7 @@ def save_or_update_family_details(request, employee_id):
             dob = request.POST.get(f"{relation.lower()}_dob", "").strip()
 
             if not first_name or not last_name or not dob:
-                continue  # Skip if incomplete
+                continue  # Skip if any required field is missing
 
             try:
                 dob_date = datetime.strptime(dob, "%Y-%m-%d").date()
@@ -379,35 +392,77 @@ def save_or_update_family_details(request, employee_id):
                 has_errors = True
                 continue
 
+            # Validate age for Father and Mother
+            if relation in ['Father', 'Mother']:
+                today = date.today()
+                age = today.year - dob_date.year - ((today.month, today.day) < (dob_date.month, dob_date.day))
+                if age < 18:
+                    messages.error(request, f"{relation} must be at least 18 years old.")
+                    has_errors = True
+                    continue
+
+            # Create or update FamilyDetail
             family_record, created = FamilyDetail.objects.get_or_create(
                 employee_id=employee_id,
                 relation=relation,
                 defaults={
                     'first_name': first_name,
                     'last_name': last_name,
-                    'date_of_birth': dob_date
+                    'date_of_birth': dob_date,
+                    'active': True
                 }
             )
             if not created:
                 family_record.first_name = first_name
                 family_record.last_name = last_name
                 family_record.date_of_birth = dob_date
+                family_record.active = True
                 family_record.save()
 
         if has_errors:
-            return redirect(request.META.get('HTTP_REFERER', '/'))
+            # Return form with POST data on error
+            family_data = {}
+            for relation in relations:
+                family_data[relation] = {
+                    'first_name': request.POST.get(f"{relation.lower()}_first_name", "").strip(),
+                    'last_name': request.POST.get(f"{relation.lower()}_last_name", "").strip(),
+                    'date_of_birth': request.POST.get(f"{relation.lower()}_dob", "").strip(),
+                }
+
+            employee = get_object_or_404(Employees, employee_id=employee_id)
+            return render(request, 'employee/create-family-details.html', {
+                'employee_id': employee_id,
+                'employee': employee,
+                'family': family_data
+            })
 
         messages.success(request, f"Family details updated for Employee ID: {employee_id}")
         return redirect('employee-management-employment-info', employee_id=employee_id)
 
-    # Preload existing family data
+    # GET request - Preload family data
+    employee = get_object_or_404(Employees, employee_id=employee_id)
     family_qs = FamilyDetail.objects.filter(employee_id=employee_id, active=True)
-    family_data = {fd.relation: fd for fd in family_qs}
+    family_data = {}
+
+    for relation in relations:
+        record = next((f for f in family_qs if f.relation == relation), None)
+        if record:
+            family_data[relation] = {
+                'first_name': record.first_name,
+                'last_name': record.last_name,
+                'date_of_birth': record.date_of_birth.strftime("%Y-%m-%d") if record.date_of_birth else ''
+            }
+        else:
+            family_data[relation] = {'first_name': '', 'last_name': '', 'date_of_birth': ''}
 
     return render(request, 'employee/create-family-details.html', {
         'employee_id': employee_id,
+        'employee': employee,
         'family': family_data
     })
+
+
+
 
 def save_or_update_employment_info(request, employee_id):
     if not request.user.is_authenticated:
