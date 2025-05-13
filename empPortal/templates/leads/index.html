@@ -552,13 +552,12 @@
                             </li>
                         {% endif %}
                     </ul>
-
                     <form method="GET" class="d-flex">
                         <select class="pagination-dropdown form-select" name="per_page" onchange="this.form.submit()">
-                            <option value="10" {% if per_page == '10' %}selected{% endif %}>10 / Page</option>
-                            <option value="20" {% if per_page == '20' %}selected{% endif %}>20 / Page</option>
-                            <option value="50" {% if per_page == '50' %}selected{% endif %}>50 / Page</option>
-                            <option value="100" {% if per_page == '100' %}selected{% endif %}>100 / Page</option>
+                            <option value="10" {% if per_page == 10 %}selected{% endif %}>10 / Page</option>
+                            <option value="20" {% if per_page == 20 %}selected{% endif %}>20 / Page</option>
+                            <option value="50" {% if per_page == 50 %}selected{% endif %}>50 / Page</option>
+                            <option value="100" {% if per_page == 100 %}selected{% endif %}>100 / Page</option>
                         </select>
                         <input type="hidden" name="page" value="1">
                     </form>
