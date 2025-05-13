@@ -572,10 +572,8 @@ def partner_policy_summary(request):
     user = request.user
 
     # Step 1: Filter policies
-    if user.is_authenticated:
-        base_qs = PolicyDocument.objects.filter(status=6, rm_id=user.id)
-    else:
-        base_qs = PolicyDocument.objects.filter(status=6)
+    
+    base_qs = PolicyDocument.objects.filter(status=6)
 
     aggregation_qs = base_qs.filter(policy_info__isnull=False).distinct()
 
@@ -623,10 +621,7 @@ def partner_policy_summary(request):
 def partner_policy_summary_ajax(request):
     user = request.user
 
-    if user.is_authenticated:
-        base_qs = PolicyDocument.objects.filter(status=6, rm_id=user.id)
-    else:
-        base_qs = PolicyDocument.objects.filter(status=6)
+    base_qs = PolicyDocument.objects.filter(status=6)
 
     aggregation_qs = base_qs.filter(policy_info__isnull=False).distinct()
 
