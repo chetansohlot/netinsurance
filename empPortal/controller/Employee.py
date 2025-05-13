@@ -9,6 +9,8 @@ from django.http import JsonResponse
 import pdfkit
 from empPortal.model import Partner
 import os
+from ..model import State, City
+
 from django.conf import settings
 import os
 from dotenv import load_dotenv
@@ -288,7 +290,6 @@ def save_or_update_employee(request, employee_id=None):
         })
 
 
-
 def save_or_update_address(request, employee_id):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -346,10 +347,21 @@ def save_or_update_address(request, employee_id):
     permanent_address = Address.objects.filter(employee_id=employee.employee_id, type="permanent").first()
     correspondence_address = Address.objects.filter(employee_id=employee.employee_id, type="correspondence").first()
 
+    states = State.objects.all()
+    permanent_state = permanent_address.state if permanent_address else None
+    correspondence_state = correspondence_address.state if correspondence_address else None
+
+    # Get cities by state
+    permanent_cities = City.objects.filter(state_id=permanent_state) if permanent_state else []
+    correspondence_cities = City.objects.filter(state_id=correspondence_state) if correspondence_state else []
+
     return render(request, 'employee/create-address.html', {
         'employee': employee,
         'permanent': permanent_address,
-        'correspondence': correspondence_address
+        'states': states,
+        'correspondence': correspondence_address,
+        'permanent_cities': permanent_cities,
+        'correspondence_cities': correspondence_cities
     })
 
 def save_or_update_family_details(request, employee_id):
@@ -360,8 +372,9 @@ def save_or_update_family_details(request, employee_id):
         messages.error(request, "You do not have permission to modify family details.")
         return redirect('employee-management')
 
+    relations = ['Father', 'Mother', 'Spouse']
+    
     if request.method == "POST":
-        relations = ['Father', 'Mother', 'Spouse']
         has_errors = False
 
         for relation in relations:
@@ -370,7 +383,7 @@ def save_or_update_family_details(request, employee_id):
             dob = request.POST.get(f"{relation.lower()}_dob", "").strip()
 
             if not first_name or not last_name or not dob:
-                continue  # Skip if incomplete
+                continue  # Skip if any required field is missing
 
             try:
                 dob_date = datetime.strptime(dob, "%Y-%m-%d").date()
@@ -379,35 +392,77 @@ def save_or_update_family_details(request, employee_id):
                 has_errors = True
                 continue
 
+            # Validate age for Father and Mother
+            if relation in ['Father', 'Mother']:
+                today = date.today()
+                age = today.year - dob_date.year - ((today.month, today.day) < (dob_date.month, dob_date.day))
+                if age < 18:
+                    messages.error(request, f"{relation} must be at least 18 years old.")
+                    has_errors = True
+                    continue
+
+            # Create or update FamilyDetail
             family_record, created = FamilyDetail.objects.get_or_create(
                 employee_id=employee_id,
                 relation=relation,
                 defaults={
                     'first_name': first_name,
                     'last_name': last_name,
-                    'date_of_birth': dob_date
+                    'date_of_birth': dob_date,
+                    'active': True
                 }
             )
             if not created:
                 family_record.first_name = first_name
                 family_record.last_name = last_name
                 family_record.date_of_birth = dob_date
+                family_record.active = True
                 family_record.save()
 
         if has_errors:
-            return redirect(request.META.get('HTTP_REFERER', '/'))
+            # Return form with POST data on error
+            family_data = {}
+            for relation in relations:
+                family_data[relation] = {
+                    'first_name': request.POST.get(f"{relation.lower()}_first_name", "").strip(),
+                    'last_name': request.POST.get(f"{relation.lower()}_last_name", "").strip(),
+                    'date_of_birth': request.POST.get(f"{relation.lower()}_dob", "").strip(),
+                }
+
+            employee = get_object_or_404(Employees, employee_id=employee_id)
+            return render(request, 'employee/create-family-details.html', {
+                'employee_id': employee_id,
+                'employee': employee,
+                'family': family_data
+            })
 
         messages.success(request, f"Family details updated for Employee ID: {employee_id}")
         return redirect('employee-management-employment-info', employee_id=employee_id)
 
-    # Preload existing family data
+    # GET request - Preload family data
+    employee = get_object_or_404(Employees, employee_id=employee_id)
     family_qs = FamilyDetail.objects.filter(employee_id=employee_id, active=True)
-    family_data = {fd.relation: fd for fd in family_qs}
+    family_data = {}
+
+    for relation in relations:
+        record = next((f for f in family_qs if f.relation == relation), None)
+        if record:
+            family_data[relation] = {
+                'first_name': record.first_name,
+                'last_name': record.last_name,
+                'date_of_birth': record.date_of_birth.strftime("%Y-%m-%d") if record.date_of_birth else ''
+            }
+        else:
+            family_data[relation] = {'first_name': '', 'last_name': '', 'date_of_birth': ''}
 
     return render(request, 'employee/create-family-details.html', {
         'employee_id': employee_id,
+        'employee': employee,
         'family': family_data
     })
+
+
+
 
 def save_or_update_employment_info(request, employee_id):
     if not request.user.is_authenticated:
@@ -741,41 +796,41 @@ def update_allocation(request, employee_id=None):
         branch_id = request.POST.get('branch', '').strip()
         role_id = request.POST.get('role', '').strip()
         senior_id = request.POST.get('senior', '').strip()
-        team_leader = request.POST.get('team_leader', '').strip()
-        team_leader_insert = request.POST.get('team_leader_insert', '').strip()
-        is_branch_head = request.POST.get('is_branch_head', '0')  # Get branch_head value
+        team_leader = request.POST.get('manager', '').strip()
+        team_leader_insert = request.POST.get('team_leader', '').strip()
+        is_branch_head = request.POST.get('is_branch_head', '0')
 
         has_error = False
 
-        # Validate required fields
+        # Validation
         if not branch_id:
             messages.error(request, 'Branch is required.')
             has_error = True
 
-        if not role_id and is_branch_head == '0':  # Only validate role if branch_head is not selected
+        if not role_id and is_branch_head == '0':
             messages.error(request, 'Role is required.')
             has_error = True
 
-        if not department_id and is_branch_head == '0':  # Only validate department if branch_head is not selected
+        role_id_int = int(role_id) if role_id.isdigit() else 0
+
+        if role_id_int > 4 and not department_id:
             messages.error(request, 'Department is required.')
             has_error = True
 
-        # Prevent assigning the Admin role
         if role_id == '1':
             messages.error(request, "You cannot assign the Admin role.")
             has_error = True
 
-        # Role-based validation
-        if role_id == '5':
+        if role_id == '6':  # Team Leader → needs Manager
             if not team_leader:
-                messages.error(request, "Manager selection is required for Role 5.")
+                messages.error(request, "Manager selection is required for Role 6 (Team Leader).")
                 has_error = True
             else:
                 senior_id = team_leader
 
-        elif role_id == '6':
+        elif role_id == '7':  # RM → needs Team Leader
             if not team_leader_insert:
-                messages.error(request, "Team Leader selection is required for Role 6.")
+                messages.error(request, "Team Leader selection is required for Role 7 (Relationship Manager).")
                 has_error = True
             else:
                 senior_id = team_leader_insert
@@ -783,14 +838,14 @@ def update_allocation(request, employee_id=None):
         if has_error:
             return redirect(request.META.get('HTTP_REFERER', '/'))
 
-        # Fetch user for update
+        # Save or update
         user_data = Users.objects.filter(id=employee_id).first()
         if user_data:
-            user_data.department_id = department_id
+            user_data.department_id = department_id if role_id_int > 4 else None
             user_data.branch_id = branch_id
             user_data.role_id = role_id
-            user_data.senior_id = senior_id
-            user_data.branch_head = 1 if is_branch_head == '1' else 0  # Set branch_head based on checkbox value
+            user_data.senior_id = senior_id if senior_id else None
+            user_data.branch_head = 1 if is_branch_head == '1' else 0
             user_data.save()
             messages.success(request, "User allocation updated successfully.")
         else:
@@ -798,57 +853,68 @@ def update_allocation(request, employee_id=None):
 
         return redirect('employee-management')
 
-    # GET method - Load data for the allocation form
+    # GET method: load form
     departments = Department.objects.all().order_by('name')
     branches = Branch.objects.filter(status='Active').order_by('-created_at')
-    roles = Roles.objects.exclude(id__in=[1, 4])
-    senior_users = Users.objects.filter(role_id=2).values('id', 'first_name', 'last_name', 'senior_id')
-
+    roles = Roles.objects.exclude(id__in=[1, 4])  # Exclude Admin and possibly Superuser
     employee = Users.objects.filter(id=employee_id).first() if employee_id else None
+
     senior_details = None
     manager_list = []
     tl_list = []
-    manager_id = None
     manager_details = None
+    manager_id = None
+
     if employee:
-        if employee.role_id == 5 and employee.senior_id:
-            # Get TL details
-            tl_details = Users.objects.filter(id=employee.senior_id).values('id', 'first_name', 'last_name', 'senior_id').first()
-            if tl_details:
-                senior_id = tl_details.get('senior_id')
-                if senior_id:
-                    senior_details = Users.objects.filter(id=senior_id).values('id', 'first_name', 'last_name').first()
-                    manager_list = list(Users.objects.filter(senior_id=senior_id).values('id', 'first_name', 'last_name', 'role_id'))
+        if employee.role_id == 6 and employee.senior_id:
+            # Team Leader: senior is Manager
+            manager_user = Users.objects.filter(id=employee.senior_id).first()
+            if manager_user:
+                manager_list = Users.objects.filter(role_id=5, branch_id=employee.branch_id).values(
+                    'id', 'first_name', 'last_name'
+                )
+                manager_details = manager_user
+                manager_id = manager_user.id
+                if manager_user.senior_id:
+                    senior_details = Users.objects.filter(id=manager_user.senior_id).values(
+                        'id', 'first_name', 'last_name'
+                    ).first()
 
-        elif employee.role_id == 6 and employee.senior_id:
-            # Get TL and their manager
-            tl_details = Users.objects.filter(id=employee.senior_id).values('id', 'first_name', 'last_name', 'senior_id').first()
-            if tl_details:
-                manager_id = tl_details.get('senior_id')
-                manager_details = Users.objects.filter(id=manager_id).values('id', 'first_name', 'last_name', 'senior_id').first()
-                head_id = manager_details.get('senior_id')
-
-                if manager_id:
-                    tl_list = list(Users.objects.filter(senior_id=manager_id).values('id', 'first_name', 'last_name', 'role_id'))
-                    manager_list = list(Users.objects.filter(senior_id=head_id).values('id', 'first_name', 'last_name', 'role_id'))
-                    senior_details = Users.objects.filter(id=head_id).values('id', 'first_name', 'last_name').first()
+        elif employee.role_id == 7 and employee.senior_id:
+            # RM: senior is TL, TL's senior is Manager
+            tl_user = Users.objects.filter(id=employee.senior_id).first()
+            if tl_user:
+                tl_list = Users.objects.filter(role_id=6, senior_id=tl_user.senior_id).values(
+                    'id', 'first_name', 'last_name'
+                )
+                if tl_user.senior_id:
+                    manager_user = Users.objects.filter(id=tl_user.senior_id).first()
+                    if manager_user:
+                        manager_list = Users.objects.filter(role_id=5, branch_id=employee.branch_id).values(
+                            'id', 'first_name', 'last_name'
+                        )
+                        manager_details = manager_user
+                        manager_id = manager_user.id
+                        if manager_user.senior_id:
+                            senior_details = Users.objects.filter(id=manager_user.senior_id).values(
+                                'id', 'first_name', 'last_name'
+                            ).first()
 
         elif employee.senior_id:
-            senior_details = Users.objects.filter(id=employee.senior_id).values('id', 'first_name', 'last_name', 'senior_id').first()
+            # Others: just get senior
+            senior_details = Users.objects.filter(id=employee.senior_id).values(
+                'id', 'first_name', 'last_name', 'senior_id'
+            ).first()
 
     return render(request, 'employee/create-allocation.html', {
         'employee': employee,
         'departments': departments,
         'branches': branches,
         'roles': roles,
-        'senior_users': senior_users,
+        'senior_users': Users.objects.all().values('id', 'first_name', 'last_name'),
         'manager_id': manager_id,
         'manager_list': manager_list,
         'manager_details': manager_details,
         'tl_list': tl_list,
         'senior_details': senior_details,
     })
-
-
-
-

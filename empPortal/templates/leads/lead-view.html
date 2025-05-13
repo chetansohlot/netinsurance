@@ -59,57 +59,6 @@ View Lead
                     <div class="col-md-4 px-0">
                         <div class="card member-detail-left-card">
                             <div class="card-body box-profile">
-                                <!-- {% if user_details.profile_image %}
-                                    <img src="{{ user_details.profile_image.url }}" alt="Profile Image" class="card-profile-img">
-                                {% else %}
-                                    <img src="{% static 'dist/img/svg/profile-avatar-male.svg' %}" alt="Default Profile" class="card-profile-img">
-                                {% endif %} -->
-                                
-                                <!--<h3 class="profile-username text-center">
-                                    {{ lead.name_as_per_pan }}
-                                    {% if lead.lead_customer_gender == 1 %}
-                                    <span class="text-muted ml-1">(Male)</span>
-                                  {% elif lead.lead_customer_gender == 2 %}
-                                  <span class="text-muted ml-1">(Female)</span>
-                                    {% else %}
-                                  
-                                  {% endif %}
-                                </h3>-->
-                                <!--<h3 class="profile-username text-start">
-                                    {{ lead.name_as_per_pan }}
-                                    {% if lead.lead_customer_gender == 1 %}
-                                        <span class="text-muted ms-1">(Male)</span>
-                                    {% elif lead.lead_customer_gender == 2 %}
-                                        <span class="text-muted ms-1">(Female)</span>
-                                    {% endif %}
-                                </h3>
-                                
-                                
-                                <div class="d-flex justify-content-center mt-2">-->
-                                    <!--<span class="text-muted">Customer Since: {{ lead.created_at|date:"Y" }}</span>-->
-                                    <!--<span class="text-muted">
-                                        Customer Since:
-                                        {% if lead.created_at.date == today %}
-                                            <span class="badge bg-primary rounded-pill">Today</span>
-                                        {% elif lead.created_at.date == yesterday %}
-                                            <span class="badge bg-primary rounded-pill">Yesterday</span>
-                                        {% else %}
-                                            <span class="badge bg-primary rounded-pill">{{ lead.created_at|timesince }} ago</span>
-                                        {% endif %}
-                                    </span>-->
-                                    <!--<span class="text-muted">
-                                        Customer Since:
-                                        {% if lead.created_at.date == today %}
-                                            <span class="badge bg-primary rounded-pill">Today</span>
-                                        {% elif lead.created_at.date == yesterday %}
-                                            <span class="badge bg-primary rounded-pill">Yesterday</span>
-                                        {% else %}
-                                            <span class="badge bg-primary rounded-pill">
-                                                {{ lead.created_at|timesince|cut:", "|slice:":3" }}
-                                            </span>
-                                        {% endif %}
-                                    </span>                                                                      
-                                </div>--> 
                                 <div class="d-flex justify-content-between align-items-center">
                                     <h3 class="profile-username m-0">
                                         {{ lead.name_as_per_pan }}
@@ -117,6 +66,8 @@ View Lead
                                             <span class="text-muted ms-1">(Male)</span>
                                         {% elif lead.lead_customer_gender == 2 %}
                                             <span class="text-muted ms-1">(Female)</span>
+                                        {% elif lead.lead_customer_gender == 3 %}
+                                            <span class="text-muted ms-1">(Other)</span>
                                         {% endif %}
                                     </h3>
                                 
@@ -143,14 +94,28 @@ View Lead
                                     <li><span class="list">Status</span><span class="list-output"> {{ lead.status|default:"N/A"  }}</span></li>
                                     <li><span class="list">Email</span><span class="list-output">{{ lead.email_address|default:"N/A"  }}</span></li>
                                     <li><span class="list">Mobile</span><span class="list-output">{{ lead.mobile_number|default:"N/A"  }}</span></li>
-                                    <li><span class="list">PANCARD</span><span class="list-output text-uppercase">{{ lead.pan_card_number|default:"N/A"  }}</span></li>
-                                    <li><span class="list">Insurance Type</span><span class="list-output">{{ lead.insurance_type|default:"N/A" }}</span></li>
-                                    <li><span class="list">Product Category</span><span class="list-output">{{ lead.product_category|default:"N/A" }}</span></li>
-                                    <li><span class="list">Product Name</span><span class="list-output">{{ lead.make_and_model|default:"N/A" }}</span></li>
-                                    <li><span class="list">Lead Source Type</span><span class="list-output">{{ lead.lead_source|default:"N/A" }}</span></li>
-                                    <li><span class="list">Lead Source Name</span><span class="list-output">{{ lead.referral_by|default:"N/A" }}</span></li>
+                                    <li><span class="list">Identity No.</span><span class="list-output text-uppercase">{{ lead.lead_customer_identity_no|default:"N/A"  }}</span></li>
+                                    <li><span class="list">Insurance Type</span><span class="list-output">{{ lead.lead_insurance_type|default:"N/A" }}</span></li>
+                                    <li><span class="list">Product Category</span><span class="list-output">{{ lead.lead_insurance_category|default:"N/A" }}</span></li>
+                                    <li><span class="list">Product Name</span><span class="list-output">{{ lead.lead_insurance_product|default:"N/A" }}</span></li>
+                                    <li><span class="list">Lead Source Type</span><span class="list-output">{{ lead.lead_source_type.source_name|default:"N/A" }}</span></li>
+                                    <li><span class="list">Lead Source Name</span><span class="list-output">{{ lead.lead_source|default:"N/A" }}</span></li>
                                     <li><span class="list">Referral Name</span><span class="list-output">{{ lead.referral_name|default:"N/A" }}</span></li>
-                                    <li><span class="list">Source Medium</span><span class="list-output">{{ lead.lead_source_medium|default:"N/A" }}</span></li>
+                                    <li><span class="list">Source Medium</span><span class="list-output">
+                                        {% if lead.lead_source_medium == 1 %}
+                                            Facebook
+                                        {% elif lead.lead_source_medium == 2 %}
+                                            Google
+                                        {% elif lead.lead_source_medium == 3 %}
+                                            WhatsApp
+                                        {% elif lead.lead_source_medium == 4 %}
+                                            Walk-in
+                                        {% elif lead.lead_source_medium == 5 %}
+                                            Embedded Partner
+                                        {% else %}
+                                            N/A
+                                        {% endif %}
+                                    </span></li>
                                     <li><span class="list">Assigned By</span><span class="list-output">{{ lead.created_by.full_name|default:"N/A" }}</span></li>
                                     <li><span class="list">Assigned To</span><span class="list-output">{{ lead.assigned_to.full_name|default:"N/A" }}</span></li>
                                 </ul>
@@ -301,12 +266,14 @@ View Lead
                                         <p class="userdetail-lbl">Gender</p>
                                         <p class="userdetail-highligt">
                                             {% if lead.lead_customer_gender == 1 %}
-                                    <span class="userdetail-highligt">Male</span>
-                                        {% elif lead.lead_customer_gender == 2 %}
-                                        <span class="userdetail-highligt">Female</span>
-                                        {% else %}
-                  
-                                        {% endif %}
+                                                <span class="userdetail-highligt">Male</span>
+                                            {% elif lead.lead_customer_gender == 2 %}
+                                                <span class="userdetail-highligt">Female</span>
+                                            {% elif lead.lead_customer_gender == 3 %}
+                                                <span class="userdetail-highligt">Others</span>
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
                                         </p>
                                     </div>  
                                   </div>
@@ -320,9 +287,9 @@ View Lead
                                   </div>
                                   <div class="col-md-3">
                                     <div class="userdetail-group">
-                                        <p class="userdetail-lbl">PAN/Aadhaar</p>
+                                        <p class="userdetail-lbl">Identity No.</p>
                                         <p class="userdetail-highligt text-uppercase">
-                                            {{lead.pan_card_number|default:"N/A"}}
+                                            {{lead.lead_customer_identity_no|default:"N/A"}}
                                         </p>
                                     </div>  
                                   </div>
@@ -342,7 +309,7 @@ View Lead
                                     <div class="userdetail-group">
                                         <p class="userdetail-lbl">Lead Source Type</p>
                                         <p class="userdetail-highligt">
-                                            {{lead.lead_source|default:"N/A"}}
+                                            {{ lead.lead_source_type.source_name|default:"N/A" }}
                                         </p>
                                     </div>  
                                   </div>
@@ -350,7 +317,7 @@ View Lead
                                     <div class="userdetail-group">
                                         <p class="userdetail-lbl">Lead Source Name</p>
                                         <p class="userdetail-highligt">
-                                            {{lead.referral_by|default:"N/A"}}
+                                            {{ lead.lead_source|default:"N/A" }}
                                         </p>
                                     </div>  
                                   </div>
@@ -366,7 +333,19 @@ View Lead
                                     <div class="userdetail-group">
                                         <p class="userdetail-lbl">Source Medium</p>
                                         <p class="userdetail-highligt">
-                                            {{ lead.lead_source_medium|default:"N/A"}}
+                                            {% if lead.lead_source_medium == 1 %}
+                                                Facebook
+                                            {% elif lead.lead_source_medium == 2 %}
+                                                Google
+                                            {% elif lead.lead_source_medium == 3 %}
+                                                WhatsApp
+                                            {% elif lead.lead_source_medium == 4 %}
+                                                Walk-in
+                                            {% elif lead.lead_source_medium == 5 %}
+                                                Embedded Partner
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
                                         </p>
                                     </div>  
                                   </div>
@@ -406,7 +385,7 @@ View Lead
                                     <div class="userdetail-group">
                                         <p class="userdetail-lbl">Assigned To</p>
                                         <p class="userdetail-highligt">
-                                            {{lead.assigned_to|default:"N/A"}}
+                                            {{lead.assigned_to.full_name|default:"N/A"}}
                                         </p>
                                     </div>  
                                   </div>
@@ -422,15 +401,41 @@ View Lead
                                     <div class="userdetail-group">
                                         <p class="userdetail-lbl">Lead Status Type</p>
                                         <p class="userdetail-highligt">
-                                           {{lead.lead_status_type|default:"N/A"}}
+                                            {% if lead.lead_status_type == 1 %}
+                                                <p>New</p>
+                                            {% elif lead.lead_status_type == 2 %}
+                                                <p>Follow-up</p>
+                                            {% elif lead.lead_status_type == 3 %}
+                                                <p>Quoted</p>
+                                            {% elif lead.lead_status_type == 4 %}
+                                                <p>Booked</p>
+                                            {% elif lead.lead_status_type == 5 %}
+                                                <p>Closed</p>
+                                            {% else %}
+                                                <p>N/A</p>
+                                            {% endif %}
                                         </p>
                                     </div>  
                                   </div>
                                   <div class="col-md-3">
                                     <div class="userdetail-group">
                                         <p class="userdetail-lbl">Lead Tag</p>
-                                        <p class="userdetail-highligt">                                           
-                                            {{lead.lead_tag|default:"N/A"}}                                            
+                                        <p class="userdetail-highligt">
+                                            {% if lead.lead_tag == 1 %}
+                                                <p>Hot</p>
+                                            {% elif lead.lead_tag == 2 %}
+                                                <p>Warm</p>
+                                            {% elif lead.lead_tag == 3 %}
+                                                <p>Cold</p>
+                                            {% elif lead.lead_tag == 4 %}
+                                                <p>Renewal</p>
+                                            {% elif lead.lead_tag == 5 %}
+                                                <p>Break-in</p>
+                                            {% elif lead.lead_tag == 6 %}
+                                                <p>etc.</p>
+                                            {% else %}
+                                                <p>N/A</p>
+                                            {% endif %}
                                         </p>
                                     </div>  
                                   </div>
@@ -461,7 +466,15 @@ View Lead
                                         <div class="userdetail-group">
                                             <p class="userdetail-lbl">Policy Type</p>
                                             <p class="userdetail-highligt">
-                                                {{lead.policy_type|default:"N/A"}}
+                                                {% if lead.policy_type == 1 %}
+                                                    Comprehensive
+                                                {% elif lead.policy_type == 2 %}
+                                                    Third Party
+                                                {% elif lead.policy_type == 3 %}
+                                                    OD Only
+                                                {% else %}
+                                                    N/A
+                                                {% endif %}
                                             </p>
                                         </div>  
                                     </div>
@@ -485,6 +498,16 @@ View Lead
                                         <div class="userdetail-group">
                                             <p class="userdetail-lbl">Expiry Status</p>
                                             <p class="userdetail-highligt">
+                                                {% if lead.expiry_status == "Expired" %}
+                                                    Expired
+                                                {% elif lead.expiry_status == "Active" %}
+                                                    Active
+                                                {% elif lead.expiry_status == "Grace" %}
+                                                    Grace Period
+                                                {% else %}
+                                                    N/A
+                                                {% endif %}
+                                                
                                                 {{ lead.expiry_status|default:"N/A"}}
                                             </p>
                                         </div>  
@@ -493,7 +516,21 @@ View Lead
                                         <div class="userdetail-group">
                                             <p class="userdetail-lbl">No Claim Bonus (NCB)</p>
                                             <p class="userdetail-highligt">
-                                                {{ lead.ncb|default:"N/A" }}
+                                                {% if lead.ncb == "1" %}
+                                                    0%
+                                                {% elif lead.ncb == "2" %}
+                                                    20%
+                                                {% elif lead.ncb == "3" %}
+                                                    25%
+                                                {% elif lead.ncb == "4" %}
+                                                    35%
+                                                {% elif lead.ncb == "5" %}
+                                                    45%
+                                                {% elif lead.ncb == "6" %}
+                                                    50%
+                                                {% else %}
+                                                  N/A
+                                                {% endif %}
                                             </p>
                                         </div>  
                                     </div>
@@ -517,7 +554,14 @@ View Lead
                                         <div class="userdetail-group">
                                             <p class="userdetail-lbl">Claims Made</p>
                                             <p class="userdetail-highligt">
-                                                {{ lead.claim_made|default:"N/A" }}
+                                                {% if lead.claim_made == "1"  %}
+                                                    Yes
+                                                {% elif lead.claim_made == "2"  %}
+                                                    No                                                  
+                                                {% else %}
+                                                    N/A
+                                                {% endif %}
+                                                
                                             </p>
                                         </div>  
                                     </div>
@@ -535,7 +579,7 @@ View Lead
                                             <p class="userdetail-highligt">
                                                 <!--Uploaded File <a href="#">View</a>-->
                                                 {% if lead.previous_policy_copy %}
-                                            <a href="{{ lead.previous_policy_copy.url }}" target="_blank">View File</a>
+                                                    <a href="{{ lead.previous_policy_copy.url }}" target="_blank">View File</a>
                                                 {% else %}
                                                     No File Uploaded
                                             {% endif %}
@@ -546,7 +590,19 @@ View Lead
                                         <div class="userdetail-group">
                                             <p class="userdetail-lbl">Previous Policy Source </p>
                                             <p class="userdetail-highligt">
-                                                {{ lead.previous_policy_source|default:"N/A" }}
+                                                {% if lead.previous_policy_source == "1" %}
+                                                    Agent
+                                                {% elif lead.previous_policy_source == "2" %}
+                                                    Online
+                                                {% elif lead.previous_policy_source == "3" %}
+                                                    Dealer
+                                                {% elif lead.previous_policy_source == "4" %}
+                                                    Direct
+                                                {% elif lead.previous_policy_source == "5" %}
+                                                    Aggregator
+                                                {% else %}
+                                                    N/A
+                                                {% endif %}
                                             </p>
                                         </div>  
                                     </div>
@@ -554,7 +610,15 @@ View Lead
                                         <div class="userdetail-group">
                                             <p class="userdetail-lbl">Vehicle Type </p>
                                             <p class="userdetail-highligt">
-                                                {{lead.vehicle_type|default:"N/A"}}
+                                                {% if lead.vehicle_type == "1" %}
+                                                    Private
+                                                {% elif lead.vehicle_type == "2" %}
+                                                    Commercial                              
+                                                {% elif lead.vehicle_type == "3" %}
+                                                    Other                         
+                                                {% else %}
+                                                    N/A                       
+                                                {% endif %}
                                             </p>
                                         </div>  
                                     </div>
@@ -562,15 +626,32 @@ View Lead
                                         <div class="userdetail-group">
                                             <p class="userdetail-lbl">Vehicle Class </p>
                                             <p class="userdetail-highligt">
-                                                
-                                                {{lead.vehicle_class|default:"N/A" }}                                            </p>
+                                                {% if lead.vehicle_class == "1" %}
+                                                    Two-Wheeler
+                                                {% elif lead.vehicle_class == "2" %}
+                                                    Four-Wheeler 
+                                                {% elif lead.vehicle_class == "3" %}
+                                                  Other
+                                                {% endif %}
                                         </div>  
                                     </div>
                                     <div class="col-md-3">
                                         <div class="userdetail-group">
                                             <p class="userdetail-lbl">Insurance Type </p>
                                             <p class="userdetail-highligt">
-                                                {{lead.lead_source_type.source_name|default:"N/A"}}
+                                                {% if lead_data.insurance_type == "1" %}
+                                                    Motor
+                                                {% elif lead_data.insurance_type == "2" %}
+                                                    Health
+                                                {% elif lead_data.insurance_type == "3" %}
+                                                    Life
+                                                {% elif lead_data.insurance_type == "4" %}
+                                                    Travel
+                                                {% elif lead_data.insurance_type == "5" %}
+                                                    General
+                                                {% else %}
+                                                    N/A
+                                                {% endif %}
                                             </p>
                                         </div>  
                                     </div>
@@ -578,7 +659,21 @@ View Lead
                                         <div class="userdetail-group">
                                             <p class="userdetail-lbl">Product Category </p>
                                             <p class="userdetail-highligt">
-                                               {{lead.product_category|default:"N/A" }}
+                                                {% if lead.product_category == "1" %}
+                                                    Private Car
+                                                {% elif lead.product_category == "2" %}
+                                                    Mediclaim
+                                                {% elif lead.product_category == "3" %}
+                                                    Two Wheeler
+                                                {% elif lead.product_category == "4" %}
+                                                    Term Life
+                                                {% elif lead.product_category == "5" %}
+                                                    Fire Insurance
+                                                {% elif lead.product_category == "6" %}
+                                                    Commercial Vehicle
+                                                {% else %}
+                                                    Not Specified
+                                                {% endif %}
                                             </p>
                                         </div>  
                                     </div>
@@ -651,11 +746,6 @@ View Lead
                                     </div>
                                 </div>
                             </div>
-                            
-
-
-
-
                             <!-- /.tab-pane -->
                             <div class="tab-pane" id="claims-tab">
                                 <div class="row align-items-center mt-3 mb-3">
@@ -719,84 +809,6 @@ View Lead
                 });
             }
             </script>
-        <!-- <script>
-            function showRejectNote(note) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Rejected Reason',
-                    text: note || 'No reason provided',  // Show message if note is empty
-                    confirmButtonColor: '#d33'
-                });
-            }
-            </script>
-        <script>
-            // Add event listener to the button
-            document.getElementById('activate-btn').addEventListener('click', function() {
-              var userId = this.getAttribute('data-user-id');
-              
-              // Show SweetAlert confirmation
-              Swal.fire({
-                title: 'Are you sure?',
-                text: "You are about to activate this account.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, activate it!',
-                cancelButtonText: 'Cancel',
-              }).then((result) => {
-                if (result.isConfirmed) {
-                  // Submit the hidden form
-                  document.getElementById('activate-form').submit();
-                }
-              });
-            });
-          </script>
-
-          
-        <script>
-            // Add event listener to the button
-            document.getElementById('deactivate-btn').addEventListener('click', function() {
-              var userId = this.getAttribute('data-user-id');
-              
-              // Show SweetAlert confirmation
-              Swal.fire({
-                title: 'Are you sure?',
-                text: "You are about to deactivate this account.",
-                icon: 'danger',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, deactivate it!',
-                cancelButtonText: 'Cancel',
-              }).then((result) => {
-                if (result.isConfirmed) {
-                  // Submit the hidden form
-                  document.getElementById('deactivate-form').submit();
-                }
-              });
-            });
-          </script>
-
-          
-        <script>
-            // Add event listener to the button
-            document.getElementById('login-activate-btn').addEventListener('click', function() {
-              var userId = this.getAttribute('data-user-id');
-              
-              // Show SweetAlert confirmation
-              Swal.fire({
-                title: 'Are you sure?',
-                text: "You are about to activate this account.",
-                icon: 'info',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, activate it!',
-                cancelButtonText: 'Cancel',
-              }).then((result) => {
-                if (result.isConfirmed) {
-                  // Submit the hidden form
-                  document.getElementById('login-activate-form').submit();
-                }
-              });
-            });
-          </script> -->
-    
       
         {% include "footer.html" %}
     </div>

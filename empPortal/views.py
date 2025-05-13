@@ -214,6 +214,60 @@ def get_users_by_role(request):
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
+
+def get_team_leaders_by_manager(request):
+    if request.method == "GET" and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        manager_id = request.GET.get('manager_id')
+        branch_id = request.GET.get('branch_id')
+        department_id = request.GET.get('department_id')
+
+        if manager_id and manager_id.isdigit():
+            filters = {'senior_id': int(manager_id)}
+            if branch_id and branch_id.isdigit():
+                filters['branch_id'] = int(branch_id)
+            if department_id and department_id.isdigit():
+                filters['department_id'] = int(department_id)
+
+            users = Users.objects.filter(**filters).values('id', 'first_name', 'last_name')
+            role_name = "Team Leader"
+
+            users_list = [
+                {'id': user['id'], 'full_name': f"{user['first_name']} {user['last_name']} ({role_name})"}
+                for user in users
+            ]
+            return JsonResponse({'users': users_list}, status=200)
+
+        return JsonResponse({'users': []}, status=200)
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+def get_users_by_role_id(request):
+    if request.method == "GET" and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        role_id = request.GET.get('role_id')
+        branch_id = request.GET.get('branch_id')
+        department_id = request.GET.get('department_id')
+
+        if role_id and role_id.isdigit():
+            filters = {'role_id': int(role_id)}
+            if branch_id and branch_id.isdigit():
+                filters['branch_id'] = int(branch_id)
+            if department_id and department_id.isdigit():
+                filters['department_id'] = int(department_id)
+
+            users = Users.objects.filter(**filters).values('id', 'first_name', 'last_name')
+            role_name = "Manager"
+
+            users_list = [
+                {'id': user['id'], 'full_name': f"{user['first_name']} {user['last_name']} ({role_name})"}
+                for user in users
+            ]
+            return JsonResponse({'users': users_list}, status=200)
+
+        return JsonResponse({'users': []}, status=200)
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
 def get_pos_partners_by_bqp(request):
     if request.method == "GET" and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         bqp_id = request.GET.get('bqp_id', '')
