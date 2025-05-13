@@ -571,7 +571,6 @@ def referral_summary_chartajax(request):
     })
 
 
-
 def partner_policy_summary(request):
     user = request.user
 
@@ -594,7 +593,11 @@ def partner_policy_summary(request):
     if not pos_qs:
         return JsonResponse({'message': 'No data found for the given filters'}, status=200)
 
-    agent_ids = [int(item['agent_name']) for item in pos_qs if str(item['agent_name']).isdigit()]
+    # Step 3: Prepare agent IDs safely
+    agent_ids = [
+        int(item['agent_name']) for item in pos_qs
+        if str(item['agent_name']).strip().isdigit()
+    ]
     users_map = {
         user.id: f"{user.first_name} {user.last_name}".strip() or user.user_name
         for user in Users.objects.filter(id__in=agent_ids)
@@ -605,10 +608,13 @@ def partner_policy_summary(request):
     agent_counts = []
 
     for item in pos_qs:
-        agent_id = int(item['agent_name'])
-        agent_name = users_map.get(agent_id, f"Agent {agent_id}")
-        agent_labels.append(agent_name)
-        agent_counts.append(item['policies_sold'])
+        raw_id = str(item['agent_name']).strip()
+        if raw_id.isdigit():
+            agent_id = int(raw_id)
+            agent_name = users_map.get(agent_id, f"Agent {agent_id}")
+            agent_labels.append(agent_name)
+            agent_counts.append(item['policies_sold'])
+       
 
     # Optional: Debug output
     print("Agent Labels:", agent_labels)
@@ -616,8 +622,6 @@ def partner_policy_summary(request):
 
     return  agent_labels, agent_counts
     
-
-
 
 def partner_policy_summary_ajax(request):
     user = request.user
@@ -639,7 +643,10 @@ def partner_policy_summary_ajax(request):
     if not pos_qs:
         return JsonResponse({'agent_data': []}, status=200)
 
-    agent_ids = [int(item['agent_name']) for item in pos_qs if str(item['agent_name']).isdigit()]
+    agent_ids = [
+        int(item['agent_name']) for item in pos_qs 
+        if str(item['agent_name']).strip().isdigit()
+    ]
     users_map = {
         user.id: f"{user.first_name} {user.last_name}".strip() or user.user_name
         for user in Users.objects.filter(id__in=agent_ids)
@@ -648,18 +655,18 @@ def partner_policy_summary_ajax(request):
     agent_labels = []
     agent_counts = []
   
-    agent_labels = [
-          users_map[int(item['agent_name'])]
-            for item in pos_qs
-            ]
-    agent_counts = [
-        item['policies_sold']
-         for item in pos_qs
-        ]
+    for item in pos_qs:
+        raw_id = str(item['agent_name']).strip()
+        if raw_id.isdigit():
+            agent_id = int(raw_id)
+            agent_name = users_map.get(agent_id, f"Agent {agent_id}")
+            agent_labels.append(agent_name)
+            agent_counts.append(item['policies_sold'])
+
     return JsonResponse({
         'agent_labels' : agent_labels,
         'agent_counts' : agent_counts
-        })
+    })
 
 def business_summary_product_wise(request):
 
