@@ -1469,7 +1469,7 @@ def save_leads_assignment_info(request):
     
     lead_data = Leads.objects.filter(lead_id = lead_id).first()
     try:
-        lead_data.assigned_to_id = clean(assigned_to)
+        lead_data.assigned_to_id = assigned_to
         lead_data.branch_id = clean(branch)
         lead_data.lead_status_type = clean(lead_status_type)
         lead_data.lead_tag = clean(lead_tag)
