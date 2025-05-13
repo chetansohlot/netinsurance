@@ -54,23 +54,34 @@
 
                   <!-- Personal Info -->
               <td>
-                <span class="d-block text-muted">DOB: {{ lead.date_of_birth|default:"-" }}</span>
-                  <span>PAN: {{ lead.pan_card_number|default:"-" }}</span>
+                <span class="d-block text-muted">DOB: {{ lead.date_of_birth|default:"N/A" }}</span>
+                  <span>PAN: {{ lead.lead_customer_identity_no|default:"N/A" }}</span>
               </td>
-          <!-- <td class="text-center">
-            {{ lead.project_name|default:"-" }}
-          </td> -->
+
           <td>
-            <strong>Insurance Type:</strong> {{ lead.lead_type|default:"-" }}<br>
-            <span class="d-block text-muted">Category: {{ lead.product_category|default:"N/A" }}</span>
-            <span>Product Name: {{ lead.make_and_model|default:"-" }}</span>
+            <strong>Insurance Type:</strong> {{ lead.lead_insurance_type|default:"-" }}<br>
+            <span class="d-block text-muted">Category: {{ lead.lead_insurance_category|default:"N/A" }}</span>
+            <span class="d-block text-muted">Product Name: {{ lead.lead_insurance_product|default:"-" }}</span>
           </td>
              <!-- Lead Source Info -->
           <td>
-            Source Type: {{ lead.lead_source|default:"N/A" }}<br>
-            <span class="d-block text-muted">Source Name: {{ lead.previous_policy_source|default:"N/A" }}</span>
-            Refferal Name: {{ lead.referral_name|default:"-" }}<br>
-          <span>Source Medium: {{ lead.lead_source_medium|default:"N/A" }}</span>
+            Source Type: {{ lead.lead_source_type.source_name|default:"N/A" }}<br>
+            <span class="d-block text-muted">Source Name: {{ lead.lead_source|default:"N/A" }}</span>
+            Refferal Name: {{ lead.referral_name|default:"N/A" }}<br>
+          <span>Source Medium: 
+            {% if lead.lead_source_medium == 1 %}
+              Facebook
+            {% elif lead.lead_source_medium == 2 %}
+              Google
+            {% elif lead.lead_source_medium == 3 %}
+              WhatsApp
+            {% elif lead.lead_source_medium == 4 %}
+              Walk-in
+            {% elif lead.lead_source_medium == 5 %}
+              Embedded Partner
+            {% else %}
+              N/A
+            {% endif %}
           </td>
             <!-- Lead Allocation -->
           <td>

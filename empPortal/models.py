@@ -199,7 +199,7 @@ class Leads(models.Model):
     lead_source = models.CharField(max_length=25, null=True, blank=True)  
     referral_by = models.CharField(max_length=25, null=True, blank=True)  
     
-    assigned_to = models.IntegerField( null=True, blank=True)  
+    assigned_to = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.SET_NULL,null=True,blank=True, related_name='leads_assigned')  
     branch_id = models.IntegerField( null=True, blank=True)  
     lead_status_type = models.IntegerField( null=True, blank=True)  
     lead_tag = models.IntegerField( null=True, blank=True)  
@@ -207,7 +207,6 @@ class Leads(models.Model):
     referral_mobile_no = models.BigIntegerField(null=True, blank=True)
     referral_name = models.CharField(max_length=255,null=True,blank=True)
     lead_source_medium = models.IntegerField(null=True, blank=True)
-    
     
     status = models.CharField(max_length=50, default='new')  # Status of the lead (new, contacted, converted, etc.)
     policy_date = models.DateField(null=True, blank=True)
@@ -281,13 +280,15 @@ class Leads(models.Model):
     gross_premium = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     # risk_start_date = models.DateField(null=True, blank=True)
     risk_start_date = models.CharField(max_length=255)
+    lead_source_type = models.ForeignKey(SourceMaster,on_delete=models.SET_NULL,null=True,blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True) 
     created_by =  created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
-        blank=True
+        blank=True,
+        related_name='leads_created'
     )
     updated_at = models.DateTimeField(auto_now=True)  
     class Meta:
