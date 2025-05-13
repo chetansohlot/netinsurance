@@ -796,41 +796,41 @@ def update_allocation(request, employee_id=None):
         branch_id = request.POST.get('branch', '').strip()
         role_id = request.POST.get('role', '').strip()
         senior_id = request.POST.get('senior', '').strip()
-        team_leader = request.POST.get('team_leader', '').strip()
-        team_leader_insert = request.POST.get('team_leader_insert', '').strip()
-        is_branch_head = request.POST.get('is_branch_head', '0')  # Get branch_head value
+        team_leader = request.POST.get('manager', '').strip()
+        team_leader_insert = request.POST.get('team_leader', '').strip()
+        is_branch_head = request.POST.get('is_branch_head', '0')
 
         has_error = False
 
-        # Validate required fields
+        # Validation
         if not branch_id:
             messages.error(request, 'Branch is required.')
             has_error = True
 
-        if not role_id and is_branch_head == '0':  # Only validate role if branch_head is not selected
+        if not role_id and is_branch_head == '0':
             messages.error(request, 'Role is required.')
             has_error = True
 
-        if not department_id and is_branch_head == '0':  # Only validate department if branch_head is not selected
+        role_id_int = int(role_id) if role_id.isdigit() else 0
+
+        if role_id_int > 4 and not department_id:
             messages.error(request, 'Department is required.')
             has_error = True
 
-        # Prevent assigning the Admin role
         if role_id == '1':
             messages.error(request, "You cannot assign the Admin role.")
             has_error = True
 
-        # Role-based validation
-        if role_id == '5':
+        if role_id == '6':  # Team Leader → needs Manager
             if not team_leader:
-                messages.error(request, "Manager selection is required for Role 5.")
+                messages.error(request, "Manager selection is required for Role 6 (Team Leader).")
                 has_error = True
             else:
                 senior_id = team_leader
 
-        elif role_id == '6':
+        elif role_id == '7':  # RM → needs Team Leader
             if not team_leader_insert:
-                messages.error(request, "Team Leader selection is required for Role 6.")
+                messages.error(request, "Team Leader selection is required for Role 7 (Relationship Manager).")
                 has_error = True
             else:
                 senior_id = team_leader_insert
@@ -838,14 +838,14 @@ def update_allocation(request, employee_id=None):
         if has_error:
             return redirect(request.META.get('HTTP_REFERER', '/'))
 
-        # Fetch user for update
+        # Save or update
         user_data = Users.objects.filter(id=employee_id).first()
         if user_data:
-            user_data.department_id = department_id
+            user_data.department_id = department_id if role_id_int > 4 else None
             user_data.branch_id = branch_id
             user_data.role_id = role_id
-            user_data.senior_id = senior_id
-            user_data.branch_head = 1 if is_branch_head == '1' else 0  # Set branch_head based on checkbox value
+            user_data.senior_id = senior_id if senior_id else None
+            user_data.branch_head = 1 if is_branch_head == '1' else 0
             user_data.save()
             messages.success(request, "User allocation updated successfully.")
         else:
@@ -853,57 +853,68 @@ def update_allocation(request, employee_id=None):
 
         return redirect('employee-management')
 
-    # GET method - Load data for the allocation form
+    # GET method: load form
     departments = Department.objects.all().order_by('name')
     branches = Branch.objects.filter(status='Active').order_by('-created_at')
-    roles = Roles.objects.exclude(id__in=[1, 4])
-    senior_users = Users.objects.filter(role_id=2).values('id', 'first_name', 'last_name', 'senior_id')
-
+    roles = Roles.objects.exclude(id__in=[1, 4])  # Exclude Admin and possibly Superuser
     employee = Users.objects.filter(id=employee_id).first() if employee_id else None
+
     senior_details = None
     manager_list = []
     tl_list = []
-    manager_id = None
     manager_details = None
+    manager_id = None
+
     if employee:
-        if employee.role_id == 5 and employee.senior_id:
-            # Get TL details
-            tl_details = Users.objects.filter(id=employee.senior_id).values('id', 'first_name', 'last_name', 'senior_id').first()
-            if tl_details:
-                senior_id = tl_details.get('senior_id')
-                if senior_id:
-                    senior_details = Users.objects.filter(id=senior_id).values('id', 'first_name', 'last_name').first()
-                    manager_list = list(Users.objects.filter(senior_id=senior_id).values('id', 'first_name', 'last_name', 'role_id'))
+        if employee.role_id == 6 and employee.senior_id:
+            # Team Leader: senior is Manager
+            manager_user = Users.objects.filter(id=employee.senior_id).first()
+            if manager_user:
+                manager_list = Users.objects.filter(role_id=5, branch_id=employee.branch_id).values(
+                    'id', 'first_name', 'last_name'
+                )
+                manager_details = manager_user
+                manager_id = manager_user.id
+                if manager_user.senior_id:
+                    senior_details = Users.objects.filter(id=manager_user.senior_id).values(
+                        'id', 'first_name', 'last_name'
+                    ).first()
 
-        elif employee.role_id == 6 and employee.senior_id:
-            # Get TL and their manager
-            tl_details = Users.objects.filter(id=employee.senior_id).values('id', 'first_name', 'last_name', 'senior_id').first()
-            if tl_details:
-                manager_id = tl_details.get('senior_id')
-                manager_details = Users.objects.filter(id=manager_id).values('id', 'first_name', 'last_name', 'senior_id').first()
-                head_id = manager_details.get('senior_id')
-
-                if manager_id:
-                    tl_list = list(Users.objects.filter(senior_id=manager_id).values('id', 'first_name', 'last_name', 'role_id'))
-                    manager_list = list(Users.objects.filter(senior_id=head_id).values('id', 'first_name', 'last_name', 'role_id'))
-                    senior_details = Users.objects.filter(id=head_id).values('id', 'first_name', 'last_name').first()
+        elif employee.role_id == 7 and employee.senior_id:
+            # RM: senior is TL, TL's senior is Manager
+            tl_user = Users.objects.filter(id=employee.senior_id).first()
+            if tl_user:
+                tl_list = Users.objects.filter(role_id=6, senior_id=tl_user.senior_id).values(
+                    'id', 'first_name', 'last_name'
+                )
+                if tl_user.senior_id:
+                    manager_user = Users.objects.filter(id=tl_user.senior_id).first()
+                    if manager_user:
+                        manager_list = Users.objects.filter(role_id=5, branch_id=employee.branch_id).values(
+                            'id', 'first_name', 'last_name'
+                        )
+                        manager_details = manager_user
+                        manager_id = manager_user.id
+                        if manager_user.senior_id:
+                            senior_details = Users.objects.filter(id=manager_user.senior_id).values(
+                                'id', 'first_name', 'last_name'
+                            ).first()
 
         elif employee.senior_id:
-            senior_details = Users.objects.filter(id=employee.senior_id).values('id', 'first_name', 'last_name', 'senior_id').first()
+            # Others: just get senior
+            senior_details = Users.objects.filter(id=employee.senior_id).values(
+                'id', 'first_name', 'last_name', 'senior_id'
+            ).first()
 
     return render(request, 'employee/create-allocation.html', {
         'employee': employee,
         'departments': departments,
         'branches': branches,
         'roles': roles,
-        'senior_users': senior_users,
+        'senior_users': Users.objects.all().values('id', 'first_name', 'last_name'),
         'manager_id': manager_id,
         'manager_list': manager_list,
         'manager_details': manager_details,
         'tl_list': tl_list,
         'senior_details': senior_details,
     })
-
-
-
-

@@ -46,7 +46,7 @@ Update Allocation
                 
                 <div class="card box-shadow-none p-md-5 p-3">
                   <div class="card-body px-0 pb-0 pt-0">
-                    <form autocomplete="off" id="employeeForm" name="employeeForm"
+                    <form autocomplete="off" id="employeeAllocationForm" name="employeeForm"
                         action="{% url 'employee-management-update-allocation' employee.id %}" method="post">
                         {% csrf_token %}
 
@@ -70,11 +70,17 @@ Update Allocation
                                 </select>
                             </div>
 
-                            <!-- Is Branch Head (Checkbox) -->
-                            <div class="form-group col-sm-6 col-md-4 d-flex align-items-center mt-4">
-                                <input type="checkbox" id="is_branch_head" name="is_branch_head" value="1"
-                                    {% if employee.branch_head %}checked{% endif %}>
-                                <label class="ml-2 mb-0" for="is_branch_head">Is Branch Head</label>
+                            <!-- Role -->
+                            <div class="form-group col-sm-6 col-md-4">
+                                <label class="form-lbl" for="role">Role</label>
+                                <select class="form-field" name="role" id="role">
+                                    <option value="">Select Role</option>
+                                    {% for role in roles %}
+                                        <option value="{{ role.id }}" {% if role.id|stringformat:"s" == employee.role_id|stringformat:"s" %}selected{% endif %}>
+                                            {{ role.roleName }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
                             </div>
 
                             <!-- Department -->
@@ -89,76 +95,27 @@ Update Allocation
                                     {% endfor %}
                                 </select>
                             </div>
-
-                            <!-- Role -->
-                            <div class="form-group col-sm-6 col-md-4">
-                                <label class="form-lbl" for="role">Role</label>
-                                <select class="form-field" name="role" id="role">
-                                    <option value="">Select Role</option>
-                                    {% for role in roles %}
-                                        <option value="{{ role.id }}" {% if role.id|stringformat:"s" == employee.role_id|stringformat:"s" %}selected{% endif %}>
-                                            {{ role.roleName }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-
-                            <!-- Senior -->
-                            <div class="form-group col-sm-6 col-md-4">
-                                <label class="form-lbl" for="senior">Select Head</label>
-                                <select class="form-field" name="senior" id="senior">
-                                    <option value="">Select Head</option>
-                                    {% for senior in senior_users %}
-                                        <option value="{{ senior.id }}"
-                                            {% if employee.role_id|stringformat:"s" == "5" and senior_details and senior.id|stringformat:"s" == senior_details.id|stringformat:"s" %}
-                                                selected
-                                            {% elif employee.role_id|stringformat:"s" == "6" and senior_details and senior.id|stringformat:"s" == senior_details.id|stringformat:"s" %}
-                                                selected
-                                            {% elif senior.id|stringformat:"s" == employee.senior_id|stringformat:"s" %}
-                                                selected
-                                            {% endif %}>
-                                            {{ senior.first_name }} {{ senior.last_name }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-
-                            <!-- Sales Manager -->
-                            <div class="form-group col-sm-6 col-md-4" id="salesManagerContainer"
-                                style="{% if manager_list %}display:block;{% else %}display:none;{% endif %};">
+                            <div class="form-group col-sm-6 col-md-4" id="salesManagerContainer" style="{% if employee.role_id == 6 or employee.role_id == 7 %}display:block;{% else %}display:none;{% endif %}">
                                 <label class="form-lbl" for="sales_manager">Select Manager</label>
-                                <select class="form-field" name="team_leader" id="sales_manager">
+                                <select class="form-field" name="manager" id="sales_manager">
                                     <option value="">Select Manager</option>
-                                    {% if manager_list %}
-                                        {% for manager in manager_list %}
-                                            <option value="{{ manager.id }}"
-                                                {% if employee.role_id|stringformat:"s" == "6" and manager_id and manager.id|stringformat:"s" == manager_id|stringformat:"s" %}
-                                                    selected
-                                                {% elif manager.id|stringformat:"s" == employee.senior_id|stringformat:"s" %}
-                                                    selected
-                                                {% endif %}>
-                                                {{ manager.first_name }} {{ manager.last_name }}
-                                            </option>
-                                        {% endfor %}
-                                    {% endif %}
+                                    {% for m in manager_list %}
+                                        <option value="{{ m.id }}" {% if manager_id == m.id %}selected{% endif %}>{{ m.first_name }} {{ m.last_name }}</option>
+                                    {% endfor %}
                                 </select>
                             </div>
 
-                            <!-- Team Leader -->
-                            <div class="form-group col-sm-6 col-md-4" id="tlManagerContainer"
-                                style="{% if tl_list %}display:block;{% else %}display:none;{% endif %};">
-                                <label class="form-lbl" for="tl_manager">Select Team Leader</label>
-                                <select class="form-field" name="team_leader_insert" id="tl_manager">
+                            <div class="form-group col-sm-6 col-md-4" id="teamLeaderContainer" style="{% if employee.role_id == 7 %}display:block;{% else %}display:none;{% endif %}">
+                                <label class="form-lbl" for="team_leader">Select Team Leader</label>
+                                <select class="form-field" name="team_leader" id="team_leader">
                                     <option value="">Select Team Leader</option>
-                                    {% if tl_list %}
-                                        {% for tl in tl_list %}
-                                            <option value="{{ tl.id }}" {% if employee.senior_id|stringformat:"s" == tl.id|stringformat:"s" %}selected{% endif %}>
-                                                {{ tl.first_name }} {{ tl.last_name }}
-                                            </option>
-                                        {% endfor %}
-                                    {% endif %}
+                                    {% for tl in tl_list %}
+                                        <option value="{{ tl.id }}" {% if employee.senior_id == tl.id %}selected{% endif %}>{{ tl.first_name }} {{ tl.last_name }}</option>
+                                    {% endfor %}
                                 </select>
                             </div>
+
+
                         </div>
 
                         <div class="d-flex justify-content-end mt-4">
@@ -189,73 +146,131 @@ Update Allocation
           document.getElementById("loader").style.display = "flex";
       });
     </script>
-    <script>
-        $(document).ready(function() {
-            $('#role').change(function() {
-                var roleId = $(this).val();
-                var userSelect = $('#senior');
+    
+<script>
+   
+    $(document).ready(function() {
+            
+        var departmentContainer = $('#department').closest('.form-group');
+        var roleId = $('#role').val(); // Get the selected value
 
-                if (roleId) {
-                    $.ajax({
-                        url: "{% url 'get_users_by_role' %}",
-                        type: 'GET',
-                        data: { 'role_id': roleId },
-                        headers: { 'X-Requested-With': 'XMLHttpRequest' },
-                        success: function(response) {
-                            userSelect.empty();
-                            userSelect.append('<option value="">Select User</option>');
-                            if (response.users && response.users.length > 0) {
-                                $.each(response.users, function(index, user) {
-                                    userSelect.append(
-                                        `<option value="${user.id}">${user.full_name}</option>`
-                                    );
-                                });
-                            } else {
-                                userSelect.append('<option value="">No users available</option>');
-                            }
-                        },
-                        error: function() {
-                            alert('Error fetching users');
-                        }
-                    });
-                } else {
-                    userSelect.empty().append('<option value="">Select User</option>');
+        if (parseInt(roleId) <= 4) {
+            departmentContainer.hide();
+        }
+    $('#role').change(function() {
+        var roleId = $(this).val();
+        var salesManagerContainer = $('#salesManagerContainer');
+        var teamLeaderContainer = $('#teamLeaderContainer');
+        var managerSelect = $('#sales_manager');
+        var teamLeaderSelect = $('#team_leader');
+
+        // Hide both fields initially
+        salesManagerContainer.hide();
+        teamLeaderContainer.hide();
+        departmentContainer.show();  // Show the department by default
+
+        if (roleId <= 4 || roleId <= '4') {
+            // Hide department field if role_id is less than or equal to 4
+            departmentContainer.hide();
+        } else {
+            departmentContainer.show();  // Show department field if role_id is greater than 4
+        }
+
+        if (roleId <= 5) {
+            // Hide Select Manager and Select Team Leader if role_id is 5 or less
+            salesManagerContainer.hide();
+            teamLeaderContainer.hide();
+        } else if (roleId == 6) {
+            // Show Select Manager only for role_id 6
+            salesManagerContainer.show();
+            teamLeaderContainer.hide();
+            // Fetch managers with role_id 5
+            $.ajax({
+                url: "{% url 'get_users_by_role_id' %}",
+                type: 'GET',
+                data: { 'role_id': 5 },
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                success: function(response) {
+                    managerSelect.empty();
+                    managerSelect.append('<option value="">Select Manager</option>');
+                    if (response.users && response.users.length > 0) {
+                        $.each(response.users, function(index, user) {
+                            managerSelect.append(
+                                `<option value="${user.id}">${user.full_name}</option>`
+                            );
+                        });
+                    } else {
+                        managerSelect.append('<option value="">No users available</option>');
+                    }
+                },
+                error: function() {
+                    alert('Error fetching managers');
                 }
             });
-        });
-</script>
-<script>
-  $(document).ready(function () {
-    function toggleFields() {
-      if ($('#is_branch_head').is(':checked')) {
-        // Hide all fields except branch and checkbox
-        $('#department').closest('.form-group').hide();
-        $('#role').closest('.form-group').hide();
-        $('#senior').closest('.form-group').hide();
-        $('#salesManagerContainer').hide();
-        $('#tlManagerContainer').hide();
-      } else {
-        // Show all fields
-        $('#department').closest('.form-group').show();
-        $('#role').closest('.form-group').show();
-        $('#senior').closest('.form-group').show();
-        if ($('#salesManagerContainer option').length > 1) {
-          $('#salesManagerContainer').show();
+        } else if (roleId == 7) {
+            // Show Select Manager and Select Team Leader for role_id 7
+            salesManagerContainer.show();
+            teamLeaderContainer.show();
+            // Fetch managers with role_id 5
+            $.ajax({
+                url: "{% url 'get_users_by_role_id' %}",
+                type: 'GET',
+                data: { 'role_id': 5 },
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                success: function(response) {
+                    managerSelect.empty();
+                    managerSelect.append('<option value="">Select Manager</option>');
+                    if (response.users && response.users.length > 0) {
+                        $.each(response.users, function(index, user) {
+                            managerSelect.append(
+                                `<option value="${user.id}">${user.full_name}</option>`
+                            );
+                        });
+                    } else {
+                        managerSelect.append('<option value="">No users available</option>');
+                    }
+                },
+                error: function() {
+                    alert('Error fetching managers');
+                }
+            });
         }
-        if ($('#tlManagerContainer option').length > 1) {
-          $('#tlManagerContainer').show();
-        }
-      }
-    }
-
-    // Initial check on page load
-    toggleFields();
-
-    // Bind change event
-    $('#is_branch_head').change(function () {
-      toggleFields();
     });
-  });
+
+    // Fetch team leaders based on the selected manager (for role_id 7)
+    $('#sales_manager').change(function() {
+        var managerId = $(this).val();
+        var teamLeaderSelect = $('#team_leader');
+
+        if (managerId) {
+            $.ajax({
+                url: "{% url 'get_team_leaders_by_manager' %}",
+                type: 'GET',
+                data: { 'manager_id': managerId },
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                success: function(response) {
+                    teamLeaderSelect.empty();
+                    teamLeaderSelect.append('<option value="">Select Team Leader</option>');
+                    if (response.team_leaders && response.team_leaders.length > 0) {
+                        $.each(response.team_leaders, function(index, user) {
+                            teamLeaderSelect.append(
+                                `<option value="${user.id}">${user.full_name}</option>`
+                            );
+                        });
+                    } else {
+                        teamLeaderSelect.append('<option value="">No team leaders available</option>');
+                    }
+                },
+                error: function() {
+                    alert('Error fetching team leaders');
+                }
+            });
+        } else {
+            teamLeaderSelect.empty().append('<option value="">Select Team Leader</option>');
+        }
+    });
+});
+
 </script>
 
 </body>
