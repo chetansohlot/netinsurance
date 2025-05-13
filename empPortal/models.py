@@ -9,7 +9,7 @@ from empPortal.model import Referral
 from empPortal.model import Partner
 from datetime import timedelta
 from django.utils import timezone
-
+from empPortal.model import InsuranceType
 from django.conf import settings
 
 class Roles(models.Model):
@@ -208,9 +208,7 @@ class Leads(models.Model):
     referral_name = models.CharField(max_length=255,null=True,blank=True)
     lead_source_medium = models.IntegerField(null=True, blank=True)
     
-    created_at = models.DateTimeField(auto_now_add=True)  # Timestamp when the lead was created
-    created_by = models.CharField(max_length=20, null=True, blank=True)  
-    updated_at = models.DateTimeField(auto_now=True)  # Timestamp when the lead was last updated
+    
     status = models.CharField(max_length=50, default='new')  # Status of the lead (new, contacted, converted, etc.)
     policy_date = models.DateField(null=True, blank=True)
     sales_manager = models.CharField(max_length=100, null=True, blank=True)
@@ -230,7 +228,8 @@ class Leads(models.Model):
     net_premium = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     gross_premium = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     risk_start_date = models.DateField(null=True, blank=True)
-    lead_insurance_type_id = models.IntegerField(null=True,blank=True)
+    
+    lead_insurance_type = models.ForeignKey(InsuranceType,on_delete=models.SET_NULL,null=True,blank=True)
     lead_insurance_category_id = models.IntegerField(null=True,blank=True)
     lead_insurance_product_id = models.IntegerField(null=True,blank=True)
     lead_first_name = models.CharField(max_length=255,null=True,blank=True)
@@ -282,9 +281,16 @@ class Leads(models.Model):
     # risk_start_date = models.DateField(null=True, blank=True)
     risk_start_date = models.CharField(max_length=255)
 
-
+    created_at = models.DateTimeField(auto_now_add=True) 
+    created_by =  created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+    updated_at = models.DateTimeField(auto_now=True)  
     class Meta:
-        db_table = 'leads'  # This defines the database table name
+        db_table = 'leads'  
 
     def __str__(self):
         return f"Lead - {self.name_as_per_pan}"
