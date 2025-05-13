@@ -9,6 +9,8 @@ from django.http import JsonResponse
 import pdfkit
 from empPortal.model import Partner
 import os
+from ..model import State, City
+
 from django.conf import settings
 import os
 from dotenv import load_dotenv
@@ -288,7 +290,6 @@ def save_or_update_employee(request, employee_id=None):
         })
 
 
-
 def save_or_update_address(request, employee_id):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -346,11 +347,23 @@ def save_or_update_address(request, employee_id):
     permanent_address = Address.objects.filter(employee_id=employee.employee_id, type="permanent").first()
     correspondence_address = Address.objects.filter(employee_id=employee.employee_id, type="correspondence").first()
 
+    states = State.objects.all()
+    permanent_state = permanent_address.state if permanent_address else None
+    correspondence_state = correspondence_address.state if correspondence_address else None
+
+    # Get cities by state
+    permanent_cities = City.objects.filter(state_id=permanent_state) if permanent_state else []
+    correspondence_cities = City.objects.filter(state_id=correspondence_state) if correspondence_state else []
+
     return render(request, 'employee/create-address.html', {
         'employee': employee,
         'permanent': permanent_address,
-        'correspondence': correspondence_address
+        'states': states,
+        'correspondence': correspondence_address,
+        'permanent_cities': permanent_cities,
+        'correspondence_cities': correspondence_cities
     })
+
 
 def save_or_update_family_details(request, employee_id):
     if not request.user.is_authenticated:

@@ -46,71 +46,173 @@ Add Address
                 <div class="card box-shadow-none p-md-5 p-3">
                   <div class="card-body px-0 pb-0 pt-0">
 
-                    <form autocomplete="off" id="employeeForm" name="employeeForm"
-                        action="{% url 'employee-management-update-address' employee.employee_id %}" method="post">
+                    
+                    <form autocomplete="off" id="employeeForm"
+                          action="{% url 'employee-management-update-address' employee.employee_id %}" method="post">
                       {% csrf_token %}
                       <div class="row">
-                          <div class="col-md-12">
-                              <h2 class="admin-title border-bottom pb-2 mb-4">Permanent Address</h2>
-                          </div>
+                        <div class="col-md-12">
+                          <h2 class="admin-title border-bottom pb-2 mb-4">Permanent Address</h2>
+                        </div>
 
-                          <div class="form-group col-sm-12">
-                              <label class="form-lbl">Permanent Address</label>
-                              <textarea rows="3" name="permanent_address" class="form-field"
-                                        placeholder="Permanent Address">{{ permanent.address }}</textarea>
-                          </div>
+                        <div class="form-group col-sm-12">
+                          <label class="form-lbl">Permanent Address</label>
+                          <textarea rows="3" name="permanent_address" id="permanent_address" class="form-field"
+                                    placeholder="Permanent Address">{{ permanent.address }}</textarea>
+                        </div>
+                        <div class="form-group col-sm-6 col-md-4">
+                          <label class="form-lbl">State</label>
+                          <select name="permanent_state" id="permanent_state" class="form-field" required>
+                            <option value="">Select State</option>
+                            {% for state in states %}
+                              <option value="{{ state.id }}" {% if state.id|stringformat:"s" == permanent.state|stringformat:"s" %}selected{% endif %}>
+                                {{ state.name }}
+                              </option>
+                            {% endfor %}
+                          </select>
+                        </div>
 
-                          <div class="form-group col-sm-6 col-md-4">
-                              <label class="form-lbl">State</label>
-                              <input type="text" name="permanent_state" class="form-field" placeholder="State Name"
-                                    value="{{ permanent.state }}">
-                          </div>
+                                            
+                        <div class="form-group col-sm-6 col-md-4">
+                          <label class="form-lbl">City</label>
+                          <select name="permanent_city" id="permanent_city" class="form-field" required>
+                            <option value="">Select City</option>
+                            {% for city in permanent_cities %}
+                              <option value="{{ city.id }}" {% if city.id|stringformat:"s" == permanent.city|stringformat:"s" %}selected{% endif %}>
+                                {{ city.city }}
+                              </option>
+                            {% endfor %}
+                          </select>
+                        </div>
+                        <div class="form-group col-sm-6 col-md-4">
+                          <label class="form-lbl">Pincode</label>
+                          <input type="text" name="permanent_pincode" id="permanent_pincode" class="form-field"
+                                placeholder="Pincode" value="{{ permanent.pincode }}">
+                        </div>
 
-                          <div class="form-group col-sm-6 col-md-4">
-                              <label class="form-lbl">City</label>
-                              <input type="text" name="permanent_city" class="form-field" placeholder="City Name"
-                                    value="{{ permanent.city }}">
-                          </div>
+                        <div class="col-md-12 mt-5">
+                          <h2 class="admin-title border-bottom pb-2 mb-4">Correspondence Address</h2>
+                        </div>
 
-                          <div class="form-group col-sm-6 col-md-4">
-                              <label class="form-lbl">Pincode</label>
-                              <input type="text" name="permanent_pincode" class="form-field" placeholder="Pincode"
-                                    value="{{ permanent.pincode }}">
-                          </div>
+                        <div class="form-group col-sm-12">
+                          <label class="form-lbl">Correspondence Address</label>
+                          <textarea rows="3" name="correspondence_address" id="correspondence_address" class="form-field"
+                                    placeholder="Correspondence Address">{{ correspondence.address }}</textarea>
+                        </div>
+                        <div class="form-group col-sm-6 col-md-4">
+                          <label class="form-lbl">State</label>
+                          <select name="correspondence_state" id="correspondence_state" class="form-field" required>
+                            <option value="">Select State</option>
+                            {% for state in states %}
+                              <option value="{{ state.id }}" {% if state.id|stringformat:"s" == correspondence.state|stringformat:"s" %}selected{% endif %}>
+                                {{ state.name }}
+                            </option>
 
-                          <div class="col-md-12 mt-5">
-                              <h2 class="admin-title border-bottom pb-2 mb-4">Correspondence Address</h2>
-                          </div>
+                            {% endfor %}
+                          </select>
+                        </div>
 
-                          <div class="form-group col-sm-12">
-                              <label class="form-lbl">Correspondence Address</label>
-                              <textarea rows="3" name="correspondence_address" class="form-field"
-                                        placeholder="Correspondence Address">{{ correspondence.address }}</textarea>
-                          </div>
 
-                          <div class="form-group col-sm-6 col-md-4">
-                              <label class="form-lbl">State</label>
-                              <input type="text" name="correspondence_state" class="form-field" placeholder="State Name"
-                                    value="{{ correspondence.state }}">
-                          </div>
+                                                
+                        <div class="form-group col-sm-6 col-md-4">
+                          <label class="form-lbl">City</label>
+                          <select name="correspondence_city" id="correspondence_city" class="form-field" required>
+                            <option value="">Select City</option>
+                            {% for city in correspondence_cities %}
+                              <option value="{{ city.id }}" {% if city.id|stringformat:"s" == correspondence.city|stringformat:"s" %}selected{% endif %}>
+                                {{ city.city }}
+                              </option>
+                            {% endfor %}
+                          </select>
+                        </div>
 
-                          <div class="form-group col-sm-6 col-md-4">
-                              <label class="form-lbl">City</label>
-                              <input type="text" name="correspondence_city" class="form-field" placeholder="City Name"
-                                    value="{{ correspondence.city }}">
-                          </div>
-
-                          <div class="form-group col-sm-6 col-md-4">
-                              <label class="form-lbl">Pincode</label>
-                              <input type="text" name="correspondence_pincode" class="form-field" placeholder="Pincode"
-                                    value="{{ correspondence.pincode }}">
-                          </div>
+                        <div class="form-group col-sm-6 col-md-4">
+                          <label class="form-lbl">Pincode</label>
+                          <input type="text" name="correspondence_pincode" id="correspondence_pincode" class="form-field"
+                                placeholder="Pincode" value="{{ correspondence.pincode }}">
+                        </div>
                       </div>
 
                       <div class="d-flex justify-content-end">
-                          <button type="submit" class="form-submit-btn">Update Addresses</button>
+                        <button type="submit" class="form-submit-btn">Update Addresses</button>
                       </div>
-                  </form>
+                    </form>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+
+<script>
+$(document).ready(function () {
+    $("#employeeForm").validate({
+        rules: {
+            permanent_address: {
+                required: true,
+                minlength: 5
+            },
+            permanent_state: {
+                required: true
+            },
+            permanent_city: {
+                required: true
+            },
+            permanent_pincode: {
+                required: true,
+                digits: true,
+                minlength: 6,
+                maxlength: 6
+            },
+            correspondence_address: {
+                required: true,
+                minlength: 5
+            },
+            correspondence_state: {
+                required: true
+            },
+            correspondence_city: {
+                required: true
+            },
+            correspondence_pincode: {
+                required: true,
+                digits: true,
+                minlength: 6,
+                maxlength: 6
+            }
+        },
+        messages: {
+            permanent_address: "Enter permanent address",
+            permanent_state: "Enter state",
+            permanent_city: "Enter city",
+            permanent_pincode: {
+                required: "Enter pincode",
+                digits: "Only digits allowed",
+                minlength: "6 digits required",
+                maxlength: "6 digits required"
+            },
+            correspondence_address: "Enter correspondence address",
+            correspondence_state: "Enter state",
+            correspondence_city: "Enter city",
+            correspondence_pincode: {
+                required: "Enter pincode",
+                digits: "Only digits allowed",
+                minlength: "6 digits required",
+                maxlength: "6 digits required"
+            }
+        },
+        errorElement: "span",
+        errorClass: "text-danger",
+        highlight: function (element) {
+            $(element).addClass("is-invalid");
+        },
+        unhighlight: function (element) {
+            $(element).removeClass("is-invalid");
+        },
+        submitHandler: function (form) {
+            form.submit();
+        }
+    });
+});
+</script>
+
 
 
                   </div>
@@ -164,6 +266,42 @@ Add Address
                 }
             });
         });
+</script>
+
+
+<script>
+$(document).ready(function() {
+    // On change of state (for permanent and correspondence)
+    $('#permanent_state, #correspondence_state').change(function() {
+        var stateId = $(this).val();
+        var citySelect = $(this).attr('id') == 'permanent_state' ? '#permanent_city' : '#correspondence_city';
+
+        if (stateId) {
+            // Send AJAX request to fetch cities based on state
+            $.ajax({
+                url: "{% url 'get_cities' %}",  // URL to handle AJAX request
+                method: 'GET',
+                data: { state_id: stateId },
+                success: function(response) {
+                    // Clear the city dropdown and append new cities
+                    $(citySelect).empty().append('<option value="">Select City</option>');
+
+                    if (response.cities && response.cities.length > 0) {
+                        $.each(response.cities, function(index, city) {
+                            $(citySelect).append('<option value="' + city.id + '">' + city.city + '</option>');
+                        });
+                    }
+                },
+                error: function() {
+                    // Handle any error that occurs during the AJAX request
+                    Swal.fire('Error', 'Unable to fetch cities. Please try again later.', 'error');
+                }
+            });
+        } else {
+            $(citySelect).empty().append('<option value="">Select City</option>');
+        }
+    });
+});
 </script>
 </body>
 {% endblock %}
