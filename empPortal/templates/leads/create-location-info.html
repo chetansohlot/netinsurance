@@ -84,16 +84,16 @@
                                     </option>
                                 {% endfor %}
                             </select>-->
-                            <input type="hidden" name="state_id" id="state_id" value="{{lead_data.state}}">
+                            <input type="hidden" name="state_id" id="state_id" value="{{lead_data.state_id}}">
                             <select class="form-field" name="state" id="state">
                               <option value="">Select State</option>
                               {% for state in states %}
-                                <option value="{{ state.id }}" {% if state.id|stringformat:"s" == lead_data.state|stringformat:"s" %}selected{% endif %}>{{ state.name }}</option>
+                                <option value="{{ state.id }}" {% if state.id|stringformat:"s" == lead_data.state_id|stringformat:"s" %}selected{% endif %}>{{ state.name }}</option>
                               {% endfor %}
                             </select>
                           </div>
 
-                          <input type="hidden" name="city_id" id="city_id" value="{{lead_data.city}}">
+                          <input type="hidden" name="city_id" id="city_id" value="{{lead_data.city_id}}">
                           <div class="form-group col-md-4">
                             <label class="form-lbl" for="city">City</label>
                             <!--<select class="form-field" name="city" id="city">
@@ -185,12 +185,6 @@
       }
       // Call it on page load to ensure correct initial state
       window.onload = handleLeadTypeChange;
-  </script>
-    <script>
-      document.getElementById("myForm").addEventListener("submit", function() {
-          document.getElementById("loader").style.display = "flex";
-      });
-      
 
       document.addEventListener("DOMContentLoaded", function () {
         const leadTypeSelect = document.getElementById("lead_type");
@@ -215,10 +209,8 @@
         // Listen for changes
        leadTypeSelect.addEventListener("change", toggleVehicleFields);
     });
-        
-    </script>
-    
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  </script>
+    <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
     <script>
          function fetchPolicyDetails() {
              var registrationNumber = $("#registration_number_input").val();
@@ -326,33 +318,35 @@
            $("#policy_date").val("");
        }
        
-     </script> 
-  <script>
-    $(document).ready(function () {
+      $(document).ready(function () {
         const registrationNumber = $("#registration_number_input").val();
         const isEditMode = "{{ lead.id|default:'' }}" !== "";  // Adjust based on how you're passing lead
   
         if (isEditMode && registrationNumber !== "") {
             fetchPolicyDetails();  // Auto-fetch in edit mode
         }
-    });
-  </script>
-  
-  
+      });
+     </script> 
+
   <script>
-  $('#state').change(function () {
-    var stateName = $(this).val();  // changed to state name
-    $('#city').html('<option value="">Loading...</option>');
+
+    function loadCities(stateName, selectedCity = null) {
+    $('#city').html('<option value="">Loading cities...</option>');
     if (stateName) {
         $.ajax({
             url: "{% url 'get_cities' %}",
             data: {
-                'state_id': stateName  // this is now state name
+                'state_id': stateName
             },
             success: function (data) {
-                var options = '<option value="">Select City</option>';
-                data.forEach(function(city) {
-                    options += <option value="${city.city}">${city.city}</option>;
+                console.log(data);
+                options = '';
+                $.each(data.cities, function (index, city) {
+                  if (selectedCity == city.id) {
+                      options += `<option value="${city.id}" selected>${city.city}</option>`;
+                  } else {
+                      options += `<option value="${city.id}">${city.city}</option>`;
+                  }
                 });
                 $('#city').html(options);
             }
@@ -360,39 +354,10 @@
     } else {
         $('#city').html('<option value="">Select City</option>');
     }
-});
-</script>
-
-
-  <script>
-    function loadCities(stateName, selectedCity = null) {
-        $('#city').html('<option value="">Loading cities...</option>');
-        if (stateName) {
-            $.ajax({
-                url: "{% url 'get_cities' %}",
-                data: {
-                    'state_id': stateName
-                },
-                success: function (data) {
-                    let options = '<option value="">Select City</option>';
-                    data.forEach(function(city) {
-                        if (selectedCity && city.city === selectedCity) {
-                            options += <option value="${city.city}" selected>${city.city}</option>;
-                        } else {
-                            options += <option value="${city.city}">${city.city}</option>;
-                        }
-                    });
-                    $('#city').html(options);
-                }
-            });
-        } else {
-            $('#city').html('<option value="">Select City</option>');
-        }
-    }
-
-    $(document).ready(function () {
-        const selectedState = $('#state').val();
-        const selectedCity = "{{ lead.city|default:''|escapejs }}";
+}
+  $(document).ready(function () {
+        const selectedState = $('#state_id').val();
+        const selectedCity = $('#city_id').val();
 
         // Always load cities if state is selected (even if city is not)
         if (selectedState) {
