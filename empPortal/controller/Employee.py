@@ -31,7 +31,9 @@ from empPortal.model import EmploymentInfo
 from empPortal.model import EmployeeReference
 from django.utils import timezone
 import logging
+from django.db.models import Q
 
+from datetime import date
 
 def dictfetchall(cursor):
     "Returns all rows from a cursor as a dict"
@@ -125,6 +127,7 @@ def check_branch_email(request):
 
     return JsonResponse({"error": "Invalid request"}, status=400)
 
+
 def save_or_update_employee(request, employee_id=None):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -135,8 +138,6 @@ def save_or_update_employee(request, employee_id=None):
     if employee_id:
         user_instance = get_object_or_404(Users, id=employee_id)
         employee_instance = get_object_or_404(Employees, user_id=user_instance.id)
-    else:
-        user_instance = None
 
     if request.user.role_id != 1:
         messages.error(request, "You do not have permission to add or edit employees.")
@@ -156,19 +157,77 @@ def save_or_update_employee(request, employee_id=None):
         marital_status = request.POST.get("marital_status", "").strip()
         aadhaar_card = request.POST.get("aadhaar_card", "").strip()
 
+        # Populate employee data for repopulating form in case of errors
+        employee_data = {
+            'first_name': first_name,
+            'last_name': last_name,
+            'dob': dob,
+            'gender': gender,
+            'pan_card': pan_no,
+            'aadhaar_card': aadhaar_card,
+            'mobile_number': phone,
+            'email_address': email,
+            'blood_group': blood_group,
+            'marital_status': marital_status,
+        }
+
         try:
             dob_date = datetime.strptime(dob, "%Y-%m-%d").date() if dob else None
         except ValueError:
-            messages.error(request, "Invalid date format in DOB fields")
-            return redirect(request.META.get('HTTP_REFERER', '/'))
+            messages.error(request, "Invalid date format in DOB field.")
+            return render(request, 'employee/create.html', {
+                'employee': employee_data,
+                'user': user_instance
+            })
 
-        gender_map = {'Male': 1, 'Female': 2}
+        today = date.today()
+        if dob_date and (today.year - dob_date.year - ((today.month, today.day) < (dob_date.month, dob_date.day))) < 18:
+            messages.error(request, "Employee must be at least 18 years old.")
+            return render(request, 'employee/create.html', {
+                'employee': employee_data,
+                'user': user_instance
+            })
+
+        gender_map = {'Male': 1, 'Female': 2, 'Other': 3}
         user_gender = gender_map.get(gender, None)
 
         if not first_name or not email or not phone or not dob_date or not gender or not pan_no:
             messages.error(request, "Please fill all required fields.")
-            return redirect(request.META.get('HTTP_REFERER', '/'))
+            return render(request, 'employee/create.html', {
+                'employee': employee_data,
+                'user': user_instance
+            })
 
+        # Check for duplicate Users
+        duplicate_user = Users.objects.filter(
+            Q(email=email) | Q(phone=phone) | Q(pan_no=pan_no)
+        ).exclude(id=user_instance.id if user_instance else None).first()
+
+        if duplicate_user:
+            if duplicate_user.email == email:
+                messages.error(request, "Email already exists.")
+            elif duplicate_user.phone == phone:
+                messages.error(request, "Phone number already exists.")
+            elif duplicate_user.pan_no == pan_no:
+                messages.error(request, "PAN number already exists.")
+            return render(request, 'employee/create.html', {
+                'employee': employee_data,
+                'user': user_instance
+            })
+
+        # Check for duplicate Employees
+        duplicate_employee = Employees.objects.filter(
+            Q(aadhaar_card=aadhaar_card)
+        ).exclude(user_id=user_instance.id if user_instance else None).first()
+
+        if duplicate_employee:
+            messages.error(request, "Aadhaar number already exists.")
+            return render(request, 'employee/create.html', {
+                'employee': employee_data,
+                'user': user_instance
+            })
+
+        # Save or update Users table
         if user_instance:
             user_instance.first_name = first_name
             user_instance.last_name = last_name
@@ -199,10 +258,10 @@ def save_or_update_employee(request, employee_id=None):
                 gender=user_gender,
                 password=make_password(password),
                 status=1,
-                role_id=request.user.role_id,
                 created_at=timezone.now()
             )
 
+        # Save or update Employees table
         employee_obj, created = Employees.objects.get_or_create(user_id=user_instance.id)
         employee_obj.first_name = first_name
         employee_obj.last_name = last_name
@@ -217,7 +276,6 @@ def save_or_update_employee(request, employee_id=None):
         employee_obj.updated_at = timezone.now()
         if created:
             employee_obj.created_at = timezone.now()
-
         employee_obj.save()
 
         messages.success(request, f"Employee {'created' if created else 'updated'} successfully!")
@@ -228,6 +286,7 @@ def save_or_update_employee(request, employee_id=None):
             'employee': employee_instance,
             'user': user_instance
         })
+
 
 
 def save_or_update_address(request, employee_id):

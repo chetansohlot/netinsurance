@@ -59,7 +59,7 @@ Add Employee
                 <div class="card box-shadow-none p-md-5 p-3">
                   <div class="card-body px-0 pb-0 pt-0">
 
-                    <form autocomplete="off" id="employeeForm" name="employeeForm"
+                    <form autocomplete="off" id="employeeBasicForm" name="employeeForm"
                         action="{% if employee %}{% url 'employee-management-update' employee.id %}{% else %}{% url 'employee-management-create' %}{% endif %}"
                         method="post">
                         {% csrf_token %}
@@ -89,9 +89,11 @@ Add Employee
                             </div>
                             <div class="form-group col-sm-6 col-md-4">
                                 <label class="form-lbl">Gender</label>
-                                <select class="form-field">
-                                  <option>Male</option>
-                                  <option>Female</option>
+                                <select class="form-field" name="gender" id="gender">
+                                  <option value="">Select Gender</option>
+                                  <option value="Male">Male</option>
+                                  <option value="Female">Female</option>
+                                  <option value="Other">Other</option>
                                 </select>
                             </div>
                             <div class="form-group col-sm-6 col-md-4">
@@ -119,23 +121,28 @@ Add Employee
                             </div>
                             <div class="form-group col-sm-6 col-md-4">
                                 <label class="form-lbl">Blood Group</label>
-                                <select class="form-field">
-                                  <option>A+</option>
-                                  <option>A-</option>
-                                  <option>B+</option>
-                                  <option>B-</option>
-                                  <option>O+</option>
-                                  <option>O-</option>
-                                  <option>AB+</option>
-                                  <option>AB-</option>
+                                <select class="form-field" name="blood_group" id="blood_group">
+                                  <option value="">Select Blood Group</option>
+                                  <option value="A+" {% if employee.blood_group == 'A+' %}selected{% endif %}>A+</option>
+                                  <option value="A-" {% if employee.blood_group == 'A-' %}selected{% endif %}>A-</option>
+                                  <option value="B+" {% if employee.blood_group == 'B+' %}selected{% endif %}>B+</option>
+                                  <option value="B-" {% if employee.blood_group == 'B-' %}selected{% endif %}>B-</option>
+                                  <option value="O+" {% if employee.blood_group == 'O+' %}selected{% endif %}>O+</option>
+                                  <option value="O-" {% if employee.blood_group == 'O-' %}selected{% endif %}>O-</option>
+                                  <option value="AB+" {% if employee.blood_group == 'AB+' %}selected{% endif %}>AB+</option>
+                                  <option value="AB-" {% if employee.blood_group == 'AB-' %}selected{% endif %}>AB-</option>
                                 </select>
+
                             </div>
                             <div class="form-group col-sm-6 col-md-4">
                                 <label class="form-lbl">Marital status</label>
-                                <select class="form-field">
-                                  <option>Married</option>
-                                  <option>Unmarried</option>
+                                <select class="form-field" name="marital_status" id="marital_status">
+                                  <option value="">Select Marital Status</option>
+                                  <option value="Single" {% if employee.marital_status == 'Single' %}selected{% endif %}>Single</option>
+                                  <option value="Married" {% if employee.marital_status == 'Married' %}selected{% endif %}>Married</option>
+                                  <option value="Unmarried" {% if employee.marital_status == 'Unmarried' %}selected{% endif %}>Unmarried</option>
                                 </select>
+
                             </div>
                             
                         </div>
@@ -197,4 +204,116 @@ Add Employee
         });
 </script>
 </body>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- jQuery Validate Plugin (Must be Loaded After jQuery) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+  
+<script>
+$(document).ready(function () {
+    // Add custom regex method for PAN
+    $.validator.addMethod("panFormat", function (value, element) {
+        return this.optional(element) || /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(value);
+    }, "Please enter a valid PAN number (e.g., ABCDE1234F)");
+
+    $("#employeeBasicForm").validate({
+        rules: {
+            first_name: {
+                required: true,
+                minlength: 2
+            },
+            last_name: {
+                required: true,
+                minlength: 2
+            },
+            phone: {
+                required: true,
+                digits: true,
+                minlength: 10,
+                maxlength: 10
+            },
+            email: {
+                required: true,
+                email: true
+            },
+            pan_no: {
+                required: true,
+                minlength: 10,
+                maxlength: 10,
+                panFormat: true
+            },
+            dob: {
+                required: true
+            },
+            gender: {
+                required: true
+            },
+            blood_group: {
+                required: true
+            },
+            marital_status: {
+                required: true
+            }
+        },
+        messages: {
+            first_name: {
+                required: "First name is required",
+                minlength: "At least 2 characters"
+            },
+            last_name: {
+                required: "Last name is required",
+                minlength: "At least 2 characters"
+            },
+            phone: {
+                required: "Mobile number is required",
+                digits: "Only digits allowed",
+                minlength: "Must be 10 digits",
+                maxlength: "Must be 10 digits"
+            },
+            email: {
+                required: "Email is required",
+                email: "Enter a valid email"
+            },
+            pan_no: {
+                required: "PAN number is required",
+                minlength: "PAN must be 10 characters",
+                maxlength: "PAN must be 10 characters"
+            },
+            dob: {
+                required: "Date of birth is required"
+            },
+            gender: {
+                required: "Gender is required"
+            },
+            blood_group: {
+                required: "Blood group is required"
+            },
+            marital_status: {
+                required: "Marital status is required"
+            }
+        },
+        errorElement: "span",
+        errorPlacement: function (error, element) {
+            const errorContainer = element.siblings(".error");
+            if (errorContainer.length) {
+                errorContainer.html(error);
+            } else {
+                error.addClass("text-danger").insertAfter(element);
+            }
+        },
+        highlight: function (element) {
+            $(element).addClass("is-invalid");
+        },
+        unhighlight: function (element) {
+            $(element).removeClass("is-invalid");
+        },
+        submitHandler: function (form) {
+            form.submit();
+        }
+    });
+});
+</script>
+
 {% endblock %}

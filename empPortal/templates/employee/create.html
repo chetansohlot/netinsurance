@@ -51,7 +51,7 @@ Add Employee
                         action="{% if user %}{% url 'employee-management-update' employee_id=user.id %}{% else %}{% url 'employee-management-create' %}{% endif %}"
                         method="post">
                         {% csrf_token %}
-                        
+
                         <div class="row">
                             <div class="col-md-12">
                                 <h2 class="admin-title border-bottom pb-2 mb-4">Basic Details</h2>
@@ -72,20 +72,21 @@ Add Employee
                                     value="{{ employee.last_name|default:'' }}">
                                 <span class="error last_name_err"></span>
                             </div>
+                            
                             <!-- Date of Birth -->
                             <div class="form-group col-sm-6 col-md-4">
-                                <label class="form-lbl">Date of Birth</label>
-                                <input type="date" name="dob" class="form-field dob_datepicker" placeholder="DD-MM-YYYY"
-                                    value="{{ employee.date_of_birth|date:"Y-m-d"|default:'' }}">
+                                <label class="form-lbl" for="dob">Date of Birth</label>
+                                <input type="date" name="dob" id="dob" class="form-field" value="{% if employee.date_of_birth %}{{ employee.date_of_birth|date:'Y-m-d' }}{% else %}{{ employee.dob|default:'' }}{% endif %}">
                             </div>
-
 
                             <!-- Gender -->
                             <div class="form-group col-sm-6 col-md-4">
-                                <label class="form-lbl">Gender</label>
+                                <label class="form-lbl" for="gender">Gender</label>
                                 <select class="form-field" name="gender" id="gender">
+                                    <option value="">Select Gender</option>
                                     <option value="Male" {% if employee.gender == 'Male' %}selected{% endif %}>Male</option>
                                     <option value="Female" {% if employee.gender == 'Female' %}selected{% endif %}>Female</option>
+                                    <option value="Other" {% if employee.gender == 'Other' %}selected{% endif %}>Other</option>
                                 </select>
                             </div>
 
@@ -99,7 +100,7 @@ Add Employee
 
                             <!-- Aadhaar Card -->
                             <div class="form-group col-sm-6 col-md-4">
-                                <label class="form-lbl">Aadhaar Card</label>
+                                <label class="form-lbl" for="aadhaar_card">Aadhaar Card</label>
                                 <input type="text" class="form-field" maxlength="12" name="aadhaar_card" id="aadhaar_card"
                                     placeholder="Aadhaar Number" value="{{ employee.aadhaar_card|default:'' }}">
                             </div>
@@ -121,9 +122,11 @@ Add Employee
                             </div>
 
                             <!-- Blood Group -->
+                            
                             <div class="form-group col-sm-6 col-md-4">
-                                <label class="form-lbl">Blood Group</label>
-                                <select class="form-field" name="blood_group">
+                                <label class="form-lbl" for="blood_group">Blood Group</label>
+                                <select class="form-field" name="blood_group" id="blood_group">
+                                    <option value="">Select Blood Group</option>
                                     <option value="A+" {% if employee.blood_group == 'A+' %}selected{% endif %}>A+</option>
                                     <option value="A-" {% if employee.blood_group == 'A-' %}selected{% endif %}>A-</option>
                                     <option value="B+" {% if employee.blood_group == 'B+' %}selected{% endif %}>B+</option>
@@ -135,10 +138,13 @@ Add Employee
                                 </select>
                             </div>
 
+
                             <!-- Marital Status -->
                             <div class="form-group col-sm-6 col-md-4">
-                                <label class="form-lbl">Marital status</label>
-                                <select class="form-field" name="marital_status">
+                                <label class="form-lbl" for="marital_status">Marital Status</label>
+                                <select class="form-field" name="marital_status" id="marital_status">
+                                    <option value="">Select Marital Status</option>
+                                    <option value="Single" {% if employee.marital_status == 'Single' %}selected{% endif %}>Single</option>
                                     <option value="Married" {% if employee.marital_status == 'Married' %}selected{% endif %}>Married</option>
                                     <option value="Unmarried" {% if employee.marital_status == 'Unmarried' %}selected{% endif %}>Unmarried</option>
                                 </select>
@@ -149,6 +155,7 @@ Add Employee
                             <button type="submit" class="form-submit-btn">{% if user %}Update Employee{% else %}Save Employee{% endif %}</button>
                         </div>
                     </form>
+
 
 
 
@@ -205,4 +212,93 @@ Add Employee
         });
 </script>
 </body>
+
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- jQuery Validate Plugin (Must be Loaded After jQuery) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+  
+<script>
+$(document).ready(function () {
+    // PAN custom method
+    $.validator.addMethod("panFormat", function (value, element) {
+        return this.optional(element) || /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(value);
+    }, "Enter valid PAN (e.g., ABCDE1234F)");
+
+    $("#employeeForm").validate({
+        rules: {
+            first_name: {
+                required: true,
+                minlength: 2
+            },
+            last_name: {
+                required: true,
+                minlength: 2
+            },
+            dob: {
+                required: true
+            },
+            gender: {
+                required: true
+            },
+            pan_no: {
+                required: true,
+                panFormat: true
+            },
+            phone: {
+                required: true,
+                digits: true,
+                minlength: 10,
+                maxlength: 10
+            },
+            email: {
+                required: true,
+                email: true
+            },
+            blood_group: {
+                required: true
+            },
+            marital_status: {
+                required: true
+            }
+        },
+        messages: {
+            first_name: "Enter first name",
+            last_name: "Enter last name",
+            dob: "Select DOB",
+            gender: "Select gender",
+            pan_no: {
+                required: "Enter PAN",
+                panFormat: "Invalid PAN format"
+            },
+            phone: {
+                required: "Enter mobile number",
+                digits: "Only digits allowed",
+                minlength: "10 digits required",
+                maxlength: "10 digits required"
+            },
+            email: {
+                required: "Enter email",
+                email: "Invalid email"
+            },
+            blood_group: "Select blood group",
+            marital_status: "Select marital status"
+        },
+        errorElement: "span",
+        errorClass: "text-danger",
+        highlight: function (element) {
+            $(element).addClass("is-invalid");
+        },
+        unhighlight: function (element) {
+            $(element).removeClass("is-invalid");
+        },
+        submitHandler: function (form) {
+            form.submit();
+        }
+    });
+});
+</script>
+
 {% endblock %}
