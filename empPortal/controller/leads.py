@@ -593,8 +593,6 @@ def load_products(request):
     products = InsuranceProduct.objects.filter(category_id=category_id).values('id', 'name')
     return JsonResponse(list(products), safe=False)
 
-
-
 def create_or_edit_lead(request, lead_id=None):
     if not request.user.is_authenticated:
         return redirect('login')

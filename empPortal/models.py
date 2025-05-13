@@ -9,7 +9,7 @@ from empPortal.model import Referral
 from empPortal.model import Partner
 from datetime import timedelta
 from django.utils import timezone
-from empPortal.model import InsuranceType
+from empPortal.model import InsuranceType, InsuranceCategory, InsuranceProduct
 from django.conf import settings
 
 class Roles(models.Model):
@@ -230,8 +230,9 @@ class Leads(models.Model):
     risk_start_date = models.DateField(null=True, blank=True)
     
     lead_insurance_type = models.ForeignKey(InsuranceType,on_delete=models.SET_NULL,null=True,blank=True)
-    lead_insurance_category_id = models.IntegerField(null=True,blank=True)
-    lead_insurance_product_id = models.IntegerField(null=True,blank=True)
+    lead_insurance_category = models.ForeignKey(InsuranceCategory, on_delete=models.SET_NULL, null=True, blank=True)
+    lead_insurance_product = models.ForeignKey(InsuranceProduct, on_delete=models.SET_NULL, null=True, blank=True)
+    
     lead_first_name = models.CharField(max_length=255,null=True,blank=True)
     lead_last_name = models.CharField(max_length=255,null=True,blank=True)
     lead_customer_identity_no = models.CharField(max_length=255,null=True,blank=True)
