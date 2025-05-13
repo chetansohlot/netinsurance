@@ -63,6 +63,7 @@ urlpatterns = [
     path('business_summary_insurer_chartajax/', Dashboard.business_summary_insurer_chartajax, name='business_summary_insurer_chartajax'),
     path('business_consolidated_ajax/', Dashboard.business_consolidated_ajax, name='business_consolidated_ajax'),
     path('referral_summary_chartajax', Dashboard.referral_summary_chartajax, name='referral_summary_chartajax'),
+    path('partner_policy_summary_ajax/', Dashboard.partner_policy_summary_ajax, name='partner_policy_summary_ajax'),
 
 
 
