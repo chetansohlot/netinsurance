@@ -1,4 +1,6 @@
-from sre_parse import State
+# from sre_parse import State
+from empPortal.model.StateCity import State
+from empPortal.model.StateCity import City
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
@@ -191,8 +193,8 @@ class Leads(models.Model):
     name_as_per_pan = models.CharField(max_length=255)  # Customer's name as per PAN
     pan_card_number = models.CharField(max_length=20, null=True, blank=True)  # PAN card number (optional)
     date_of_birth = models.CharField(max_length=25,null=True, blank=True)  # Customer's date of birth (optional)
-    state = models.CharField(max_length=100, null=True, blank=True)  # State of the customer
-    city = models.CharField(max_length=100, null=True, blank=True)  # City of the customer
+    state = models.ForeignKey(State, on_delete=models.SET_NULL, null=True, blank=True)
+    city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True, blank=True)
     pincode = models.CharField(max_length=10, null=True, blank=True)  # Pincode of the customer
     address = models.TextField(null=True, blank=True)  # Address of the customer
     lead_description = models.TextField(null=True, blank=True)
