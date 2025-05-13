@@ -275,7 +275,7 @@ View Lead
                                     <div class="userdetail-group">
                                         <p class="userdetail-lbl">Lead ID</p>
                                         <p class="userdetail-highligt">
-                                            {{ lead.lead_id }}
+                                            {{ lead.lead_id|default:"N/A"}}
                                         </p>
                                     </div>  
                                   </div>
@@ -291,7 +291,7 @@ View Lead
                                     <div class="userdetail-group">
                                         <p class="userdetail-lbl">Mobile Number</p>
                                         <p class="userdetail-highligt">
-                                            {{lead.mobile_number}}
+                                            {{lead.mobile_number|default:"N/A"}}
                                         </p>
                                     </div>  
                                   </div>
@@ -314,7 +314,7 @@ View Lead
                                     <div class="userdetail-group">
                                         <p class="userdetail-lbl">Date of Birth</p>
                                         <p class="userdetail-highligt">
-                                            {{lead.date_of_birth}}
+                                            {{lead.date_of_birth|default:"N/A"}}
                                         </p>
                                     </div>  
                                   </div>
@@ -322,7 +322,7 @@ View Lead
                                     <div class="userdetail-group">
                                         <p class="userdetail-lbl">PAN/Aadhaar</p>
                                         <p class="userdetail-highligt text-uppercase">
-                                            {{lead.pan_card_number}}
+                                            {{lead.pan_card_number|default:"N/A"}}
                                         </p>
                                     </div>  
                                   </div>
@@ -330,7 +330,7 @@ View Lead
                                     <div class="userdetail-group">
                                         <p class="userdetail-lbl">Email ID</p>
                                         <p class="userdetail-highligt">
-                                            {{lead.email_address}}
+                                            {{lead.email_address|default:"N/A"}}
                                         </p>
                                     </div>  
                                   </div>
@@ -342,7 +342,7 @@ View Lead
                                     <div class="userdetail-group">
                                         <p class="userdetail-lbl">Lead Source Type</p>
                                         <p class="userdetail-highligt">
-                                            {{lead.lead_source}}
+                                            {{lead.lead_source|default:"N/A"}}
                                         </p>
                                     </div>  
                                   </div>
@@ -350,7 +350,7 @@ View Lead
                                     <div class="userdetail-group">
                                         <p class="userdetail-lbl">Lead Source Name</p>
                                         <p class="userdetail-highligt">
-                                            {{lead.lead_source_medium}}
+                                            {{lead.lead_source_medium|default:"N/A"}}
                                         </p>
                                     </div>  
                                   </div>
@@ -358,7 +358,7 @@ View Lead
                                     <div class="userdetail-group">
                                         <p class="userdetail-lbl">Referral Name</p>
                                         <p class="userdetail-highligt">
-                                            {{lead.referral_name}}
+                                            {{lead.referral_name|default:"N/A"}}
                                         </p>
                                     </div>  
                                   </div>
@@ -366,7 +366,7 @@ View Lead
                                     <div class="userdetail-group">
                                         <p class="userdetail-lbl">Source Medium</p>
                                         <p class="userdetail-highligt">
-                                            {{ lead.lead_source_medium}}
+                                            {{ lead.lead_source_medium|default:"N/A"}}
                                         </p>
                                     </div>  
                                   </div>
@@ -378,7 +378,7 @@ View Lead
                                     <div class="userdetail-group">
                                         <p class="userdetail-lbl">State</p>
                                         <p class="userdetail-highligt">
-                                            {{lead.state}}
+                                            {{lead.state|default:"N/A"}}
                                         </p>
                                     </div>  
                                   </div>
@@ -386,7 +386,7 @@ View Lead
                                     <div class="userdetail-group">
                                         <p class="userdetail-lbl">City</p>
                                         <p class="userdetail-highligt">
-                                            {{lead.city}}                                       
+                                            {{lead.city|default:"N/A"}}                                       
                                         </p>
                                     </div>  
                                   </div>
@@ -394,7 +394,7 @@ View Lead
                                     <div class="userdetail-group">
                                         <p class="userdetail-lbl">Pin Code</p>
                                         <p class="userdetail-highligt">
-                                            {{lead.pincode}}                                      
+                                            {{lead.pincode|default:"N/A"}}                                      
                                         </p>
                                     </div>  
                                   </div>
@@ -406,7 +406,7 @@ View Lead
                                     <div class="userdetail-group">
                                         <p class="userdetail-lbl">Assigned To</p>
                                         <p class="userdetail-highligt">
-                                            {{lead.assigned_to}}
+                                            {{lead.assigned_to|default:"N/A"}}
                                         </p>
                                     </div>  
                                   </div>
@@ -414,7 +414,7 @@ View Lead
                                     <div class="userdetail-group">
                                         <p class="userdetail-lbl">Branch</p>
                                         <p class="userdetail-highligt">
-                                            {{lead.branch_id}}
+                                            {{lead.branch_id|default:"N/A"}}
                                         </p>
                                     </div>  
                                   </div>
@@ -422,7 +422,7 @@ View Lead
                                     <div class="userdetail-group">
                                         <p class="userdetail-lbl">Lead Status Type</p>
                                         <p class="userdetail-highligt">
-                                           {{lead.status_type}}
+                                           {{lead.status_type|default:"N/A"}}
                                         </p>
                                     </div>  
                                   </div>
@@ -430,7 +430,7 @@ View Lead
                                     <div class="userdetail-group">
                                         <p class="userdetail-lbl">Lead Tag</p>
                                         <p class="userdetail-highligt">
-                                            {{lead.tag}}
+                                            {{lead.tag|default:"N/A"}}
                                         </p>
                                     </div>  
                                   </div>
@@ -447,7 +447,7 @@ View Lead
                                         <div class="userdetail-group">
                                             <p class="userdetail-lbl">Policy Number</p>
                                             <p class="userdetail-highligt">
-                                                {{lead.policy_number}}
+                                                {{lead.policy_number|default:"N/A"}}
                                             </p>
                                         </div>  
                                     </div>
@@ -455,7 +455,7 @@ View Lead
                                         <div class="userdetail-group">
                                             <p class="userdetail-lbl">Previous Insurer Name</p>
                                             <p class="userdetail-highligt">
-                                                {{lead.insurance_company}}
+                                                {{lead.insurance_company|default:"N/A"}}
                                             </p>
                                         </div>  
                                     </div>
@@ -463,7 +463,7 @@ View Lead
                                         <div class="userdetail-group">
                                             <p class="userdetail-lbl">Policy Type</p>
                                             <p class="userdetail-highligt">
-                                                {{lead.policy_type}}
+                                                {{lead.policy_type|default:"N/A"}}
                                             </p>
                                         </div>  
                                     </div>
@@ -471,7 +471,7 @@ View Lead
                                         <div class="userdetail-group">
                                             <p class="userdetail-lbl">Policy Start Date</p>
                                             <p class="userdetail-highligt">
-                                                {{ lead.policy_start_date|date:'d-m-Y' }}
+                                                {{ lead.policy_start_date|date:'d-m-Y' |default:"N/A"}}
                                             </p>
                                         </div>  
                                     </div>
@@ -479,7 +479,7 @@ View Lead
                                         <div class="userdetail-group">
                                             <p class="userdetail-lbl">Policy End Date</p>
                                             <p class="userdetail-highligt">
-                                                {{ lead.lead_end_date|date:'d-m-Y' }}
+                                                {{ lead.lead_end_date|date:'d-m-Y'|default:"N/A" }}
                                             </p>
                                         </div>  
                                     </div>
@@ -487,7 +487,7 @@ View Lead
                                         <div class="userdetail-group">
                                             <p class="userdetail-lbl">Expiry Status</p>
                                             <p class="userdetail-highligt">
-                                                {{ lead.expiry_status }}
+                                                {{ lead.expiry_status|default:"N/A"}}
                                             </p>
                                         </div>  
                                     </div>
@@ -495,7 +495,7 @@ View Lead
                                         <div class="userdetail-group">
                                             <p class="userdetail-lbl">No Claim Bonus (NCB)</p>
                                             <p class="userdetail-highligt">
-                                                {{ lead.ncb }}
+                                                {{ lead.ncb|default:"N/A" }}
                                             </p>
                                         </div>  
                                     </div>
@@ -503,7 +503,7 @@ View Lead
                                         <div class="userdetail-group">
                                             <p class="userdetail-lbl">Previous IDV (for Motor)</p>
                                             <p class="userdetail-highligt">
-                                                ₹{{ lead.previous_idv }}
+                                                ₹{{ lead.previous_idv|default:"N/A" }}
                                             </p>
                                         </div>  
                                     </div>
@@ -511,7 +511,7 @@ View Lead
                                         <div class="userdetail-group">
                                             <p class="userdetail-lbl">Previous Sum Insured (for Health)</p>
                                             <p class="userdetail-highligt">
-                                                ₹{{ lead.previous_sum_insured }}
+                                                ₹{{ lead.previous_sum_insured|default:"N/A" }}
                                             </p>
                                         </div>  
                                     </div>
@@ -519,7 +519,7 @@ View Lead
                                         <div class="userdetail-group">
                                             <p class="userdetail-lbl">Claims Made</p>
                                             <p class="userdetail-highligt">
-                                                {{ lead.claims_made }}
+                                                {{ lead.claims_made|default:"N/A" }}
                                             </p>
                                         </div>  
                                     </div>
@@ -527,7 +527,7 @@ View Lead
                                         <div class="userdetail-group">
                                             <p class="userdetail-lbl">Claim Amount </p>
                                             <p class="userdetail-highligt">
-                                                ₹{{ lead.claim_amount }}
+                                                ₹{{ lead.claim_amount|default:"N/A" }}
                                             </p>
                                         </div>  
                                     </div>
@@ -548,7 +548,7 @@ View Lead
                                         <div class="userdetail-group">
                                             <p class="userdetail-lbl">Previous Policy Source </p>
                                             <p class="userdetail-highligt">
-                                                {{ lead.previous_policy_source }}
+                                                {{ lead.previous_policy_source|default:"N/A" }}
                                             </p>
                                         </div>  
                                     </div>
@@ -556,7 +556,7 @@ View Lead
                                         <div class="userdetail-group">
                                             <p class="userdetail-lbl">Vehicle Type </p>
                                             <p class="userdetail-highligt">
-                                                {{lead.vehical_type}}
+                                                {{lead.vehical_type|default:"N/A"}}
                                             </p>
                                         </div>  
                                     </div>
@@ -572,7 +572,7 @@ View Lead
                                         <div class="userdetail-group">
                                             <p class="userdetail-lbl">Insurance Type </p>
                                             <p class="userdetail-highligt">
-                                                {{lead.lead_type}}
+                                                {{lead.lead_type|default:"N/A"}}
                                             </p>
                                         </div>  
                                     </div>
@@ -591,7 +591,7 @@ View Lead
                                         <div class="userdetail-group">
                                             <p class="userdetail-lbl">Registration No</p>
                                             <p class="userdetail-highligt">
-                                                {{ lead.registration_no }}
+                                                {{ lead.registration_no|default:"N/A" }}
                                             </p>
                                         </div>  
                                     </div>
@@ -607,7 +607,7 @@ View Lead
                                         <div class="userdetail-group">
                                             <p class="userdetail-lbl">Modal</p>
                                             <p class="userdetail-highligt">
-                                                {{ lead.modal }}
+                                                {{ lead.modal|default:"N/A" }}
                                             </p>
                                         </div>  
                                     </div>
@@ -615,7 +615,7 @@ View Lead
                                         <div class="userdetail-group">
                                             <p class="userdetail-lbl">Year</p>
                                             <p class="userdetail-highligt">
-                                                {{ lead.year }}
+                                                {{ lead.year|default:"N/A" }}
                                             </p>
                                         </div>  
                                     </div>
@@ -623,7 +623,7 @@ View Lead
                                         <div class="userdetail-group">
                                             <p class="userdetail-lbl">Sum Insured</p>
                                             <p class="userdetail-highligt">
-                                                ₹{{ lead.sum_insured }}
+                                                ₹{{ lead.sum_insured|default:"N/A" }}
                                             </p>
                                         </div>  
                                     </div>
