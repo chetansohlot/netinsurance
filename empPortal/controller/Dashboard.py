@@ -67,11 +67,8 @@ def dashboard(request):
 
     user = request.user
 
-    # Base queryset depending on role
-    if user.role_id != 1 and str(user.department_id) not in ["3", "5", "2"]:
-        base_qs = PolicyDocument.objects.filter(status=6, rm_id=user.id)
-    else:
-        base_qs = PolicyDocument.objects.filter(status=6)
+    
+    base_qs = PolicyDocument.objects.filter(status=6)
 
      
 
