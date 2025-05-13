@@ -200,7 +200,7 @@ class Leads(models.Model):
     referral_by = models.CharField(max_length=25, null=True, blank=True)  
     
     assigned_to = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.SET_NULL,null=True,blank=True, related_name='leads_assigned')  
-    branch_id = models.IntegerField( null=True, blank=True)  
+    branch = models.ForeignKey(Branch, on_delete=models.SET_NULL, null=True, blank=True)  
     lead_status_type = models.IntegerField( null=True, blank=True)  
     lead_tag = models.IntegerField( null=True, blank=True)  
     
