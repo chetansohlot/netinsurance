@@ -50,12 +50,20 @@ from django.db.models import OuterRef, Subquery, Count
 
 from django.utils.timezone import make_naive
 from django.db import connection
+from datetime import datetime, date
+from django.utils.timezone import now
 
 
 
 def dashboard(request):
     if not request.user.is_authenticated:
         return redirect('login')
+    
+    # Get filter params
+    date_filter = request.GET.get('date_filter', 'all')
+    from_date = request.GET.get('insurer_wise_from_date')
+    to_date = request.GET.get('insurer_wise_to_date')
+    selected_month = request.GET.get('insurer_wise_summary_month')
 
     user = request.user
 
@@ -65,7 +73,11 @@ def dashboard(request):
     else:
         base_qs = PolicyDocument.objects.filter(status=6)
 
+     
+
     aggregation_qs = base_qs.filter(policy_info__isnull=False).distinct()
+
+   
 
     # Grouped summary by insurance provider
     provider_summary = (
@@ -240,6 +252,9 @@ def dashboard(request):
     insurer_motor_counts, insurer_provider_labels, insurer_sum_insured = business_summary_insurer_chart(request)
     policies_insurer_wise = insurer_wise_date(request)
     referral_agent_labels, referral_counts = referral_summary_chart(request)
+    agent_labels, agent_counts = partner_policy_summary(request)
+    summary = business_summary_product_wise(request)
+
 
     return render(request, 'dashboard.html', {
         'user': user,
@@ -254,8 +269,11 @@ def dashboard(request):
         'insurer_provider_labels': insurer_provider_labels,
         'insurer_sum_insured': insurer_sum_insured,
         'referral_counts': referral_counts,
+        'agent_labels' : agent_labels,
+        'agent_counts' : agent_counts,
         'referral_agent_labels': referral_agent_labels,
         'provider_labels': provider_labels,
+        'summary': summary,
         'motor_counts': motor_counts,
         'policy_count': total_policies,
         'total_revenue': total_revenue,
@@ -554,36 +572,98 @@ def referral_summary_chartajax(request):
 
 
 
-# def get_chart_data(request):
-#     # Fetch data
-#     base_qs = PolicyDocument.objects.filter(status=6).select_related('policy_info')
+def partner_policy_summary(request):
+    user = request.user
+
+    # Step 1: Filter policies
+    if user.is_authenticated:
+        base_qs = PolicyDocument.objects.filter(status=6, rm_id=user.id)
+    else:
+        base_qs = PolicyDocument.objects.filter(status=6)
+
+    aggregation_qs = base_qs.filter(policy_info__isnull=False).distinct()
+
+    # Step 2: Get agent policy counts
+    pos_qs = AgentPaymentDetails.objects.filter(
+        policy__in=aggregation_qs,
+        agent_name__isnull=False
+    ).values('agent_name').annotate(
+        policies_sold=Count('policy_id', distinct=True)
+    ).order_by('-policies_sold')
+
+    if not pos_qs:
+        return JsonResponse({'message': 'No data found for the given filters'}, status=200)
+
+    agent_ids = [int(item['agent_name']) for item in pos_qs if str(item['agent_name']).isdigit()]
+    users_map = {
+        user.id: f"{user.first_name} {user.last_name}".strip() or user.user_name
+        for user in Users.objects.filter(id__in=agent_ids)
+    }
+
+    # Step 4: Prepare labels and counts
+    agent_labels = []
+    agent_counts = []
+
+    for item in pos_qs:
+        agent_id = int(item['agent_name'])
+        agent_name = users_map.get(agent_id, f"Agent {agent_id}")
+        agent_labels.append(agent_name)
+        agent_counts.append(item['policies_sold'])
+
+    # Optional: Debug output
+    print("Agent Labels:", agent_labels)
+    print("Agent Counts:", agent_counts)
+
+    return  agent_labels, agent_counts
     
-#     # Monthly data calculation
-#     monthly_data = base_qs.annotate(
-#         month=ExtractMonth('created_at'),
-#         year=ExtractYear('created_at')
-#     )
 
-#     # Initialize chart data
-#     labels = [calendar.month_abbr[i] for i in range(1, 13)]
-#     motor_data = [0] * 12
-#     health_data = [0] * 12
-#     term_data = [0] * 12
 
-# # Aggregate data by month and category
-#     for row in monthly_data:
-#         if row.month:
-#             idx = row.month - 1
-#             motor_data[idx] += row.policy_info.motor if row.policy_info.motor is not None else 0
-#             health_data[idx] += row.policy_info.health if row.policy_info.health is not None else 0
-#             term_data[idx] += row.policy_info.term if row.policy_info.term is not None else 0
 
-#     # Prepare and return chart data in JSON format
-#     chart_data = {
-#         'labels': labels,
-#         'motor_data': motor_data,
-#         'health_data': health_data,
-#         'term_data': term_data
-#     }
+def partner_policy_summary_ajax(request):
+    user = request.user
 
-#     return JsonResponse(chart_data)    
+    if user.is_authenticated:
+        base_qs = PolicyDocument.objects.filter(status=6, rm_id=user.id)
+    else:
+        base_qs = PolicyDocument.objects.filter(status=6)
+
+    aggregation_qs = base_qs.filter(policy_info__isnull=False).distinct()
+
+    pos_qs = AgentPaymentDetails.objects.filter(
+        policy__in=aggregation_qs,
+        agent_name__isnull=False
+    ).values('agent_name').annotate(
+        policies_sold=Count('policy_id', distinct=True)
+    ).order_by('-policies_sold')
+
+    if not pos_qs:
+        return JsonResponse({'agent_data': []}, status=200)
+
+    agent_ids = [int(item['agent_name']) for item in pos_qs if str(item['agent_name']).isdigit()]
+    users_map = {
+        user.id: f"{user.first_name} {user.last_name}".strip() or user.user_name
+        for user in Users.objects.filter(id__in=agent_ids)
+    }
+
+    agent_labels = []
+    agent_counts = []
+  
+    agent_labels = [
+          users_map[int(item['agent_name'])]
+            for item in pos_qs
+            ]
+    agent_counts = [
+        item['policies_sold']
+         for item in pos_qs
+        ]
+    return JsonResponse({
+        'agent_labels' : agent_labels,
+        'agent_counts' : agent_counts
+        })
+
+def business_summary_product_wise(request):
+
+    summary = PolicyDocument.objects.values('vehicle_type') \
+                                      .annotate(product_count=Count('vehicle_type')) \
+                                      .order_by('vehicle_type')
+    return summary

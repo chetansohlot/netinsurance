@@ -113,6 +113,7 @@ $(document).on('input', '.mobile', function() {
     // Remove non-numeric characters
     var sanitizedMobile = mobile.replace(/[^0-9]/g, '');
 
+    sanitizedMobile = sanitizedMobile.substring(0, 10);
     // Check if first digit is greater than 5
     if (sanitizedMobile.length > 0 && sanitizedMobile.charAt(0) <= '5') {
         $('.' + error_class).show().text('Invalid Mobile Number.');

@@ -593,8 +593,6 @@ def load_products(request):
     products = InsuranceProduct.objects.filter(category_id=category_id).values('id', 'name')
     return JsonResponse(list(products), safe=False)
 
-
-
 def create_or_edit_lead(request, lead_id=None):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -1206,7 +1204,10 @@ def lead_source(request,lead_id):
         messages.error(request,'Sorry Lead Data is missing')
         return redirect('leads-mgt')
     
-    return render(request, "leads/create-lead-source-info.html",{"lead_data":lead_data})
+    source_list = SourceMaster.objects.filter(status=True)
+    referral_list = Referral.objects.filter(active=True)
+    
+    return render(request, "leads/create-lead-source-info.html",{"lead_data":lead_data,"source_list":source_list,"referral_list":referral_list})
 
 def lead_location(request,lead_id):
     if not request.user.is_authenticated and request.user.is_active!=1:
@@ -1241,8 +1242,8 @@ def assignment(request,lead_id):
         return redirect('leads-mgt')
     
     branches = Branch.objects.filter(status='Active') 
-    
-    return render(request, "leads/create-assignment.html",{"lead_data":lead_data,"branches":branches})
+    assigner_list = Users.objects.filter(role_id=5,is_active=1)
+    return render(request, "leads/create-assignment.html",{"lead_data":lead_data,"branches":branches,"assigner_list":assigner_list})
 
 def previous_policy_info(request,lead_id):
     if not request.user.is_authenticated and request.user.is_active!=1:
@@ -1293,7 +1294,7 @@ def save_leads_insurance_info(request):
             lead_last_name = lead_last_name,
             name_as_per_pan = lead_first_name +' '+ lead_last_name,
             mobile_number = mobile_number,
-            created_by = request.user.id
+            created_by_id = request.user.id
         )
         
         lead_ref_id = leads_insert.lead_id
@@ -1391,6 +1392,7 @@ def save_leads_source_info(request):
         return redirect('login')
     
     lead_id = request.POST.get('lead_ref_id') or None
+    lead_source_type = request.POST.get('lead_source_type') or None
     lead_source = request.POST.get('lead_source_name') or None
     refered_by = request.POST.get('refered_by') or None
     referral_name = request.POST.get('referral_name') or None
@@ -1403,6 +1405,7 @@ def save_leads_source_info(request):
     
     lead_data = Leads.objects.filter(lead_id = lead_id).first()
     try:
+        lead_data.lead_source_type_id = clean(lead_source_type)
         lead_data.lead_source = clean(lead_source)
         lead_data.referral_by = clean(refered_by)
         lead_data.referral_name = clean(referral_name)
@@ -1466,12 +1469,10 @@ def save_leads_assignment_info(request):
     
     lead_data = Leads.objects.filter(lead_id = lead_id).first()
     try:
-        lead_data.assigned_to = clean(assigned_to)
+        lead_data.assigned_to_id = assigned_to
         lead_data.branch_id = clean(branch)
         lead_data.lead_status_type = clean(lead_status_type)
         lead_data.lead_tag = clean(lead_tag)
-        lead_data.save()
-            
         lead_ref_id = lead_data.lead_id
         messages.success(request,f"Saved Succesfully")
         return redirect('leads-previous-policy-info',lead_id=lead_ref_id)

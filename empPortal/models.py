@@ -9,7 +9,7 @@ from empPortal.model import Referral
 from empPortal.model import Partner
 from datetime import timedelta
 from django.utils import timezone
-
+from empPortal.model import InsuranceType, InsuranceCategory, InsuranceProduct
 from django.conf import settings
 
 class Roles(models.Model):
@@ -199,8 +199,8 @@ class Leads(models.Model):
     lead_source = models.CharField(max_length=25, null=True, blank=True)  
     referral_by = models.CharField(max_length=25, null=True, blank=True)  
     
-    assigned_to = models.IntegerField( null=True, blank=True)  
-    branch_id = models.IntegerField( null=True, blank=True)  
+    assigned_to = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.SET_NULL,null=True,blank=True, related_name='leads_assigned')  
+    branch = models.ForeignKey(Branch, on_delete=models.SET_NULL, null=True, blank=True)  
     lead_status_type = models.IntegerField( null=True, blank=True)  
     lead_tag = models.IntegerField( null=True, blank=True)  
     
@@ -208,9 +208,6 @@ class Leads(models.Model):
     referral_name = models.CharField(max_length=255,null=True,blank=True)
     lead_source_medium = models.IntegerField(null=True, blank=True)
     
-    created_at = models.DateTimeField(auto_now_add=True)  # Timestamp when the lead was created
-    created_by = models.CharField(max_length=20, null=True, blank=True)  
-    updated_at = models.DateTimeField(auto_now=True)  # Timestamp when the lead was last updated
     status = models.CharField(max_length=50, default='new')  # Status of the lead (new, contacted, converted, etc.)
     policy_date = models.DateField(null=True, blank=True)
     sales_manager = models.CharField(max_length=100, null=True, blank=True)
@@ -230,9 +227,11 @@ class Leads(models.Model):
     net_premium = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     gross_premium = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     risk_start_date = models.DateField(null=True, blank=True)
-    lead_insurance_type_id = models.IntegerField(null=True,blank=True)
-    lead_insurance_category_id = models.IntegerField(null=True,blank=True)
-    lead_insurance_product_id = models.IntegerField(null=True,blank=True)
+    
+    lead_insurance_type = models.ForeignKey(InsuranceType,on_delete=models.SET_NULL,null=True,blank=True)
+    lead_insurance_category = models.ForeignKey(InsuranceCategory, on_delete=models.SET_NULL, null=True, blank=True)
+    lead_insurance_product = models.ForeignKey(InsuranceProduct, on_delete=models.SET_NULL, null=True, blank=True)
+    
     lead_first_name = models.CharField(max_length=255,null=True,blank=True)
     lead_last_name = models.CharField(max_length=255,null=True,blank=True)
     lead_customer_identity_no = models.CharField(max_length=255,null=True,blank=True)
@@ -281,10 +280,19 @@ class Leads(models.Model):
     gross_premium = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     # risk_start_date = models.DateField(null=True, blank=True)
     risk_start_date = models.CharField(max_length=255)
+    lead_source_type = models.ForeignKey(SourceMaster,on_delete=models.SET_NULL,null=True,blank=True)
 
-
+    created_at = models.DateTimeField(auto_now_add=True) 
+    created_by =  created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='leads_created'
+    )
+    updated_at = models.DateTimeField(auto_now=True)  
     class Meta:
-        db_table = 'leads'  # This defines the database table name
+        db_table = 'leads'  
 
     def __str__(self):
         return f"Lead - {self.name_as_per_pan}"
