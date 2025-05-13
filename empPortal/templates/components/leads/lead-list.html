@@ -33,7 +33,7 @@
               <!-- Lead ID + Date -->
               <td>
                 <span class="badge bg-secondary">{{ lead.lead_id }}</span><br>
-                <span class="d-block">Lead Age : {{ lead.created_at|timesince|cut:"minutes"|cut:"seconds" }}</span>
+                <span class="d-block">Lead Age : {{ lead.created_at|timesince|cut:"minutes"|cut:"hours"|cut:"seconds" }}</span>
                 <small class="text-muted">{{ lead.created_at|date:"d M Y h:i A" }}</small>
               </td>
                  <!-- Customer Info -->
