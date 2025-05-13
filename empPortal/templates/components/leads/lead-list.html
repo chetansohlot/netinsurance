@@ -90,29 +90,19 @@
             Allocation Date: {{ lead.updated_at|date:"d-m-Y" }}
           </span>
           </td>
-            <!-- Status -->
-          <!-- <td class="text-center">
-            <span class="badge bg-light text-dark">
-              {{ lead.status|default:"-" }}
-            </span>
-          </td> -->
-
-             <!-- Allocation -->
-          <!-- <td class="text-center">
-            {{ lead.sales_manager|default:"Un-Allocated" }}
-          </td> -->
-            <!-- Status -->
+          
+          <!-- Status -->
           <td>
             Create : {{ lead.created_at|date:"d-m-Y" }}<br>
             <span class="d-block text-muted">Quote: {{ lead.quote_date|default:"N/A" }}</span>
-            Booking: {{ lead.policy_date|date:"d-m-Y"|default:"-" }}<br>
-            Issued: {{ lead.policy_end_date|date:"d-m-Y"|default:"-" }}
+            Booking: N/A<br>
+            Issued: N/A
           </td>
           <!--Action-->
           <td> 
             <div class="dropdown">
               <img src="/static/dist/img/svg/menu-dot-vr.svg" alt="" class="table-doticon" data-toggle="dropdown" aria-expanded="false">
-              <ul class="dropdown-menu table-dropdown-menu" style="">
+              <ul class="dropdown-menu table-dropdown-menu">
                 <!--<li>
                   <a class="dropdown-item" href="#">
                     <i class="bi bi-eye mr-2"></i> View
