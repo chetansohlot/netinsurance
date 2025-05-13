@@ -214,6 +214,49 @@ def get_users_by_role(request):
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
+
+def get_users_by_role_id(request):
+    if request.method == "GET" and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        role_id = request.GET.get('role_id', '')
+
+        if role_id and role_id.isdigit():
+            role_id = int(role_id)
+
+            if role_id:  
+                users = Users.objects.filter(role_id=role_id).values('id', 'first_name', 'last_name')
+                role_name = "Manager"
+            else:
+                return JsonResponse({'users': []}, status=200)
+
+            users_list = [
+                {'id': user['id'], 'full_name': f"{user['first_name']} {user['last_name']} ({role_name})".strip()}
+                for user in users
+            ]
+            return JsonResponse({'users': users_list}, status=200)
+
+        return JsonResponse({'users': []}, status=200)
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+def get_team_leaders_by_manager(request):
+    if request.method == "GET" and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        manager_id = request.GET.get('manager_id', '')
+
+        if manager_id != '' and manager_id.isdigit():  # Fetch Team Leaders under selected Manager
+            users = Users.objects.filter(senior_id=manager_id).values('id', 'first_name', 'last_name')
+            role_name = "Team Leader"
+        else:
+            return JsonResponse({'users': []}, status=200)
+
+        users_list = [
+            {'id': user['id'], 'full_name': f"{user['first_name']} {user['last_name']} ({role_name})".strip()}
+            for user in users
+        ]
+        return JsonResponse({'users': users_list}, status=200)
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
 def get_pos_partners_by_bqp(request):
     if request.method == "GET" and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         bqp_id = request.GET.get('bqp_id', '')
