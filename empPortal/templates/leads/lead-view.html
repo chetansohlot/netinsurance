@@ -152,7 +152,7 @@ View Lead
                                     <li><span class="list">Referral Name</span><span class="list-output">{{ lead.referral_name|default:"N/A" }}</span></li>
                                     <li><span class="list">Source Medium</span><span class="list-output">{{ lead.lead_source_medium|default:"N/A" }}</span></li>
                                     <li><span class="list">Assigned By</span><span class="list-output">{{ lead.created_by.full_name|default:"N/A" }}</span></li>
-                                    <li><span class="list">Assigned To</span><span class="list-output">{{ lead.assigned_to|default:"N/A" }}</span></li>
+                                    <li><span class="list">Assigned To</span><span class="list-output">{{ lead.assigned_to.full_name|default:"N/A" }}</span></li>
                                 </ul>
                             </div>
                         </div>
@@ -575,7 +575,7 @@ View Lead
                                         <div class="userdetail-group">
                                             <p class="userdetail-lbl">Insurance Type </p>
                                             <p class="userdetail-highligt">
-                                                {{lead.lead_type|default:"N/A"}}
+                                                {{lead.lead_source_type.source_name|default:"N/A"}}
                                             </p>
                                         </div>  
                                     </div>
