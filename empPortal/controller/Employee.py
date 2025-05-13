@@ -684,7 +684,7 @@ def update_allocation(request, employee_id=None):
         senior_id = request.POST.get('senior', '').strip()
         team_leader = request.POST.get('team_leader', '').strip()
         team_leader_insert = request.POST.get('team_leader_insert', '').strip()
-        is_branch_head = request.POST.get('branch_head', '0')  # Get branch_head value
+        is_branch_head = request.POST.get('is_branch_head', '0')  # Get branch_head value
 
         has_error = False
 
