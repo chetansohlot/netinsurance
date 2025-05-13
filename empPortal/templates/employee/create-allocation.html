@@ -146,132 +146,203 @@ Update Allocation
           document.getElementById("loader").style.display = "flex";
       });
     </script>
-    
-<script>
-   
-    $(document).ready(function() {
-            
-        var departmentContainer = $('#department').closest('.form-group');
-        var roleId = $('#role').val(); // Get the selected value
+ 
+    <script>
+$(document).ready(function () {
+    const roleSelect = $('#role');
+    const branchSelect = $('#branch');
+    const departmentSelect = $('#department');
+    const managerSelect = $('#sales_manager');
+    const teamLeaderSelect = $('#team_leader');
 
-        if (parseInt(roleId) <= 4) {
-            departmentContainer.hide();
+    const salesManagerContainer = $('#salesManagerContainer');
+    const teamLeaderContainer = $('#teamLeaderContainer');
+    const departmentContainer = departmentSelect.closest('.form-group');
+
+    // Initial check
+    toggleFields(roleSelect.val());
+        const selectedManagerId = '{{ manager_id|default_if_none:"" }}';
+        const selectedTeamLeaderId = '{{ employee.senior_id|default_if_none:"" }}';
+
+    const initialRoleId = roleSelect.val();
+    if (initialRoleId == 6 || initialRoleId == 7) {
+        fetchManagersAndThen(() => {
+            if (selectedManagerId) {
+                managerSelect.val(selectedManagerId).trigger('change');
+            }
+            if (initialRoleId == 7 && selectedManagerId) {
+                fetchTeamLeadersAndThen(() => {
+                    if (selectedTeamLeaderId) {
+                        teamLeaderSelect.val(selectedTeamLeaderId);
+                    }
+                });
+            }
+        });
+    }
+
+    function fetchManagersAndThen(callback) {
+        const roleId = 5;
+        const branchId = branchSelect.val();
+        const departmentId = departmentSelect.val();
+
+        $.ajax({
+            url: "{% url 'get_users_by_role_id' %}",
+            type: 'GET',
+            data: {
+                'role_id': roleId,
+                'branch_id': branchId,
+                'department_id': departmentId,
+            },
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            success: function (response) {
+                managerSelect.empty().append('<option value="">Select Manager</option>');
+                if (response.users && response.users.length > 0) {
+                    $.each(response.users, function (index, user) {
+                        managerSelect.append(`<option value="${user.id}">${user.full_name}</option>`);
+                    });
+                } else {
+                    managerSelect.append('<option value="">No users available</option>');
+                }
+                if (callback) callback();
+            },
+            error: function () {
+                alert('Error fetching managers');
+            }
+        });
+    }
+
+    function fetchTeamLeadersAndThen(callback) {
+        const managerId = managerSelect.val();
+        if (!managerId) {
+            teamLeaderSelect.empty().append('<option value="">Select Team Leader</option>');
+            return;
         }
-    $('#role').change(function() {
-        var roleId = $(this).val();
-        var salesManagerContainer = $('#salesManagerContainer');
-        var teamLeaderContainer = $('#teamLeaderContainer');
-        var managerSelect = $('#sales_manager');
-        var teamLeaderSelect = $('#team_leader');
 
-        // Hide both fields initially
-        salesManagerContainer.hide();
-        teamLeaderContainer.hide();
-        departmentContainer.show();  // Show the department by default
+        $.ajax({
+            url: "{% url 'get_team_leaders_by_manager' %}",
+            type: 'GET',
+            data: { 'manager_id': managerId },
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            success: function (response) {
+                teamLeaderSelect.empty().append('<option value="">Select Team Leader</option>');
+                if (response.users && response.users.length > 0) {
+                    $.each(response.users, function (index, user) {
+                        teamLeaderSelect.append(`<option value="${user.id}">${user.full_name}</option>`);
+                    });
+                } else {
+                    teamLeaderSelect.append('<option value="">No team leaders available</option>');
+                }
+                if (callback) callback();
+            },
+            error: function () {
+                alert('Error fetching team leaders');
+            }
+        });
+    }
 
-        if (roleId <= 4 || roleId <= '4') {
-            // Hide department field if role_id is less than or equal to 4
+    roleSelect.change(function () {
+        const roleId = $(this).val();
+        toggleFields(roleId);
+    });
+
+    branchSelect.change(fetchManagersAndLeaders);
+    departmentSelect.change(fetchManagersAndLeaders);
+
+    $('#sales_manager').change(fetchTeamLeaders);
+
+    function toggleFields(roleId) {
+        const numericRoleId = parseInt(roleId);
+
+        // Show/hide department
+        if (numericRoleId <= 4) {
             departmentContainer.hide();
         } else {
-            departmentContainer.show();  // Show department field if role_id is greater than 4
+            departmentContainer.show();
         }
 
-        if (roleId <= 5) {
-            // Hide Select Manager and Select Team Leader if role_id is 5 or less
+        if (numericRoleId <= 5) {
             salesManagerContainer.hide();
             teamLeaderContainer.hide();
-        } else if (roleId == 6) {
-            // Show Select Manager only for role_id 6
+        } else if (numericRoleId == 6) {
             salesManagerContainer.show();
             teamLeaderContainer.hide();
-            // Fetch managers with role_id 5
-            $.ajax({
-                url: "{% url 'get_users_by_role_id' %}",
-                type: 'GET',
-                data: { 'role_id': 5 },
-                headers: { 'X-Requested-With': 'XMLHttpRequest' },
-                success: function(response) {
-                    managerSelect.empty();
-                    managerSelect.append('<option value="">Select Manager</option>');
-                    if (response.users && response.users.length > 0) {
-                        $.each(response.users, function(index, user) {
-                            managerSelect.append(
-                                `<option value="${user.id}">${user.full_name}</option>`
-                            );
-                        });
-                    } else {
-                        managerSelect.append('<option value="">No users available</option>');
-                    }
-                },
-                error: function() {
-                    alert('Error fetching managers');
-                }
-            });
-        } else if (roleId == 7) {
-            // Show Select Manager and Select Team Leader for role_id 7
+            fetchManagers();  // Only managers
+        } else if (numericRoleId == 7) {
             salesManagerContainer.show();
             teamLeaderContainer.show();
-            // Fetch managers with role_id 5
-            $.ajax({
-                url: "{% url 'get_users_by_role_id' %}",
-                type: 'GET',
-                data: { 'role_id': 5 },
-                headers: { 'X-Requested-With': 'XMLHttpRequest' },
-                success: function(response) {
-                    managerSelect.empty();
-                    managerSelect.append('<option value="">Select Manager</option>');
-                    if (response.users && response.users.length > 0) {
-                        $.each(response.users, function(index, user) {
-                            managerSelect.append(
-                                `<option value="${user.id}">${user.full_name}</option>`
-                            );
-                        });
-                    } else {
-                        managerSelect.append('<option value="">No users available</option>');
-                    }
-                },
-                error: function() {
-                    alert('Error fetching managers');
-                }
-            });
+            fetchManagers();  // Managers for team leader
         }
-    });
+    }
 
-    // Fetch team leaders based on the selected manager (for role_id 7)
-    $('#sales_manager').change(function() {
-        var managerId = $(this).val();
-        var teamLeaderSelect = $('#team_leader');
+    function fetchManagers() {
+        const roleId = 5;  // Fetch managers
+        const branchId = branchSelect.val();
+        const departmentId = departmentSelect.val();
 
-        if (managerId) {
-            $.ajax({
-                url: "{% url 'get_team_leaders_by_manager' %}",
-                type: 'GET',
-                data: { 'manager_id': managerId },
-                headers: { 'X-Requested-With': 'XMLHttpRequest' },
-                success: function(response) {
-                    teamLeaderSelect.empty();
-                    teamLeaderSelect.append('<option value="">Select Team Leader</option>');
-                    if (response.team_leaders && response.team_leaders.length > 0) {
-                        $.each(response.team_leaders, function(index, user) {
-                            teamLeaderSelect.append(
-                                `<option value="${user.id}">${user.full_name}</option>`
-                            );
-                        });
-                    } else {
-                        teamLeaderSelect.append('<option value="">No team leaders available</option>');
-                    }
-                },
-                error: function() {
-                    alert('Error fetching team leaders');
+        $.ajax({
+            url: "{% url 'get_users_by_role_id' %}",
+            type: 'GET',
+            data: {
+                'role_id': roleId,
+                'branch_id': branchId,
+                'department_id': departmentId,
+            },
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            success: function (response) {
+                managerSelect.empty();
+                managerSelect.append('<option value="">Select Manager</option>');
+                if (response.users && response.users.length > 0) {
+                    $.each(response.users, function (index, user) {
+                        managerSelect.append(`<option value="${user.id}">${user.full_name}</option>`);
+                    });
+                } else {
+                    managerSelect.append('<option value="">No users available</option>');
                 }
-            });
-        } else {
+            },
+            error: function () {
+                alert('Error fetching managers');
+            }
+        });
+    }
+
+    function fetchTeamLeaders() {
+        const managerId = managerSelect.val();
+        if (!managerId) {
             teamLeaderSelect.empty().append('<option value="">Select Team Leader</option>');
+            return;
         }
-    });
-});
 
+        $.ajax({
+            url: "{% url 'get_team_leaders_by_manager' %}",
+            type: 'GET',
+            data: { 'manager_id': managerId },
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            success: function (response) {
+                teamLeaderSelect.empty();
+                teamLeaderSelect.append('<option value="">Select Team Leader</option>');
+                if (response.users && response.users.length > 0) {
+                    $.each(response.users, function (index, user) {
+                        teamLeaderSelect.append(`<option value="${user.id}">${user.full_name}</option>`);
+                    });
+                } else {
+                    teamLeaderSelect.append('<option value="">No team leaders available</option>');
+                }
+            },
+            error: function () {
+                alert('Error fetching team leaders');
+            }
+        });
+    }
+
+    function fetchManagersAndLeaders() {
+        const roleId = roleSelect.val();
+        if (roleId == 6 || roleId == 7) {
+            fetchManagers();
+        }
+    }
+});
 </script>
+
 
 </body>
 {% endblock %}
