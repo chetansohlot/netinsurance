@@ -217,8 +217,14 @@ Employee Management
                                         
                                         <td>
                                           <a href="{% url 'employee-management-update' employee_id=employee.id %}" class="trlink">
-                                              {{ employee.role.roleName|default:"N/A" }}
-                                              <span class="text-gray d-block small">{{ employee.department.name }}</span>
+                                              {% if employee.branch_head == 1 %}
+                                                  Branch Head
+                                              {% else %}
+                                                  {{ employee.role.roleName|default:"N/A" }}
+                                                  {% if employee.department %}
+                                                      <span class="text-gray d-block small">{{ employee.department.name }}</span>
+                                                  {% endif %}
+                                              {% endif %}
                                           </a>
                                         </td>
                                         
