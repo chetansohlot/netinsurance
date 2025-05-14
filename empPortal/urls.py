@@ -89,6 +89,7 @@ urlpatterns = [
     path('employee-management/', Employee.index, name='employee-management'),
     path('employee-management/create-employee', Employee.save_or_update_employee, name='employee-management-create'),
     path('employee-management/update-employee/<str:employee_id>/', Employee.save_or_update_employee, name='employee-management-update'),
+    path('employee-management/view-employee/<str:employee_id>/', Employee.view_employee, name='employee-management-view'),
     path('employee-management/update-address/<str:employee_id>/', Employee.save_or_update_address, name='employee-management-update-address'),
     path('employee-management/family-details/<str:employee_id>/', Employee.save_or_update_family_details, name='employee-management-family-details'),
     path('employee-management/employment-info/<str:employee_id>/', Employee.save_or_update_employment_info, name='employee-management-employment-info'),

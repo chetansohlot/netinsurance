@@ -253,6 +253,12 @@ Employee Management
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                         </td>
+                                        <td>
+                                            <a href="{% url 'employee-management-view' employee_id=employee.id %}" class="btn btn-xs btn-warning">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </td>
+
                                     </tr>
                                     {% endfor %}
                                 </tbody>
