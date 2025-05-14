@@ -346,6 +346,7 @@ class PolicyDocument(models.Model):
         default='0'
     )
     operator_remark = models.TextField(blank=True, null=True)
+    operator_policy_verification_by = models.CharField(max_length=20, null=True, blank=True)  # Added column
 
     quality_check_status = models.CharField(
         max_length=1,
@@ -353,6 +354,7 @@ class PolicyDocument(models.Model):
         default='0'
     )
     quality_remark = models.TextField(blank=True, null=True)
+    quality_policy_check_by = models.CharField(max_length=20, null=True, blank=True)  # Added column
     
     policy_period = models.CharField(max_length=255)
     filepath = models.CharField(max_length=255)

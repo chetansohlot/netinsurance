@@ -334,6 +334,8 @@ urlpatterns = [
     # path('bulk-browser-policy/', views.bulkBrowsePolicy, name='bulk-browser-policy'),
     path('bulk-browser-policy/', policy.bulkBrowsePolicy, name='bulk-browser-policy'),
     path('policy-data/', policy.policyData, name='policy-data'),
+    path('operator-verify-policy/', policy.operator_verify_policy, name='operator-verify-policy'),
+
     path('edit-policy-data/<str:id>', views.editPolicy, name='edit-policy'),
     path('delete-policy-data/<str:id>', policy.deletePolicy, name='delete-policy'),
     path('edit-policy/<str:policy_id>/', policy.edit_policy, name='edit-policy-data'),
