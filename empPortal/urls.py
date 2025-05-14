@@ -90,6 +90,7 @@ urlpatterns = [
     path('employee-management/', Employee.index, name='employee-management'),
     path('employee-management/create-employee', Employee.save_or_update_employee, name='employee-management-create'),
     path('employee-management/update-employee/<str:employee_id>/', Employee.save_or_update_employee, name='employee-management-update'),
+    path('employee-management/view-employee/<str:employee_id>/', Employee.view_employee, name='employee-management-view'),
     path('employee-management/update-address/<str:employee_id>/', Employee.save_or_update_address, name='employee-management-update-address'),
     path('employee-management/family-details/<str:employee_id>/', Employee.save_or_update_family_details, name='employee-management-family-details'),
     path('employee-management/employment-info/<str:employee_id>/', Employee.save_or_update_employment_info, name='employee-management-employment-info'),
@@ -194,6 +195,7 @@ urlpatterns = [
     path('referral-management/create-referral', Referral.create_or_edit, name='referral-management-create'),
     path('referral-management/<str:referral_id>/', Referral.create_or_edit, name='referral-management-edit'),
     path('referral/toggle-status/<int:referral_id>/', Referral.toggle_referral_status, name='referral-toggle-status'),
+    path('referral/delete/<int:pk>/', Referral.soft_delete_referral, name='referral-soft-delete'),
     
     # path('referral-management/bulk-upload/', Referral.ref_bulk_upload, name='referral-bulk-upload'),
 
@@ -332,6 +334,8 @@ urlpatterns = [
     # path('bulk-browser-policy/', views.bulkBrowsePolicy, name='bulk-browser-policy'),
     path('bulk-browser-policy/', policy.bulkBrowsePolicy, name='bulk-browser-policy'),
     path('policy-data/', policy.policyData, name='policy-data'),
+    path('operator-verify-policy/', policy.operator_verify_policy, name='operator-verify-policy'),
+
     path('edit-policy-data/<str:id>', views.editPolicy, name='edit-policy'),
     path('delete-policy-data/<str:id>', policy.deletePolicy, name='delete-policy'),
     path('edit-policy/<str:policy_id>/', policy.edit_policy, name='edit-policy-data'),

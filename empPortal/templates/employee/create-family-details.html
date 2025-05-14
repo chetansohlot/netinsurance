@@ -71,7 +71,7 @@ Add Family Details
 
                           <div class="form-group col-sm-6 col-md-4">
                               <label class="form-lbl">Date of Birth</label>
-                              <input type="date" class="form-field" name="father_dob"
+                              <input type="date" placeholder="DD-MM-YYYY" class="form-field dob_datepicker" name="father_dob"
                                   value="{{ family.Father.date_of_birth|default:'' }}">
                           </div>
                       </div>
@@ -94,7 +94,7 @@ Add Family Details
 
                           <div class="form-group col-sm-6 col-md-4">
                               <label class="form-lbl">Date of Birth</label>
-                              <input type="date" class="form-field" name="mother_dob"
+                              <input type="date" placeholder="DD-MM-YYYY" class="form-field dob_datepicker" name="mother_dob"
                                   value="{{ family.Mother.date_of_birth|default:'' }}">
                           </div>
                       </div>
@@ -118,7 +118,7 @@ Add Family Details
 
                           <div class="form-group col-sm-6 col-md-4">
                               <label class="form-lbl">Date of Anniversary</label>
-                              <input type="date" class="form-field" name="spouse_dob"
+                              <input type="date" placeholder="DD-MM-YYYY" class="form-field dob_datepicker" name="spouse_dob"
                                   value="{{ family.Spouse.date_of_birth|default:'' }}">
                           </div>
                       </div>
