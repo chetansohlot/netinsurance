@@ -46,7 +46,33 @@
               <p>Lead Mgt</p>
             </a>
           </li>
-          
+        
+        <li class="nav-item {% if '/motor/' in request.path or '/health/' in request.path %} menu-is-opening menu-open {% endif %}">
+            <a href="#" class="nav-link">
+                <svg class="sidbarmenu-svg">
+                    <use xlink:href="#quote-mgt-icon"></use>
+                </svg>
+                <p>Quote Mgt <i class="fas fa-angle-right right"></i></p>
+            </a>
+            <ul class="nav nav-treeview" {% if '/motor/' in request.path or '/health/' in request.path %} style="display: block;" {% else %} style="display: none;" {% endif %}>
+                <li class="nav-item">
+                    <a href="{% url 'quote-management' %}" class="nav-link {% if '/motor/' in request.path %} active {% endif %}">
+                    <svg class="sidbarmenu-svg">
+                        <use xlink:href="#car-icon" />
+                    </svg>
+                        <p> Motor </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'health-quote-management' %}" class="nav-link {% if '/health/' in request.path %} active {% endif %}">
+                    <svg class="sidbarmenu-svg">
+                        <use xlink:href="#health-icon" />
+                    </svg>
+                        <p> Health </p>
+                    </a>
+                </li>
+            </ul>
+        </li>
         </ul>
       </nav>
     </div>
