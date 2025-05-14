@@ -13,11 +13,11 @@ class AutoLogoutMiddleware:
             now = timezone.now().timestamp()
             timeout = 3600  #1 Hour
 
-            if last_activity and (now - last_activity > timeout):
-                from django.contrib.auth import logout
-                logout(request)
-                return redirect('login')
+            # if last_activity and (now - last_activity > timeout):
+            #     from django.contrib.auth import logout
+            #     logout(request)
+            #     return redirect('login')
 
-            request.session['last_activity'] = now
+            # request.session['last_activity'] = now
 
         return self.get_response(request)

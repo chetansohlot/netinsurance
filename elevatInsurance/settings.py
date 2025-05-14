@@ -337,6 +337,11 @@ LOGGING = {
             'class':'logging.FileHandler',
             'filename': 'logs/crons.log',
             'formatter':'verbose',
+        },
+        'leads':{
+            'class':'logging.FileHandler',
+            'filename': 'logs/leads.log',
+            'formatter':'verbose',
         }
 
     },
@@ -353,6 +358,11 @@ LOGGING = {
         },
         'empPortal.crons':{
             'handlers':['crons'],
+            'level': 'DEBUG',  # Can be INFO, WARNING, ERROR in production
+            'propagate': False,
+        },
+        'empPortal.controller.leads':{
+            'handlers':['leads'],
             'level': 'DEBUG',  # Can be INFO, WARNING, ERROR in production
             'propagate': False,
         }

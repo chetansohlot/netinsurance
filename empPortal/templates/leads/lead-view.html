@@ -1,804 +1,828 @@
 {% extends 'master.html' %}
-
-
 {% load static %}
-
 {% block title %}
-
-View Lead
+    View Lead
 {% endblock %}
 
 {% block content %}
+    {% include "css-code.html" %}
 
-{% include "css-code.html" %}
-
-
-<body class="hold-transition sidebar-mini">
-    <div class="wrapper">
-        {% include 'navbar.html' %}
-
-        {% include 'sidebar.html' %}
-    
-        <div class="content-wrapper white-bg">
-            <div class="content-header header-content-bg mb-0">
-              <div class="container-fluid">
-             
-                <div class="row justify-content-between justify-content-sm-start pb-4">
-                    <div class="col-sm-12">
-                        <h1 class="admin-title m-0 pt-2">Lead View</h1>
-                        <ul class="breadcrump">
-                          <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
-                          <li>Lead View (lead id: {{lead.lead_id}})</li>
-                        </ul>
-                    </div>
-        
-                </div>
-              </div>
-            </div>
-            <!-- Main content -->
-            <div class="content px-0">
-                <div class="container-fluid">
-                  <div class="row">
-                    <div class="col-md-12 px-0">
-                        <ul class="lead-view-step">
-                            <li class="active">Working-Contacted</li>
-                            <li>
-                                <div class="arrow-design"></div>
-                                Close - Not Converted
-                            </li>
-                            <li>
-                                <div class="arrow-design"></div>
-                                Disqualified
-                            </li>
-                            <li>
-                                <div class="arrow-design"></div>
-                                Converted
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-md-4 px-0">
-                        <div class="card member-detail-left-card">
-                            <div class="card-body box-profile">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <h3 class="profile-username m-0">
-                                        {{ lead.name_as_per_pan }}
-                                        {% if lead.lead_customer_gender == 1 %}
-                                            <span class="text-muted ms-1">(Male)</span>
-                                        {% elif lead.lead_customer_gender == 2 %}
-                                            <span class="text-muted ms-1">(Female)</span>
-                                        {% elif lead.lead_customer_gender == 3 %}
-                                            <span class="text-muted ms-1">(Other)</span>
-                                        {% endif %}
-                                    </h3>
-                                
-                                    <span class="text-muted m-0">
-                                        Customer Since:
-                                        {% if lead.created_at.date == today %}
-                                            <span class="badge bg-primary rounded-pill">Today</span>
-                                        {% elif lead.created_at.date == yesterday %}
-                                            <span class="badge bg-primary rounded-pill">Yesterday</span>
-                                        {% else %}
-                                            <span class="badge bg-primary rounded-pill">
-                                                {{ lead.created_at|timesince }} ago
-                                            </span>
-                                        {% endif %}
-                                    </span>
-                                </div>
-                                
-                                
-                                <div class="d-flex justify-content-center mt-2">
-                                    <a href="#" class="breadcrump-addbtn">Dispose the lead</a>
-                                </div>
-                                
-                                <ul class="member-detail-list">
-                                    <li><span class="list">Status</span><span class="list-output"> {{ lead.status|default:"N/A"  }}</span></li>
-                                    <li><span class="list">Email</span><span class="list-output">{{ lead.email_address|default:"N/A"  }}</span></li>
-                                    <li><span class="list">Mobile</span><span class="list-output">{{ lead.mobile_number|default:"N/A"  }}</span></li>
-                                    <li><span class="list">Identity No.</span><span class="list-output text-uppercase">{{ lead.lead_customer_identity_no|default:"N/A"  }}</span></li>
-                                    <li><span class="list">Insurance Type</span><span class="list-output">{{ lead.lead_insurance_type|default:"N/A" }}</span></li>
-                                    <li><span class="list">Product Category</span><span class="list-output">{{ lead.lead_insurance_category|default:"N/A" }}</span></li>
-                                    <li><span class="list">Product Name</span><span class="list-output">{{ lead.lead_insurance_product|default:"N/A" }}</span></li>
-                                    <li><span class="list">Lead Source Type</span><span class="list-output">{{ lead.lead_source_type.source_name|default:"N/A" }}</span></li>
-                                    <li><span class="list">Lead Source Name</span><span class="list-output">{{ lead.lead_source|default:"N/A" }}</span></li>
-                                    <li><span class="list">Referral Name</span><span class="list-output">{{ lead.referral_name|default:"N/A" }}</span></li>
-                                    <li><span class="list">Source Medium</span><span class="list-output">
-                                        {% if lead.lead_source_medium == 1 %}
-                                            Facebook
-                                        {% elif lead.lead_source_medium == 2 %}
-                                            Google
-                                        {% elif lead.lead_source_medium == 3 %}
-                                            WhatsApp
-                                        {% elif lead.lead_source_medium == 4 %}
-                                            Walk-in
-                                        {% elif lead.lead_source_medium == 5 %}
-                                            Embedded Partner
-                                        {% else %}
-                                            N/A
-                                        {% endif %}
-                                    </span></li>
-                                    <li><span class="list">Assigned By</span><span class="list-output">{{ lead.created_by.full_name|default:"N/A" }}</span></li>
-                                    <li><span class="list">Assigned To</span><span class="list-output">{{ lead.assigned_to.full_name|default:"N/A" }}</span></li>
+    <body class="hold-transition sidebar-mini">
+        <div class="wrapper">
+            {% include 'navbar.html' %}
+            {% include 'sidebar.html' %}
+            <div class="content-wrapper white-bg">
+                <div class="content-header header-content-bg mb-0">
+                    <div class="container-fluid">
+                        <div class="row justify-content-between justify-content-sm-start pb-4">
+                            <div class="col-sm-12">
+                                <h1 class="admin-title m-0 pt-2">Lead View</h1>
+                                <ul class="breadcrump">
+                                <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
+                                <li>Lead View (lead id: {{lead.lead_id}})</li>
                                 </ul>
                             </div>
                         </div>
                     </div>
-                    
-
-                    <div class="col-md-8 px-0">
-                      <div class="card member-detail-right-card">
-                        
-                        <ul class="nav nav-pills profile-tab">
-                            <li class="nav-item text-bold"><a class="nav-link active" href="#activity-tab" data-toggle="tab">Activity</a></li>
-                            <li class="nav-item text-bold"><a class="nav-link" href="#lead-details-tab" data-toggle="tab">Lead Deatils</a></li>
-                            <li class="nav-item text-bold"><a class="nav-link" href="#previous-policy-info-tab" data-toggle="tab">Previous Policy Information </a></li>
-                            <li class="nav-item text-bold"><a class="nav-link" href="#quote-tab" data-toggle="tab">Quote </a></li>
-                            <li class="nav-item text-bold"><a class="nav-link" href="#booking-tab" data-toggle="tab">Booking</a></li>
-                            <li class="nav-item text-bold"><a class="nav-link" href="#policy-issued-tab" data-toggle="tab">Policy Issued </a></li>
-                        </ul>
-                        <!-- /.card-header -->
-                        <div class="card-body">
-                          <div class="tab-content tab-scrollbar">
-                            <div class="active tab-pane" id="activity-tab">
-                                <div class="row mt-3">
-                                    <div class="table-responsive">
-                                        <table class="table table-design table-bordered">
-                                            
-                                            <tbody>
-                                                <tr>
-                                                    <td>
-                                                        <div class="d-flex">
-                                                            <div class="activity-circle">
-                                                                I
-                                                            </div>
-                                                            <div class="ml-2">
-                                                                <span class="d-block">05 Dec</span>
-                                                                <span class="text-muted">5:43 PM</span>
-                                                            </div>    
-                                                        </div>    
-                                                    </td>
-                                                    <td>
-                                                        <div class="d-flex flex-wrap">
-                                                            <span class="d-block text-primary">Ishank Ahuja - NEET UG</span>
-                                                            <span class="ml-1">Opportunity added via Opportunity Capture API</span>
-                                                        </div>    
-                                                        <span class="text-muted d-block">Added by Utkarsh Rai on 16 Jul 2020 5:10 PM</span>
-                                                    </td>
-                                                    <td>
-                                                        <div class="d-flex">
-                                                            <a href="#" class="mx-1"><i class="fa-solid fa-eye"></i></a>
-                                                            <a href="#" class="mx-1 text-info"><i class="fa-solid fa-pen-to-square"></i></a>
-                                                            <a href="#" class="mx-1 text-danger"><i class="fa-solid fa-trash-can"></i></a>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div class="d-flex">
-                                                            <div class="activity-circle">
-                                                                A
-                                                            </div>
-                                                            <div class="ml-2">
-                                                                <span class="d-block">05 Dec</span>
-                                                                <span class="text-muted">5:43 PM</span>
-                                                            </div>    
-                                                        </div>    
-                                                    </td>
-                                                    <td>
-                                                        <div class="d-flex flex-wrap">
-                                                            <span class="d-block text-primary">Agree to pay</span>
-                                                        </div>    
-                                                        <span class="text-muted d-block">Added by Rajesh Aggarwal on 16 Jul 2020 5:10 PM</span>
-                                                    </td>
-                                                    <td>
-                                                        <div class="d-flex">
-                                                            <a href="#" class="mx-1"><i class="fa-solid fa-eye"></i></a>
-                                                            <a href="#" class="mx-1 text-info"><i class="fa-solid fa-pen-to-square"></i></a>
-                                                            <a href="#" class="mx-1 text-danger"><i class="fa-solid fa-trash-can"></i></a>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div class="d-flex">
-                                                            <div class="activity-circle">
-                                                                I
-                                                            </div>
-                                                            <div class="ml-2">
-                                                                <span class="d-block">05 Dec</span>
-                                                                <span class="text-muted">5:43 PM</span>
-                                                            </div>    
-                                                        </div>    
-                                                    </td>
-                                                    <td>
-                                                        <div class="d-flex flex-wrap">
-                                                            <span class="d-block text-primary">Ishank Ahuja - NEET UG</span>
-                                                            <span class="ml-1">Opportunity added via Opportunity Capture API</span>
-                                                        </div>    
-                                                        <span class="text-muted d-block">Added by Utkarsh Rai on 16 Jul 2020 5:10 PM</span>
-                                                    </td>
-                                                    <td>
-                                                        <div class="d-flex">
-                                                            <a href="#" class="mx-1"><i class="fa-solid fa-eye"></i></a>
-                                                            <a href="#" class="mx-1 text-info"><i class="fa-solid fa-pen-to-square"></i></a>
-                                                            <a href="#" class="mx-1 text-danger"><i class="fa-solid fa-trash-can"></i></a>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                            
-                                </div>
-                            </div>
-
-                            <div class="tab-pane" id="lead-details-tab">
-                              <div class="row">
-                                  <div class="col-sm-12">
-                                    <h2 class="admin-title pb-2 mb-3 border-bottom">Basic Info</h2>
-                                  </div>
-                                  <div class="col-md-3">
-                                    <div class="userdetail-group">
-                                        <p class="userdetail-lbl">Lead ID</p>
-                                        <p class="userdetail-highligt">
-                                            {{ lead.lead_id|default:"N/A"}}
-                                        </p>
-                                    </div>  
-                                  </div>
-                                  <div class="col-md-3">
-                                    <div class="userdetail-group">
-                                        <p class="userdetail-lbl">Customer Name</p>
-                                        <p class="userdetail-highligt">
-                                            {{ lead.name_as_per_pan|default:"-" }}
-                                        </p>
-                                    </div>  
-                                  </div>
-                                  <div class="col-md-3">
-                                    <div class="userdetail-group">
-                                        <p class="userdetail-lbl">Mobile Number</p>
-                                        <p class="userdetail-highligt">
-                                            {{lead.mobile_number|default:"N/A"}}
-                                        </p>
-                                    </div>  
-                                  </div>
-                                  
-                                  <div class="col-md-3">
-                                    <div class="userdetail-group">
-                                        <p class="userdetail-lbl">Gender</p>
-                                        <p class="userdetail-highligt">
-                                            {% if lead.lead_customer_gender == 1 %}
-                                                <span class="userdetail-highligt">Male</span>
-                                            {% elif lead.lead_customer_gender == 2 %}
-                                                <span class="userdetail-highligt">Female</span>
-                                            {% elif lead.lead_customer_gender == 3 %}
-                                                <span class="userdetail-highligt">Others</span>
-                                            {% else %}
-                                                N/A
-                                            {% endif %}
-                                        </p>
-                                    </div>  
-                                  </div>
-                                  <div class="col-md-3">
-                                    <div class="userdetail-group">
-                                        <p class="userdetail-lbl">Date of Birth</p>
-                                        <p class="userdetail-highligt">
-                                            {{lead.date_of_birth|default:"N/A"}}
-                                        </p>
-                                    </div>  
-                                  </div>
-                                  <div class="col-md-3">
-                                    <div class="userdetail-group">
-                                        <p class="userdetail-lbl">Identity No.</p>
-                                        <p class="userdetail-highligt text-uppercase">
-                                            {{lead.lead_customer_identity_no|default:"N/A"}}
-                                        </p>
-                                    </div>  
-                                  </div>
-                                  <div class="col-md-auto">
-                                    <div class="userdetail-group">
-                                        <p class="userdetail-lbl">Email ID</p>
-                                        <p class="userdetail-highligt">
-                                            {{lead.email_address|default:"N/A"}}
-                                        </p>
-                                    </div>  
-                                  </div>
-
-                                  <div class="col-sm-12">
-                                    <h2 class="admin-title pb-2 mb-3 border-bottom">Lead Source Info</h2>
-                                  </div>
-                                  <div class="col-md-3">
-                                    <div class="userdetail-group">
-                                        <p class="userdetail-lbl">Lead Source Type</p>
-                                        <p class="userdetail-highligt">
-                                            {{ lead.lead_source_type.source_name|default:"N/A" }}
-                                        </p>
-                                    </div>  
-                                  </div>
-                                  <div class="col-md-3">
-                                    <div class="userdetail-group">
-                                        <p class="userdetail-lbl">Lead Source Name</p>
-                                        <p class="userdetail-highligt">
-                                            {{ lead.lead_source|default:"N/A" }}
-                                        </p>
-                                    </div>  
-                                  </div>
-                                  <div class="col-md-3">
-                                    <div class="userdetail-group">
-                                        <p class="userdetail-lbl">Referral Name</p>
-                                        <p class="userdetail-highligt">
-                                            {{lead.referral_name|default:"N/A"}}
-                                        </p>
-                                    </div>  
-                                  </div>
-                                  <div class="col-md-3">
-                                    <div class="userdetail-group">
-                                        <p class="userdetail-lbl">Source Medium</p>
-                                        <p class="userdetail-highligt">
-                                            {% if lead.lead_source_medium == 1 %}
-                                                Facebook
-                                            {% elif lead.lead_source_medium == 2 %}
-                                                Google
-                                            {% elif lead.lead_source_medium == 3 %}
-                                                WhatsApp
-                                            {% elif lead.lead_source_medium == 4 %}
-                                                Walk-in
-                                            {% elif lead.lead_source_medium == 5 %}
-                                                Embedded Partner
-                                            {% else %}
-                                                N/A
-                                            {% endif %}
-                                        </p>
-                                    </div>  
-                                  </div>
-
-                                  <div class="col-sm-12">
-                                    <h2 class="admin-title pb-2 mb-3 border-bottom">Location Info</h2>
-                                  </div>
-                                  <div class="col-md-3">
-                                    <div class="userdetail-group">
-                                        <p class="userdetail-lbl">State</p>
-                                        <p class="userdetail-highligt">
-                                            {{lead.state|default:"N/A"}}
-                                        </p>
-                                    </div>  
-                                  </div>
-                                  <div class="col-md-3">
-                                    <div class="userdetail-group">
-                                        <p class="userdetail-lbl">City</p>
-                                        <p class="userdetail-highligt">
-                                            {{lead.city|default:"N/A"}}                                       
-                                        </p>
-                                    </div>  
-                                  </div>
-                                  <div class="col-md-3">
-                                    <div class="userdetail-group">
-                                        <p class="userdetail-lbl">Pin Code</p>
-                                        <p class="userdetail-highligt">
-                                            {{lead.pincode|default:"N/A"}}                                      
-                                        </p>
-                                    </div>  
-                                  </div>
-
-                                  <div class="col-sm-12">
-                                    <h2 class="admin-title pb-2 mb-3 border-bottom">Assignment</h2>
-                                  </div>
-                                  <div class="col-md-3">
-                                    <div class="userdetail-group">
-                                        <p class="userdetail-lbl">Assigned To</p>
-                                        <p class="userdetail-highligt">
-                                            {{lead.assigned_to.full_name|default:"N/A"}}
-                                        </p>
-                                    </div>  
-                                  </div>
-                                  <div class="col-md-3">
-                                    <div class="userdetail-group">
-                                        <p class="userdetail-lbl">Branch</p>
-                                        <p class="userdetail-highligt">
-                                            {{lead.branch.branch_name|default:"N/A"}}
-                                        </p>
-                                    </div>  
-                                  </div>
-                                  <div class="col-md-3">
-                                    <div class="userdetail-group">
-                                        <p class="userdetail-lbl">Lead Status Type</p>
-                                        <p class="userdetail-highligt">
-                                            {% if lead.lead_status_type == 1 %}
-                                                <p>New</p>
-                                            {% elif lead.lead_status_type == 2 %}
-                                                <p>Follow-up</p>
-                                            {% elif lead.lead_status_type == 3 %}
-                                                <p>Quoted</p>
-                                            {% elif lead.lead_status_type == 4 %}
-                                                <p>Booked</p>
-                                            {% elif lead.lead_status_type == 5 %}
-                                                <p>Closed</p>
-                                            {% else %}
-                                                <p>N/A</p>
-                                            {% endif %}
-                                        </p>
-                                    </div>  
-                                  </div>
-                                  <div class="col-md-3">
-                                    <div class="userdetail-group">
-                                        <p class="userdetail-lbl">Lead Tag</p>
-                                        <p class="userdetail-highligt">
-                                            {% if lead.lead_tag == 1 %}
-                                                <p>Hot</p>
-                                            {% elif lead.lead_tag == 2 %}
-                                                <p>Warm</p>
-                                            {% elif lead.lead_tag == 3 %}
-                                                <p>Cold</p>
-                                            {% elif lead.lead_tag == 4 %}
-                                                <p>Renewal</p>
-                                            {% elif lead.lead_tag == 5 %}
-                                                <p>Break-in</p>
-                                            {% elif lead.lead_tag == 6 %}
-                                                <p>etc.</p>
-                                            {% else %}
-                                                <p>N/A</p>
-                                            {% endif %}
-                                        </p>
-                                    </div>  
-                                  </div>
-                              </div>
-                            </div>
-                            <div class="tab-pane" id="previous-policy-info-tab">
-                                <div class="row">
-                                    <div class="col-sm-12">
-                                        <h2 class="admin-title pb-2 mb-3 border-bottom">Previous Policy Information</h2>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="userdetail-group">
-                                            <p class="userdetail-lbl">Policy Number</p>
-                                            <p class="userdetail-highligt">
-                                                {{lead.policy_number|default:"N/A"}}
-                                            </p>
-                                        </div>  
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="userdetail-group">
-                                            <p class="userdetail-lbl">Previous Insurer Name</p>
-                                            <p class="userdetail-highligt">
-                                                {{lead.previous_insurer_name|default:"N/A"}}
-                                            </p>
-                                        </div>  
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="userdetail-group">
-                                            <p class="userdetail-lbl">Policy Type</p>
-                                            <p class="userdetail-highligt">
-                                                {% if lead.policy_type == 1 %}
-                                                    Comprehensive
-                                                {% elif lead.policy_type == 2 %}
-                                                    Third Party
-                                                {% elif lead.policy_type == 3 %}
-                                                    OD Only
-                                                {% else %}
-                                                    N/A
-                                                {% endif %}
-                                            </p>
-                                        </div>  
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="userdetail-group">
-                                            <p class="userdetail-lbl">Policy Start Date</p>
-                                            <p class="userdetail-highligt">
-                                                {{ lead.policy_date|date:'d-m-Y' |default:"N/A"}}
-                                            </p>
-                                        </div>  
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="userdetail-group">
-                                            <p class="userdetail-lbl">Policy End Date</p>
-                                            <p class="userdetail-highligt">
-                                                {{ lead.policy_end_date|date:'d-m-Y'|default:"N/A" }}
-                                            </p>
-                                        </div>  
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="userdetail-group">
-                                            <p class="userdetail-lbl">Expiry Status</p>
-                                            <p class="userdetail-highligt">
-                                                {% if lead.expiry_status == "Expired" %}
-                                                    Expired
-                                                {% elif lead.expiry_status == "Active" %}
-                                                    Active
-                                                {% elif lead.expiry_status == "Grace" %}
-                                                    Grace Period
-                                                {% else %}
-                                                    N/A
-                                                {% endif %}
-                                                
-                                                {{ lead.expiry_status|default:"N/A"}}
-                                            </p>
-                                        </div>  
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="userdetail-group">
-                                            <p class="userdetail-lbl">No Claim Bonus (NCB)</p>
-                                            <p class="userdetail-highligt">
-                                                {% if lead.ncb == "1" %}
-                                                    0%
-                                                {% elif lead.ncb == "2" %}
-                                                    20%
-                                                {% elif lead.ncb == "3" %}
-                                                    25%
-                                                {% elif lead.ncb == "4" %}
-                                                    35%
-                                                {% elif lead.ncb == "5" %}
-                                                    45%
-                                                {% elif lead.ncb == "6" %}
-                                                    50%
-                                                {% else %}
-                                                  N/A
-                                                {% endif %}
-                                            </p>
-                                        </div>  
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="userdetail-group">
-                                            <p class="userdetail-lbl">Previous IDV (for Motor)</p>
-                                            <p class="userdetail-highligt">
-                                                ₹{{ lead.previous_idv|default:"N/A" }}
-                                            </p>
-                                        </div>  
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="userdetail-group">
-                                            <p class="userdetail-lbl">Previous Sum Insured (for Health)</p>
-                                            <p class="userdetail-highligt">
-                                                ₹{{ lead.previous_sum_insured|default:"N/A" }}
-                                            </p>
-                                        </div>  
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="userdetail-group">
-                                            <p class="userdetail-lbl">Claims Made</p>
-                                            <p class="userdetail-highligt">
-                                                {% if lead.claim_made == "1"  %}
-                                                    Yes
-                                                {% elif lead.claim_made == "2"  %}
-                                                    No                                                  
-                                                {% else %}
-                                                    N/A
-                                                {% endif %}
-                                                
-                                            </p>
-                                        </div>  
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="userdetail-group">
-                                            <p class="userdetail-lbl">Claim Amount </p>
-                                            <p class="userdetail-highligt">
-                                                ₹{{ lead.claim_amount|default:"N/A" }}
-                                            </p>
-                                        </div>  
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="userdetail-group">
-                                            <p class="userdetail-lbl">Copy of Previous Policy </p>
-                                            <p class="userdetail-highligt">
-                                                <!--Uploaded File <a href="#">View</a>-->
-                                                {% if lead.previous_policy_copy %}
-                                                    <a href="{{ lead.previous_policy_copy.url }}" target="_blank">View File</a>
-                                                {% else %}
-                                                    No File Uploaded
-                                            {% endif %}
-                                            </p>
-                                        </div>  
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="userdetail-group">
-                                            <p class="userdetail-lbl">Previous Policy Source </p>
-                                            <p class="userdetail-highligt">
-                                                {% if lead.previous_policy_source == "1" %}
-                                                    Agent
-                                                {% elif lead.previous_policy_source == "2" %}
-                                                    Online
-                                                {% elif lead.previous_policy_source == "3" %}
-                                                    Dealer
-                                                {% elif lead.previous_policy_source == "4" %}
-                                                    Direct
-                                                {% elif lead.previous_policy_source == "5" %}
-                                                    Aggregator
-                                                {% else %}
-                                                    N/A
-                                                {% endif %}
-                                            </p>
-                                        </div>  
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="userdetail-group">
-                                            <p class="userdetail-lbl">Vehicle Type </p>
-                                            <p class="userdetail-highligt">
-                                                {% if lead.vehicle_type == "1" %}
-                                                    Private
-                                                {% elif lead.vehicle_type == "2" %}
-                                                    Commercial                              
-                                                {% elif lead.vehicle_type == "3" %}
-                                                    Other                         
-                                                {% else %}
-                                                    N/A                       
-                                                {% endif %}
-                                            </p>
-                                        </div>  
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="userdetail-group">
-                                            <p class="userdetail-lbl">Vehicle Class </p>
-                                            <p class="userdetail-highligt">
-                                                {% if lead.vehicle_class == "1" %}
-                                                    Two-Wheeler
-                                                {% elif lead.vehicle_class == "2" %}
-                                                    Four-Wheeler 
-                                                {% elif lead.vehicle_class == "3" %}
-                                                  Other
-                                                {% endif %}
-                                        </div>  
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="userdetail-group">
-                                            <p class="userdetail-lbl">Insurance Type </p>
-                                            <p class="userdetail-highligt">
-                                                {% if lead_data.insurance_type == "1" %}
-                                                    Motor
-                                                {% elif lead_data.insurance_type == "2" %}
-                                                    Health
-                                                {% elif lead_data.insurance_type == "3" %}
-                                                    Life
-                                                {% elif lead_data.insurance_type == "4" %}
-                                                    Travel
-                                                {% elif lead_data.insurance_type == "5" %}
-                                                    General
-                                                {% else %}
-                                                    N/A
-                                                {% endif %}
-                                            </p>
-                                        </div>  
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="userdetail-group">
-                                            <p class="userdetail-lbl">Product Category </p>
-                                            <p class="userdetail-highligt">
-                                                {% if lead.product_category == "1" %}
-                                                    Private Car
-                                                {% elif lead.product_category == "2" %}
-                                                    Mediclaim
-                                                {% elif lead.product_category == "3" %}
-                                                    Two Wheeler
-                                                {% elif lead.product_category == "4" %}
-                                                    Term Life
-                                                {% elif lead.product_category == "5" %}
-                                                    Fire Insurance
-                                                {% elif lead.product_category == "6" %}
-                                                    Commercial Vehicle
-                                                {% else %}
-                                                    Not Specified
-                                                {% endif %}
-                                            </p>
-                                        </div>  
-                                    </div>
-                                    <div class="col-sm-12">
-                                        <h2 class="admin-title pb-2 mb-3 border-bottom">Vehicle Details</h2>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="userdetail-group">
-                                            <p class="userdetail-lbl">Registration No</p>
-                                            <p class="userdetail-highligt">
-                                                {{ lead.vehicle_reg_no|default:"N/A" }}
-                                            </p>
-                                        </div>  
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="userdetail-group">
-                                            <p class="userdetail-lbl">Make</p>
-                                            <p class="userdetail-highligt">
-                                                {{ lead.vehicle_make|default:"N/A" }}
-                                            </p>
-                                        </div>  
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="userdetail-group">
-                                            <p class="userdetail-lbl">Modal</p>
-                                            <p class="userdetail-highligt">
-                                                {{ lead.vehicle_model|default:"N/A" }}
-                                            </p>
-                                        </div>  
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="userdetail-group">
-                                            <p class="userdetail-lbl">Year</p>
-                                            <p class="userdetail-highligt">
-                                                {{ lead.mgf_year|default:"N/A" }}
-                                            </p>
-                                        </div>  
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="userdetail-group">
-                                            <p class="userdetail-lbl">Sum Insured</p>
-                                            <p class="userdetail-highligt">
-                                                ₹{{ lead.sum_insured|default:"N/A" }}
-                                            </p>
-                                        </div>  
-                                    </div>
-                                </div>
-                                
-                            </div>
-
-                            <div class="tab-pane" id="quote-tab">
-                                <div class="row mt-3">
-                                    <div class="col-sm-12">
-                                        <h2 class="admin-title pb-2 mb-3 border-bottom">Quote</h2>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="tab-pane" id="booking-tab">
-                                <div class="row mt-3">
-                                    <div class="col-sm-12">
-                                        <h2 class="admin-title pb-2 mb-3 border-bottom">Booking</h2>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tab-pane" id="policy-issued-tab">
-                                <div class="row mt-3">
-                                    <div class="col-sm-12">
-                                        <h2 class="admin-title pb-2 mb-3 border-bottom">Policy Issued</h2>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- /.tab-pane -->
-                            <div class="tab-pane" id="claims-tab">
-                                <div class="row align-items-center mt-3 mb-3">
-                                  <div class="col-md-auto">
-                                    <h3 class="card-hding mb-0 pb-0">Claim History</h3>
-                                  </div>
-                                  <div class="col">
-                                    <div class="d-flex justify-content-end">
-                                      <a href="#" class="dashboard-btn-outline mx-2">Search Cashless Hospitals</a>
-                                      <a href="#" class="dashboard-addbtn">Raise a Claim</a>
-                                    </div>
-                                  </div>
-                                </div>  
-                              <!-- Documents -->
-                              <div class="table-responsive">
-                                <table class="table table-design admin-table-design">
-                                  <thead class="align-middle thead-light">
-                                      <tr>
-                                          <th>Claim ID/Type</th>
-                                          <th>Patient Name/Relation</th>
-                                          <th>Claim Status/Last Update On</th>
-                                      </tr>
-                                  </thead>
-                                  <tbody>
-                                    <tr>
-                                      <td colspan="3">
-                                        <div class="d-flex justify-content-center py-5">
-                                          <div>
-                                            <img src="dist/img/svg/drive.svg" alt="" class="mx-auto d-table">
-                                            <p class="wrap-small text-gray text-center pt-2">No Data</p>
-                                          </div>  
-                                        </div>   
-                                      </td>
-                                    </tr>
-                                  </tbody>
-                                </table>                               
-                               </div>    
-                              <!-- /.Documents -->
-                            </div>
-                          </div>
-                            <!-- /.tab-content -->
-                        </div>
-                      </div>
-                    </div>
-                  </div>  
                 </div>
-                
-              </div>
+                <!-- Main content -->
+                <div class="content px-0">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-12 px-0">
+                                <ul class="lead-view-step">
+                                    <li class="active">Working-Contacted</li>
+                                    <li>
+                                        <div class="arrow-design"></div>
+                                        Close - Not Converted
+                                    </li>
+                                    <li>
+                                        <div class="arrow-design"></div>
+                                        Disqualified
+                                    </li>
+                                    <li>
+                                        <div class="arrow-design"></div>
+                                        Converted
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-md-4 px-0">
+                                <div class="card member-detail-left-card">
+                                    <div class="card-body box-profile">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h3 class="profile-username m-0">
+                                                {{ lead.name_as_per_pan }}
+                                                {% if lead.lead_customer_gender == 1 %}
+                                                    <span class="text-muted ms-1">(Male)</span>
+                                                {% elif lead.lead_customer_gender == 2 %}
+                                                    <span class="text-muted ms-1">(Female)</span>
+                                                {% elif lead.lead_customer_gender == 3 %}
+                                                    <span class="text-muted ms-1">(Other)</span>
+                                                {% endif %}
+                                            </h3>
+                                        
+                                            <span class="text-muted m-0">
+                                                Customer Since:
+                                                {% if lead.created_at.date == today %}
+                                                    <span class="badge bg-primary rounded-pill">Today</span>
+                                                {% elif lead.created_at.date == yesterday %}
+                                                    <span class="badge bg-primary rounded-pill">Yesterday</span>
+                                                {% else %}
+                                                    <span class="badge bg-primary rounded-pill">
+                                                        {{ lead.created_at|timesince }} ago
+                                                    </span>
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                        
+                                        <div class="d-flex justify-content-center mt-2">
+                                            <a href="javascript:void(0)" class="breadcrump-addbtn" data-toggle="modal" data-target="#dispostion-update-model-id">Dispose the lead</a>
+                                        </div>
+                                        
+                                        <ul class="member-detail-list">
+                                            <li><span class="list">Status</span><span class="list-output"> {{ lead.status|default:"N/A"  }}</span></li>
+                                            <li><span class="list">Email</span><span class="list-output">{{ lead.email_address|default:"N/A"  }}</span></li>
+                                            <li><span class="list">Mobile</span><span class="list-output">{{ lead.mobile_number|default:"N/A"  }}</span></li>
+                                            <li><span class="list">Identity No.</span><span class="list-output text-uppercase">{{ lead.lead_customer_identity_no|default:"N/A"  }}</span></li>
+                                            <li><span class="list">Insurance Type</span><span class="list-output">{{ lead.lead_insurance_type|default:"N/A" }}</span></li>
+                                            <li><span class="list">Product Category</span><span class="list-output">{{ lead.lead_insurance_category|default:"N/A" }}</span></li>
+                                            <li><span class="list">Product Name</span><span class="list-output">{{ lead.lead_insurance_product|default:"N/A" }}</span></li>
+                                            <li><span class="list">Lead Source Type</span><span class="list-output">{{ lead.lead_source_type.source_name|default:"N/A" }}</span></li>
+                                            <li><span class="list">Lead Source Name</span><span class="list-output">{{ lead.lead_source|default:"N/A" }}</span></li>
+                                            <li><span class="list">Referral Name</span><span class="list-output">{{ lead.referral_name|default:"N/A" }}</span></li>
+                                            <li><span class="list">Source Medium</span><span class="list-output">
+                                                {% if lead.lead_source_medium == 1 %}
+                                                    Facebook
+                                                {% elif lead.lead_source_medium == 2 %}
+                                                    Google
+                                                {% elif lead.lead_source_medium == 3 %}
+                                                    WhatsApp
+                                                {% elif lead.lead_source_medium == 4 %}
+                                                    Walk-in
+                                                {% elif lead.lead_source_medium == 5 %}
+                                                    Embedded Partner
+                                                {% else %}
+                                                    N/A
+                                                {% endif %}
+                                            </span></li>
+                                            <li><span class="list">Assigned By</span><span class="list-output">{{ lead.created_by.full_name|default:"N/A" }}</span></li>
+                                            <li><span class="list">Assigned To</span><span class="list-output">{{ lead.assigned_to.full_name|default:"N/A" }}</span></li>
+                                            <li><span class="list">Main Disposition</span><span class="list-output">{{ lead_disposition.disp.disp_name|default:"N/A" }}</span></li>
+                                            <li><span class="list">Sub Disposition</span><span class="list-output">{{ lead_disposition.sub_disp.sub_disp_name|default:"N/A" }}</span></li>
+                                            <li><span class="list">Disposition Followup Date</span><span class="list-output">{{ lead_disposition.followup_date|default:"N/A" }}</span></li>
+                                            <li><span class="list">Disposition Followup Time</span><span class="list-output">{{ lead_disposition.followup_time|default:"N/A" }}</span></li>
+                                            <li><span class="list">Disposition Remark</span><span class="list-output">{{ lead_disposition.remark|default:"N/A" }}</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-8 px-0">
+                                <div class="card member-detail-right-card">
+                                    <ul class="nav nav-pills profile-tab">
+                                        <li class="nav-item text-bold"><a class="nav-link active" href="#activity-tab" data-toggle="tab">Activity</a></li>
+                                        <li class="nav-item text-bold"><a class="nav-link" href="#lead-details-tab" data-toggle="tab">Lead Deatils</a></li>
+                                        <li class="nav-item text-bold"><a class="nav-link" href="#previous-policy-info-tab" data-toggle="tab">Previous Policy Information </a></li>
+                                        <li class="nav-item text-bold"><a class="nav-link" href="#quote-tab" data-toggle="tab">Quote </a></li>
+                                        <li class="nav-item text-bold"><a class="nav-link" href="#booking-tab" data-toggle="tab">Booking</a></li>
+                                        <li class="nav-item text-bold"><a class="nav-link" href="#policy-issued-tab" data-toggle="tab">Policy Issued </a></li>
+                                        <li class="nav-item text-bold"><a class="nav-link" href="#disposition-logs" data-toggle="tab">Disposition Logs </a></li>
+                                    </ul>
+                                    <div class="card-body">
+                                        <div class="tab-content tab-scrollbar">
+                                            <div class="active tab-pane" id="activity-tab">
+                                                <div class="row mt-3">
+                                                    <div class="table-responsive">
+                                                        <table class="table table-design table-bordered">
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>
+                                                                        <div class="d-flex">
+                                                                            <div class="activity-circle">
+                                                                                I
+                                                                            </div>
+                                                                            <div class="ml-2">
+                                                                                <span class="d-block">05 Dec</span>
+                                                                                <span class="text-muted">5:43 PM</span>
+                                                                            </div>    
+                                                                        </div>    
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="d-flex flex-wrap">
+                                                                            <span class="d-block text-primary">Ishank Ahuja - NEET UG</span>
+                                                                            <span class="ml-1">Opportunity added via Opportunity Capture API</span>
+                                                                        </div>    
+                                                                        <span class="text-muted d-block">Added by Utkarsh Rai on 16 Jul 2020 5:10 PM</span>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="d-flex">
+                                                                            <a href="#" class="mx-1"><i class="fa-solid fa-eye"></i></a>
+                                                                            <a href="#" class="mx-1 text-info"><i class="fa-solid fa-pen-to-square"></i></a>
+                                                                            <a href="#" class="mx-1 text-danger"><i class="fa-solid fa-trash-can"></i></a>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        <div class="d-flex">
+                                                                            <div class="activity-circle">
+                                                                                A
+                                                                            </div>
+                                                                            <div class="ml-2">
+                                                                                <span class="d-block">05 Dec</span>
+                                                                                <span class="text-muted">5:43 PM</span>
+                                                                            </div>    
+                                                                        </div>    
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="d-flex flex-wrap">
+                                                                            <span class="d-block text-primary">Agree to pay</span>
+                                                                        </div>    
+                                                                        <span class="text-muted d-block">Added by Rajesh Aggarwal on 16 Jul 2020 5:10 PM</span>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="d-flex">
+                                                                            <a href="#" class="mx-1"><i class="fa-solid fa-eye"></i></a>
+                                                                            <a href="#" class="mx-1 text-info"><i class="fa-solid fa-pen-to-square"></i></a>
+                                                                            <a href="#" class="mx-1 text-danger"><i class="fa-solid fa-trash-can"></i></a>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        <div class="d-flex">
+                                                                            <div class="activity-circle">
+                                                                                I
+                                                                            </div>
+                                                                            <div class="ml-2">
+                                                                                <span class="d-block">05 Dec</span>
+                                                                                <span class="text-muted">5:43 PM</span>
+                                                                            </div>    
+                                                                        </div>    
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="d-flex flex-wrap">
+                                                                            <span class="d-block text-primary">Ishank Ahuja - NEET UG</span>
+                                                                            <span class="ml-1">Opportunity added via Opportunity Capture API</span>
+                                                                        </div>    
+                                                                        <span class="text-muted d-block">Added by Utkarsh Rai on 16 Jul 2020 5:10 PM</span>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="d-flex">
+                                                                            <a href="#" class="mx-1"><i class="fa-solid fa-eye"></i></a>
+                                                                            <a href="#" class="mx-1 text-info"><i class="fa-solid fa-pen-to-square"></i></a>
+                                                                            <a href="#" class="mx-1 text-danger"><i class="fa-solid fa-trash-can"></i></a>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                            
+                                                </div>
+                                            </div>
+
+                                            <div class="tab-pane" id="lead-details-tab">
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <h2 class="admin-title pb-2 mb-3 border-bottom">Basic Info</h2>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">Lead ID</p>
+                                                            <p class="userdetail-highligt">
+                                                                {{ lead.lead_id|default:"N/A"}}
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">Customer Name</p>
+                                                            <p class="userdetail-highligt">
+                                                                {{ lead.name_as_per_pan|default:"-" }}
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">Mobile Number</p>
+                                                            <p class="userdetail-highligt">
+                                                                {{lead.mobile_number|default:"N/A"}}
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+                                                    
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">Gender</p>
+                                                            <p class="userdetail-highligt">
+                                                                {% if lead.lead_customer_gender == 1 %}
+                                                                    <span class="userdetail-highligt">Male</span>
+                                                                {% elif lead.lead_customer_gender == 2 %}
+                                                                    <span class="userdetail-highligt">Female</span>
+                                                                {% elif lead.lead_customer_gender == 3 %}
+                                                                    <span class="userdetail-highligt">Others</span>
+                                                                {% else %}
+                                                                    N/A
+                                                                {% endif %}
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">Date of Birth</p>
+                                                            <p class="userdetail-highligt">
+                                                                {{lead.date_of_birth|default:"N/A"}}
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">Identity No.</p>
+                                                            <p class="userdetail-highligt text-uppercase">
+                                                                {{lead.lead_customer_identity_no|default:"N/A"}}
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+                                                    <div class="col-md-auto">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">Email ID</p>
+                                                            <p class="userdetail-highligt">
+                                                                {{lead.email_address|default:"N/A"}}
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+
+                                                    <div class="col-sm-12">
+                                                        <h2 class="admin-title pb-2 mb-3 border-bottom">Lead Source Info</h2>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">Lead Source Type</p>
+                                                            <p class="userdetail-highligt">
+                                                                {{ lead.lead_source_type.source_name|default:"N/A" }}
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">Lead Source Name</p>
+                                                            <p class="userdetail-highligt">
+                                                                {{ lead.lead_source|default:"N/A" }}
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">Referral Name</p>
+                                                            <p class="userdetail-highligt">
+                                                                {{lead.referral_name|default:"N/A"}}
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">Source Medium</p>
+                                                            <p class="userdetail-highligt">
+                                                                {% if lead.lead_source_medium == 1 %}
+                                                                    Facebook
+                                                                {% elif lead.lead_source_medium == 2 %}
+                                                                    Google
+                                                                {% elif lead.lead_source_medium == 3 %}
+                                                                    WhatsApp
+                                                                {% elif lead.lead_source_medium == 4 %}
+                                                                    Walk-in
+                                                                {% elif lead.lead_source_medium == 5 %}
+                                                                    Embedded Partner
+                                                                {% else %}
+                                                                    N/A
+                                                                {% endif %}
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+
+                                                    <div class="col-sm-12">
+                                                        <h2 class="admin-title pb-2 mb-3 border-bottom">Location Info</h2>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">State</p>
+                                                            <p class="userdetail-highligt">
+                                                                {{lead.state|default:"N/A"}}
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">City</p>
+                                                            <p class="userdetail-highligt">
+                                                                {{lead.city|default:"N/A"}}                                       
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">Pin Code</p>
+                                                            <p class="userdetail-highligt">
+                                                                {{lead.pincode|default:"N/A"}}                                      
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+
+                                                    <div class="col-sm-12">
+                                                        <h2 class="admin-title pb-2 mb-3 border-bottom">Assignment</h2>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">Assigned To</p>
+                                                            <p class="userdetail-highligt">
+                                                                {{lead.assigned_to.full_name|default:"N/A"}}
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">Branch</p>
+                                                            <p class="userdetail-highligt">
+                                                                {{lead.branch.branch_name|default:"N/A"}}
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">Lead Status Type</p>
+                                                            <p class="userdetail-highligt">
+                                                                {% if lead.lead_status_type == 1 %}
+                                                                    <p>New</p>
+                                                                {% elif lead.lead_status_type == 2 %}
+                                                                    <p>Follow-up</p>
+                                                                {% elif lead.lead_status_type == 3 %}
+                                                                    <p>Quoted</p>
+                                                                {% elif lead.lead_status_type == 4 %}
+                                                                    <p>Booked</p>
+                                                                {% elif lead.lead_status_type == 5 %}
+                                                                    <p>Closed</p>
+                                                                {% else %}
+                                                                    <p>N/A</p>
+                                                                {% endif %}
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">Lead Tag</p>
+                                                            <p class="userdetail-highligt">
+                                                                {% if lead.lead_tag == 1 %}
+                                                                    <p>Hot</p>
+                                                                {% elif lead.lead_tag == 2 %}
+                                                                    <p>Warm</p>
+                                                                {% elif lead.lead_tag == 3 %}
+                                                                    <p>Cold</p>
+                                                                {% elif lead.lead_tag == 4 %}
+                                                                    <p>Renewal</p>
+                                                                {% elif lead.lead_tag == 5 %}
+                                                                    <p>Break-in</p>
+                                                                {% elif lead.lead_tag == 6 %}
+                                                                    <p>etc.</p>
+                                                                {% else %}
+                                                                    <p>N/A</p>
+                                                                {% endif %}
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="tab-pane" id="previous-policy-info-tab">
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <h2 class="admin-title pb-2 mb-3 border-bottom">Previous Policy Information</h2>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">Policy Number</p>
+                                                            <p class="userdetail-highligt">
+                                                                {{lead.policy_number|default:"N/A"}}
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">Previous Insurer Name</p>
+                                                            <p class="userdetail-highligt">
+                                                                {{lead.previous_insurer_name|default:"N/A"}}
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">Policy Type</p>
+                                                            <p class="userdetail-highligt">
+                                                                {% if lead.policy_type == 1 %}
+                                                                    Comprehensive
+                                                                {% elif lead.policy_type == 2 %}
+                                                                    Third Party
+                                                                {% elif lead.policy_type == 3 %}
+                                                                    OD Only
+                                                                {% else %}
+                                                                    N/A
+                                                                {% endif %}
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">Policy Start Date</p>
+                                                            <p class="userdetail-highligt">
+                                                                {{ lead.policy_date|date:'d-m-Y' |default:"N/A"}}
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">Policy End Date</p>
+                                                            <p class="userdetail-highligt">
+                                                                {{ lead.policy_end_date|date:'d-m-Y'|default:"N/A" }}
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">Expiry Status</p>
+                                                            <p class="userdetail-highligt">
+                                                                {% if lead.expiry_status == "Expired" %}
+                                                                    Expired
+                                                                {% elif lead.expiry_status == "Active" %}
+                                                                    Active
+                                                                {% elif lead.expiry_status == "Grace" %}
+                                                                    Grace Period
+                                                                {% else %}
+                                                                    N/A
+                                                                {% endif %}
+                                                                
+                                                                {{ lead.expiry_status|default:"N/A"}}
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">No Claim Bonus (NCB)</p>
+                                                            <p class="userdetail-highligt">
+                                                                {% if lead.ncb == "1" %}
+                                                                    0%
+                                                                {% elif lead.ncb == "2" %}
+                                                                    20%
+                                                                {% elif lead.ncb == "3" %}
+                                                                    25%
+                                                                {% elif lead.ncb == "4" %}
+                                                                    35%
+                                                                {% elif lead.ncb == "5" %}
+                                                                    45%
+                                                                {% elif lead.ncb == "6" %}
+                                                                    50%
+                                                                {% else %}
+                                                                N/A
+                                                                {% endif %}
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">Previous IDV (for Motor)</p>
+                                                            <p class="userdetail-highligt">
+                                                                ₹{{ lead.previous_idv|default:"N/A" }}
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">Previous Sum Insured (for Health)</p>
+                                                            <p class="userdetail-highligt">
+                                                                ₹{{ lead.previous_sum_insured|default:"N/A" }}
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">Claims Made</p>
+                                                            <p class="userdetail-highligt">
+                                                                {% if lead.claim_made == "1"  %}
+                                                                    Yes
+                                                                {% elif lead.claim_made == "2"  %}
+                                                                    No                                                  
+                                                                {% else %}
+                                                                    N/A
+                                                                {% endif %}
+                                                                
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">Claim Amount </p>
+                                                            <p class="userdetail-highligt">
+                                                                ₹{{ lead.claim_amount|default:"N/A" }}
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">Copy of Previous Policy </p>
+                                                            <p class="userdetail-highligt">
+                                                                <!--Uploaded File <a href="#">View</a>-->
+                                                                {% if lead.previous_policy_copy %}
+                                                                    <a href="{{ lead.previous_policy_copy.url }}" target="_blank">View File</a>
+                                                                {% else %}
+                                                                    No File Uploaded
+                                                            {% endif %}
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">Previous Policy Source </p>
+                                                            <p class="userdetail-highligt">
+                                                                {% if lead.previous_policy_source == "1" %}
+                                                                    Agent
+                                                                {% elif lead.previous_policy_source == "2" %}
+                                                                    Online
+                                                                {% elif lead.previous_policy_source == "3" %}
+                                                                    Dealer
+                                                                {% elif lead.previous_policy_source == "4" %}
+                                                                    Direct
+                                                                {% elif lead.previous_policy_source == "5" %}
+                                                                    Aggregator
+                                                                {% else %}
+                                                                    N/A
+                                                                {% endif %}
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">Vehicle Type </p>
+                                                            <p class="userdetail-highligt">
+                                                                {% if lead.vehicle_type == "1" %}
+                                                                    Private
+                                                                {% elif lead.vehicle_type == "2" %}
+                                                                    Commercial                              
+                                                                {% elif lead.vehicle_type == "3" %}
+                                                                    Other                         
+                                                                {% else %}
+                                                                    N/A                       
+                                                                {% endif %}
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">Vehicle Class </p>
+                                                            <p class="userdetail-highligt">
+                                                                {% if lead.vehicle_class == "1" %}
+                                                                    Two-Wheeler
+                                                                {% elif lead.vehicle_class == "2" %}
+                                                                    Four-Wheeler 
+                                                                {% elif lead.vehicle_class == "3" %}
+                                                                Other
+                                                                {% endif %}
+                                                        </div>  
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">Insurance Type </p>
+                                                            <p class="userdetail-highligt">
+                                                                {% if lead_data.insurance_type == "1" %}
+                                                                    Motor
+                                                                {% elif lead_data.insurance_type == "2" %}
+                                                                    Health
+                                                                {% elif lead_data.insurance_type == "3" %}
+                                                                    Life
+                                                                {% elif lead_data.insurance_type == "4" %}
+                                                                    Travel
+                                                                {% elif lead_data.insurance_type == "5" %}
+                                                                    General
+                                                                {% else %}
+                                                                    N/A
+                                                                {% endif %}
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">Product Category </p>
+                                                            <p class="userdetail-highligt">
+                                                                {% if lead.product_category == "1" %}
+                                                                    Private Car
+                                                                {% elif lead.product_category == "2" %}
+                                                                    Mediclaim
+                                                                {% elif lead.product_category == "3" %}
+                                                                    Two Wheeler
+                                                                {% elif lead.product_category == "4" %}
+                                                                    Term Life
+                                                                {% elif lead.product_category == "5" %}
+                                                                    Fire Insurance
+                                                                {% elif lead.product_category == "6" %}
+                                                                    Commercial Vehicle
+                                                                {% else %}
+                                                                    Not Specified
+                                                                {% endif %}
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+                                                    <div class="col-sm-12">
+                                                        <h2 class="admin-title pb-2 mb-3 border-bottom">Vehicle Details</h2>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">Registration No</p>
+                                                            <p class="userdetail-highligt">
+                                                                {{ lead.vehicle_reg_no|default:"N/A" }}
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">Make</p>
+                                                            <p class="userdetail-highligt">
+                                                                {{ lead.vehicle_make|default:"N/A" }}
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">Modal</p>
+                                                            <p class="userdetail-highligt">
+                                                                {{ lead.vehicle_model|default:"N/A" }}
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">Year</p>
+                                                            <p class="userdetail-highligt">
+                                                                {{ lead.mgf_year|default:"N/A" }}
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="userdetail-group">
+                                                            <p class="userdetail-lbl">Sum Insured</p>
+                                                            <p class="userdetail-highligt">
+                                                                ₹{{ lead.sum_insured|default:"N/A" }}
+                                                            </p>
+                                                        </div>  
+                                                    </div>
+                                                </div>
+                                                
+                                            </div>
+
+                                            <div class="tab-pane" id="quote-tab">
+                                                <div class="row mt-3">
+                                                    <div class="col-sm-12">
+                                                        <h2 class="admin-title pb-2 mb-3 border-bottom">Quote</h2>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="tab-pane" id="booking-tab">
+                                                <div class="row mt-3">
+                                                    <div class="col-sm-12">
+                                                        <h2 class="admin-title pb-2 mb-3 border-bottom">Booking</h2>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="tab-pane" id="policy-issued-tab">
+                                                <div class="row mt-3">
+                                                    <div class="col-sm-12">
+                                                        <h2 class="admin-title pb-2 mb-3 border-bottom">Policy Issued</h2>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="tab-pane" id="claims-tab">
+                                                <div class="row align-items-center mt-3 mb-3">
+                                                    <div class="col-md-auto">
+                                                        <h3 class="card-hding mb-0 pb-0">Claim History</h3>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="d-flex justify-content-end">
+                                                            <a href="#" class="dashboard-btn-outline mx-2">Search Cashless Hospitals</a>
+                                                            <a href="#" class="dashboard-addbtn">Raise a Claim</a>
+                                                        </div>
+                                                    </div>
+                                                </div>  
+                                                <div class="table-responsive">
+                                                    <table class="table table-design admin-table-design">
+                                                    <thead class="align-middle thead-light">
+                                                        <tr>
+                                                            <th>Claim ID/Type</th>
+                                                            <th>Patient Name/Relation</th>
+                                                            <th>Claim Status/Last Update On</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                        <td colspan="3">
+                                                            <div class="d-flex justify-content-center py-5">
+                                                            <div>
+                                                                <img src="dist/img/svg/drive.svg" alt="" class="mx-auto d-table">
+                                                                <p class="wrap-small text-gray text-center pt-2">No Data</p>
+                                                            </div>  
+                                                            </div>   
+                                                        </td>
+                                                        </tr>
+                                                    </tbody>
+                                                    </table>                               
+                                                </div>    
+                                            </div>
+
+                                             <div class="tab-pane" id="disposition-logs">
+                                                <div class="row mt-3">
+                                                    <div class="table-responsive">
+                                                        <table class="table table-design table-bordered">
+                                                            <tbody>
+                                                                {% if disposition_logs %}
+                                                                  {% for disposition_log in disposition_logs %}
+                                                                    <tr>
+                                                                        <td>
+                                                                            <div class="d-flex">
+                                                                                <div class="ml-2">
+                                                                                    <span class="d-block">{{disposition_log.create_date}}</span>
+                                                                                    <span class="text-muted">{{disposition_log.create_time}}</span>
+                                                                                </div>    
+                                                                            </div>    
+                                                                        </td>
+                                                                        <td>
+                                                                            <div class="d-flex flex-wrap">
+                                                                                <!-- <span class="d-block text-primary">Ishank Ahuja - NEET UG</span> -->
+                                                                                <span class="ml-1">Disposition: {{disposition_log.log_disp.disp_name}} - Sub Disposition: {{disposition_log.log_sub_disp.sub_disp_name}}</span>
+                                                                            </div>    
+                                                                            <span class="text-muted d-block">Added by {{disposition_log.log_created_by.full_name}} on {{disposition_log.log_created_at}}</span>
+                                                                        </td>
+                                                                </tr>
+                                                                  {% endfor %}
+                                                                {% endif %}
+                                                                
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                            
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>  
+                    </div>
+                </div>
             </div>
-          </div>
-        <!-- /.content-wrapper -->
+        </div>
+        
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  
+    
         <script>
             function showRejectNote(note) {
                 Swal.fire({
@@ -808,17 +832,213 @@ View Lead
                     confirmButtonColor: '#d33'
                 });
             }
-            </script>
-      
+        </script>
+            
+        <div class="modal fade" id="dispostion-update-model-id">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header p-2 h6">
+                        <label class="px-2 my-2" id="customer_details_heading">Lead Disposition</label>
+                        <button type="button" class="close" data-dismiss="modal">×</button>
+                    </div>
+                            
+                    <div class="modal-body px-4">
+                        <form id="update-dispostion-form-id">
+                            {% csrf_token %}
+                            <input type="hidden" name="lead_id" id="disposition_lead_id" value="{{lead.lead_id}}">
+                                        
+                            <div class="col-sm-6">
+                                <div class="form-group ">
+                                    <label for="main_disposition model-form-lbl">Main Disposition <span class="text-red">*</span></label>
+                                    <select class="form-field" name="main_disposition" id="main_disposition">
+                                        <option value="">Select Main Disposition</option>
+                                        {% if disposition_list %}
+                                            {% for dispositions in disposition_list %}
+                                                <option value="{{dispositions.disp_id}}">{{dispositions.disp_name}}</option>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </select>
+                                </div>
+                            </div>
+                                
+                            <div class="col-sm-6">
+                                <div class="form-group ">
+                                    <label for="sub_disposition model-form-lbl">Sub Disposition <span class="text-red">*</span></label>
+                                    <select class="form-field sub-disposition-class" name="sub_disposition" id="sub_disposition">
+                                        <option value="">Select Sub Disposition</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="col-sm-6">
+                                <div class="form-group ">
+                                    <label for="model-form-lbl">Follow Up Date <span class="text-red">*</span></label>
+                                    <input type="date" class="form-field" name="follow_up_date" id="follow_up_date">
+                                </div>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <div class="form-group ">
+                                    <label for="model-form-lbl">Follow Up Time <span class="text-red">*</span></label>
+                                    <input type="time" class="form-field" name="follow_up_time" id="follow_up_time">
+                                </div>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <div class="form-group ">
+                                    <label for="model-form-lbl">Remark <span class="text-red">*</span></label>
+                                    <input type="text" class="form-field" name="remark" id="remark">
+                                </div>
+                            </div>
+
+                            <div class="col-sm-12">
+                                <div class="form-group text-right">
+                                    <button type="submit" class="dashboard-applybtn px-4" id="update-dispostion-form-btn" disabled>Save Changes</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
         {% include "footer.html" %}
     </div>
-    <!-- ./wrapper -->
-    
+        
     {% include 'footer-script.html' %}
+        <script>
+            function getSubDispositionList(){
+                main_disp_id = $('#main_disposition').val();
+                    $.ajax({
+                        url: "{% url 'get-sub-disposition' %}",
+                        type: 'POST',
+                        headers: {
+                            'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')  // Django requires this header
+                        },
+                        data: {
+                            disposition_id: main_disp_id,
+                        },
+                        success: function(response) {
+                            let options = '';
+                            $.each(response.sub_disposition_list, function(index, sub_disposition) {
+                                options += `<option value="${sub_disposition.sub_disp_id}">${sub_disposition.sub_disp_name}</option>`;
+                            });
+                            $('#sub_disposition').html(options);
+                        },
+                        error: function(xhr) {
+                            console.error(xhr.responseText);
+                        }
+                    });
+            }
             
-    {% include "js-code.html" %}
-    
-    
+            $(document).ready(function(){
+                $('#main_disposition').on('change',function(){
+                    getSubDispositionList()
+                });
+
+
+                $('#update-dispostion-form-btn').prop('disabled', false);
+
+                $.validator.addMethod("futureDateTime", function(value, element) {
+                    let dateVal = $('#follow_up_date').val();
+                    let timeVal = $('#follow_up_time').val();
+
+                    if (!dateVal || !timeVal) {
+                        return true; // skip validation if either field is empty
+                    }
+
+                    let selectedDateTime = new Date(dateVal + 'T' + timeVal);
+                    let now = new Date();
+
+                    return selectedDateTime > now;
+                }, "Follow up date and time must be in the future");
+
+
+                $("#update-dispostion-form-id").validate({
+                    rules: {
+                        main_disposition: {
+                            required: true
+                        },
+                        sub_disposition: {
+                            required: true
+                        },
+                        follow_up_date: {
+                            futureDateTime: true,
+                            required: function () {
+                                return $('#follow_up_time').val().length > 0;
+                            }
+                        },
+                        follow_up_time: {
+                            futureDateTime: true,
+                            required: function () {
+                                return $('#follow_up_date').val().length > 0;
+                            }
+                        },
+                        remark: {
+                            maxlength: 500
+                        }
+                    },
+                    messages: {
+                        main_disposition: {
+                            required: "Please select main disposition"
+                        },
+                        sub_disposition: {
+                            required: "Please select sub disposition"
+                        },
+                        remark: {
+                            maxlength: "Remark cannot be more than 500 characters"
+                        },
+                        follow_up_date: {
+                            required: "Please select follow up date"
+                        },
+                        follow_up_time: {
+                            required: "Please select follow up time"
+                        },
+                    },
+                    errorElement: "div",
+                    errorPlacement: function (error, element) {
+                        error.addClass("text-danger");
+                        error.insertAfter(element);
+                    },
+                    submitHandler: function (form) {
+                        let formData = new FormData(form);
+                        $('#update-dispostion-form-btn').prop('disabled', true);
+
+                        $.ajax({
+                            url: '{% url "save-lead-dispositions" %}',
+                            type: 'POST',
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            success: function(response) {
+                                if(response.statusCode == 401){
+                                    window.location.replace("{% url 'login' %}")
+                                }else if(response.statusCode == 405){
+                                    $('#update-dispostion-form-btn').prop('disabled', false);
+                                    window.location.reload(true);
+                                }else if(response.statusCode == 200){
+                                    $('#update-dispostion-form-btn').prop('disabled', false);
+                                    window.location.reload(true);
+                                }else if(response.statusCode == 500){
+                                    $('#update-dispostion-form-btn').prop('disabled', false);
+                                    window.location.reload(true);
+                                }else{
+                                    $('#update-dispostion-form-btn').prop('disabled', false);
+                                    window.location.reload(true);
+                                }
+                            },
+                            error: function(xhr) {
+                                console.error('Error:', xhr.responseText);
+                                $('#update-dispostion-form-btn').prop('disabled', false);
+                                window.location.reload(true);
+                            }
+                        });
+                    }
+                });
+            });
+
+        </script>
+        {% include "js-code.html" %}
+        
     </body>
 
 {% endblock %}

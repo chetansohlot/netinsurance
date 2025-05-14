@@ -3,7 +3,7 @@ from . import views,export
 from . import views
 from . import authenticationView
 from .controller import commissions, profile,policy,Dashboard, Referral, globalController, helpAndSupport, Employee, leads, sellMotor, sellHealth, sellTerm, Franchises, Department, Branches, members, customers, quoteManagement, healthQuoteManagement, homeManagement, exams,SourceMaster,BQP
-from .controller import reports, PolicyCommission, PolicyPayment, insurance
+from .controller import reports, PolicyCommission, PolicyPayment, insurance, dispositions
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import re_path
@@ -181,6 +181,8 @@ urlpatterns = [
     path('leads/v1/save-lead-location-info',leads.save_leads_location_info,name="save-lead-location-info"), 
     path('leads/v1/save-lead-assignment-info',leads.save_leads_assignment_info,name="save-lead-assignment-info"), 
     path('leads/v1/save-lead-previous-policy-info',leads.save_leads_previous_policy_info,name="save-lead-previous-policy-info"), 
+    
+    path('leads/v1/save-lead-dispositions',leads.save_leads_dispositions,name="save-lead-dispositions"),
     #Insurance
     path('insurance/', insurance.insurance_list, name='insurance_index'),
     path('create-insurance/', insurance.insurance_create, name='create_insurance'),
@@ -380,7 +382,9 @@ urlpatterns = [
     path('bqp/edit/<int:bqp_id>/', BQP.bqp_edit, name='bqp_edit'),
     path('bqp/delete/<int:bqp_id>/', BQP.bqp_delete, name='bqp_delete'),
     
-    path('get-pos-partners-by-bqp/', views.get_pos_partners_by_bqp,name="get-pos-partners-by-bqp")
+    path('get-pos-partners-by-bqp/', views.get_pos_partners_by_bqp,name="get-pos-partners-by-bqp"),
+    
+    path('disposition/v1/sub-disposition-list',dispositions.get_sub_disposition_list,name="get-sub-disposition")
 ] 
 
 
