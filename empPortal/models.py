@@ -355,6 +355,12 @@ class PolicyDocument(models.Model):
     insurer_tp_commission = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     insurer_od_commission = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     insurer_net_commission = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+
+    ACTIVE_CHOICES = (
+        ('1', 'Active'),
+        ('0', 'Inactive'),
+    )
+
     def __str__(self):
         return self.filename    
     

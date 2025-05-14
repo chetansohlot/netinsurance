@@ -62,9 +62,10 @@ urlpatterns = [
     path('dashboard/', Dashboard.dashboard, name='dashboard'),
     path('business_summary_insurer_chartajax/', Dashboard.business_summary_insurer_chartajax, name='business_summary_insurer_chartajax'),
     path('business_consolidated_ajax/', Dashboard.business_consolidated_ajax, name='business_consolidated_ajax'),
-    path('referral_summary_chartajax', Dashboard.referral_summary_chartajax, name='referral_summary_chartajax'),
+    path('referral_summary_chartajax/', Dashboard.referral_summary_chartajax, name='referral_summary_chartajax'),
     path('partner_policy_summary_ajax/', Dashboard.partner_policy_summary_ajax, name='partner_policy_summary_ajax'),
-
+    path('dashboard-ajax/', Dashboard.dashboard_ajax, name='dashboard_ajax'),
+    path('business_summary_product_wiseajax/', Dashboard.business_summary_product_wiseajax,name='business_summary_product_wiseajax'),
 
 
     path('franchise-management/', Franchises.index, name='franchise-management'),
@@ -194,6 +195,7 @@ urlpatterns = [
     path('referral-management/create-referral', Referral.create_or_edit, name='referral-management-create'),
     path('referral-management/<str:referral_id>/', Referral.create_or_edit, name='referral-management-edit'),
     path('referral/toggle-status/<int:referral_id>/', Referral.toggle_referral_status, name='referral-toggle-status'),
+    path('referral/delete/<int:pk>/', Referral.soft_delete_referral, name='referral-soft-delete'),
     
     # path('referral-management/bulk-upload/', Referral.ref_bulk_upload, name='referral-bulk-upload'),
 

@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Referral(models.Model):
     name = models.CharField(max_length=255)
     email = models.EmailField(unique=True)
@@ -27,8 +28,8 @@ class Referral(models.Model):
     city = models.CharField(max_length=100, null=True, blank=True)
     state = models.CharField(max_length=100, null=True, blank=True)
 
-
-
+    referral_is_delete = models.BooleanField(default=False)
+    referral_deleted_by = models.ForeignKey('Users', on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return f"{self.name} - {self.referral_code}"
