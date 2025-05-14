@@ -2,7 +2,7 @@ from django.urls import path, include
 from . import views,export
 from . import views
 from . import authenticationView
-from .controller import commissions, profile,policy,Dashboard, Referral, globalController, helpAndSupport, Employee, leads, sellMotor, sellHealth, sellTerm, Franchises, Department, Branches, members, customers, quoteManagement, healthQuoteManagement, homeManagement, exams,SourceMaster,BQP
+from .controller import commissions, profile,policy,Dashboard, Referral, globalController, helpAndSupport, Employee, leads, sellMotor, sellHealth, sellTerm, Franchises, Department, Branches, members, customers, quoteManagement, healthQuoteManagement, homeManagement, exams,SourceMaster,BQP,Credential
 from .controller import reports, PolicyCommission, PolicyPayment, insurance
 from django.conf import settings
 from django.conf.urls.static import static
@@ -185,9 +185,11 @@ urlpatterns = [
     path('leads/v1/save-lead-previous-policy-info',leads.save_leads_previous_policy_info,name="save-lead-previous-policy-info"), 
     #Insurance
     path('insurance/', insurance.insurance_list, name='insurance_index'),
-    path('create-insurance/', insurance.insurance_create, name='create_insurance'),
+    path('insurance/v1/create-insurance/', insurance.insurance_create, name='create-insurance'),
     path('insurance/edit/<int:insurance_id>/', insurance.insurance_edit, name='insurance_edit'),
     path('toggle-insurance-status/<int:insurance_id>/', insurance.toggle_insurance_status, name='insurance-toggle-status'),  #Anjali
+    path('get-state/', insurance.get_state, name='get_state'),
+    path('get-cities/', insurance.get_cities, name='get_cities'),
 
     # REFERRAL 
     path('referral-management/bulk-upload/', Referral.refBulkUpload, name='referral-bulk-upload'),
@@ -196,6 +198,7 @@ urlpatterns = [
     path('referral-management/<str:referral_id>/', Referral.create_or_edit, name='referral-management-edit'),
     path('referral/toggle-status/<int:referral_id>/', Referral.toggle_referral_status, name='referral-toggle-status'),
     path('referral/delete/<int:pk>/', Referral.soft_delete_referral, name='referral-soft-delete'),
+    
     
     # path('referral-management/bulk-upload/', Referral.ref_bulk_upload, name='referral-bulk-upload'),
 
@@ -385,7 +388,14 @@ urlpatterns = [
     path('bqp/edit/<int:bqp_id>/', BQP.bqp_edit, name='bqp_edit'),
     path('bqp/delete/<int:bqp_id>/', BQP.bqp_delete, name='bqp_delete'),
     
-    path('get-pos-partners-by-bqp/', views.get_pos_partners_by_bqp,name="get-pos-partners-by-bqp")
+    path('get-pos-partners-by-bqp/', views.get_pos_partners_by_bqp,name="get-pos-partners-by-bqp"),
+
+    ## Credential URL ##
+    path('credential', Credential.credential_list,name='credential_list'),
+    path('credential/create/', Credential.credential_create, name='credential_create'),
+    path('credential/edit/<int:credential_id>/', Credential.credential_edit, name='credential_edit'),
+    path('credential/delete/<int:credential_id>/', Credential.credential_delete, name='credential_delete'),
+
 ] 
 
 
