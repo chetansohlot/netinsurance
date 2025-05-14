@@ -1,13 +1,11 @@
 from django.db import models
-
-
 class InsuranceType(models.Model):
     id = models.AutoField(primary_key=True, db_column='insurance_type_id')
     name = models.CharField(max_length=100, db_column='insurance_type_name')
     created_at = models.DateTimeField(auto_now_add=True, db_column='insurance_type_created_at')
     updated_at = models.DateTimeField(auto_now=True, db_column='insurance_type_updated_at')
     status = models.CharField(max_length=10, default='Active', db_column='insurance_type_status')
-
+    
     class Meta:
         db_table = 'ni_insurance_type'
         verbose_name = 'Insurance Type'

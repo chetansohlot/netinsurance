@@ -184,9 +184,11 @@ urlpatterns = [
     path('leads/v1/save-lead-previous-policy-info',leads.save_leads_previous_policy_info,name="save-lead-previous-policy-info"), 
     #Insurance
     path('insurance/', insurance.insurance_list, name='insurance_index'),
-    path('create-insurance/', insurance.insurance_create, name='create_insurance'),
+    path('insurance/v1/create-insurance/', insurance.insurance_create, name='create-insurance'),
     path('insurance/edit/<int:insurance_id>/', insurance.insurance_edit, name='insurance_edit'),
     path('toggle-insurance-status/<int:insurance_id>/', insurance.toggle_insurance_status, name='insurance-toggle-status'),  #Anjali
+    path('get-state/', insurance.get_state, name='get_state'),
+    path('get-cities/', insurance.get_cities, name='get_cities'),
 
     # REFERRAL 
     path('referral-management/bulk-upload/', Referral.refBulkUpload, name='referral-bulk-upload'),
@@ -195,6 +197,7 @@ urlpatterns = [
     path('referral-management/<str:referral_id>/', Referral.create_or_edit, name='referral-management-edit'),
     path('referral/toggle-status/<int:referral_id>/', Referral.toggle_referral_status, name='referral-toggle-status'),
     path('referral/delete/<int:pk>/', Referral.soft_delete_referral, name='referral-soft-delete'),
+    
     
     # path('referral-management/bulk-upload/', Referral.ref_bulk_upload, name='referral-bulk-upload'),
 
