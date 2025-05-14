@@ -233,6 +233,13 @@ Policy Data
                             <th class="nowrap">Sum Insured</th>
                             <th class="nowrap">Manufacture Year</th>
                             <th class="nowrap">Commission Status</th>
+                            {% if request.user.role_id|stringformat:"s" not in "1,4" and request.user.department_id|stringformat:"s" == "2" %}
+                            <th class="nowrap">Operator Status</th>
+                            {% endif %}
+                            {% if request.user.role_id|stringformat:"s" not in "1,4" and request.user.department_id|stringformat:"s" == "5" %}
+                            <th class="nowrap">Quality Status</th>
+                            {% endif %}
+
                             <th class="nowrap">Action</th>
                           </tr>
                         </thead>
@@ -346,6 +353,31 @@ Policy Data
                                 {% endif %}
                                 <br>
                               </td>
+                              
+                            {% if request.user.role_id|stringformat:"s" not in "1,4" and request.user.department_id|stringformat:"s" == "2" %}
+                              <td>
+                                {% if data.operator_verification_status|stringformat:"s" == "1" %}
+                                  <a href="javascript:void(0);" onclick="showRemark('{{ data.operator_remark|default_if_none:''|escapejs }}', 'Operator Remark')" class="text-success">Verified</a>
+                                {% elif data.operator_verification_status|stringformat:"s" == "2" %}
+                                  <a href="javascript:void(0);" onclick="showRemark('{{ data.operator_remark|default_if_none:''|escapejs }}', 'Operator Remark')" class="text-danger">Not Verified</a>
+                                {% else %}
+                                  <span class="text-warning">Pending</span>
+                                {% endif %}
+                              </td>
+                            {% endif %}
+
+                            {% if request.user.role_id|stringformat:"s" not in "1,4" and request.user.department_id|stringformat:"s" == "5" %}
+                              <td>
+                                {% if data.quality_check_status|stringformat:"s" == "1" %}
+                                  <a href="javascript:void(0);" onclick="showRemark('{{ data.quality_remark|default_if_none:''|escapejs }}', 'Quality Remark')" class="text-success">Completed</a>
+                                {% elif data.quality_check_status|stringformat:"s" == "2" %}
+                                  <a href="javascript:void(0);" onclick="showRemark('{{ data.quality_remark|default_if_none:''|escapejs }}', 'Quality Remark')" class="text-danger">Re-Verification</a>
+                                {% else %}
+                                  <span class="text-warning">Pending</span>
+                                {% endif %}
+                              </td>
+                            {% endif %}
+
                               <td>
                                 <div class="d-flex">
                                   <a href="{{ data.filepath }}" class="tooltip-sec mx-2 text-success" data-title="Download {{ data.filename }}" target="_blank" download><i class="fas fa-download"></i></a>
@@ -361,16 +393,25 @@ Policy Data
                                     <i class="fa-solid fa-trash"></i>
                                   </a>
                                 {% endif %}
-                                
+
+
                                 {% if request.user.role_id|stringformat:"s" not in "1,4" and request.user.department_id|stringformat:"s" == "2" %}
-                                    <a href="javascript:void(0);" class="tooltip-sec mx-2 text-primary" data-title="Approve with Remark" onclick="approveWithRemark('{{ data.id }}')">
+                                    <!-- Operator Verification -->
+                                    <a href="javascript:void(0);" class="tooltip-sec mx-2 text-primary" data-title="Approve with Remark" onclick="approveWithRemark('{{ data.id }}', '1')">
                                         <i class="fas fa-check-circle"></i>
                                     </a>
-                                    <a href="javascript:void(0);" class="tooltip-sec mx-2 text-danger" data-title="Reject with Remark" onclick="rejectWithRemark('{{ data.id }}')">
+                                    <a href="javascript:void(0);" class="tooltip-sec mx-2 text-danger" data-title="Reject with Remark" onclick="rejectWithRemark('{{ data.id }}', '2')">
                                         <i class="fas fa-times-circle"></i>
                                     </a>
                                 {% endif %}
-
+                                {% if request.user.role_id|stringformat:"s" not in "1,4" and request.user.department_id|stringformat:"s" == "5" %}
+                                    <a href="javascript:void(0);" class="tooltip-sec mx-2 text-primary" data-title="Approve Quality Check" onclick="approveWithRemark('{{ data.id }}', '1', 'quality')">
+                                        <i class="fas fa-check-circle"></i>
+                                    </a>
+                                    <a href="javascript:void(0);" class="tooltip-sec mx-2 text-danger" data-title="Reject Quality Check" onclick="rejectWithRemark('{{ data.id }}', '2', 'quality')">
+                                        <i class="fas fa-times-circle"></i>
+                                    </a>
+                                {% endif %}
 
                                 </div>
                               </td>
@@ -434,90 +475,103 @@ Policy Data
   });
 </script>
 <script>
-  function approveWithRemark(policyId) {
+  function showRemark(remark, title) {
     Swal.fire({
-      title: 'Approve Policy',
-      input: 'textarea',
-      inputLabel: 'Remark (optional)',
-      inputPlaceholder: 'Enter any remark here...',
-      inputAttributes: {
-        'aria-label': 'Remark'
-      },
-      showCancelButton: true,
-      confirmButtonText: 'Approve',
-      cancelButtonText: 'Cancel'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        sendVerification(policyId, '1', result.value);  // '1' for Approved
-      }
+      title: title,
+      text: remark || 'No remark provided.',
+      icon: 'info',
+      confirmButtonText: 'Close'
     });
   }
+</script>
 
-  function rejectWithRemark(policyId) {
-    Swal.fire({
-      title: 'Reject Policy',
-      input: 'textarea',
-      inputLabel: 'Remark (required)',
-      inputPlaceholder: 'Enter reason for rejection...',
-      inputAttributes: {
-        'aria-label': 'Remark'
-      },
-      inputValidator: (value) => {
-        if (!value) {
-          return 'Remark is required to reject a policy!';
-        }
-      },
-      showCancelButton: true,
-      confirmButtonText: 'Reject',
-      cancelButtonText: 'Cancel'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        sendVerification(policyId, '2', result.value);  // '2' for Rejected
-      }
-    });
-  }
+<script>
+  function approveWithRemark(policyId, status, type) {
+  Swal.fire({
+    title: 'Approve Policy',
+    input: 'textarea',
+    inputLabel: 'Remark (optional)',
+    inputPlaceholder: 'Enter any remark here...',
+    inputAttributes: {
+      'aria-label': 'Remark'
+    },
+    showCancelButton: true,
+    confirmButtonText: 'Approve',
+    cancelButtonText: 'Cancel'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      sendVerification(policyId, status, result.value, type);  // Added type (operator or quality)
+    }
+  });
+}
 
-  function sendVerification(policyId, status, remark) {
-    fetch('/operator-verify-policy/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': '{{ csrf_token }}',
-      },
-      body: JSON.stringify({
-        policy_id: policyId,
-        remark: remark,
-        status: status
-      })
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        Swal.fire({
-          title: status === '1' ? 'Approved!' : 'Rejected!',
-          text: data.message,
-          icon: 'success',
-          timer: 2000,
-          showConfirmButton: false
-        });
-        setTimeout(() => location.reload(), 2000);
-      } else {
-        Swal.fire({
-          title: 'Error',
-          text: data.error || 'Something went wrong.',
-          icon: 'error'
-        });
+function rejectWithRemark(policyId, status, type) {
+  Swal.fire({
+    title: 'Reject Policy',
+    input: 'textarea',
+    inputLabel: 'Remark (required)',
+    inputPlaceholder: 'Enter reason for rejection...',
+    inputAttributes: {
+      'aria-label': 'Remark'
+    },
+    inputValidator: (value) => {
+      if (!value) {
+        return 'Remark is required to reject a policy!';
       }
+    },
+    showCancelButton: true,
+    confirmButtonText: 'Reject',
+    cancelButtonText: 'Cancel'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      sendVerification(policyId, status, result.value, type);  // Added type (operator or quality)
+    }
+  });
+}
+
+function sendVerification(policyId, status, remark, type) {
+  fetch('/operator-verify-policy/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': '{{ csrf_token }}',
+    },
+    body: JSON.stringify({
+      policy_id: policyId,
+      remark: remark,
+      status: status,
+      type: type  // Passing type (operator or quality)
     })
-    .catch(error => {
-      console.error('Error:', error);
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      Swal.fire({
+        title: status === '1' ? 'Approved!' : 'Rejected!',
+        text: data.message,
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false
+      });
+      setTimeout(() => location.reload(), 2000);
+    } else {
       Swal.fire({
         title: 'Error',
-        text: 'Request failed. Please try again.',
+        text: data.error || 'Something went wrong.',
         icon: 'error'
       });
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    Swal.fire({
+      title: 'Error',
+      text: 'Request failed. Please try again.',
+      icon: 'error'
     });
-  }
+  });
+}
+
 </script>
 
 
