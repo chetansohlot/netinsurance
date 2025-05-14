@@ -881,7 +881,6 @@ from django.utils import timezone
 
 class Department(models.Model):
     name = models.CharField(max_length=255, verbose_name="Department Name")
-    department_code = models.CharField(max_length=20, unique=True, verbose_name="Department Code")  # New Field
     head = models.CharField(max_length=255, verbose_name="Head of Department")
     head_of_department = models.CharField(max_length=255, verbose_name="Head of Department Name")  # New Field
     contact_person = models.CharField(max_length=255, verbose_name="Contact Person")  # New Field
