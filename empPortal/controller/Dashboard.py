@@ -67,11 +67,8 @@ def dashboard(request):
 
     user = request.user
 
-    # Base queryset depending on role
-    if user.role_id != 1 and str(user.department_id) not in ["3", "5", "2"]:
-        base_qs = PolicyDocument.objects.filter(status=6, rm_id=user.id)
-    else:
-        base_qs = PolicyDocument.objects.filter(status=6)
+    
+    base_qs = PolicyDocument.objects.filter(status=6)
 
      
 
@@ -580,10 +577,8 @@ def partner_policy_summary(request):
     user = request.user
 
     # Step 1: Filter policies
-    if user.is_authenticated:
-        base_qs = PolicyDocument.objects.filter(status=6, rm_id=user.id)
-    else:
-        base_qs = PolicyDocument.objects.filter(status=6)
+    
+    base_qs = PolicyDocument.objects.filter(status=6)
 
     aggregation_qs = base_qs.filter(policy_info__isnull=False).distinct()
 
@@ -631,10 +626,7 @@ def partner_policy_summary(request):
 def partner_policy_summary_ajax(request):
     user = request.user
 
-    if user.is_authenticated:
-        base_qs = PolicyDocument.objects.filter(status=6, rm_id=user.id)
-    else:
-        base_qs = PolicyDocument.objects.filter(status=6)
+    base_qs = PolicyDocument.objects.filter(status=6)
 
     aggregation_qs = base_qs.filter(policy_info__isnull=False).distinct()
 

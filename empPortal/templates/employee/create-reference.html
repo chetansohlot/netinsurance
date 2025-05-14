@@ -80,7 +80,7 @@ Add Reference
                           </div>
                           <div class="form-group col-sm-6 col-md-4">
                               <label class="form-lbl">Mobile Number</label>
-                              <input type="text" name="reference1_mobile_number" class="form-field" placeholder="Mobile Number"
+                              <input type="text" maxlength="10" name="reference1_mobile_number" class="form-field" placeholder="Mobile Number"
                                     value="{% if reference1 %}{{ reference1.mobile_number }}{% endif %}">
                           </div>
                           <div class="form-group col-sm-6 col-md-4">
@@ -113,7 +113,7 @@ Add Reference
                           </div>
                           <div class="form-group col-sm-6 col-md-4">
                               <label class="form-lbl">Mobile Number</label>
-                              <input type="text" name="reference2_mobile_number" class="form-field" placeholder="Mobile Number"
+                              <input type="text" maxlength="10" name="reference2_mobile_number" class="form-field" placeholder="Mobile Number"
                                     value="{% if reference2 %}{{ reference2.mobile_number }}{% endif %}">
                           </div>
                           <div class="form-group col-sm-6 col-md-4">
