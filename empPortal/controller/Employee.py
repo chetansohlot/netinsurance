@@ -290,6 +290,10 @@ def save_or_update_employee(request, employee_id=None):
         })
 
 
+def view_employee(request, employee_id):
+    
+    return render(request, 'employee/view-employee.html')
+
 def save_or_update_address(request, employee_id):
     if not request.user.is_authenticated:
         return redirect('login')

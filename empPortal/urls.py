@@ -2,7 +2,7 @@ from django.urls import path, include
 from . import views,export
 from . import views
 from . import authenticationView
-from .controller import commissions, profile,policy,Dashboard, Referral, globalController, helpAndSupport, Employee, leads, sellMotor, sellHealth, sellTerm, Franchises, Department, Branches, members, customers, quoteManagement, healthQuoteManagement, homeManagement, exams,SourceMaster,BQP
+from .controller import commissions, profile,policy,Dashboard, Referral, globalController, helpAndSupport, Employee, leads, sellMotor, sellHealth, sellTerm, Franchises, Department, Branches, members, customers, quoteManagement, healthQuoteManagement, homeManagement, exams,SourceMaster,BQP,Credential
 from .controller import reports, PolicyCommission, PolicyPayment, insurance
 from django.conf import settings
 from django.conf.urls.static import static
@@ -90,6 +90,7 @@ urlpatterns = [
     path('employee-management/', Employee.index, name='employee-management'),
     path('employee-management/create-employee', Employee.save_or_update_employee, name='employee-management-create'),
     path('employee-management/update-employee/<str:employee_id>/', Employee.save_or_update_employee, name='employee-management-update'),
+    path('employee-management/view-employee/<str:employee_id>/', Employee.view_employee, name='employee-management-view'),
     path('employee-management/update-address/<str:employee_id>/', Employee.save_or_update_address, name='employee-management-update-address'),
     path('employee-management/family-details/<str:employee_id>/', Employee.save_or_update_family_details, name='employee-management-family-details'),
     path('employee-management/employment-info/<str:employee_id>/', Employee.save_or_update_employment_info, name='employee-management-employment-info'),
@@ -336,6 +337,8 @@ urlpatterns = [
     # path('bulk-browser-policy/', views.bulkBrowsePolicy, name='bulk-browser-policy'),
     path('bulk-browser-policy/', policy.bulkBrowsePolicy, name='bulk-browser-policy'),
     path('policy-data/', policy.policyData, name='policy-data'),
+    path('operator-verify-policy/', policy.operator_verify_policy, name='operator-verify-policy'),
+
     path('edit-policy-data/<str:id>', views.editPolicy, name='edit-policy'),
     path('delete-policy-data/<str:id>', policy.deletePolicy, name='delete-policy'),
     path('edit-policy/<str:policy_id>/', policy.edit_policy, name='edit-policy-data'),
@@ -385,7 +388,14 @@ urlpatterns = [
     path('bqp/edit/<int:bqp_id>/', BQP.bqp_edit, name='bqp_edit'),
     path('bqp/delete/<int:bqp_id>/', BQP.bqp_delete, name='bqp_delete'),
     
-    path('get-pos-partners-by-bqp/', views.get_pos_partners_by_bqp,name="get-pos-partners-by-bqp")
+    path('get-pos-partners-by-bqp/', views.get_pos_partners_by_bqp,name="get-pos-partners-by-bqp"),
+
+    ## Credential URL ##
+    path('credential', Credential.credential_list,name='credential_list'),
+    path('credential/create/', Credential.credential_create, name='credential_create'),
+    path('credential/edit/<int:credential_id>/', Credential.credential_edit, name='credential_edit'),
+    path('credential/delete/<int:credential_id>/', Credential.credential_delete, name='credential_delete'),
+
 ] 
 
 

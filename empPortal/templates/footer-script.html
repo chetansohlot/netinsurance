@@ -6,9 +6,27 @@
 <!-- AdminLTE App -->
 <script src="{% static 'dist/js/adminlte.min.js' %}"></script>
 
+<script src="{% static 'dist/js/jquery-ui.js' %}"></script>
+
+<script>
+    $('.dob_datepicker').datepicker({
+        // format: 'dd/mm/yyyy' 
+        dateFormat: 'd-mm-yy',
+        changeMonth: true,
+        changeYear: true,
+        yearRange: "-100:+0", // last hundred years
+        maxDate: 0,
+    });
+    $('.datepicker_common').datepicker({
+        dateFormat: 'd-mm-yy',
+        changeMonth: true,
+        changeYear: true,
+    });
+</script>    
 <!-- Include Tom Select -->
 <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {

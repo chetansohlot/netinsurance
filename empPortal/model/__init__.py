@@ -18,3 +18,4 @@ from .Employees import Address
 from .Employees import FamilyDetail
 from .Employees import EmploymentInfo
 from .Employees import EmployeeReference
+from .Credential import Credential
