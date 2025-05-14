@@ -887,12 +887,10 @@ from django.utils import timezone
 
 class Department(models.Model):
     name = models.CharField(max_length=255, verbose_name="Department Name")
-    department_code = models.CharField(max_length=20, unique=True, verbose_name="Department Code")  # New Field
     head = models.CharField(max_length=255, verbose_name="Head of Department")
     head_of_department = models.CharField(max_length=255, verbose_name="Head of Department Name")  # New Field
     contact_person = models.CharField(max_length=255, verbose_name="Contact Person")  # New Field
     contact_number = models.CharField(max_length=15, verbose_name="Contact Number")
-    email = models.EmailField(max_length=255, unique=True, verbose_name="Email")
     address = models.TextField(null=True, blank=True, verbose_name="Address")
     city = models.CharField(max_length=100, null=True, blank=True, verbose_name="City")
     state = models.CharField(max_length=100, null=True, blank=True, verbose_name="State")

@@ -443,11 +443,11 @@ def business_consolidated_ajax(request):
 
     query = f"""
         WITH RECURSIVE month_series AS (
-            SELECT DATE_FORMAT(CURDATE(), '%Y-%m-01') AS month_start  -- Start from the current month (May)
+            SELECT DATE_FORMAT(CURDATE(), '%Y-%m-01') AS month_start
             UNION ALL
             SELECT DATE_FORMAT(DATE_ADD(month_start, INTERVAL -1 MONTH), '%Y-%m-01')
             FROM month_series
-            WHERE month_start > DATE_FORMAT(CURDATE(), '%Y-%m-01') - INTERVAL 6 MONTH  -- Generate 6 months back
+            WHERE month_start > DATE_FORMAT(CURDATE(), '%Y-%m-01') - INTERVAL 6 MONTH
         )
         SELECT 
             DATE_FORMAT(ms.month_start, '%b') AS month_name,
@@ -461,14 +461,15 @@ def business_consolidated_ajax(request):
         LEFT JOIN 
             policy_info pi 
             ON pd.id = pi.policy_id AND pd.policy_number = pi.policy_number
-            AND pd.status = 6
         WHERE 
-            ms.month_start >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 5 MONTH), '%Y-%m-01')  -- Ensure we include the last 6 months
+            {filters} AND
+            ms.month_start >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 5 MONTH), '%Y-%m-01')
         GROUP BY 
             ms.month_start
         ORDER BY 
             ms.month_start;
     """
+
 
 
 
@@ -499,11 +500,11 @@ def business_consolidated_ajax(request):
 def referral_summary_chart(request):
     with connection.cursor() as cursor:
         cursor.execute("""
-            SELECT users.first_name, COUNT(*) AS total_referrals
-            FROM users 
-            LEFT JOIN agent_payment_details 
-            ON agent_payment_details.agent_name = users.id 
-            GROUP BY users.first_name
+        SELECT apd.agent_name, u.first_name, COUNT(apd.id) AS total_referrals
+            FROM agent_payment_details apd
+            INNER JOIN users u ON apd.agent_name = u.id
+            WHERE apd.agent_name != 1
+            GROUP BY apd.agent_name, u.first_name
             ORDER BY total_referrals DESC
             LIMIT 5;
         """)
@@ -512,10 +513,11 @@ def referral_summary_chart(request):
     referral_counts = []
     referral_agent_labels = []
 
-    for first_name, total_referrals in rows:
+    
+    for agent_name, first_name, total_referrals in rows:
         referral_counts.append(total_referrals)
         referral_agent_labels.append(first_name)
-    
+
     return referral_agent_labels, referral_counts
 
 
@@ -526,22 +528,25 @@ def referral_summary_chartajax(request):
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
 
-    filters = "status = 6"
+    filters = ""
 
     if filter_type == "2":  # Today
-        filters += " AND DATE(created_at) = CURDATE()"
+        filters = "DATE(apd.created_at) = CURDATE()"
     elif filter_type == "3" and month:  # MTD
-        filters += f" AND MONTH(created_at) = {int(month)} AND YEAR(created_at) = YEAR(CURDATE())"
+        filters = f"MONTH(apd.created_at) = {int(month)} AND YEAR(apd.created_at) = YEAR(CURDATE())"
     elif filter_type == "4" and start_date and end_date:  # Custom
-        filters += f" AND DATE(created_at) BETWEEN '{start_date}' AND '{end_date}'"
-
+        filters = f"DATE(apd.created_at) BETWEEN '{start_date}' AND '{end_date}'"
+            
      # Write your raw SQL query here
     query = f"""
-        SELECT apd.agent_name, u.first_name, COUNT(apd.id) AS total_referrals
+       SELECT apd.agent_name, u.first_name, COUNT(apd.id) AS total_referrals
         FROM agent_payment_details apd
-        LEFT JOIN users u ON apd.agent_name = u.id
-        WHERE {filters}
+        INNER JOIN users u ON apd.agent_name = u.id
+        WHERE apd.agent_name != 1
+       {"AND " + filters if filters else ""}
         GROUP BY apd.agent_name, u.first_name
+        ORDER BY total_referrals DESC
+        LIMIT 5;
     """
     
     # Execute the query
@@ -660,9 +665,90 @@ def partner_policy_summary_ajax(request):
         'agent_counts' : agent_counts
     })
 
+
+def dashboard_ajax(request):
+    
+    base_qs = PolicyDocument.objects.filter(status=6)
+
+    # Collect selected filter values
+    consolidated_by = request.GET.get('consolidated_by', '1')
+    month = request.GET.get('consolidated_by_month', '')
+    consolidated_from_date = request.GET.get('consolidated_from_date', '')
+    consolidated_to_date = request.GET.get('consolidated_to_date', '')
+
+    filters = "WHERE pd.status = 6"
+
+    if consolidated_by == "2":  # Today
+        filters += " AND DATE(pd.created_at) = CURDATE()"
+
+    elif consolidated_by == "3" and month:  # MTD
+        try:
+            filters += f" AND MONTH(pd.created_at) = {int(month)} AND YEAR(pd.created_at) = YEAR(CURDATE())"
+        except (IndexError, ValueError):
+            return JsonResponse({'error': 'Invalid month format.'}, status=400)
+
+    elif consolidated_by == "4" and  consolidated_from_date and consolidated_to_date:  # Custom Range
+        filters += f" AND DATE(pd.created_at) BETWEEN '{consolidated_from_date}' AND '{consolidated_to_date}'"
+
+
+    # Prepare the raw SQL query with safe parameters
+    sql_query = f"""
+        SELECT 
+            COUNT(DISTINCT pd.id) AS policies_sold, 
+            SUM(COALESCE(CAST(pi.net_premium AS DECIMAL(10,2)), 0)) AS total_net_premium, 
+            SUM(COALESCE(CAST(pi.gross_premium AS DECIMAL(10,2)), 0)) AS total_gross_premium 
+        FROM 
+            policydocument pd 
+        JOIN 
+            policy_info pi ON pi.policy_id = pd.id 
+            {filters};
+    """
+
+    # Execute the raw SQL query with parameters
+    with connection.cursor() as cursor:
+        cursor.execute(sql_query)
+        result = cursor.fetchall()
+
+    # Check if result is not None
+    if result:
+        policies_sold = result[0][0] or 0
+        total_net_premium = float(result[0][1]) if result[0][1] is not None else 0.0
+        total_gross_premium = float(result[0][2]) if result[0][2] is not None else 0.0
+        data = {
+            'policies_sold':policies_sold ,  # Get the first value from the result
+            'total_net_premium': total_net_premium ,  # Get the second value from the result
+            'total_gross_premium': total_gross_premium,  # Get the third value from the result
+        }
+        return JsonResponse(data)
+    else:
+        return JsonResponse({
+            'policies_sold': 0,
+            'total_net_premium': 0.0,
+            'total_gross_premium': 0.0
+        })
+
 def business_summary_product_wise(request):
 
-    summary = PolicyDocument.objects.values('vehicle_type') \
-                                      .annotate(product_count=Count('vehicle_type')) \
-                                      .order_by('vehicle_type')
-    return summary
+    summary = PolicyDocument.objects.exclude(vehicle_type__isnull=True)\
+                                    .exclude(vehicle_type__exact='')\
+                                    .values('vehicle_type') \
+                                    .annotate(product_count=Count('vehicle_type')) \
+                                    .order_by('vehicle_type').distinct()
+    return summary  
+
+
+def business_summary_product_wiseajax(request):
+    summary = PolicyDocument.objects.exclude(vehicle_type__isnull=True) \
+                                    .exclude(vehicle_type__exact='') \
+                                    .values('vehicle_type') \
+                                    .annotate(product_count=Count('vehicle_type')) \
+                                    .distinct()
+
+    total_count = sum(item['product_count'] for item in summary)
+
+    return JsonResponse({
+        'product_wise_labels': ["2W/4 Wheeler"],
+        'product_wise_counts': [total_count],
+        'productCommercialLabels': ["Commercial"],
+        'productCommercialCounts': [total_count], 
+    }, safe=False)
