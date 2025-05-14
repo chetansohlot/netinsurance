@@ -2,7 +2,7 @@ from django.urls import path, include
 from . import views,export
 from . import views
 from . import authenticationView
-from .controller import commissions, profile,policy,Dashboard, Referral, globalController, helpAndSupport, Employee, leads, sellMotor, sellHealth, sellTerm, Franchises, Department, Branches, members, customers, quoteManagement, healthQuoteManagement, homeManagement, exams,SourceMaster,BQP
+from .controller import commissions, profile,policy,Dashboard, Referral, globalController, helpAndSupport, Employee, leads, sellMotor, sellHealth, sellTerm, Franchises, Department, Branches, members, customers, quoteManagement, healthQuoteManagement, homeManagement, exams,SourceMaster,BQP,Credential
 from .controller import reports, PolicyCommission, PolicyPayment, insurance
 from django.conf import settings
 from django.conf.urls.static import static
@@ -381,7 +381,14 @@ urlpatterns = [
     path('bqp/edit/<int:bqp_id>/', BQP.bqp_edit, name='bqp_edit'),
     path('bqp/delete/<int:bqp_id>/', BQP.bqp_delete, name='bqp_delete'),
     
-    path('get-pos-partners-by-bqp/', views.get_pos_partners_by_bqp,name="get-pos-partners-by-bqp")
+    path('get-pos-partners-by-bqp/', views.get_pos_partners_by_bqp,name="get-pos-partners-by-bqp"),
+
+    ## Credential URL ##
+    path('credential', Credential.credential_list,name='credential_list'),
+    path('credential/create/', Credential.credential_create, name='credential_create'),
+    path('credential/edit/<int:credential_id>/', Credential.credential_edit, name='credential_edit'),
+    path('credential/delete/<int:credential_id>/', Credential.credential_delete, name='credential_delete'),
+
 ] 
 
 

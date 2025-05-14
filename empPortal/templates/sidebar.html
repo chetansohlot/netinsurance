@@ -231,15 +231,16 @@
                         <p>Employee</p>
                       </a>
                   </li>
-                  <!--Parth Singh-->
-<li class="nav-item">
-  <a href="{% url 'bqp_list' %}" class="nav-link {% if '/bqp/' in request.path %} active {% endif %}">
-     <svg class="sidbarmenu-svg">
-        <use xlink:href="#employees-icon" />
-     </svg>
-     <p>BQP</p>
-  </a>
-</li>
+
+                <!--Parth Singh-->
+                <li class="nav-item">
+                  <a href="{% url 'bqp_list' %}" class="nav-link {% if '/bqp/' in request.path %} active {% endif %}">
+                    <svg class="sidbarmenu-svg">
+                        <use xlink:href="#employees-icon" />
+                    </svg>
+                    <p>BQP</p>
+                  </a>
+                </li>
 
             <!--Anjali Pandey-->
             <li class="nav-item">
@@ -250,6 +251,16 @@
                 <p>Insurance Co.</p>
               </a>
             </li>
+
+            <!--Parth Singh-->
+                <li class="nav-item">
+                  <a href="{% url 'credential_list' %}" class="nav-link ">
+                    <svg class="sidbarmenu-svg">
+                        <use xlink:href="#employees-icon" />
+                    </svg>
+                    <p>Credential Mgt</p>
+                  </a>
+                </li>
             
 
               </ul>
