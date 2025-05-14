@@ -193,6 +193,7 @@ urlpatterns = [
     path('referral-management/create-referral', Referral.create_or_edit, name='referral-management-create'),
     path('referral-management/<str:referral_id>/', Referral.create_or_edit, name='referral-management-edit'),
     path('referral/toggle-status/<int:referral_id>/', Referral.toggle_referral_status, name='referral-toggle-status'),
+    path('referral/delete/<int:pk>/', Referral.soft_delete_referral, name='referral-soft-delete'),
     
     # path('referral-management/bulk-upload/', Referral.ref_bulk_upload, name='referral-bulk-upload'),
 
