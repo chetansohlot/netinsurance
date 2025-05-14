@@ -93,6 +93,14 @@
           {% comment %} ____ BULK UPDATE INSURER _____  {% endcomment %}
           
           
+          <li class="nav-item">
+            <a href="{% url 'credential_list' %}" class="nav-link ">
+              <svg class="sidbarmenu-svg">
+                  <use xlink:href="#employees-icon" />
+              </svg>
+              <p>Credential Mgt</p>
+            </a>
+          </li>
             <li class="nav-item {% if '/report/' in request.path %} menu-is-opening menu-open {% endif %}">
               <a href="#" class="nav-link {% if '/report/' in request.path %} active {% endif %}" {% if "/report/" in request.path %} style="display:block" {% endif %}>
                 <svg class="sidbarmenu-svg">
@@ -101,14 +109,14 @@
                 <p>Reports  <i class="fas fa-angle-right right"></i></p>
               </a>
               <ul class="nav nav-treeview">
-                <li class="nav-item">
+                {% comment %} <li class="nav-item">
                   <a href="{{ commission_url }}" class="nav-link sidebar-menutext {% if request.path == commission_url %} active {% endif %}">
                     <svg class="sidbarmenu-svg">
                       <use xlink:href="#commission-icon" />
                     </svg>
                     <p>Comp. Report </p>
                   </a>
-                </li>
+                </li> {% endcomment %}
                 <li class="nav-item">
                   <a href="{{ pending_commission_url }}" class="nav-link sidebar-menutext {% if request.path == pending_commission_url %} active {% endif %}">
                     <svg class="sidbarmenu-svg">

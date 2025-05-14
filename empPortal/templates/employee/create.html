@@ -76,7 +76,7 @@ Add Employee
                             <!-- Date of Birth -->
                             <div class="form-group col-sm-6 col-md-4">
                                 <label class="form-lbl" for="dob">Date of Birth</label>
-                                <input type="date" name="dob" id="dob" class="form-field" value="{% if employee.date_of_birth %}{{ employee.date_of_birth|date:'Y-m-d' }}{% else %}{{ employee.dob|default:'' }}{% endif %}">
+                                <input type="text" name="dob" id="dob" placeholder="DD-MM-YYYY" class="form-field dob_datepicker" value="{% if employee.date_of_birth %}{{ employee.date_of_birth|date:'Y-m-d' }}{% else %}{{ employee.dob|default:'' }}{% endif %}">
                             </div>
 
                             <!-- Gender -->
@@ -151,7 +151,7 @@ Add Employee
                             </div>
                             <div class="form-group col-sm-6 col-md-4">
                                 <label class="form-lbl" for="password">Password</label>
-                                <input type="password" autocomplete="off" class="form-field password" name="password" id="password" placeholder="Enter Password" value="">
+                                <input type="password" autocomplete="new-password" class="form-field password" name="password" id="password" placeholder="Enter Password" value="">
                                 {% if employee %}<small class="form-text text-muted">Leave blank if you do not want to update</small>{% endif %}
                             </div>
 

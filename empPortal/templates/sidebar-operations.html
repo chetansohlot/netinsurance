@@ -45,9 +45,18 @@
               <p>Policy Mgt</p>
             </a>
           </li>
+          
+          <li class="nav-item">
+            <a href="{% url 'credential_list' %}" class="nav-link ">
+              <svg class="sidbarmenu-svg">
+                  <use xlink:href="#employees-icon" />
+              </svg>
+              <p>Credential Mgt</p>
+            </a>
+          </li>
           {% comment %} ____ COMMISSION POLICY _____  {% endcomment %}
           
-          <li class="nav-item {% if '/policy-commission/' in request.path %} menu-is-opening menu-open {% endif %}">
+          {% comment %} <li class="nav-item {% if '/policy-commission/' in request.path %} menu-is-opening menu-open {% endif %}">
             <a href="#" class="nav-link {% if '/policy-commission/' in request.path %} active {% endif %}" {% if "/policy-commission/" in request.path %} style="display:block" {% endif %}>
               <svg class="sidbarmenu-svg">
                 <use xlink:href="#billing-icon" />
@@ -82,7 +91,7 @@
               </li>
             </ul>
             
-          </li>
+          </li> {% endcomment %}
           {% comment %} ____ COMMISSION POLICY _____  {% endcomment %}
         </ul>
       </nav>

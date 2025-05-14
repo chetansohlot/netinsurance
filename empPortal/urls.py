@@ -2,7 +2,7 @@ from django.urls import path, include
 from . import views,export
 from . import views
 from . import authenticationView
-from .controller import commissions, profile,policy,Dashboard, Referral, globalController, helpAndSupport, Employee, leads, sellMotor, sellHealth, sellTerm, Franchises, Department, Branches, members, customers, quoteManagement, healthQuoteManagement, homeManagement, exams,SourceMaster,BQP
+from .controller import commissions, profile,policy,Dashboard, Referral, globalController, helpAndSupport, Employee, leads, sellMotor, sellHealth, sellTerm, Franchises, Department, Branches, members, customers, quoteManagement, healthQuoteManagement, homeManagement, exams,SourceMaster,BQP,Credential
 from .controller import reports, PolicyCommission, PolicyPayment, insurance, dispositions
 from django.conf import settings
 from django.conf.urls.static import static
@@ -62,9 +62,10 @@ urlpatterns = [
     path('dashboard/', Dashboard.dashboard, name='dashboard'),
     path('business_summary_insurer_chartajax/', Dashboard.business_summary_insurer_chartajax, name='business_summary_insurer_chartajax'),
     path('business_consolidated_ajax/', Dashboard.business_consolidated_ajax, name='business_consolidated_ajax'),
-    path('referral_summary_chartajax', Dashboard.referral_summary_chartajax, name='referral_summary_chartajax'),
+    path('referral_summary_chartajax/', Dashboard.referral_summary_chartajax, name='referral_summary_chartajax'),
     path('partner_policy_summary_ajax/', Dashboard.partner_policy_summary_ajax, name='partner_policy_summary_ajax'),
-
+    path('dashboard-ajax/', Dashboard.dashboard_ajax, name='dashboard_ajax'),
+    path('business_summary_product_wiseajax/', Dashboard.business_summary_product_wiseajax,name='business_summary_product_wiseajax'),
 
 
     path('franchise-management/', Franchises.index, name='franchise-management'),
@@ -89,6 +90,7 @@ urlpatterns = [
     path('employee-management/', Employee.index, name='employee-management'),
     path('employee-management/create-employee', Employee.save_or_update_employee, name='employee-management-create'),
     path('employee-management/update-employee/<str:employee_id>/', Employee.save_or_update_employee, name='employee-management-update'),
+    path('employee-management/view-employee/<str:employee_id>/', Employee.view_employee, name='employee-management-view'),
     path('employee-management/update-address/<str:employee_id>/', Employee.save_or_update_address, name='employee-management-update-address'),
     path('employee-management/family-details/<str:employee_id>/', Employee.save_or_update_family_details, name='employee-management-family-details'),
     path('employee-management/employment-info/<str:employee_id>/', Employee.save_or_update_employment_info, name='employee-management-employment-info'),
@@ -185,9 +187,11 @@ urlpatterns = [
     path('leads/v1/save-lead-dispositions',leads.save_leads_dispositions,name="save-lead-dispositions"),
     #Insurance
     path('insurance/', insurance.insurance_list, name='insurance_index'),
-    path('create-insurance/', insurance.insurance_create, name='create_insurance'),
+    path('insurance/v1/create-insurance/', insurance.insurance_create, name='create-insurance'),
     path('insurance/edit/<int:insurance_id>/', insurance.insurance_edit, name='insurance_edit'),
     path('toggle-insurance-status/<int:insurance_id>/', insurance.toggle_insurance_status, name='insurance-toggle-status'),  #Anjali
+    path('get-state/', insurance.get_state, name='get_state'),
+    path('get-cities/', insurance.get_cities, name='get_cities'),
 
     # REFERRAL 
     path('referral-management/bulk-upload/', Referral.refBulkUpload, name='referral-bulk-upload'),
@@ -195,6 +199,8 @@ urlpatterns = [
     path('referral-management/create-referral', Referral.create_or_edit, name='referral-management-create'),
     path('referral-management/<str:referral_id>/', Referral.create_or_edit, name='referral-management-edit'),
     path('referral/toggle-status/<int:referral_id>/', Referral.toggle_referral_status, name='referral-toggle-status'),
+    path('referral/delete/<int:pk>/', Referral.soft_delete_referral, name='referral-soft-delete'),
+    
     
     # path('referral-management/bulk-upload/', Referral.ref_bulk_upload, name='referral-bulk-upload'),
 
@@ -333,6 +339,8 @@ urlpatterns = [
     # path('bulk-browser-policy/', views.bulkBrowsePolicy, name='bulk-browser-policy'),
     path('bulk-browser-policy/', policy.bulkBrowsePolicy, name='bulk-browser-policy'),
     path('policy-data/', policy.policyData, name='policy-data'),
+    path('operator-verify-policy/', policy.operator_verify_policy, name='operator-verify-policy'),
+
     path('edit-policy-data/<str:id>', views.editPolicy, name='edit-policy'),
     path('delete-policy-data/<str:id>', policy.deletePolicy, name='delete-policy'),
     path('edit-policy/<str:policy_id>/', policy.edit_policy, name='edit-policy-data'),
@@ -381,7 +389,13 @@ urlpatterns = [
     path('bqp/create/', BQP.bqp_create, name='bqp_create'),
     path('bqp/edit/<int:bqp_id>/', BQP.bqp_edit, name='bqp_edit'),
     path('bqp/delete/<int:bqp_id>/', BQP.bqp_delete, name='bqp_delete'),
-    
+
+    ## Credential URL ##
+    path('credential', Credential.credential_list,name='credential_list'),
+    path('credential/create/', Credential.credential_create, name='credential_create'),
+    path('credential/edit/<int:credential_id>/', Credential.credential_edit, name='credential_edit'),
+    path('credential/delete/<int:credential_id>/', Credential.credential_delete, name='credential_delete'),
+
     path('get-pos-partners-by-bqp/', views.get_pos_partners_by_bqp,name="get-pos-partners-by-bqp"),
     
     path('disposition/v1/sub-disposition-list',dispositions.get_sub_disposition_list,name="get-sub-disposition")

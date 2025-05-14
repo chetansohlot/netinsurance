@@ -98,8 +98,6 @@ def create_or_edit(request, department_id=None):
         # Extract form data
         name = request.POST.get("name", "").strip()
         mobile = request.POST.get("mobile", "").strip()
-        email = request.POST.get("email", "").strip()
-        department_code = request.POST.get("department_code", "").strip()  # New Field
 
         if department:
             # Update existing department

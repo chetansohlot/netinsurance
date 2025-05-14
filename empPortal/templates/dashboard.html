@@ -111,9 +111,10 @@
                   <div class="row">
                     <div class="col-auto">
                         <select name="consolidated_by" class="form-field" id="consolidated_by">
-                            <option value="1">Today</option>
-                            <option value="2">MTD</option>
-                            <option value="3">Custom Date</option>
+                            <option value="1">All</option>
+                            <option value="2">Today</option>
+                            <option value="3">MTD</option>
+                            <option value="4">Custom Date</option>
                         </select>
                     </div>
                     <div class="col-auto" style="display: none;">
@@ -133,11 +134,11 @@
                         </select>
                     </div>
                     <div class="col" style="display: none;">
-                        <input type="text" name="consolidated_from_date" class="datepicker_common" id="consolidated_from_date" placeholder="From Date" autocomplete="off">
+                        <input type="text" name="consolidated_from_date" class="form-fields datepicker_common" id="consolidated_from_date" placeholder="From Date" autocomplete="off">
                         <span class="error consolidated_from_date_err"></span>
                     </div>
                     <div class="col" style="display: none;">
-                        <input type="text" name="consolidated_to_date" class="datepicker_common" id="consolidated_to_date" placeholder="To Date" autocomplete="off">
+                        <input type="text" name="consolidated_to_date" class=" form-fields datepicker_common" id="consolidated_to_date" placeholder="To Date" autocomplete="off">
                         <span class="error consolidated_to_date_err"></span>
                     </div>
                   </div>
@@ -152,7 +153,7 @@
                               <p class="card-text text-dark">
                                 Total Policies Sold
                               </p>
-                              <h5 class="card-title card-number">{{ policy_count }}</h5>
+                              <h5 class="card-title card-number" id="policies_sold">{{ policy_count }}</h5>
                             </div>
                           </div>
                         </div>
@@ -183,7 +184,7 @@
                           <div class="row">
                             <div class="col">
                               <p class="card-text text-dark">Total Revenue</p>
-                              <h5 class="card-title card-number">
+                              <h5 class="card-title card-number" >
                                 <i class="fa-solid fa-indian-rupee-sign"></i>{{ total_revenue|indian_currency }}
                               </h5>
                             </div>
@@ -200,7 +201,7 @@
                           <div class="row">
                             <div class="col">
                               <p class="card-text text-dark">Gross Premium</p>
-                              <h5 class="card-title card-number">
+                              <h5 class="card-title card-number" id="total_gross_premium">
                                 <i class="fa-solid fa-indian-rupee-sign"></i>{{ total_gross_premium|indian_currency }}
                               </h5>
                             </div>
@@ -217,7 +218,7 @@
                           <div class="row">
                             <div class="col">
                               <p class="card-text text-dark">Net Premium</p>
-                              <h5 class="card-title card-number">
+                              <h5 class="card-title card-number" id="total_net_premium">
                                 <i class="fa-solid fa-indian-rupee-sign"></i>{{ total_net_premium|indian_currency }}
                               </h5>
                             </div>
@@ -368,7 +369,7 @@
                   <h5 class="card-hding pb-0">Referal Business Summary</h5>
                   <div class="row">
                     <div class="col-auto">
-                        <select name="summary_referal" class="form-field" id="summary_referal">
+                        <select name="summary_referral" class="form-field" id="summary_referral">
                             <option value="1">All</option>
                             <option value="2">Today</option>
                             <option value="3">MTD</option>
@@ -376,7 +377,7 @@
                         </select>
                     </div>
                     <div class="col-auto" style="display: none;">
-                        <select name="summary_referal_month" class="form-field" id="summary_referal_month">
+                        <select name="summary_referral_month" class="form-field" id="summary_referral_month">
                             <option value="1">Jan</option>
                             <option value="2">Feb</option>
                             <option value="3">March</option>
@@ -392,17 +393,17 @@
                         </select>
                     </div>
                     <div class="col" style="display: none;">
-                        <input type="text" name="summary_referal_from_date" class="form-field datepicker_common" id="summary_referal_from_date" placeholder="From Date" autocomplete="off">
+                        <input type="text" name="summary_referral_from_date" class="form-field datepicker_common" id="summary_referral_from_date" placeholder="From Date" autocomplete="off">
                         <span class="error consolidated_from_date_err"></span>
                     </div>
                     <div class="col" style="display: none;">
-                        <input type="text" name="summary_referal_to_date" class="form-field datepicker_common" id="summary_referal_to_date" placeholder="To Date" autocomplete="off">
-                        <span class="error summary_referal_to_date_err"></span>
+                        <input type="text" name="summary_referral_to_date" class="form-field datepicker_common" id="summary_referral_to_date" placeholder="To Date" autocomplete="off">
+                        <span class="error summary_referral_to_date_err"></span>
                     </div>
                   </div>
                 </div>  
                 <hr class="my-2">
-                <canvas id="referal_bar_chart" style="width:100%; height: 280px;"></canvas>
+                <canvas id="referal_bar_chart" style="width:100%; height: 140px;"></canvas>
               </div>
             </div>
           </div>
@@ -647,6 +648,106 @@
   });
 </script>
 
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    var csrfToken = "{{ csrf_token }}";
+
+    // Handle visibility of date inputs and month dropdown
+    document.getElementById("consolidated_by").addEventListener("change", function() {
+        var consolidatedBy = this.value;
+        console.log("Consolidated by selected: " + consolidatedBy);
+
+        var fromDateField = document.getElementById("consolidated_from_date").parentElement;
+        var toDateField = document.getElementById("consolidated_to_date").parentElement;
+        var monthField = document.getElementById("consolidated_by_month").parentElement;
+
+        if (consolidatedBy === "4") {
+            // Custom Date selected: show date range, hide month
+            fromDateField.style.display = "block";
+            toDateField.style.display = "block";
+            monthField.style.display = "none";
+        } else if (consolidatedBy === "3") {
+            // MTD selected: show month dropdown, hide dates
+            fromDateField.style.display = "none";
+            toDateField.style.display = "none";
+            monthField.style.display = "block";
+        } else {
+            // All or Today selected: hide all
+            fromDateField.style.display = "none";
+            toDateField.style.display = "none";
+            monthField.style.display = "none";
+        }
+
+        fetchDashboardData(); // Trigger data update
+    });
+
+    function fetchDashboardData() {
+        var consolidatedBy = document.getElementById("consolidated_by").value;
+        var consolidatedByMonth = document.getElementById("consolidated_by_month").value;
+        var fromDate = document.getElementById("consolidated_from_date").value;
+        var toDate = document.getElementById("consolidated_to_date").value;
+
+        console.log("Fetching data with values:");
+        console.log("Consolidated By: " + consolidatedBy);
+        console.log("Selected Month: " + consolidatedByMonth);
+        console.log("From Date: " + fromDate);
+        console.log("To Date: " + toDate);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/dashboard-ajax/?" +
+            "consolidated_by=" + consolidatedBy +
+            "&consolidated_from_date=" + fromDate +
+            "&consolidated_to_date=" + toDate +
+            "&consolidated_by_month=" + consolidatedByMonth, true);
+        xhr.setRequestHeader("X-CSRFToken", csrfToken);
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    var data = JSON.parse(xhr.responseText);
+                    console.log("Server Response:", data);
+
+                    if (data.error || data.message === "No data found for the given filters") {
+                        console.warn("No data found, resetting values to 0.");
+                        updateDashboard(0, 0, 0);
+                    } else {
+                        updateDashboard(
+                            data.policies_sold ?? 0,
+                            data.total_net_premium ?? 0,
+                            data.total_gross_premium ?? 0
+                        );
+                    }
+                } else {
+                    console.error("AJAX failed with status: " + xhr.status);
+                    updateDashboard(0, 0, 0);
+                }
+            }
+        };
+
+        xhr.send();
+    }
+
+    function formatIndianCurrency(amount) {
+        return '₹' + new Intl.NumberFormat('en-IN', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(amount);
+    }
+
+    function updateDashboard(policiesSold, netPremium, grossPremium) {
+        document.getElementById("policies_sold").textContent = policiesSold;
+        document.getElementById("total_net_premium").textContent = formatIndianCurrency(netPremium);
+        document.getElementById("total_gross_premium").textContent = formatIndianCurrency(grossPremium);
+    }
+
+    // Attach change events to all inputs
+    document.getElementById("consolidated_by_month").addEventListener("change", fetchDashboardData);
+    document.getElementById("consolidated_from_date").addEventListener("change", fetchDashboardData);
+    document.getElementById("consolidated_to_date").addEventListener("change", fetchDashboardData);
+});
+</script>
+
+
           
           
           
@@ -765,9 +866,7 @@
 <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script> -->
 <script src="http://retention.netcrm.in/js/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0/dist/chartjs-plugin-datalabels.min.js"></script>
-<script>
-  let window.myChart = null; // Or use window.myChart
-</script>
+
 
 {{ consolidated_month_labels|json_script:"monthLabels" }}
 {{ consolidated_month_counts|json_script:"motorData" }}
@@ -1082,9 +1181,94 @@
   });
 </script>
 
-
+{{ product_wise_labels|json_script:"productWiseLabels" }}
+{{ product_wise_counts|json_script:"productWiseCounts" }}
+{{ productCommercialLabels|json_script:"productCommercialLabels" }}
+{{ productCommercialCounts|json_script:"productCommercialCounts" }}
 
 <script type="text/javascript">
+  Chart.register(ChartDataLabels);
+
+  const productWiseLabels = JSON.parse(document.getElementById("productWiseLabels").textContent);
+  const productWiseCounts = JSON.parse(document.getElementById("productWiseCounts").textContent);
+
+  const productCommercialLabels = JSON.parse(document.getElementById("productCommercialLabels").textContent);
+  const productCommercialCounts = JSON.parse(document.getElementById("productCommercialCounts").textContent);
+
+  new Chart("product_wise_bar_chart", {
+    type: 'bar',
+    data: {
+      labels: productWiseLabels,
+      datasets: [{
+        label: 'Motor',
+        data: productWiseCounts,
+        backgroundColor: "#4593dd",
+        fill: false,
+        borderColor: '#4593dd'
+      }]
+    },
+    options: {
+      responsive: true,
+      indexAxis: 'y',
+      plugins: {
+        legend: {
+          labels: {
+            padding: 20,
+            font: { size: 11 }
+          },
+          position: 'top',
+        },
+        datalabels: {
+          anchor: 'middle',
+          align: 'middle',
+          color: '#000',
+          font: { weight: 'bold' },
+          formatter: (value) => value
+        }
+      }
+    }
+  });
+
+  new Chart("product_commercial_bar_chart", {
+    type: 'bar',
+    data: {
+      labels: productCommercialLabels,
+      datasets: [{
+        label: 'Motor',
+        data: productCommercialCounts,
+        backgroundColor: "#4593dd",
+        fill: false,
+        borderColor: '#4593dd'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      indexAxis: 'y',
+      plugins: {
+        legend: {
+          labels: {
+            padding: 20,
+            font: { size: 11 }
+          },
+          position: 'top',
+        },
+        datalabels: {
+          anchor: 'middle',
+          align: 'middle',
+          color: '#000',
+          font: { weight: 'bold' },
+          formatter: (value) => value
+        }
+      }
+    }
+  });
+</script>
+
+
+
+
+<!-- <script type="text/javascript">
   Chart.register(ChartDataLabels);
 
 
@@ -1170,10 +1354,71 @@
             }
              
         }
-    });
-
-
+    }); -->
 </script>
+
+<script>
+function updateProductWiseChart() {
+    // AJAX request to fetch the data
+    $.ajax({
+        url: '/business_summary_product_wiseajax/',
+        type: 'GET',
+        success: function(response) {
+            console.log("Product Counts:", response.product_wise_counts);
+            console.log("Product Labels:", response.product_wise_labels);
+            console.log("Commercial Counts:", response.productCommercialCounts);
+            console.log("Commercial Labels:", response.productCommercialLabels);
+
+            // Update both charts
+            updateProductWiseBarChart(response.product_wise_counts, response.product_wise_labels);
+            updateProductCommercialBarChart(response.productCommercialCounts, response.productCommercialLabels);
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX Error: ' + error);
+        }
+    });
+}
+
+// Function to update the Product Wise Bar Chart
+function updateProductWiseBarChart(counts, labels) {
+    var chartInstance = Chart.getChart("product_wise_bar_chart");
+
+    if (chartInstance) {
+        chartInstance.data.labels = labels;
+        chartInstance.data.datasets[0].data = counts;
+        chartInstance.update();
+    } else {
+        console.error('Product-wise chart instance not found');
+    }
+}
+
+// Function to update the Commercial Bar Chart
+function updateProductCommercialBarChart(counts, labels) {
+    var chartInstance = Chart.getChart("product_commercial_bar_chart");
+
+    if (chartInstance) {
+        chartInstance.data.labels = labels;
+        chartInstance.data.datasets[0].data = counts;
+        chartInstance.update();
+    } else {
+        console.error('Commercial chart instance not found');
+    }
+}
+
+// DOM Events
+document.addEventListener('DOMContentLoaded', function() {
+    updateProductWiseChart();
+});
+
+document.getElementById('update_chart_button').addEventListener('click', function() {
+    updateProductWiseChart();
+});
+
+document.getElementById('select_product').addEventListener('change', function() {
+    updateProductWiseChart();
+});
+</script>
+
 
 <script>
   //Function to update the Insurer business chart
@@ -1261,9 +1506,9 @@
               end_date: endDate
           },
           success: function(response) {
-              console.log("Referral Counts:", response.referral_motor_counts);
-              console.log("Referral Provider:", response.referral_provider_labels);
-              referral_bar_chart_open(response.referral_motor_counts, response.referral_provider_labels);
+              console.log("Referral Counts:", response.referral_counts);
+              console.log("Referral Agent Labels:", response.referral_agent_labels);
+              referral_bar_chart_open(response.referral_counts, response.referral_agent_labels);
           },
           error: function(xhr, status, error) {
               console.error('AJAX Error: ' + error);
@@ -1271,31 +1516,6 @@
       });
   }
 </script>
-
-<!-- <script>
-  //Function to update the Insurer business chart
-  function updatePartnerChart() {
-   
-      $.ajax({
-          url: '/partner_policy_summary_ajax/',  // Django view URL
-          type: 'GET',
-          data: {
-              start_date: startDate,
-              end_date: endDate
-          },
-          success: function(response) {
-              console.log("Agent Labels:", response.agent_labels); 
-              console.log("Agent Counts:", response.agent_counts); 
-              partner_bar_chart_open(response.agent_counts, response.agent_labels);
-          },
-          error: function(xhr, status, error) {
-              console.error('AJAX Error: ' + error);
-          }
-      });
-  }
-</script> -->
-
-
 
 
 <script>
@@ -1569,7 +1789,7 @@
       .then(response => response.json())
       .then(data => {
         console.log("AJAX payload:", data);
-        referral_bar_chart_open(data.referral_motor_counts, data.referral_provider_labels);
+        referral_bar_chart_open(data.referral_counts, data.referral_agent_labels);
       })
       .catch(error => {
         console.error("Chart fetch error:", error);

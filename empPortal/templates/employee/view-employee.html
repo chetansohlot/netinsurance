@@ -1,0 +1,379 @@
+{% extends 'master.html' %}
+
+{% load static %}
+
+{% block title %}
+View Employee
+{% endblock %}
+
+{% block content %}
+
+<body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+    
+        {% include "navbar.html" %}
+        {% include "sidebar.html" %}
+    
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <div class="content-header breadcrump-bg">
+          <div class="container-fluid">
+            <div class="row py-2">
+              <div class="col-sm-6">
+                <div class="d-flex align-items-center">
+                  <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">View Employee</a>
+                </div>
+                <ul class="breadcrump">
+                  <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
+                  <li> <a href="#">Employee</a> <i class="fas fa-chevron-right"></i></li>
+                  <li>View Employee</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /.content-header -->
+    
+        <!-- Main content -->
+        <div class="content px-0">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-md-4 px-0">
+                <div class="card member-detail-left-card">
+                  <div class="card-body box-profile">
+                    <!-- {% if user_details.profile_image %}
+                        <img src="{{ user_details.profile_image.url }}" alt="Profile Image" class="card-profile-img">
+                    {% else %}
+                        <img src="{% static 'dist/img/svg/profile-avatar-male.svg' %}" alt="Default Profile" class="card-profile-img">
+                    {% endif %} -->
+                    
+                    <h3 class="profile-username text-center">Vinod Kumar (Male)</h3>
+                    <div class="d-flex justify-content-center mt-2">
+                      <span class="text-muted">DOB: 15-12-1986</span>
+                    </div>  
+                    <div class="profile-info-divider"></div>
+                    <ul class="member-detail-list">
+                        
+                        <li>
+                            <!-- <img src="{% static 'dist/img/svg/birthday_ic.svg' %}" alt=""> -->
+                            <span class="list">PAN No</span>
+                            <span class="list-output">BAKPK1234K</span>
+                        </li>
+                         <li>
+                            <!-- <img src="{% static 'dist/img/svg/birthday_ic.svg' %}" alt=""> -->
+                            <span class="list">Aadhaar No.</span>
+                            <span class="list-output">BAKPK1234K</span>
+                        </li>
+                        <li>
+                            <!-- <img src="{% static 'dist/img/svg/birthday_ic.svg' %}" alt=""> -->
+                            <span class="list">Employee Code</span>
+                            <span class="list-output">100001</span>
+                        </li>
+                        <li>
+                            <!-- <img src="{% static 'dist/img/svg/gender_ic.svg' %}" alt=""> -->
+                            <span class="list">Designation</span>
+                            <span class="list-output">
+                                RM Manager
+                            </span>
+                        </li>
+                        <li>
+                            <!-- <img src="{% static 'dist/img/svg/birthday_ic.svg' %}" alt=""> -->
+                            <span class="list">Date of Joining</span>
+                            <span class="list-output">15-05-2025</span>
+                        </li>
+                        <li>
+                            <!-- <img src="{% static 'dist/img/svg/phone_ic.svg' %}" alt=""> -->
+                            <span class="list">Mobile Number</span>
+                            <span class="list-output">9876543210</span>
+                        </li>
+                        <li>
+                            <!-- <img src="{% static 'dist/img/svg/email_ic.svg' %}" alt=""> -->
+                            <span class="list">E-mail</span>
+                            <span class="list-output">vinod.kumar@netleafinfosoft.com</span>
+                        </li>
+                        <li>
+                            <!-- <img src="{% static 'dist/img/svg/state.svg' %}" alt=""> -->
+                            <span class="list">Blood Group</span>
+                            <span class="list-output">B+</span>
+                        </li>
+                        <li>
+                            <!-- <img src="{% static 'dist/img/svg/city.svg' %}" alt=""> -->
+                            <span class="list">Marital Status</span>
+                            <span class="list-output">Married</span>
+                        </li>
+                        
+
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-8 px-0">
+                <div class="card member-detail-right-card">
+                  <ul class="nav nav-pills profile-tab">
+                    <li class="nav-item text-bold"><a class="nav-link active" href="#address-tab" data-toggle="tab">Address</a></li>
+                    <li class="nav-item text-bold"><a class="nav-link" href="#family-details-tab" data-toggle="tab">Family Details</a></li>
+                    <li class="nav-item text-bold"><a class="nav-link" href="#reference-tab" data-toggle="tab">Reference </a></li>
+                    <li class="nav-item text-bold"><a class="nav-link" href="#allocation-tab" data-toggle="tab">Allocations </a></li>
+                    
+                    <!-- <li class="nav-item text-bold"><a class="nav-link" href="#address-tab" data-toggle="tab">Documents</a></li> -->
+                  </ul>
+                                <!-- /.card-header -->
+                  <div class="card-body">
+                    <div class="tab-content tab-scrollbar">
+                      <div class="active tab-pane" id="address-tab">
+                        <div class="row mt-3">
+                          <div class="col-md-12">
+                            <h2 class="admin-title border-bottom pb-2 mb-4">Permanent Address</h2>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="userdetail-group">
+                                <p class="userdetail-lbl">Address</p>
+                                <p class="userdetail-highligt">
+                                    60 Foot Road, Jawahar Colony NIT Faridabad Haryana
+                                </p>
+                            </div>
+                          </div>
+                          <div class="col-md-2">
+                            <div class="userdetail-group">
+                                <p class="userdetail-lbl">State</p>
+                                <p class="userdetail-highligt">
+                                    Haryana
+                                </p>
+                            </div>
+                          </div>
+                          <div class="col-md-2">
+                            <div class="userdetail-group">
+                                <p class="userdetail-lbl">City</p>
+                                <p class="userdetail-highligt">
+                                    Faridabad
+                                </p>
+                            </div>
+                          </div>
+                          <div class="col-md-2">
+                            <div class="userdetail-group">
+                                <p class="userdetail-lbl">Pincode</p>
+                                <p class="userdetail-highligt">
+                                    121001
+                                </p>
+                            </div>
+                          </div>
+
+                          <div class="col-md-12">
+                            <h2 class="admin-title border-bottom pb-2 my-4">Correspondence Address</h2>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="userdetail-group">
+                                <p class="userdetail-lbl">Address</p>
+                                <p class="userdetail-highligt">
+                                    Sector 49, Grugram Haryana
+                                </p>
+                            </div>
+                          </div>
+                          <div class="col-md-2">
+                            <div class="userdetail-group">
+                                <p class="userdetail-lbl">State</p>
+                                <p class="userdetail-highligt">
+                                    Haryana
+                                </p>
+                            </div>
+                          </div>
+                          <div class="col-md-2">
+                            <div class="userdetail-group">
+                                <p class="userdetail-lbl">City</p>
+                                <p class="userdetail-highligt">
+                                    Grugram
+                                </p>
+                            </div>
+                          </div>
+                          <div class="col-md-2">
+                            <div class="userdetail-group">
+                                <p class="userdetail-lbl">Pincode</p>
+                                <p class="userdetail-highligt">
+                                    121005
+                                </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="tab-pane" id="family-details-tab">
+                        <div class="row mt-3">
+                          <div class="col-md-12">
+                            <h2 class="admin-title border-bottom pb-2 mb-4">Family Details</h2>
+                          </div>
+                          <div class="col-md-12">
+                            <div class="table-responsive">
+                              <table class="table table-design">
+                                <thead class="table-thead-bg-light table-header-fix">
+                                  <tr>
+                                    <th>Releation</th>
+                                    <th>First Name</th>
+                                    <th>Last Name</th>
+                                    <th>Date of Birth</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                      <th>Father</th>
+                                      <td>Rajender</td>
+                                      <td>Kumar</td>
+                                      <td>26-5-1964</td>
+                                    </tr>
+                                    <tr>
+                                      <th>Mother</th>
+                                      <td>Raj</td>
+                                      <td>Rani</td>
+                                      <td>26-5-1964</td>
+                                    </tr>
+                                </tbody>
+                              </table>
+                            </div>  
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div class="tab-pane" id="reference-tab">
+                        <!-- Personal Details -->
+                        <div class="row mt-3">
+                          <div class="col-md-12">
+                            <h2 class="admin-title border-bottom pb-2 mb-4">Reference Details</h2>
+                          </div>
+                          <div class="table-responsive">
+                            <table class="table table-design">
+                              <thead class="table-thead-bg-light table-header-fix">
+                                <tr>
+                                  <th>Releation</th>
+                                  <th>First Name</th>
+                                  <th>Last Name</th>
+                                  <th>Mobile No.</th>
+                                  <th>Email</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                  <tr>
+                                    <td>Father</td>
+                                    <td>Rajender</td>
+                                    <td>Kumar</td>
+                                    <td>9876543210</td>
+                                    <td>rajender@gmail.com</td>
+                                  </tr>
+                                  <tr>
+                                    <td>Mother</td>
+                                    <td>Raj</td>
+                                    <td>Rani</td>
+                                    <td>9876543210</td>
+                                    <td>rajrani@gmail.com</td>
+                                  </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                        <!-- Edit Button -->
+                      </div>
+                      <div class="tab-pane" id="allocation-tab">
+                        <div class="row mt-3">
+                          <div class="col-md-12">
+                            <h2 class="admin-title border-bottom pb-2 mb-4">Allocation Details</h2>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="userdetail-group">
+                                <p class="userdetail-lbl">Branch</p>
+                                <p class="userdetail-highligt">
+                                    Haryana
+                                </p>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="userdetail-group">
+                                <p class="userdetail-lbl">Role</p>
+                                <p class="userdetail-highligt">
+                                    Branch Manager
+                                </p>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="userdetail-group">
+                                <p class="userdetail-lbl">Department</p>
+                                <p class="userdetail-highligt">
+                                    Renewal
+                                </p>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="userdetail-group">
+                                <p class="userdetail-lbl">Manager</p>
+                                <p class="userdetail-highligt">
+                                    Abhay Singh
+                                </p>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="userdetail-group">
+                                <p class="userdetail-lbl">Team Leader</p>
+                                <p class="userdetail-highligt">
+                                    Ankit Sharma
+                                </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>  
+          </div>
+
+        </div>
+      </div>
+    </div>
+        
+
+    
+    {% include "footer.html" %}
+    {% include "footer-script.html" %}
+    <script>
+      document.getElementById("myForm").addEventListener("submit", function() {
+          document.getElementById("loader").style.display = "flex";
+      });
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('#role').change(function() {
+                var roleId = $(this).val();
+                var userSelect = $('#senior');
+
+                if (roleId) {
+                    $.ajax({
+                        url: "{% url 'get_users_by_role' %}",
+                        type: 'GET',
+                        data: { 'role_id': roleId },
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                        success: function(response) {
+                            userSelect.empty();
+                            userSelect.append('<option value="">Select User</option>');
+                            if (response.users && response.users.length > 0) {
+                                $.each(response.users, function(index, user) {
+                                    userSelect.append(
+                                        `<option value="${user.id}">${user.full_name}</option>`
+                                    );
+                                });
+                            } else {
+                                userSelect.append('<option value="">No users available</option>');
+                            }
+                        },
+                        error: function() {
+                            alert('Error fetching users');
+                        }
+                    });
+                } else {
+                    userSelect.empty().append('<option value="">Select User</option>');
+                }
+            });
+        });
+</script>
+</body>
+
+
+
+{% endblock %}

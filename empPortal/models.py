@@ -319,6 +319,19 @@ from django.utils.timezone import now
 
 
 class PolicyDocument(models.Model):
+    
+    OPERATOR_STATUS_CHOICES = [
+        ('0', 'Pending'),
+        ('1', 'Approved'),
+        ('2', 'Rejected'),
+    ]
+
+    QUALITY_STATUS_CHOICES = [
+        ('0', 'Pending'),
+        ('1', 'Approved'),
+        ('2', 'Rejected'),
+    ]
+
     filename = models.CharField(max_length=255)
     insurance_provider = models.CharField(max_length=255)
     policy_number = models.CharField(max_length=255)
@@ -326,6 +339,23 @@ class PolicyDocument(models.Model):
     policy_expiry_date = models.CharField(max_length=255)
     vehicle_number = models.CharField(max_length=255)
     holder_name = models.CharField(max_length=255)
+    
+    operator_verification_status = models.CharField(
+        max_length=1,
+        choices=OPERATOR_STATUS_CHOICES,
+        default='0'
+    )
+    operator_remark = models.TextField(blank=True, null=True)
+    operator_policy_verification_by = models.CharField(max_length=20, null=True, blank=True)  # Added column
+
+    quality_check_status = models.CharField(
+        max_length=1,
+        choices=QUALITY_STATUS_CHOICES,
+        default='0'
+    )
+    quality_remark = models.TextField(blank=True, null=True)
+    quality_policy_check_by = models.CharField(max_length=20, null=True, blank=True)  # Added column
+    
     policy_period = models.CharField(max_length=255)
     filepath = models.CharField(max_length=255)
     policy_premium = models.CharField(max_length=255)
@@ -355,6 +385,12 @@ class PolicyDocument(models.Model):
     insurer_tp_commission = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     insurer_od_commission = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     insurer_net_commission = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+
+    ACTIVE_CHOICES = (
+        ('1', 'Active'),
+        ('0', 'Inactive'),
+    )
+
     def __str__(self):
         return self.filename    
     
@@ -881,12 +917,10 @@ from django.utils import timezone
 
 class Department(models.Model):
     name = models.CharField(max_length=255, verbose_name="Department Name")
-    department_code = models.CharField(max_length=20, unique=True, verbose_name="Department Code")  # New Field
     head = models.CharField(max_length=255, verbose_name="Head of Department")
     head_of_department = models.CharField(max_length=255, verbose_name="Head of Department Name")  # New Field
     contact_person = models.CharField(max_length=255, verbose_name="Contact Person")  # New Field
     contact_number = models.CharField(max_length=15, verbose_name="Contact Number")
-    email = models.EmailField(max_length=255, unique=True, verbose_name="Email")
     address = models.TextField(null=True, blank=True, verbose_name="Address")
     city = models.CharField(max_length=100, null=True, blank=True, verbose_name="City")
     state = models.CharField(max_length=100, null=True, blank=True, verbose_name="State")

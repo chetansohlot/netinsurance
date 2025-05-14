@@ -27,6 +27,8 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django_q.tasks import async_task
 # from empPortal.tasks.referral_task import ref_BulkUpload
+from django.contrib.auth.decorators import login_required
+
 
 
 
@@ -59,6 +61,8 @@ def index(request):
         referrals = Referral.objects.filter(sales=str(user_id))
     else:
         referrals = Referral.objects.all()
+
+    referrals = Referral.objects.filter(referral_is_delete=False)
         
     # Filtering
     # if search_field and search_query:
@@ -106,6 +110,8 @@ def index(request):
         'search_query': search_query,
         'per_page': per_page,
         'sort_by': sort_by,
+        'referrals':referrals,
+        
     })
 
 def create_or_edit(request, referral_id=None):
@@ -653,6 +659,23 @@ def refBulkUpload(request):
         return redirect('referral-bulk-upload')
 
     return render(request, 'referral/ref-upload_excel.html')
+
+@login_required
+def soft_delete_referral(request, pk):
+    referral = get_object_or_404(Referral, pk=pk)
+    
+    # Convert invalid empty strings to None
+    if referral.dob == "":
+        referral.dob = None
+    if referral.date_of_anniversary == "":
+        referral.date_of_anniversary = None
+
+    # Mark as deleted
+    referral.referral_is_delete = True
+    referral.referral_deleted_by = request.user
+    referral.save()
+    return redirect('referral-management')
+
 
 
         

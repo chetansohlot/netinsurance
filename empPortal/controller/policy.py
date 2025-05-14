@@ -143,6 +143,51 @@ def edit_policy(request, policy_id):
 def none_if_blank(value):
     return value if value and value.strip() else None
 
+
+
+def operator_verify_policy(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            policy_id = data.get('policy_id')
+            remark = data.get('remark', '')
+            status = data.get('status')  # Expecting '1' for Approved, '2' for Rejected
+            type = data.get('type')  # 'operator' or 'quality'
+
+            if not policy_id:
+                return JsonResponse({'success': False, 'error': 'Policy ID is required.'})
+            if status not in ['1', '2']:
+                return JsonResponse({'success': False, 'error': 'Invalid status. Must be "1" (Approved) or "2" (Rejected).'})
+
+            policy = PolicyDocument.objects.filter(id=policy_id).first()
+            if not policy:
+                return JsonResponse({'success': False, 'error': 'Policy not found.'})
+
+            if type == 'operator':
+                policy.operator_verification_status = status
+                policy.operator_policy_verification_by = request.user.id
+                policy.operator_remark = remark
+            elif type == 'quality':
+                policy.quality_check_status = status
+                policy.quality_policy_check_by = request.user.id
+                policy.quality_remark = remark
+            else:
+                return JsonResponse({'success': False, 'error': 'Invalid type.'})
+
+            policy.save()
+
+            status_msg = 'approved' if status == '1' else 'rejected'
+            return JsonResponse({'success': True, 'message': f'Policy {status_msg} successfully.'})
+
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'error': 'Invalid JSON.'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+
+    return JsonResponse({'success': False, 'error': 'Invalid request method.'})
+
+
+
 def edit_vehicle_details(request, policy_id):
     
     if not request.user.is_authenticated and request.user.is_active != 1:
