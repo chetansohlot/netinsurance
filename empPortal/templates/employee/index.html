@@ -249,16 +249,15 @@ Employee Management
                                         
                                         <td>{{ branches|get_item:employee.branch_id|default:"-" }}</td>
                                         <td>
-                                            <a href="{% url 'employee-management-update' employee_id=employee.id %}" class="btn btn-xs btn-warning">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
+                                          <div class="d-flex">
+                                              <a href="{% url 'employee-management-update' employee_id=employee.id %}" class="btn btn-xs btn-warning mx-1">
+                                                  <i class="fas fa-edit"></i>
+                                              </a>
+                                              <a href="{% url 'employee-management-view' employee_id=employee.id %}" class="btn btn-xs btn-primary mx-1">
+                                                  <i class="fas fa-eye"></i>
+                                              </a>
+                                            </div>
                                         </td>
-                                        <td>
-                                            <a href="{% url 'employee-management-view' employee_id=employee.id %}" class="btn btn-xs btn-warning">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                        </td>
-
                                     </tr>
                                     {% endfor %}
                                 </tbody>
