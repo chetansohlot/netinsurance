@@ -48,6 +48,16 @@ Insurance Company- {% if insurance %}Edit Insurance Company{% else %}Create Insu
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-sm-12">
+                        <ul class="stepflow-text stepflow-five-col mt-0">
+                            <li><a href="#">Basic Company Details</a></li>
+                            <li><a href="#">Contact Details</a></li>
+                            
+                          </ul>
+                          <ul class="new-stepflow mb-3">
+                            <li></li>
+                            <li></li>
+                           
+                          </ul>
                         <!-- Form Card -->
                         <div class="card box-shadow-none p-md-5 p-3">
                             <div class="card-body px-0 pb-0 pt-0">
@@ -61,7 +71,7 @@ Insurance Company- {% if insurance %}Edit Insurance Company{% else %}Create Insu
                                             <label class="form-lbl" for="insurance_company">Insurance Company</label>
                                             <input type="text" class="form-field" name="insurance_company" id="insurance_company"
                                                    placeholder="Enter Insurance Company Name"
-                                                   value="{{ insurance.insurance_company|default:'' }}" required>
+                                                   value="{{ insurance.insurance_company|default:'' }}" >
                                             <span class="error insurance_company_err"></span>
                                         </div>
                                     </div>
@@ -69,7 +79,7 @@ Insurance Company- {% if insurance %}Edit Insurance Company{% else %}Create Insu
                                     <div class="form-row">
                                         <div class="form-group col-sm-6 col-md-4">
                                             <label class="form-lbl" for="registered_state">State</label>
-                                            <select class="form-field" name="registered_state" id="registered_state" required>
+                                            <select class="form-field" name="registered_state" id="registered_state" >
                                                 <option value="">Select State</option>
                                                 {% for state in states %}
                                                     <option value="{{ state.id }}"
@@ -86,7 +96,7 @@ Insurance Company- {% if insurance %}Edit Insurance Company{% else %}Create Insu
                                         
                                         <div class="form-group col-sm-6 col-md-4">
                                             <label class="form-lbl" for="registered_city">City</label>
-                                            <select class="form-field" name="registered_city" id="registered_city" required>
+                                            <select class="form-field" name="registered_city" id="registered_city" >
                                                 <option value="">Select City</option>
                                             </select>
                                             <span class="error city_err"></span>
@@ -95,8 +105,8 @@ Insurance Company- {% if insurance %}Edit Insurance Company{% else %}Create Insu
                                         <div class="form-group col-sm-6 col-md-4">
                                             <label class="form-lbl" for="pincode">Pincode</label>
                                             <input type="number" class="form-field" name="registered_pincode" 
-                                            id="registered_pincode" placeholder="Enter Pincode" 
-                                            value="{{ insurance.pincode|default:'' }}">
+                                            id="registered_pincode" placeholder="Enter Pincode" maxlength="6" 
+                                            value="{{ insurance.pincode|default:'' }}" >
                                             <span class="error pincode_err"></span>
                                         </div>
                                     </div>
@@ -104,14 +114,14 @@ Insurance Company- {% if insurance %}Edit Insurance Company{% else %}Create Insu
                                     <div class="form-group col-sm-6 col-md-4">
                                         <label class="form-lbl" for="address">Address</label>
                                         <textarea class="form-field" name="registered_address" 
-                                        id="registered_address" placeholder="Enter Address">
+                                        id="registered_address" placeholder="Enter Address" >
                                         {{ insurance.address|default:'' }}</textarea>
                                         <span class="error address_err"></span>
                                     </div>
                                     
                                     <!-- Checkbox for Same Address -->
                                     <div class="form-check mb-3">
-                                        <input type="checkbox" class="form-check-input" id="sameAddress">
+                                        <input type="checkbox" class="form-check-input" id="sameAddress" name="billing_same_as_registered">
                                         <label class="form-check-label" for="sameAddress">Same as Registered Address</label>
                                     </div>
                             
@@ -149,7 +159,7 @@ Insurance Company- {% if insurance %}Edit Insurance Company{% else %}Create Insu
                                         <div class="form-group col-sm-6 col-md-4">
                                             <label class="form-lbl" for="pincode">Pincode</label>
                                             <input type="number" class="form-field" name="billing_pincode" 
-                                            id="billing_pincode" placeholder="Enter Pincode" 
+                                            id="billing_pincode" placeholder="Enter Pincode"  maxlength="6" 
                                             value="{{ insurance.billing_pincode|default:'' }}">
                                             <span class="error pincode_err"></span>
                                         </div>
@@ -285,6 +295,53 @@ Insurance Company- {% if insurance %}Edit Insurance Company{% else %}Create Insu
             loadBillingCities(stateId);
         });
     });   
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const pincodeInput = document.getElementById("registered_pincode");
+        const addressInput = document.getElementById("registered_address");
+    
+        // Pincode Validation (Only 6-digit numbers)
+        pincodeInput.addEventListener("input", function () {
+            let value = this.value;
+    
+            // Remove non-digit characters
+            value = value.replace(/\D/g, "");
+    
+            // Limit to 6 digits
+            if (value.length > 6) {
+                value = value.slice(0, 6);
+            }
+    
+            this.value = value;
+    
+            const errorSpan = document.querySelector(".pincode_err");
+            if (value.length !== 6) {
+                errorSpan.textContent = "Pincode must be a 6-digit number.";
+            } else {
+                errorSpan.textContent = "";
+            }
+        });
+    
+        // Address Validation (No special characters except comma and period)
+        addressInput.addEventListener("input", function () {
+            let value = this.value;
+    
+            // Allow only letters, numbers, spaces, commas, and periods
+            const cleaned = value.replace(/[^a-zA-Z0-9\s,\.]/g, '');
+    
+            if (value !== cleaned) {
+                this.value = cleaned;
+            }
+    
+            const errorSpan = document.querySelector(".address_err");
+            if (/[^a-zA-Z0-9\s,\.]/.test(value)) {
+                errorSpan.textContent = "Special characters are not allowed in address.";
+            } else {
+                errorSpan.textContent = "";
+            }
+        });
+    });
 </script>
 </body>
 {% endblock %}

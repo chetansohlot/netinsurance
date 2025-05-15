@@ -190,7 +190,8 @@ urlpatterns = [
     #Insurance
     path('insurance/', insurance.insurance_list, name='insurance_index'),
     path('insurance/v1/create-insurance/', insurance.insurance_create, name='create-insurance'),
-    path('insurance/edit/<int:insurance_id>/', insurance.insurance_edit, name='insurance_edit'),
+    path('insurance/v1/create-contact-details/<int:id>/', insurance.insurance_contact_details, name='create-contact-detail'),
+    path('insurance/v1/edit/<int:insurance_id>/', insurance.insurance_edit, name='insurance_edit'),
     path('toggle-insurance-status/<int:insurance_id>/', insurance.toggle_insurance_status, name='insurance-toggle-status'),  #Anjali
     path('get-state/', insurance.get_state, name='get_state'),
     path('get-cities/', insurance.get_cities, name='get_cities'),
