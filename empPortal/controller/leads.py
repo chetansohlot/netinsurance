@@ -1271,6 +1271,31 @@ def lead_assignment(request,lead_id):
     branches = Branch.objects.filter(status='Active') 
     return render(request, "leads/create-assignment.html",{"lead_data":lead_data,"branches":branches,"assigner_list":assigner_list})
 
+def lead_allocation(request,lead_id):
+    if not request.user.is_authenticated and request.user.is_active!=1:
+        messages.error(request,'Please Login First')
+        return redirect('login')
+    
+    if not lead_id:
+        messages.error(request,'Sorry Lead Id is missing')
+        return redirect('leads-mgt')
+    
+    lead_data = Leads.objects.filter(lead_id=lead_id).first()
+    if not lead_data:
+        messages.error(request,'Sorry Lead Data is missing')
+        return redirect('leads-mgt')
+
+    user_role = request.user.role_id
+    user_dept = request.user.department_id
+    
+    if user_role == 1:
+        assigner_list = Users.objects.filter(is_active=1)
+    else:
+        assigner_list = Users.objects.filter(is_active=1,department_id=user_dept)   
+        
+    branches = Branch.objects.filter(status='Active') 
+    return render(request, "leads/lead_allocation.html",{"lead_data":lead_data,"branches":branches,"assigner_list":assigner_list})
+
 def previous_policy_info(request,lead_id):
     if not request.user.is_authenticated and request.user.is_active!=1:
         messages.error(request,'Please Login First')
@@ -1507,6 +1532,39 @@ def save_leads_assignment_info(request):
         
     except Exception as e:
         logger.error(f"Error in save_leads_assignment_info error: {str(e)}")
+        messages.error(request,'Something Went Wrong Please Try After Sometime')
+        return redirect('leads-mgt')
+    
+    
+def save_leads_allocation_info(request):
+    if not request.user.is_authenticated and request.user.is_active != 1:
+        messages.error(request,'Please Login First')
+        return redirect('login')
+    
+    lead_id = request.POST.get('lead_ref_id') or None
+    assigned_to = request.POST.get('assigned_to') or None
+    branch = request.POST.get('branch') or None
+    lead_status_type = request.POST.get('lead_status_type') or None
+    lead_tag = request.POST.get('lead_tag') or None
+    
+    if not lead_id or lead_id == 0:
+        messages.error(request,'Lead Id is not found') 
+        return redirect('leads-mgt')
+    
+    lead_data = Leads.objects.filter(lead_id = lead_id).first()
+    try:
+        lead_data.assigned_to_id = assigned_to
+        lead_data.branch_id = clean(branch)
+        lead_data.lead_status_type = clean(lead_status_type)
+        lead_data.lead_tag = clean(lead_tag)
+        lead_data.save()
+        
+        lead_ref_id = lead_data.lead_id
+        messages.success(request,f"Allocated Succesfully")
+        return redirect('leads-mgt')
+        
+    except Exception as e:
+        logger.error(f"Error in save_leads_allocation_info error: {str(e)}")
         messages.error(request,'Something Went Wrong Please Try After Sometime')
         return redirect('leads-mgt')
     

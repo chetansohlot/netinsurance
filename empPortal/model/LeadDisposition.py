@@ -4,7 +4,10 @@ from empPortal.model.Dispositions import Disposition, SubDisposition
 from ..models import Leads
 from datetime import datetime
 from django.conf import settings
-
+from django.utils.timezone import localtime
+from django.utils import timezone
+import pytz
+INDIA_TZ = pytz.timezone('Asia/Kolkata')
 
 class LeadDisposition(models.Model):
     id = models.BigAutoField(primary_key=True)
@@ -49,11 +52,14 @@ class LeadDispositionLogs(models.Model):
     @property
     def create_date(self):
         if self.log_created_at:
-            return self.log_created_at.strftime("%d %b")
+            local_time = timezone.localtime(self.log_created_at, INDIA_TZ)
+            return local_time.strftime("%d %b")
         return None
 
     @property
     def create_time(self):
         if self.log_created_at:
-            return self.log_created_at.strftime("%H:%M")
+            local_time = timezone.localtime(self.log_created_at, INDIA_TZ)
+            return local_time.strftime("%I:%M %p")
         return None
+       
