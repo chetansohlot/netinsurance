@@ -42,70 +42,75 @@ View Employee
               <div class="col-md-4 px-0">
                 <div class="card member-detail-left-card">
                   <div class="card-body box-profile">
-                    <!-- {% if user_details.profile_image %}
-                        <img src="{{ user_details.profile_image.url }}" alt="Profile Image" class="card-profile-img">
+                    <!-- Example profile image section if you have it, otherwise keep default -->
+                    <!-- 
+                    {% if user.profile_image %}
+                        <img src="{{ user.profile_image.url }}" alt="Profile Image" class="card-profile-img">
                     {% else %}
                         <img src="{% static 'dist/img/svg/profile-avatar-male.svg' %}" alt="Default Profile" class="card-profile-img">
-                    {% endif %} -->
-                    
-                    <h3 class="profile-username text-center">Vinod Kumar (Male)</h3>
+                    {% endif %}
+                    -->
+
+                    <h3 class="profile-username text-center">
+                        {{ employee.first_name }} {{ employee.last_name }} ({{ employee.gender }})
+                    </h3>
                     <div class="d-flex justify-content-center mt-2">
-                      <span class="text-muted">DOB: 15-12-1986</span>
+                        <span class="text-muted">DOB: {{ employee.date_of_birth|date:"d-m-Y" }}</span>
                     </div>  
                     <div class="profile-info-divider"></div>
                     <ul class="member-detail-list">
-                        
                         <li>
-                            <!-- <img src="{% static 'dist/img/svg/birthday_ic.svg' %}" alt=""> -->
                             <span class="list">PAN No</span>
-                            <span class="list-output">BAKPK1234K</span>
+                            <span class="list-output">{{ employee.pan_card }}</span>
                         </li>
-                         <li>
-                            <!-- <img src="{% static 'dist/img/svg/birthday_ic.svg' %}" alt=""> -->
+                        <li>
                             <span class="list">Aadhaar No.</span>
-                            <span class="list-output">BAKPK1234K</span>
+                            <span class="list-output">{{ employee.aadhaar_card }}</span>
                         </li>
                         <li>
-                            <!-- <img src="{% static 'dist/img/svg/birthday_ic.svg' %}" alt=""> -->
                             <span class="list">Employee Code</span>
-                            <span class="list-output">100001</span>
-                        </li>
-                        <li>
-                            <!-- <img src="{% static 'dist/img/svg/gender_ic.svg' %}" alt=""> -->
-                            <span class="list">Designation</span>
                             <span class="list-output">
-                                RM Manager
+                                {% if employment_info %}
+                                    {{ employment_info.employee_code }}
+                                {% endif %}
                             </span>
                         </li>
                         <li>
-                            <!-- <img src="{% static 'dist/img/svg/birthday_ic.svg' %}" alt=""> -->
+                            <span class="list">Designation</span>
+                            <span class="list-output">
+                                {% if employment_info %}
+                                    {{ employment_info.designation }}
+                                {% endif %}
+                            </span>
+                        </li>
+                        <li>
                             <span class="list">Date of Joining</span>
-                            <span class="list-output">15-05-2025</span>
+                            <span class="list-output">
+                                {% if employment_info %}
+                                    {{ employment_info.date_of_joining|date:"d-m-Y" }}
+                                {% endif %}
+                            </span>
                         </li>
-                        <li>
-                            <!-- <img src="{% static 'dist/img/svg/phone_ic.svg' %}" alt=""> -->
-                            <span class="list">Mobile Number</span>
-                            <span class="list-output">9876543210</span>
-                        </li>
-                        <li>
-                            <!-- <img src="{% static 'dist/img/svg/email_ic.svg' %}" alt=""> -->
-                            <span class="list">E-mail</span>
-                            <span class="list-output">vinod.kumar@netleafinfosoft.com</span>
-                        </li>
-                        <li>
-                            <!-- <img src="{% static 'dist/img/svg/state.svg' %}" alt=""> -->
-                            <span class="list">Blood Group</span>
-                            <span class="list-output">B+</span>
-                        </li>
-                        <li>
-                            <!-- <img src="{% static 'dist/img/svg/city.svg' %}" alt=""> -->
-                            <span class="list">Marital Status</span>
-                            <span class="list-output">Married</span>
-                        </li>
-                        
 
+                        <li>
+                            <span class="list">Mobile Number</span>
+                            <span class="list-output">{{ employee.mobile_number }}</span>
+                        </li>
+                        <li>
+                            <span class="list">E-mail</span>
+                            <span class="list-output">{{ employee.email_address }}</span>
+                        </li>
+                        <li>
+                            <span class="list">Blood Group</span>
+                            <span class="list-output">{{ employee.blood_group }}</span>
+                        </li>
+                        <li>
+                            <span class="list">Marital Status</span>
+                            <span class="list-output">{{ employee.marital_status }}</span>
+                        </li>
                     </ul>
-                  </div>
+                </div>
+
                 </div>
               </div>
               <div class="col-md-8 px-0">
@@ -126,75 +131,68 @@ View Employee
                           <div class="col-md-12">
                             <h2 class="admin-title border-bottom pb-2 mb-4">Permanent Address</h2>
                           </div>
-                          <div class="col-md-6">
-                            <div class="userdetail-group">
+                          {% if permanent_address %}
+                            <div class="col-md-6">
+                              <div class="userdetail-group">
                                 <p class="userdetail-lbl">Address</p>
-                                <p class="userdetail-highligt">
-                                    60 Foot Road, Jawahar Colony NIT Faridabad Haryana
-                                </p>
+                                <p class="userdetail-highligt">{{ permanent_address.address }}</p>
+                              </div>
                             </div>
-                          </div>
-                          <div class="col-md-2">
-                            <div class="userdetail-group">
+                            <div class="col-md-2">
+                              <div class="userdetail-group">
                                 <p class="userdetail-lbl">State</p>
-                                <p class="userdetail-highligt">
-                                    Haryana
-                                </p>
+                                <p class="userdetail-highligt">{{ permanent_address.get_state.name }}</p>
+                              </div>
                             </div>
-                          </div>
-                          <div class="col-md-2">
-                            <div class="userdetail-group">
+                            <div class="col-md-2">
+                              <div class="userdetail-group">
                                 <p class="userdetail-lbl">City</p>
-                                <p class="userdetail-highligt">
-                                    Faridabad
-                                </p>
+                                <p class="userdetail-highligt">{{ permanent_address.get_city.city }}</p>
+                              </div>
                             </div>
-                          </div>
-                          <div class="col-md-2">
-                            <div class="userdetail-group">
+                            <div class="col-md-2">
+                              <div class="userdetail-group">
                                 <p class="userdetail-lbl">Pincode</p>
-                                <p class="userdetail-highligt">
-                                    121001
-                                </p>
+                                <p class="userdetail-highligt">{{ permanent_address.pincode }}</p>
+                              </div>
                             </div>
-                          </div>
+                          {% else %}
+                            <p>No permanent address available.</p>
+                          {% endif %}
 
                           <div class="col-md-12">
                             <h2 class="admin-title border-bottom pb-2 my-4">Correspondence Address</h2>
                           </div>
-                          <div class="col-md-6">
-                            <div class="userdetail-group">
+                          {% if correspondence_address %}
+                            <div class="col-md-6">
+                              <div class="userdetail-group">
                                 <p class="userdetail-lbl">Address</p>
-                                <p class="userdetail-highligt">
-                                    Sector 49, Grugram Haryana
-                                </p>
+                                <p class="userdetail-highligt">{{ correspondence_address.address }}</p>
+                              </div>
                             </div>
-                          </div>
-                          <div class="col-md-2">
-                            <div class="userdetail-group">
+                            <div class="col-md-2">
+                              <div class="userdetail-group">
                                 <p class="userdetail-lbl">State</p>
-                                <p class="userdetail-highligt">
-                                    Haryana
-                                </p>
+                                <p class="userdetail-highligt">{{ correspondence_address.get_state.name }}</p>
+                              </div>
                             </div>
-                          </div>
-                          <div class="col-md-2">
-                            <div class="userdetail-group">
+                            <div class="col-md-2">
+                              <div class="userdetail-group">
                                 <p class="userdetail-lbl">City</p>
-                                <p class="userdetail-highligt">
-                                    Grugram
-                                </p>
+                                <p class="userdetail-highligt">{{ correspondence_address.get_city.city }}</p>
+                              </div>
                             </div>
-                          </div>
-                          <div class="col-md-2">
-                            <div class="userdetail-group">
+                            <div class="col-md-2">
+                              <div class="userdetail-group">
                                 <p class="userdetail-lbl">Pincode</p>
-                                <p class="userdetail-highligt">
-                                    121005
-                                </p>
+                                <p class="userdetail-highligt">{{ correspondence_address.pincode }}</p>
+                              </div>
                             </div>
-                          </div>
+                          {% else %}
+                            <p>No correspondence address available.</p>
+                          {% endif %}
                         </div>
+
                       </div>
                       <div class="tab-pane" id="family-details-tab">
                         <div class="row mt-3">
@@ -206,30 +204,31 @@ View Employee
                               <table class="table table-design">
                                 <thead class="table-thead-bg-light table-header-fix">
                                   <tr>
-                                    <th>Releation</th>
+                                    <th>Relation</th>
                                     <th>First Name</th>
                                     <th>Last Name</th>
                                     <th>Date of Birth</th>
                                   </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                      <th>Father</th>
-                                      <td>Rajender</td>
-                                      <td>Kumar</td>
-                                      <td>26-5-1964</td>
-                                    </tr>
-                                    <tr>
-                                      <th>Mother</th>
-                                      <td>Raj</td>
-                                      <td>Rani</td>
-                                      <td>26-5-1964</td>
-                                    </tr>
+                                  {% for member in family_members %}
+                                  <tr>
+                                    <th>{{ member.relation }}</th>
+                                    <td>{{ member.first_name }}</td>
+                                    <td>{{ member.last_name }}</td>
+                                    <td>{{ member.date_of_birth|date:"d-m-Y" }}</td>
+                                  </tr>
+                                  {% empty %}
+                                  <tr>
+                                    <td colspan="4" class="text-center">No family details available.</td>
+                                  </tr>
+                                  {% endfor %}
                                 </tbody>
                               </table>
                             </div>  
                           </div>
                         </div>
+
                       </div>
                       
                       <div class="tab-pane" id="reference-tab">
@@ -242,7 +241,7 @@ View Employee
                             <table class="table table-design">
                               <thead class="table-thead-bg-light table-header-fix">
                                 <tr>
-                                  <th>Releation</th>
+                                  <th>Relation</th>
                                   <th>First Name</th>
                                   <th>Last Name</th>
                                   <th>Mobile No.</th>
@@ -250,24 +249,26 @@ View Employee
                                 </tr>
                               </thead>
                               <tbody>
+                                {% if references %}
+                                  {% for ref in references %}
                                   <tr>
-                                    <td>Father</td>
-                                    <td>Rajender</td>
-                                    <td>Kumar</td>
-                                    <td>9876543210</td>
-                                    <td>rajender@gmail.com</td>
+                                    <td>{{ ref.relation }}</td>
+                                    <td>{{ ref.first_name }}</td>
+                                    <td>{{ ref.last_name }}</td>
+                                    <td>{{ ref.mobile_number }}</td>
+                                    <td>{{ ref.email_address }}</td>
                                   </tr>
+                                  {% endfor %}
+                                {% else %}
                                   <tr>
-                                    <td>Mother</td>
-                                    <td>Raj</td>
-                                    <td>Rani</td>
-                                    <td>9876543210</td>
-                                    <td>rajrani@gmail.com</td>
+                                    <td colspan="5" class="text-center">No references found.</td>
                                   </tr>
+                                {% endif %}
                               </tbody>
                             </table>
                           </div>
                         </div>
+
                         <!-- Edit Button -->
                       </div>
                       <div class="tab-pane" id="allocation-tab">
@@ -275,47 +276,72 @@ View Employee
                           <div class="col-md-12">
                             <h2 class="admin-title border-bottom pb-2 mb-4">Allocation Details</h2>
                           </div>
+
                           <div class="col-md-4">
                             <div class="userdetail-group">
-                                <p class="userdetail-lbl">Branch</p>
-                                <p class="userdetail-highligt">
-                                    Haryana
-                                </p>
+                              <p class="userdetail-lbl">Branch</p>
+                              <p class="userdetail-highligt">
+                                {{ user.branch.branch_name|default:"N/A" }}
+                              </p>
                             </div>
                           </div>
+
                           <div class="col-md-4">
                             <div class="userdetail-group">
-                                <p class="userdetail-lbl">Role</p>
-                                <p class="userdetail-highligt">
-                                    Branch Manager
-                                </p>
+                              <p class="userdetail-lbl">Role</p>
+                              <p class="userdetail-highligt">
+                                {{ user.role.roleName|default:user.role_name|default:"N/A" }}
+                              </p>
                             </div>
                           </div>
+                          {% if user.role_id|stringformat:"s" >= "5" %}
+                          
                           <div class="col-md-4">
                             <div class="userdetail-group">
-                                <p class="userdetail-lbl">Department</p>
-                                <p class="userdetail-highligt">
-                                    Renewal
-                                </p>
+                              <p class="userdetail-lbl">Department</p>
+                              <p class="userdetail-highligt">
+                                {% if user.department %}
+                                  {{ user.department.name }}
+                                {% else %}
+                                  N/A
+                                {% endif %}
+                              </p>
                             </div>
                           </div>
+                          {% if user.role_id|stringformat:"s" >= "6" %}
+
                           <div class="col-md-4">
                             <div class="userdetail-group">
-                                <p class="userdetail-lbl">Manager</p>
-                                <p class="userdetail-highligt">
-                                    Abhay Singh
-                                </p>
+                              <p class="userdetail-lbl">Manager</p>
+                              <p class="userdetail-highligt">
+                                {% if manager_details %}
+                                  {{ manager_details.first_name }} {{ manager_details.last_name }}
+                                {% else %}
+                                  N/A
+                                {% endif %}
+                              </p>
                             </div>
                           </div>
+                          {% if user.role_id|stringformat:"s" == "7" %}
+
                           <div class="col-md-4">
                             <div class="userdetail-group">
-                                <p class="userdetail-lbl">Team Leader</p>
-                                <p class="userdetail-highligt">
-                                    Ankit Sharma
-                                </p>
+                              <p class="userdetail-lbl">Team Leader</p>
+                              <p class="userdetail-highligt">
+                                {% if senior_details %}
+                                  {{ senior_details.first_name }} {{ senior_details.last_name }}
+                                {% else %}
+                                  N/A
+                                {% endif %}
+                              </p>
                             </div>
                           </div>
+                          {% endif %}
+                          {% endif %}
+
+                          {% endif %}
                         </div>
+
                       </div>
                     </div>
                   </div>
