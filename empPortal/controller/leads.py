@@ -94,8 +94,16 @@ def index(request):
         leads = Leads.objects.all()
 
     elif role_id == 3:  # Branch Manager
-        leads = Leads.objects.filter(Q(created_by_id=user_id) | Q(assigned_to_id=user_id))
+        managers = Users.objects.filter(role_id=5, senior_id=user_id)
+        team_leaders = Users.objects.filter(role_id=6, senior_id__in=managers.values_list('id', flat=True))
+        relationship_managers = Users.objects.filter(role_id=7, senior_id__in=team_leaders.values_list('id', flat=True))
 
+        user_ids = list(managers.values_list('id', flat=True)) + \
+                list(team_leaders.values_list('id', flat=True)) + \
+                list(relationship_managers.values_list('id', flat=True)) + \
+                [user_id]
+
+        leads = Leads.objects.filter(Q(created_by_id__in=user_ids) | Q(assigned_to_id__in=user_ids))
     elif role_id == 4:  # Agent
         leads = Leads.objects.filter(Q(created_by_id=user_id) | Q(assigned_to_id=user_id))
 
