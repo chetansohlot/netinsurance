@@ -174,6 +174,7 @@ urlpatterns = [
     path('leads/previous-policy-info/<str:lead_id>', leads.previous_policy_info, name='leads-previous-policy-info'),
 
     path('leads/product-info/lead-init/<str:lead_id>', leads.lead_init_edit, name='edit-lead-init'),
+    path('leads/v1/product-info/lead-allocation/<str:lead_id>', leads.lead_allocation, name='lead-allocation'),
     
     #save lead steps 
     path('leads/v1/save-lead-insurance-info',leads.save_leads_insurance_info,name="save-lead-insurance-info"), 
@@ -182,6 +183,7 @@ urlpatterns = [
     path('leads/v1/save-lead-source-info',leads.save_leads_source_info,name="save-lead-source-info"), 
     path('leads/v1/save-lead-location-info',leads.save_leads_location_info,name="save-lead-location-info"), 
     path('leads/v1/save-lead-assignment-info',leads.save_leads_assignment_info,name="save-lead-assignment-info"), 
+    path('leads/v1/save-lead-allocation-info',leads.save_leads_allocation_info,name="save-lead-allocation-info"), 
     path('leads/v1/save-lead-previous-policy-info',leads.save_leads_previous_policy_info,name="save-lead-previous-policy-info"), 
     
     path('leads/v1/save-lead-dispositions',leads.save_leads_dispositions,name="save-lead-dispositions"),

@@ -922,7 +922,7 @@
                             disposition_id: main_disp_id,
                         },
                         success: function(response) {
-                            let options = '';
+                            let options = '<option value="">Select Sub Disposition</option>';
                             $.each(response.sub_disposition_list, function(index, sub_disposition) {
                                 options += `<option value="${sub_disposition.sub_disp_id}">${sub_disposition.sub_disp_name}</option>`;
                             });
