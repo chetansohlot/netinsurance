@@ -2773,6 +2773,7 @@ a:hover .dr-pdficon {
 .ui-datepicker select.ui-datepicker-month, .ui-datepicker select.ui-datepicker-year {
     width:60px; border:none;
 }
+.thead-icon {width:16px; height: 16px; object-fit: contain;}
 
 @media (max-width:767px) {
     .banner-hding {font-size: 30px;}

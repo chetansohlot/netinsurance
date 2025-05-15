@@ -75,6 +75,7 @@
                 <div class="card card-widget widget-user shadow mb-0">
                   <div class="widget-user-header bg-info">
                     <h3 class="widget-user-username">{{request.user.full_name}}</h3>
+                    
                   </div>
                   <div class="card-footer">
                     <div class="row">
@@ -85,26 +86,47 @@
                           </a>
                         </div>
                       </div>
+                      
                       <div class="col">
                         <div class="row">
-                          <div class="col-12">
-                            <p class="navbar-profile-contact">{% if request.user.phone != None %}
-                              +91 {{ request.user.phone }}
-                            {% endif %}</p>
-                            <p class="navbar-profile-contact">{{ request.user.email }}</p>
-                            <a href="{% url 'change-password' %}" class="navbar-profile-contact text-success pb-1">Change Password</a>
-                            <ul class="navbar-profile-list">
-                              <li><a href="{% url 'my-account' %}" class="text-primary">My Account</a></li>
+                          <div class="col-12 small"> <!-- Apply smaller font overall -->
+                            {% if request.user.phone %}
+                              <p class="mb-1 text-muted">
+                                <i class="fas fa-phone-alt me-1"></i> +91 {{ request.user.phone }}
+                              </p>
+                            {% endif %}
+                            <p class="mb-1 text-muted">
+                              <i class="fas fa-envelope me-1"></i> {{ request.user.email }}
+                            </p>
+                            {% if request.user.role_id|stringformat:"s" in '1,2,3,4' %}
+                              <p class="mb-2 text-muted">
+                                <i class="fas fa-user-tag me-1"></i> {{ request.user.roleName.roleName }}
+                              </p>
+                            {% else %}
+                              <p class="mb-2 text-muted">
+                                <i class="fas fa-user-tag me-1"></i> {{ request.user.roleName.roleName }} - {{ request.user.department.name }}
+                              </p>
+                            {% endif %}
+
+
+                            <a href="{% url 'change-password' %}" class="d-block text-success mb-2">Change Password</a>
+
+                            <ul class="list-unstyled mb-0">
                               <li>
-                                <form action="{% url 'logout' %}" method="post">
+                                <a href="{% url 'my-account' %}" class="text-primary d-block mb-1">My Account</a>
+                              </li>
+                              <li>
+                                <form action="{% url 'logout' %}" method="post" class="d-inline">
                                   {% csrf_token %}
-                                  <button type="submit" class="navbar-logout-btn text-danger">Sign out</button>
+                                  <button type="submit" class="btn btn-sm btn-outline-danger">Sign out</button>
                                 </form>
                               </li>
                             </ul>
                           </div>
                         </div>
-                      </div>  
+                      </div>
+
+  
                     </div>
                     <!-- <div class="row">
                       <div class="col-sm-6 border-right">
