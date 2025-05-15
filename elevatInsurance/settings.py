@@ -168,10 +168,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'Asia/Kolkata'
 USE_I18N = True
 USE_TZ = True
-
+TIME_ZONE = 'Asia/Kolkata'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
@@ -337,6 +336,11 @@ LOGGING = {
             'class':'logging.FileHandler',
             'filename': 'logs/crons.log',
             'formatter':'verbose',
+        },
+        'leads':{
+            'class':'logging.FileHandler',
+            'filename': 'logs/leads.log',
+            'formatter':'verbose',
         }
 
     },
@@ -353,6 +357,11 @@ LOGGING = {
         },
         'empPortal.crons':{
             'handlers':['crons'],
+            'level': 'DEBUG',  # Can be INFO, WARNING, ERROR in production
+            'propagate': False,
+        },
+        'empPortal.controller.leads':{
+            'handlers':['leads'],
             'level': 'DEBUG',  # Can be INFO, WARNING, ERROR in production
             'propagate': False,
         }

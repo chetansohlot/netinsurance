@@ -113,31 +113,23 @@
             <div class="dropdown">
               <img src="/static/dist/img/svg/menu-dot-vr.svg" alt="" class="table-doticon" data-toggle="dropdown" aria-expanded="false">
               <ul class="dropdown-menu table-dropdown-menu">
-                <!--<li>
-                  <a class="dropdown-item" href="#">
-                    <i class="bi bi-eye mr-2"></i> View
-                  </a>
-                </li>-->
                 {% if lead.lead_id %}
-                <a class="dropdown-item" href="{% url 'lead-view' lead_id=lead.lead_id %}">
-                  <i class="bi bi-eye mr-2"></i> View
-                </a>
-              {% else %}
-                
-              {% endif %}
-                <li>
-                  <a href="#" class="dropdown-item">
-                    <i class="bi bi-person-plus mr-2"></i> Allocation
-                  </a>
-                </li>
-                <li>
-                  {% if lead.lead_id %}
+                  <li>
+                    <a class="dropdown-item" href="{% url 'lead-view' lead_id=lead.lead_id %}">
+                      <i class="bi bi-eye mr-2"></i> View
+                    </a>
+                  </li>
+                  <li>
+                    <a href="{% url 'lead-allocation' lead_id=lead.lead_id %}" class="dropdown-item">
+                      <i class="bi bi-person-plus mr-2"></i> Allocation
+                    </a>
+                  </li>
+                  <li>
                     <a href="{% url 'edit-lead-init' lead_id=lead.lead_id %}" class="dropdown-item">
                       <i class="bi bi-pencil-square mr-2"></i> Edit
                     </a>  
-                  {% endif %}
-                </li>
-                   
+                  </li>
+                {% endif %}
               </ul>
             </div>
           </td>

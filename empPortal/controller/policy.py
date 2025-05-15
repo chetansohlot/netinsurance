@@ -152,6 +152,7 @@ def operator_verify_policy(request):
             policy_id = data.get('policy_id')
             remark = data.get('remark', '')
             status = data.get('status')  # Expecting '1' for Approved, '2' for Rejected
+            type = data.get('type')  # 'operator' or 'quality'
 
             if not policy_id:
                 return JsonResponse({'success': False, 'error': 'Policy ID is required.'})
@@ -162,9 +163,17 @@ def operator_verify_policy(request):
             if not policy:
                 return JsonResponse({'success': False, 'error': 'Policy not found.'})
 
-            policy.operator_verification_status = status
-            policy.operator_policy_verification_by = request.user.id
-            policy.operator_remark = remark
+            if type == 'operator':
+                policy.operator_verification_status = status
+                policy.operator_policy_verification_by = request.user.id
+                policy.operator_remark = remark
+            elif type == 'quality':
+                policy.quality_check_status = status
+                policy.quality_policy_check_by = request.user.id
+                policy.quality_remark = remark
+            else:
+                return JsonResponse({'success': False, 'error': 'Invalid type.'})
+
             policy.save()
 
             status_msg = 'approved' if status == '1' else 'rejected'
@@ -177,6 +186,8 @@ def operator_verify_policy(request):
 
     return JsonResponse({'success': False, 'error': 'Invalid request method.'})
 
+def viewPolicy(request, id):
+    return render(request, 'policy/view-policy.html')
 
 def edit_vehicle_details(request, policy_id):
     

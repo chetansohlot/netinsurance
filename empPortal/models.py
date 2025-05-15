@@ -818,10 +818,24 @@ class Users(AbstractBaseUser):
         db_table = 'users'
 
     @property
+    def roleName(self):
+        try:
+            return Roles.objects.get(id=self.role_id)
+        except Roles.DoesNotExist:
+            return None
+    
+    @property
     def department(self):
         try:
             return Department.objects.get(id=self.department_id)
         except Department.DoesNotExist:
+            return None
+        
+    @property
+    def branch(self):
+        try:
+            return Branch.objects.get(id=self.branch_id)
+        except Branch.DoesNotExist:
             return None
         
     def bqpData(self):

@@ -93,6 +93,14 @@
           {% comment %} ____ BULK UPDATE INSURER _____  {% endcomment %}
           
           
+          {% comment %} <li class="nav-item">
+            <a href="{% url 'credential_list' %}" class="nav-link ">
+              <svg class="sidbarmenu-svg">
+                  <use xlink:href="#employees-icon" />
+              </svg>
+              <p>Credential Mgt</p>
+            </a>
+          </li> {% endcomment %}
             <li class="nav-item {% if '/report/' in request.path %} menu-is-opening menu-open {% endif %}">
               <a href="#" class="nav-link {% if '/report/' in request.path %} active {% endif %}" {% if "/report/" in request.path %} style="display:block" {% endif %}>
                 <svg class="sidbarmenu-svg">

@@ -3,7 +3,7 @@ from . import views,export
 from . import views
 from . import authenticationView
 from .controller import commissions, profile,policy,Dashboard, Referral, globalController, helpAndSupport, Employee, leads, sellMotor, sellHealth, sellTerm, Franchises, Department, Branches, members, customers, quoteManagement, healthQuoteManagement, homeManagement, exams,SourceMaster,BQP,Credential
-from .controller import reports, PolicyCommission, PolicyPayment, insurance
+from .controller import reports, PolicyCommission, PolicyPayment, insurance, dispositions
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import re_path
@@ -170,10 +170,11 @@ urlpatterns = [
     path('lead/basic_info/<str:lead_id>', leads.basic_info, name='basic-info'),
     path('leads/lead-source/<str:lead_id>',leads.lead_source, name='lead-source'),
     path('leads/lead-location/<str:lead_id>',leads.lead_location, name='lead-location'),
-    path('leads/assignment/<str:lead_id>', leads.assignment, name='lead-assignment'),
+    path('leads/assignment/<str:lead_id>', leads.lead_assignment, name='lead-assignment'),
     path('leads/previous-policy-info/<str:lead_id>', leads.previous_policy_info, name='leads-previous-policy-info'),
 
     path('leads/product-info/lead-init/<str:lead_id>', leads.lead_init_edit, name='edit-lead-init'),
+    path('leads/v1/product-info/lead-allocation/<str:lead_id>', leads.lead_allocation, name='lead-allocation'),
     
     #save lead steps 
     path('leads/v1/save-lead-insurance-info',leads.save_leads_insurance_info,name="save-lead-insurance-info"), 
@@ -182,7 +183,10 @@ urlpatterns = [
     path('leads/v1/save-lead-source-info',leads.save_leads_source_info,name="save-lead-source-info"), 
     path('leads/v1/save-lead-location-info',leads.save_leads_location_info,name="save-lead-location-info"), 
     path('leads/v1/save-lead-assignment-info',leads.save_leads_assignment_info,name="save-lead-assignment-info"), 
+    path('leads/v1/save-lead-allocation-info',leads.save_leads_allocation_info,name="save-lead-allocation-info"), 
     path('leads/v1/save-lead-previous-policy-info',leads.save_leads_previous_policy_info,name="save-lead-previous-policy-info"), 
+    
+    path('leads/v1/save-lead-dispositions',leads.save_leads_dispositions,name="save-lead-dispositions"),
     #Insurance
     path('insurance/', insurance.insurance_list, name='insurance_index'),
     path('insurance/v1/create-insurance/', insurance.insurance_create, name='create-insurance'),
@@ -341,6 +345,7 @@ urlpatterns = [
     path('operator-verify-policy/', policy.operator_verify_policy, name='operator-verify-policy'),
 
     path('edit-policy-data/<str:id>', views.editPolicy, name='edit-policy'),
+    path('view-policy-data/<str:id>', policy.viewPolicy, name='view-policy'),
     path('delete-policy-data/<str:id>', policy.deletePolicy, name='delete-policy'),
     path('edit-policy/<str:policy_id>/', policy.edit_policy, name='edit-policy-data'),
     re_path(r'^edit-policy-vehicle-details/(?P<policy_id>.+)/$', policy.edit_vehicle_details, name='edit-policy-vehicle-details'),
@@ -388,15 +393,16 @@ urlpatterns = [
     path('bqp/create/', BQP.bqp_create, name='bqp_create'),
     path('bqp/edit/<int:bqp_id>/', BQP.bqp_edit, name='bqp_edit'),
     path('bqp/delete/<int:bqp_id>/', BQP.bqp_delete, name='bqp_delete'),
-    
-    path('get-pos-partners-by-bqp/', views.get_pos_partners_by_bqp,name="get-pos-partners-by-bqp"),
 
     ## Credential URL ##
-    path('credential', Credential.credential_list,name='credential_list'),
+    path('credential/', Credential.credential_list,name='credential_list'),
     path('credential/create/', Credential.credential_create, name='credential_create'),
     path('credential/edit/<int:credential_id>/', Credential.credential_edit, name='credential_edit'),
-    path('credential/delete/<int:credential_id>/', Credential.credential_delete, name='credential_delete'),
+    path('credential/delete/<int:credential_id>/toggle/', Credential.credential_delete, name='credential_delete'),
 
+    path('get-pos-partners-by-bqp/', views.get_pos_partners_by_bqp,name="get-pos-partners-by-bqp"),
+    
+    path('disposition/v1/sub-disposition-list',dispositions.get_sub_disposition_list,name="get-sub-disposition")
 ] 
 
 

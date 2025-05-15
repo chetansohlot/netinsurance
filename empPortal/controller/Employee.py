@@ -289,10 +289,65 @@ def save_or_update_employee(request, employee_id=None):
             'user': user_instance
         })
 
-
 def view_employee(request, employee_id):
-    
-    return render(request, 'employee/view-employee.html')
+    try:
+        user = get_object_or_404(Users, id=employee_id)
+        employee = get_object_or_404(Employees, user_id=employee_id)
+
+        # Fetch addresses
+        permanent_address = Address.objects.filter(employee_id=employee.employee_id, type='Permanent').first()
+        correspondence_address = Address.objects.filter(employee_id=employee.employee_id, type='Correspondence').first()
+
+        # Family members
+        family_members = FamilyDetail.objects.filter(employee_id=employee.employee_id)
+
+        # Employment info
+        employment_info = EmploymentInfo.objects.filter(employee_id=employee.employee_id).first()
+
+        # References
+        references = EmployeeReference.objects.filter(employee_id=employee.employee_id)
+
+        # Fetch manager user
+        manager_details = None
+        if user.department_id:
+            # Assuming 'manager' is the senior or manager related by senior_id or some other logic
+            try:
+                manager_details = Users.objects.get(id=user.senior_id)  # or user.manager_id if you have that
+            except Users.DoesNotExist:
+                manager_details = None
+
+        # Fetch team leader user
+        senior_details = None
+        if user.senior_id:
+            try:
+                senior_details = Users.objects.get(id=user.senior_id)
+            except Users.DoesNotExist:
+                senior_details = None
+
+        if user.role_id == 7 or user.role_id == '7':
+            try:
+                manager_details = Users.objects.get(id=senior_details.senior_id)  # or user.manager_id if you have that
+            except Users.DoesNotExist:
+                manager_details = None
+
+        context = {
+            'employee': employee,
+            'user': user,
+            'permanent_address': permanent_address,
+            'correspondence_address': correspondence_address,
+            'family_members': family_members,
+            'employment_info': employment_info,
+            'references': references,
+            'manager_details': manager_details,
+            'senior_details': senior_details,
+        }
+
+        return render(request, 'employee/view-employee.html', context)
+
+    except Exception as e:
+        # Optionally log the exception e here
+        return redirect('employee-management')
+
 
 def save_or_update_address(request, employee_id):
     if not request.user.is_authenticated:

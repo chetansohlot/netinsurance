@@ -3,7 +3,7 @@
 {% load static %}
 
 {% block title %}
-{% if lead %}Edit Lead{% else %}Add New Lead{% endif %}
+    Lead Allocation
 {% endblock %}
 
 {% block content %}
@@ -22,14 +22,12 @@
           <div class="row py-2">
             <div class="col-sm-6">
               <div class="d-flex align-items-center">
-                <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">{% if lead %}Edit Lead{% else %}Add
-                  New Lead{% endif %}</a>
+                <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Lead Allocation</a>
               </div>
               <ul class="breadcrump">
                 <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
                 <li> <a href="#">Lead</a> <i class="fas fa-chevron-right"></i></li>
-
-                <li>{% if lead %}Edit Lead{% else %}Add Lead{% endif %}</li>
+                <li> Lead Allocation </li>
               </ul>
             </div>
           </div>
@@ -41,41 +39,18 @@
       <div class="content">
         <div class="container-fluid">
           <div class="row">
-
-            <div class="col-sm-12">
-              <div class="card box-shadow-none p-md-4 p-3">
-                <div class="card-body px-0 pb-0 pt-0">
-                  <ul class="stepflow-text stepflow-five-col mt-0">
-                    <li class="active"><a href="#">Insurance Info</a></li>
-                    <li class="active"><a href="#">Basic Info</a></li>
-                    <li class="active"><a href="#">Lead Source Info</a></li>
-                    <li class="active"><a href="#">Location Info</a></li>
-                    <li><a href="#">Assignment</a></li>
-                    <li><a href="#">Previous Policy Information</a></li>
-                  </ul>
-                  <ul class="new-stepflow mb-2">
-                    <li class="active"></li>
-                    <li class="active"></li>
-                    <li class="active"></li>
-                    <li class="active"></li>
-                    <li></li>
-                    <li></li>
-                  </ul>
-                </div>
-              </div>
-            </div>
             <div class="col-sm-12">
               <div class="card box-shadow-none p-md-4 p-3">
                 <div class="card-body px-0 pb-0 pt-0">
 
                   <form autocomplete="off" id="leadAssignmentForm" name="leadAssignmentForm"
-                    action="{% url 'save-lead-assignment-info' %}" method="post">
+                    action="{% url 'save-lead-allocation-info' %}" method="post">
                     {% csrf_token %}
                     <input type="hidden" id="lead_ref_id" name="lead_ref_id" value="{{lead_data.lead_id}}">
 
                     <div class="row">
                       <div class="col-md-12">
-                        <h2 class="admin-title border-bottom pb-2 mb-4">Assignment</h2>
+                        <h2 class="admin-title border-bottom pb-2 mb-4">Lead Allocation</h2>
                       </div>
                       <div class="form-group col-md-4">
                         <label class="form-lbl">Assigned To</label>
@@ -122,11 +97,10 @@
                     </div>
                     <div class="d-flex justify-content-end">
                       <button type="submit" class="form-submit-btn mt-3">
-                        {% if lead %}Update Lead{% else %}Add Lead{% endif %}
+                        Allocate
                       </button>
                     </div>
                   </form>
-
                 </div>
                 <div id="loader" class="form-loader" style="display: none;">
                   <div>
