@@ -186,7 +186,8 @@ def operator_verify_policy(request):
 
     return JsonResponse({'success': False, 'error': 'Invalid request method.'})
 
-
+def viewPolicy(request, id):
+    return render(request, 'policy/view-policy.html')
 
 def edit_vehicle_details(request, policy_id):
     

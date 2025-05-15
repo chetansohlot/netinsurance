@@ -2775,6 +2775,47 @@ a:hover .dr-pdficon {
 }
 .thead-icon {width:16px; height: 16px; object-fit: contain; margin-right: 5px;}
 
+/* .card-body:has(.card6) {
+    padding: 3px 10px !important;
+} */
+
+.card6 {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+    position: relative;
+}
+
+.card6 .card-body {
+    padding: 2px 6px !important;
+}
+
+.card6 .dashboard-icon {
+    width: auto;
+    height: 32px;
+    padding-left: 0px;
+    background: none;
+    display: inline-flex !important;
+    margin-right: 8px;
+}
+
+.card6 .dashboard-icon>i {
+    font-size: 18px;
+}
+
+.card6 .card-title {
+    font-size: 16px;
+}
+
+.card6 .card-text {
+    font-weight: 400;
+    font-size: 13px;
+    color: rgba(58, 53, 65, 0.68);
+    padding-top: 8px;
+}
+
 @media (max-width:767px) {
     .banner-hding {font-size: 30px;}
     .banner-subhding {font-size:20px;}

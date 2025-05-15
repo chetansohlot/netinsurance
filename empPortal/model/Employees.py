@@ -75,6 +75,22 @@ class Address(models.Model):
     class Meta:
         db_table = 'employee_addresses'  # Using the default table name 'addresses'
 
+    def get_state(self):
+        from empPortal.model.StateCity import State
+        """Returns the related Users object if it exists, else None."""
+        try:
+            return State.objects.get(id=self.state)
+        except State.DoesNotExist:
+            return None
+        
+    def get_city(self):
+        from empPortal.model.StateCity import City
+        """Returns the related Users object if it exists, else None."""
+        try:
+            return City.objects.get(id=self.city)
+        except City.DoesNotExist:
+            return None
+        
     def __str__(self):
         return f"Address for Employee ID {self.employee_id} ({self.type})"
     
