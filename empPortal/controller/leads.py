@@ -63,6 +63,8 @@ from ..model import State, City
 app = FastAPI()
 from datetime import datetime
 from ..model import InsuranceType, InsuranceCategory, InsuranceProduct
+from empPortal.model.Dispositions import Disposition, SubDisposition
+from empPortal.model.LeadDisposition import LeadDisposition, LeadDispositionLogs
 
 def dictfetchall(cursor):
     "Returns all rows from a cursor as a dict"
@@ -1173,7 +1175,6 @@ def lead_init_edit(request,lead_id):
     
     return render(request, 'leads/edit-lead-init.html', {'types': types,'lead_data':lead_data})
 
-
 def basic_info(request,lead_id):
     if not request.user.is_authenticated and request.user.is_active!=1:
         messages.error(request,'Please Login First')
@@ -1554,4 +1555,121 @@ def view_lead(request, lead_id):
         return redirect('login')
         
     lead = get_object_or_404(Leads, lead_id=lead_id)
-    return render(request, 'leads/lead-view.html', {'lead': lead})
+    
+    disposition_list = Disposition.objects.filter(disp_is_active=True)
+    lead_disposition = LeadDisposition.objects.filter(lead_id=lead.id).last()
+    disposition_logs  = LeadDispositionLogs.objects.filter(log_lead_id=lead.id).order_by('-log_created_at')
+    return render(request, 'leads/lead-view.html', {'lead': lead,'disposition_list':disposition_list,'disposition_logs':disposition_logs,'lead_disposition':lead_disposition})
+
+def save_leads_dispositions(request):
+    if not request.user.is_authenticated and request.user.is_active != 1:
+        messages.error(request,'Please Login First')
+        return JsonResponse({'statusCode': 401, 'status': 'Authentication Failed', 'message': 'Please Login First'})
+        
+    if request.method == "POST":
+        lead_ref_id = request.POST.get('lead_id')
+        main_disposition = request.POST.get('main_disposition')
+        sub_disposition = request.POST.get('sub_disposition')
+        
+        follow_up_date = request.POST.get('follow_up_date',None)
+        if follow_up_date:
+            try:
+                follow_up_date = datetime.strptime(follow_up_date, '%Y-%m-%d').date()
+            except ValueError:
+                messages.error(request, 'Invalid date format. Please use YYYY-MM-DD.')
+                return JsonResponse({
+                    'statusCode': 400,
+                    'status': 'failed',
+                    'message': 'Invalid date format. It must be in YYYY-MM-DD format.'
+                })
+        else:
+            follow_up_date = None
+            
+        follow_up_time = request.POST.get('follow_up_time', None)
+        if follow_up_time:
+            try:
+                follow_up_time = datetime.strptime(follow_up_time, '%H:%M').time()
+            except ValueError:
+                try:
+                    follow_up_time = datetime.strptime(follow_up_time, '%H:%M:%S').time()
+                except ValueError:
+                    messages.error(request, 'Invalid time format. Please use HH:MM or HH:MM:SS.')
+                    return JsonResponse({
+                        'statusCode': 400,
+                        'status': 'failed',
+                        'message': 'Invalid time format. It must be in HH:MM[:ss] format.'
+                    })
+        else:
+            # Handle None case if follow_up_time is not provided
+            follow_up_time = None
+            
+        remark = request.POST.get('remark',None)
+
+        if not (lead_ref_id and main_disposition and sub_disposition):
+            messages.error(request, 'All fields are required.')
+            return JsonResponse({'statusCode': 405, 'status': 'failed', 'message': 'Missing required fields'})
+
+        lead_data = Leads.objects.filter(lead_id=lead_ref_id).last()
+        lead_id = lead_data.id
+        if not lead_data:
+            messages.error(request, 'Lead id is not found')
+            return JsonResponse({'statusCode': 2, 'status': 'failed', 'message': 'Missing lead id'})
+
+        try:
+            lead_disp_data = LeadDisposition.objects.filter(lead_id=lead_id).first()
+            if lead_disp_data:
+                lead_disp_data.disp_id = main_disposition
+                lead_disp_data.sub_disp_id = sub_disposition
+                lead_disp_data.updated_by_id = request.user.id
+                lead_disp_data.followup_date = follow_up_date
+                lead_disp_data.followup_time = follow_up_time
+                lead_disp_data.remark = remark
+                lead_disp_data.save()
+                status = "Updated"
+            else:
+                lead_disp_data = LeadDisposition.objects.create(
+                    lead_id = lead_id,
+                    disp_id = main_disposition, 
+                    sub_disp_id = sub_disposition, 
+                    created_by_id = request.user.id, 
+                    followup_date = follow_up_date,
+                    followup_time = follow_up_time,
+                    remark = remark
+                )
+                status = "Updated"
+                 
+            logs = LeadDispositionLogs.objects.create(
+                log_lead_disp_id = lead_disp_data.id,
+                log_lead_id  = lead_id,
+                log_disp_id  = main_disposition,
+                log_sub_disp_id  = sub_disposition,
+                log_created_by_id  = request.user.id,
+                log_followup_date = follow_up_date,
+                log_followup_time = follow_up_time,
+                log_remark = remark
+            )
+            
+            messages.success(request,'Saved Successfully')
+            return JsonResponse({
+                    'statusCode': 200,
+                    'status': 'success',
+                    'action': status,
+                    'lead_disposition_id': lead_disp_data.id
+                })
+        except Exception as e:
+            logger.error(f"Failed to insert or update disposition for lead_id {lead_id}. Error: {str(e)}")
+            messages.error(request, 'Something went wrong')
+            return JsonResponse({
+                'statusCode': 500,
+                'status': 'failed',
+                'message': str(e)
+            })
+    else:
+        logger.error(f"Failed to insert or update disposition for lead_id Error")
+        messages.error(request,'Something went Wrong')
+        return JsonResponse({
+            'statusCode': 405,
+            'status': 'failed',
+            'message': 'Invalid request method'
+        })
+    

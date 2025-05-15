@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from empPortal.model import Credential
+from django.contrib import messages
 
 def credential_list(request):
     credentials =Credential.objects.all()
@@ -36,6 +37,7 @@ def credential_create(request):
             credential_remark=credential_remark,
             credential_status=credential_status
         )
+        messages.success(request, "Credential create sucessfully.")
         return redirect('credential_list')
     
     return render(request, 'credential-mgt/credential_create.html')
@@ -55,6 +57,11 @@ def credential_edit(request,credential_id):
 
 def credential_delete(request,credential_id):
     credential =get_object_or_404(Credential,id=credential_id)
-    credential.credential_status= not credential.credential_status
+    # credential.credential_status= not credential.credential_status
+    if credential.credential_status is True:
+        credential.credential_status = False
+    else : 
+        credential.credential_status = True 
+
     credential.save()
     return redirect('credential_list')
