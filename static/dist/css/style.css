@@ -1282,6 +1282,8 @@ input[type="file"] {padding:0px !important; height: 31.6px;}
 
 .profile-tab {
     border-bottom: 1px solid #ccc;
+    flex-wrap: unset !important;
+    white-space: nowrap;
 }
 
 .profile-tab li {
@@ -2814,6 +2816,11 @@ a:hover .dr-pdficon {
     font-size: 13px;
     color: rgba(58, 53, 65, 0.68);
     padding-top: 8px;
+}
+.tabarea-scrollbar {
+    width: 100%;
+    overflow-x: auto;
+    padding: 0px 0 2px !important;
 }
 
 @media (max-width:767px) {
