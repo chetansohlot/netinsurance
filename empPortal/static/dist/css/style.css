@@ -2773,7 +2773,7 @@ a:hover .dr-pdficon {
 .ui-datepicker select.ui-datepicker-month, .ui-datepicker select.ui-datepicker-year {
     width:60px; border:none;
 }
-.thead-icon {width:16px; height: 16px; object-fit: contain;}
+.thead-icon {width:16px; height: 16px; object-fit: contain; margin-right: 5px;}
 
 @media (max-width:767px) {
     .banner-hding {font-size: 30px;}
@@ -2781,27 +2781,11 @@ a:hover .dr-pdficon {
     .wrap-hding {font-size:24px;}
     .wrap-subhding {font-size:16px;}
     .hiw-first-arrow, .hiw-sec-arrow {display: none; }
-    .ui-datepicker.ui-widget-content {
-        width: 300px !important;
-    }
-
-    .ui-datepicker {
-        padding: 15px 10px !important;
-        height: 350px !important;
-    }
+    .ui-datepicker.ui-widget-content { width: 300px !important;}
+    .ui-datepicker {padding: 15px 10px !important; height: 350px !important;}
     .ui-state-default,
     .ui-widget-content .ui-state-default,
-    .ui-widget-header .ui-state-default {
-        width: 36px !important;
-        height: 36px !important;
-        font-size: 14px;
-    }
-
-    .ui-datepicker .ui-datepicker-next {
-        right: 0px !important;
-    }
-
-    .ui-datepicker .ui-datepicker-prev {
-        right: 60px !important;
-    }
+    .ui-widget-header .ui-state-default {width: 36px !important; height: 36px !important; font-size: 14px;}
+    .ui-datepicker .ui-datepicker-next {right: 0px !important;}
+    .ui-datepicker .ui-datepicker-prev {right: 60px !important;}
   }
