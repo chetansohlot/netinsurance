@@ -87,9 +87,43 @@ def index(request):
     except ValueError:
         per_page = 10
 
-    # Base queryset
-    if request.user.role_id != 1:
-        leads = Leads.objects.filter(created_by=request.user.id)
+    role_id = request.user.role_id
+    user_id = request.user.id
+
+    if role_id == 2:  # Management
+        leads = Leads.objects.all()
+
+    elif role_id == 3:  # Branch Manager
+        leads = Leads.objects.filter(Q(created_by_id=user_id) | Q(assigned_to_id=user_id))
+
+    elif role_id == 4:  # Agent
+        leads = Leads.objects.filter(Q(created_by_id=user_id) | Q(assigned_to_id=user_id))
+
+    elif role_id == 5:  # Manager
+        team_leaders = Users.objects.filter(role_id=6, senior_id=user_id)
+        relationship_managers = Users.objects.filter(role_id=7, senior_id__in=team_leaders.values_list('id', flat=True))
+
+        team_leader_ids = team_leaders.values_list('id', flat=True)
+        rm_ids = relationship_managers.values_list('id', flat=True)
+        user_ids = list(team_leader_ids) + list(rm_ids) + [user_id]
+
+        leads = Leads.objects.filter(
+            Q(created_by_id__in=user_ids) | Q(assigned_to_id__in=user_ids)
+        )
+
+    elif role_id == 6:  # Team Leader
+        relationship_managers = Users.objects.filter(role_id=7, senior_id=user_id)
+        rm_ids = relationship_managers.values_list('id', flat=True)
+        user_ids = list(rm_ids) + [user_id]
+        leads = Leads.objects.filter(
+            Q(created_by_id__in=user_ids) | Q(assigned_to_id__in=user_ids)
+        )
+
+    elif role_id == 7:  # Relationship Manager
+        leads = Leads.objects.filter(
+            Q(created_by_id=user_id) | Q(assigned_to_id=user_id)
+        )
+
     else:
         leads = Leads.objects.all()
 
@@ -109,18 +143,6 @@ def index(request):
     if search_field and search_query:
         filter_args = {f"{search_field}__icontains": search_query}
         leads = leads.filter(**filter_args)
-
-     # Apply filters based on form input
-    """if 'lead_id' in request.GET and request.GET['lead_id']:
-        leads = leads.filter(lead_id__icontains=request.GET['lead_id'])
-    if 'name_as_per_pan' in request.GET and request.GET['name_as_per_pan']:
-        leads = leads.filter(name_as_per_pan__icontains=request.GET['name_as_per_pan'])    
-    if 'pan_card_number' in request.GET and request.GET['pan_card_number']:
-        leads = leads.filter(pan_card_number__icontains=request.GET['pan_card_number'])
-    if 'email_address' in request.GET and request.GET['email_address']:
-        leads = leads.filter(email_address__icontains=request.GET['email_address'])
-    if 'mobile_number' in request.GET and request.GET['mobile_number']:
-        leads = leads.filter(mobile_number__icontains=request.GET['mobile_number']) """
     
     # Get filter inputs
     lead_id = request.GET.get('lead_id', '')
@@ -149,8 +171,6 @@ def index(request):
         lead_type, motor_type
     ])
 
-    #today = datetime.today().date()
-    #after_30_days = today + timedelta(days=30)
     allowed_roles = Roles.objects.filter(roleDepartment=1)
 
     # Apply filters
@@ -186,7 +206,6 @@ def index(request):
     if lead_type == 'MOTOR' and motor_type:
         leads = leads.filter(vehicle_type=motor_type)
 
-     # Example logic for upcoming renewals (next 30 days)
     upcoming_renewals = request.GET.get('upcoming_renewals')
 
     if upcoming_renewals:
@@ -195,24 +214,20 @@ def index(request):
             days = int(upcoming_renewals)
             target_date = today + timedelta(days=days)
 
-        # Range from today to target_date
             leads = leads.filter(risk_start_date__range=[today, target_date])
         except ValueError:
             pass  # Invalid number of days (safe fallback)
     
    
-    # Get unique dropdown values
-    #sales_managers = Users.objects.filter(role_id=3).values('first_name','first_name', 'last_name').distinct()
     sales_managers = Users.objects.filter(
         role_id=3,
         role__in=allowed_roles
         ).values('first_name', 'last_name').distinct() 
     agents = Users.objects.filter(role_id=4).values_list('user_name', flat=True)
-    insurance_companies = Leads.objects.values_list('insurance_company', flat=True).distinct().exclude(insurance_company__isnull=True).exclude(insurance_company__exact='')
-    policy_types = Leads.objects.values_list('policy_type', flat=True).distinct().exclude(policy_type__isnull=True).exclude(policy_type__exact='')
-    vehicle_types = Leads.objects.values_list('vehicle_type', flat=True).distinct().exclude(vehicle_type__isnull=True).exclude(vehicle_type__exact='')
+    insurance_companies = leads.values_list('insurance_company', flat=True).distinct().exclude(insurance_company__isnull=True).exclude(insurance_company__exact='')
+    policy_types = leads.values_list('policy_type', flat=True).distinct().exclude(policy_type__isnull=True).exclude(policy_type__exact='')
+    vehicle_types = leads.values_list('vehicle_type', flat=True).distinct().exclude(vehicle_type__isnull=True).exclude(vehicle_type__exact='')
    
-
     # Sorting
     if shorting == 'name_asc':
         leads = leads.order_by('name_as_per_pan')
@@ -225,10 +240,6 @@ def index(request):
     else:
         leads = leads.order_by('-created_at')  # Default sort
 
-    # After filtering leads
-    #if request.GET.get('export') == '1':
-        #return export_leads_to_excel(leads)
-    # Handle Export
     if request.GET.get('export') == '1':
         if filters_applied:
             return export_leads_to_excel(leads)
@@ -245,7 +256,6 @@ def index(request):
 
     # Base queryset
     if request.user.role_id != 1:
-        leads = Leads.objects.filter(created_by=request.user.id)
         all_leads = Leads.objects.filter(created_by=request.user.id)
         total_leads = all_leads.filter(created_by=request.user.id).count()  
         motor_leads = Leads.objects.filter(created_by=request.user.id,lead_type='MOTOR').count()
@@ -1246,9 +1256,9 @@ def lead_assignment(request,lead_id):
     user_dept = request.user.department_id
     
     if user_role == 1:
-        assigner_list = Users.objects.filter(role_id=5,is_active=1)
+        assigner_list = Users.objects.filter(is_active=1)
     else:
-        assigner_list = Users.objects.filter(role_id=user_role,is_active=1,department_id=user_dept)   
+        assigner_list = Users.objects.filter(is_active=1,department_id=user_dept)   
         
     branches = Branch.objects.filter(status='Active') 
     return render(request, "leads/create-assignment.html",{"lead_data":lead_data,"branches":branches,"assigner_list":assigner_list})
