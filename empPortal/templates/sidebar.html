@@ -182,7 +182,7 @@
                    
                   <!--Source parth-->
                   <li class="nav-item">
-                    <a href="{% url 'source_list' %}" class="nav-link {% if '/branch-management/' in request.path %} active {% endif %}">
+                    <a href="{% url 'source_list' %}" class="nav-link {% if '/source/' in request.path %} active {% endif %}">
                       <svg class="sidbarmenu-svg">
                         <use xlink:href="#view-policy" />
                       </svg>
@@ -254,7 +254,7 @@
 
             <!--Parth Singh-->
                 <li class="nav-item">
-                  <a href="{% url 'credential_list' %}" class="nav-link ">
+                  <a href="{% url 'credential_list' %}" class="nav-link {% if '/credential/' in request.path %} active {% endif %}">
                     <svg class="sidbarmenu-svg">
                         <use xlink:href="#employees-icon" />
                     </svg>
