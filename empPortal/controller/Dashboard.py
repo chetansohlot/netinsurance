@@ -192,6 +192,37 @@ def dashboard(request):
 
     # Totals
     total_policies = aggregation_qs.count()
+    status_counts = aggregation_qs.values('operator_verification_status').annotate(count=Count('id'))
+
+    pendingOperator = verifiedOperator = not_verifiedOperator = 0
+
+    # Map status values to named variables
+    for entry in status_counts:
+        status = entry['operator_verification_status']
+        count = entry['count']
+        if status == '0':
+            pendingOperator = count
+        elif status == '1':
+            verifiedOperator = count
+        elif status == '2':
+            not_verifiedOperator = count
+
+            
+    status_counts_quality = aggregation_qs.values('quality_check_status').annotate(count=Count('id'))
+
+    pendingQuality = verifiedQuality = not_verifiedQuality = 0
+
+    # Map status values to named variables
+    for entry in status_counts_quality:
+        status = entry['quality_check_status']
+        count = entry['count']
+        if status == '0':
+            pendingQuality = count
+        elif status == '1':
+            verifiedQuality = count
+        elif status == '2':
+            not_verifiedQuality = count
+
     total_revenue = aggregation_qs.aggregate(
         total=Sum(Cast('policy_premium', output_field=FloatField()))
     )['total'] or 0
@@ -276,6 +307,12 @@ def dashboard(request):
         'total_revenue': total_revenue,
         'total_net_premium': total_net_premium,
         'total_gross_premium': total_gross_premium,
+        'pendingOperator': pendingOperator,
+        'verifiedOperator': verifiedOperator,
+        'not_verifiedOperator': not_verifiedOperator,
+        'pendingQuality': pendingQuality,
+        'verifiedQuality': verifiedQuality,
+        'not_verifiedQuality': not_verifiedQuality,
     })
 
 

@@ -144,6 +144,116 @@
                   </div>
                 </div>  
                 <div class="row">
+                {% if request.user.role_id|stringformat:"s" not in "1,4" and request.user.department_id|stringformat:"s" == "5" %}
+                
+                  <div class="col-xs-6 col-sm-4 col-md-3">
+                    <a href="#">
+                      <div class="card counter-img-card counter-active-card ">
+                        <div class="card-body">
+                          <div class="row">
+                            <div class="col">
+                              <p class="card-text text-dark">
+                                Pending Policy
+                              </p>
+                              <h5 class="card-title card-number" id="policies_sold">{{ pendingQuality }}</h5>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </a>  
+                  </div> 
+                  
+                  <div class="col-xs-6 col-sm-4 col-md-3">
+                    <a href="#">
+                      <div class="card counter-img-card counter-active-card ">
+                        <div class="card-body">
+                          <div class="row">
+                            <div class="col">
+                              <p class="card-text text-dark">
+                                Completed Policy
+                              </p>
+                              <h5 class="card-title card-number" id="policies_sold">{{ verifiedQuality }}</h5>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </a>  
+                  </div> 
+                  <div class="col-xs-6 col-sm-4 col-md-3">
+                    <a href="#">
+                      <div class="card counter-img-card counter-active-card ">
+                        <div class="card-body">
+                          <div class="row">
+                            <div class="col">
+                              <p class="card-text text-dark">
+                                Re-Verification Policy
+                              </p>
+                              <h5 class="card-title card-number" id="policies_sold">{{ not_verifiedQuality }}</h5>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </a>  
+                  </div> 
+                    
+                    
+                {% elif request.user.role_id|stringformat:"s" not in "1,4" and request.user.department_id|stringformat:"s" == "2" %}
+
+                  <div class="col-xs-6 col-sm-4 col-md-3">
+                    <a href="#">
+                      <div class="card counter-img-card counter-active-card ">
+                        <div class="card-body">
+                          <div class="row">
+                            <div class="col">
+                              <p class="card-text text-dark">
+                                Pending Policy
+                              </p>
+                              <h5 class="card-title card-number" id="policies_sold">{{ pendingOperator }}</h5>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </a>  
+                  </div> 
+                  
+                  <div class="col-xs-6 col-sm-4 col-md-3">
+                    <a href="#">
+                      <div class="card counter-img-card counter-active-card ">
+                        <div class="card-body">
+                          <div class="row">
+                            <div class="col">
+                              <p class="card-text text-dark">
+                                Verified Policy
+                              </p>
+                              <h5 class="card-title card-number" id="policies_sold">{{ verifiedOperator }}</h5>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </a>  
+                  </div> 
+                  <div class="col-xs-6 col-sm-4 col-md-3">
+                    <a href="#">
+                      <div class="card counter-img-card counter-active-card ">
+                        <div class="card-body">
+                          <div class="row">
+                            <div class="col">
+                              <p class="card-text text-dark">
+                                Not-Verified Policy
+                              </p>
+                              <h5 class="card-title card-number" id="policies_sold">{{ not_verifiedOperator }}</h5>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </a>  
+                  </div> 
+                    
+                    
+                    
+
+                {% else %}     
+
                   <div class="col-xs-6 col-sm-4 col-md-3">
                     <a href="#">
                       <div class="card counter-img-card counter-active-card ">
@@ -160,40 +270,7 @@
                       </div>
                     </a>  
                   </div>    
-                  <!-- <div class="col-xs-6 col-sm-4 col-md-3">
-                    <a href="#">
-                      <div class="card counter-img-card counter-pending-card ">
-                        <div class="card-body">
-                          <div class="row">
-                            <div class="col">
-                              <p class="card-text text-dark">
-                                Current Payout
-                              </p>
-                              <h5 class="card-title card-number"><i class="fa-solid fa-indian-rupee-sign"></i>500000</h5>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </a>  
-                  </div> -->
-
-                  {% comment %} <div class="col-xs-6 col-sm-4 col-md-3">
-                    <a href="#">
-                      <div class="card counter-img-card counter-deactive-card ">
-                        <div class="card-body">
-                          <div class="row">
-                            <div class="col">
-                              <p class="card-text text-dark">Total Revenue</p>
-                              <h5 class="card-title card-number" >
-                                <i class="fa-solid fa-indian-rupee-sign"></i>{{ total_revenue|indian_currency }}
-                              </h5>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </a>
-                  </div>   {% endcomment %}
-                  
+                 
                   <div class="col-xs-6 col-sm-4 col-md-3">
                     <a href="#">
                       <div class="card counter-img-card counter-deactive-card ">
@@ -227,6 +304,7 @@
                       </div>
                     </a>
                   </div>
+                {% endif %}     
 
                 </div>
               </div>

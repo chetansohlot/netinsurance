@@ -46,14 +46,14 @@
             </a>
           </li>
           
-          <li class="nav-item">
+          {% comment %} <li class="nav-item">
             <a href="{% url 'credential_list' %}" class="nav-link ">
               <svg class="sidbarmenu-svg">
                   <use xlink:href="#employees-icon" />
               </svg>
               <p>Credential Mgt</p>
             </a>
-          </li>
+          </li> {% endcomment %}
           {% comment %} ____ COMMISSION POLICY _____  {% endcomment %}
           
           {% comment %} <li class="nav-item {% if '/policy-commission/' in request.path %} menu-is-opening menu-open {% endif %}">

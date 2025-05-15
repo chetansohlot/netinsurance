@@ -148,26 +148,24 @@ $(document).on('input', '.aadhar', function() {
 });
 
 $(document).on('input', '.pan', function() {
-    var pan = $(this).val().toUpperCase(); // Convert to uppercase for consistency
-    var error_class = $(this).attr('name') + '_err';
+    var panInput = $(this);
+    var pan = panInput.val().replace(/[^a-zA-Z0-9]/g, ''); // remove non-alphanumeric characters
+    pan = pan.toUpperCase().substring(0, 10); // convert to uppercase and limit to 10 characters
 
-    // Allow only alphanumeric characters
-    var sanitizedPan = pan.replace(/[^A-Z0-9]/gi, '');
-
-    // Limit to 10 characters
-    sanitizedPan = sanitizedPan.substring(0, 10);
-
-    // PAN regex pattern: 5 letters, 4 digits, 1 letter
+    var error_class = panInput.attr('name') + '_err';
     var panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
 
-    if (sanitizedPan.length === 10 && !panRegex.test(sanitizedPan)) {
+    // Update the input with sanitized and formatted PAN
+    panInput.val(pan);
+
+    // Validate PAN format
+    if (pan.length === 10 && !panRegex.test(pan)) {
         $('.' + error_class).show().text('Invalid PAN format.');
     } else {
         $('.' + error_class).hide().text('');
     }
-
-    $(this).val(sanitizedPan);
 });
+
 
 $(document).on('input', '.number', function() {
     var value = $(this).val();
