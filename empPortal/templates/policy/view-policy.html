@@ -1,0 +1,223 @@
+{% extends 'master.html' %}
+
+{% block title %}
+View Policy
+{% endblock %}
+
+{% block content %}
+{% load static %}
+
+<body class="hold-transition sidebar-mini">
+<div class="wrapper">
+  {% include 'navbar.html' %}
+  <!-- /.navbar -->
+
+  <!-- Main Sidebar Container -->
+   {% include 'sidebar.html' %}
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper white-bg">
+    <!-- Content Header (Page header) -->
+    <div class="content-header header-content-bg">
+      <div class="container-fluid ">
+        <div class="row py-2">
+          <div class="col-sm-6">
+            <h1 class="admin-title m-0 pt-2">View Policy</h1>
+            <ul class="breadcrump">
+              <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
+              <li>View Policy</li>
+            </ul>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-6 col-sm-4 col-md-2">
+            <a href="#">
+              <div class="card counter-img-card active">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col">
+                      
+                      <p class="card-text">
+                        Total Policy
+                      </p>
+                      <h5 class="card-title card-number">{{ policy_count }}</h5>
+                    </div>
+                    
+                  </div>
+                </div>
+              </div>
+            </a>   
+          </div>  
+          <div class="col-xs-6 col-sm-4 col-md-2">
+            <a href="#">
+              <div class="card counter-img-card counter-active-card ">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col">
+                      
+                      <p class="card-text">
+                        Motor Policy
+                      </p>
+                      <h5 class="card-title card-number">{{ policy_count }}</h5>
+                    </div>
+                    
+                  </div>
+                </div>
+              </div>
+            </a>  
+          </div>  
+          <div class="col-xs-6 col-sm-4 col-md-2">
+            <a href="#">
+              <div class="card counter-img-card counter-deactive-card ">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col">
+                      
+                      <p class="card-text">
+                        Health Policy
+                      </p>
+                      <h5 class="card-title card-number">0</h5>
+                    </div>
+                    
+                  </div>
+                </div>
+              </div>
+            </a>  
+          </div>  
+          <div class="col-xs-6 col-sm-4 col-md-2">
+            <a href="#">
+              <div class="card counter-img-card counter-pending-card ">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col">
+                      
+                      <p class="card-text">
+                        Term Policy
+                      </p>
+                      <h5 class="card-title card-number">0</h5>
+                    </div>
+                    
+                  </div>
+                </div>
+              </div>
+            </a>  
+          </div>  
+        </div>
+      </div>
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <div class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-sm-12 col-md-12">
+            <div class="card box-shadow-none">
+              <div class="card-body px-0 pb-0 pt-0">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="">
+                      <!-- <form method="GET" class="d-flex gap-2 align-items-center mb-3">
+                        <select class="table-select-field form-select" name="search_field" required>
+                            <option value="" disabled {% if not search_field %}selected{% endif %}>Filter By</option>
+                            <option value="policy_number" {% if search_field == "policy_number" %}selected{% endif %}>Policy Number</option>
+                            <option value="vehicle_number" {% if search_field == "vehicle_number" %}selected{% endif %}>Vehicle Number</option>
+                            <option value="holder_name" {% if search_field == "holder_name" %}selected{% endif %}>Holder Name</option>
+                            <option value="insurance_provider" {% if search_field == "insurance_provider" %}selected{% endif %}>Insurance Provider</option>
+                        </select>
+                    
+                        <input type="text" name="search_query" class="table-search-field form-control"
+                               placeholder="Search" value="{{ search_query|default_if_none:'' }}" required>
+                    
+                        <button type="submit" class="table-search-btn btn btn-primary">
+                            <img src="{% static 'dist/img/svg/search-icon.svg' %}" alt="Search">
+                        </button>
+                    </form> -->
+                    <!-- Filter Start -->
+                    <div class="card">
+                      <div class="card-body pb-0">
+                        <form method="get">
+                          <div class="row align-items-center">
+                            <div class="col-sm-6 col-md-2">
+                              View Policy Data Here
+                            </div>
+                            <!-- <div class="col-md-auto">
+                              <div class="form-group d-flex justify-content-end">
+                                <div class="dropdown">
+                                   <div class="shorting-select mx-0"  data-toggle="dropdown" aria-expanded="false">
+                                    <img src="{% static 'dist/img/svg/shorting-icon.svg' %}" alt="">
+                                    <span>Short</span>
+                                    <img src="{% static 'dist/img/svg/down-arrow-icon.svg' %}" alt="" class="change-arrow">
+                                  </div> --> 
+                                  
+                                    <!-- <ul class="dropdown-menu shorting-dropdown-menu">
+                                      <p class="border-bottom pb-1 title2">Short</p>
+                                      <li><input type="radio" name="shorting" id="name-a_z"> <label for="name-a_z">Name A &gt; Z</label></li>
+                                      <li><input type="radio" name="shorting" id="name-z_a"> <label for="name-z_a">Name Z &lt; A</label></li>
+                                      <li><input type="radio" name="shorting" id="recently_activated"> <label for="recently_activated">Recently Activated</label></li>
+                                      <li><input type="radio" name="shorting" id="recently_deactivated"> <label for="recently_deactivated">Recently Deactivated</label></li>
+                                      <div class="d-flex justify-content-center border-top pt-3 mt-2 pb-2">
+                                        <button type="submit" class="dashboard-addbtn w-100">Apply</button>
+                                      </div>   
+                                    </ul> -->
+                                  
+                                <!-- </div>   -->
+                                <!-- <div class="shorting-select" data-toggle="modal" data-target="#modal-filter">
+                                  <img src="{% static 'dist/img/svg/filter-icon.svg' %}" alt="">
+                                  <span>Filter</span>
+                                  <img src="{% static 'dist/img/svg/down-arrow-icon.svg' %}" alt="" class="change-arrow">
+                                </div> -->
+                              </div>  
+                            </div>
+                            <!--filter ends-->
+                                        
+                          </div>
+                        </form>
+                  
+                </div>  
+                <ul class="nav nav-pills profile-tab">
+                  <li class="nav-item text-bold">
+                      <a class="nav-link active" href="#">MOTOR</a>
+                  </li>
+                  <li class="nav-item text-bold">
+                      <a class="nav-link " href="#">HEALTH</a>
+                  </li>
+                  <li class="nav-item text-bold">
+                      <a class="nav-link " href="#">TERM</a>
+                  </li>
+                </ul>
+                <div class="tab-content" id="nav-tabContent">
+                    <div class="table-responsive">
+                     
+                    </div>
+                </div>
+              </div>
+              
+              
+              {% include "components/filter/paginator.html" %}
+              
+            </div>
+            
+            
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /.content-wrapper -->
+
+<!-- Main Footer -->
+{% include 'footer.html' %}
+
+</div>
+<!-- ./wrapper -->
+
+{% include 'footer-script.html' %}
+</body>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+{% endblock %}
