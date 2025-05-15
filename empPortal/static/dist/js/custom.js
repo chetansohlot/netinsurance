@@ -51,6 +51,7 @@ $(document).on('input', '.percentage', function() {
     $(this).val(sanitizedValue);
 });
 
+
 $(document).on('input', '.name', function() {
     var name = $(this).val();
     var error_class = $(this).attr('name') + '_err';
@@ -113,7 +114,9 @@ $(document).on('input', '.mobile', function() {
     // Remove non-numeric characters
     var sanitizedMobile = mobile.replace(/[^0-9]/g, '');
 
+    // Max length 10 
     sanitizedMobile = sanitizedMobile.substring(0, 10);
+    
     // Check if first digit is greater than 5
     if (sanitizedMobile.length > 0 && sanitizedMobile.charAt(0) <= '5') {
         $('.' + error_class).show().text('Invalid Mobile Number.');
@@ -124,29 +127,108 @@ $(document).on('input', '.mobile', function() {
     $(this).val(sanitizedMobile);
 });
 
+$(document).on('input', '.aadhar', function() {
+    var aadhar = $(this).val();
+    var error_class = $(this).attr('name') + '_err';
+
+    // Remove non-numeric characters
+    var sanitizedAadhar = aadhar.replace(/[^0-9]/g, '');
+
+    // Max length 10 
+    sanitizedAadhar = sanitizedAadhar.substring(0, 12);
+    
+    // Check if first digit is greater than 5
+    if (sanitizedAadhar.length > 0 && sanitizedAadhar.charAt(0) == '0') {
+        $('.' + error_class).show().text('Invalid Aadhar Number.');
+    } else {
+        $('.' + error_class).hide().text('');
+    }
+
+    $(this).val(sanitizedAadhar);
+});
+
+$(document).on('input', '.pan', function() {
+    var panInput = $(this);
+    var pan = panInput.val().replace(/[^a-zA-Z0-9]/g, ''); // remove non-alphanumeric characters
+    pan = pan.toUpperCase().substring(0, 10); // convert to uppercase and limit to 10 characters
+
+    var error_class = panInput.attr('name') + '_err';
+    var panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+
+    // Update the input with sanitized and formatted PAN
+    panInput.val(pan);
+
+    // Validate PAN format
+    if (pan.length === 10 && !panRegex.test(pan)) {
+        $('.' + error_class).show().text('Invalid PAN format.');
+    } else {
+        $('.' + error_class).hide().text('');
+    }
+});
+
 
 $(document).on('input', '.number', function() {
     var value = $(this).val();
     var error_class = $(this).attr('name') + '_err';
 
-    // ✅ Allow any digits before decimal, up to 2 decimal places
-    if (!/^\d*(\.\d{0,2})?$/.test(value)) {
-        $('.' + error_class).show().text('Enter a valid number (up to 2 decimal places).');
+    // Allow only numbers with up to 2 decimal places
+    if (!/^\d{0,10}(\.\d{0,2})?$/.test(value)) {
+        $('.' + error_class).show().text('Enter a valid percentage (max 2 digits, up to 2 decimal places).');
     } else {
         $('.' + error_class).hide().text('');
     }
 
-    // Remove non-numeric and extra dots
-    var sanitizedValue = value.replace(/[^0-9.]/g, ''); // keep only numbers and dot
-    var parts = sanitizedValue.split('.');
+    // Remove non-numeric and multiple decimal points
+    var sanitizedValue = value.replace(/[^0-9.]/g, ''); // Remove alphabets and special characters except '.'
 
-    // Keep only one decimal point
+    var parts = sanitizedValue.split('.');
+    
+    // Ensure only one decimal point
     if (parts.length > 2) {
         sanitizedValue = parts[0] + '.' + parts.slice(1).join('');
     }
 
-    // ✅ No limit on integer part anymore (remove this block)
-    // Truncate decimal part to 2 digits
+    // Limit integer part to 2 digits
+    if (parts[0].length > 10) {
+        sanitizedValue = parts[0].slice(0, 10) + (parts.length > 1 ? '.' + parts[1] : '');
+    }
+
+    // Limit decimal part to 2 digits
+    if (parts.length === 2 && parts[1].length > 2) {
+        sanitizedValue = parts[0] + '.' + parts[1].substring(0, 2);
+    }
+
+    $(this).val(sanitizedValue);
+});
+
+
+$(document).on('input', '.amount-number', function() {
+    var value = $(this).val();
+    var error_class = $(this).attr('name') + '_err';
+
+    // Allow only numbers with up to 2 decimal places
+    if (!/^\d{0,4}(\.\d{0,2})?$/.test(value)) {
+        $('.' + error_class).show().text('Enter a valid percentage (max 2 digits, up to 2 decimal places).');
+    } else {
+        $('.' + error_class).hide().text('');
+    }
+
+    // Remove non-numeric and multiple decimal points
+    var sanitizedValue = value.replace(/[^0-9.]/g, ''); // Remove alphabets and special characters except '.'
+
+    var parts = sanitizedValue.split('.');
+    
+    // Ensure only one decimal point
+    if (parts.length > 2) {
+        sanitizedValue = parts[0] + '.' + parts.slice(1).join('');
+    }
+
+    // Limit integer part to 2 digits
+    if (parts[0].length > 4) {
+        sanitizedValue = parts[0].slice(0, 4) + (parts.length > 1 ? '.' + parts[1] : '');
+    }
+
+    // Limit decimal part to 2 digits
     if (parts.length === 2 && parts[1].length > 2) {
         sanitizedValue = parts[0] + '.' + parts[1].substring(0, 2);
     }
