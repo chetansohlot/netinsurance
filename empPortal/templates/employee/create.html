@@ -93,7 +93,7 @@ Add Employee
                             <!-- PAN Card -->
                             <div class="form-group col-sm-6 col-md-4">
                                 <label class="form-lbl" for="pan_no">PAN Card</label>
-                                <input type="text" class="form-field text-uppercase" maxlength="10" name="pan_no" id="pan_no"
+                                <input type="text" class="form-field pan" maxlength="10" name="pan_no" id="pan_no"
                                     placeholder="Enter PAN No" value="{{ employee.pan_card|default:'' }}">
                                 <span class="error pan_no_err"></span>
                             </div>
