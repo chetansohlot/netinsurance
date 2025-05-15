@@ -818,6 +818,13 @@ class Users(AbstractBaseUser):
         db_table = 'users'
 
     @property
+    def roleName(self):
+        try:
+            return Roles.objects.get(id=self.role_id)
+        except Roles.DoesNotExist:
+            return None
+    
+    @property
     def department(self):
         try:
             return Department.objects.get(id=self.department_id)
