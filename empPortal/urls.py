@@ -394,7 +394,7 @@ urlpatterns = [
     path('credential/', Credential.credential_list,name='credential_list'),
     path('credential/create/', Credential.credential_create, name='credential_create'),
     path('credential/edit/<int:credential_id>/', Credential.credential_edit, name='credential_edit'),
-    path('credential/delete/<int:credential_id>/', Credential.credential_delete, name='credential_delete'),
+    path('credential/delete/<int:credential_id>/toggle/', Credential.credential_delete, name='credential_delete'),
 
     path('get-pos-partners-by-bqp/', views.get_pos_partners_by_bqp,name="get-pos-partners-by-bqp"),
     
