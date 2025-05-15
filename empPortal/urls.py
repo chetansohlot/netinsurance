@@ -170,7 +170,7 @@ urlpatterns = [
     path('lead/basic_info/<str:lead_id>', leads.basic_info, name='basic-info'),
     path('leads/lead-source/<str:lead_id>',leads.lead_source, name='lead-source'),
     path('leads/lead-location/<str:lead_id>',leads.lead_location, name='lead-location'),
-    path('leads/assignment/<str:lead_id>', leads.assignment, name='lead-assignment'),
+    path('leads/assignment/<str:lead_id>', leads.lead_assignment, name='lead-assignment'),
     path('leads/previous-policy-info/<str:lead_id>', leads.previous_policy_info, name='leads-previous-policy-info'),
 
     path('leads/product-info/lead-init/<str:lead_id>', leads.lead_init_edit, name='edit-lead-init'),
