@@ -232,7 +232,257 @@
               </div>
             </div>
           </div>
+          <div class="col-sm-6 col-md-6">  
+            <div class="card">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap">
+                  <h5 class="card-hding pb-0">Lead Summary</h5>
+                  <div class="d-flex flex-wrap gap-2 align-items-center">
+                    <div class="col-auto">
+                      <select name="summary_insurer" class="form-field" id="summary_insurer">
+                        <option value="1">All</option>
+                        <option value="2">Today</option>
+                        <option value="3">MTD</option>
+                        <option value="4">Custom Date</option>
+                      </select>
+                    </div>
+                    <div class="col-auto" id="month_select_wrapper" style="display: none;">
+                      <select name="summary_insurer_month" class="form-field" id="summary_insurer_month">
+                        <option value="1">Jan</option>
+                        <option value="2">Feb</option>
+                        <option value="3">March</option>
+                        <option value="4">Apr</option>
+                        <option value="5">May</option>
+                        <option value="6">June</option>
+                        <option value="7">July</option>
+                        <option value="8">Aug</option>
+                        <option value="9">Sept</option>
+                        <option value="10">Oct</option>
+                        <option value="11">Nov</option>
+                        <option value="12">Dec</option>
+                      </select>
+                    </div>
+                    <div class="col-auto" id="from_date_wrapper" style="display: none;">
+                      <input type="date" name="summary_insurer_from_date" class="form-field" id="summary_insurer_from_date" placeholder="From Date" autocomplete="off">
+                      <span class="error summary_insurer_from_date_err"></span>
+                    </div>
+                    <div class="col-auto" id="to_date_wrapper" style="display: none;">
+                      <input type="date" name="summary_insurer_to_date" class="form-field" id="summary_insurer_to_date" placeholder="To Date" autocomplete="off">
+                      <span class="error summary_insurer_to_date_err"></span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-12 px-0">
+                  <div class="card">
+                    <div class="card-body p-1">
+                      <div class="row">
+                          <div class="col-4 col-lg-4">
+                            <a href="$" class="anchor-card">
+                              <div class="card6 jd-icon tooltip-sec res-ht h-100 mb-0 border-right" data-title="Today's Leads">
+                                  <div class="card-body p-0">
+                                      <div class="row">
+                                        <div class="col-md-12">
+                                          <div class="d-flex align-items-center">
+                                            <div class="dashboard-icon text-success">
+                                                <i class="far fa-address-book"></i>
+                                            </div>
+                                            <h5 class="card-title" id="today_leads_div_id">4</h5>
+                                          </div>  
+                                        </div>
+                                        <div class="col-12">
+                                          <p class="card-text">
+                                              Today's Leads
+                                            </p>
+                                        </div>
+                                      </div>
+                                  </div>
+                              </div>
+                            </a>  
+                          </div>
+                          <div class="col-4 col-lg-4">
+                            <a href="#" class="anchor-card">
+                              <div class="card6 jd-icon tooltip-sec res-ht h-100 mb-0 border-right" data-title="Duplicate Leads">
+                                  <div class="card-body p-0">
+                                      <div class="row">
+                                        <div class="col-md-12">
+                                          <div class="d-flex align-items-center">
+                                            <div class="dashboard-icon text-warning">
+                                              <i class="far fa-address-book"></i>
+                                            </div>
+                                            <h5 class="card-title" id="today_duplicate_leads_div_id">0</h5>
+                                          </div>  
+                                        </div>
+                                        <div class="col pr-0">
+                                          <p class="card-text">
+                                              Duplicate Leads
+                                            </p>
+                                        </div>
+                                      </div>
+                                  </div>
+                              </div>
+                            </a>
+                          </div>
+                          <div class="col-4 col-lg-4">
+                            <a href="#" class="anchor-card">
+                              <div class="card6 jd-icon tooltip-sec res-ht h-100 mb-0" data-title="Fresh Leads">
+                                  <div class="card-body p-0">
+                                      <div class="row">
+                                        <div class="col-md-12">
+                                          <div class="d-flex align-items-center">
+                                            <div class="dashboard-icon text-primary">
+                                              <i class="fas fa-calendar-day"></i>
+                                            </div>
+                                            <h5 class="card-title" id="today_fresh_leads_div_id">3</h5>
+                                          </div>  
+                                        </div>
+                                        <div class="col-12">
+                                          <p class="card-text">
+                                              Fresh Leads
+                                            </p>
+                                        </div>
+                                      </div>
+                                  </div>
+                              </div>
+                            </a>
+                          </div>
+                      </div>
+                    </div>  
+                  </div>    
+              </div>
           
+                <!-- <hr class="my-2"> -->
+                <div style="position: relative; height: 400px; max-height: 300px;">
+                  <canvas id="lead_bar_chart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-md-6">  
+            <div class="card">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap">
+                  <h5 class="card-hding pb-0">Quote Summary</h5>
+                  <div class="d-flex flex-wrap gap-2 align-items-center">
+                    <div class="col-auto">
+                      <select name="summary_insurer" class="form-field" id="summary_insurer">
+                        <option value="1">All</option>
+                        <option value="2">Today</option>
+                        <option value="3">MTD</option>
+                        <option value="4">Custom Date</option>
+                      </select>
+                    </div>
+                    <div class="col-auto" id="month_select_wrapper" style="display: none;">
+                      <select name="summary_insurer_month" class="form-field" id="summary_insurer_month">
+                        <option value="1">Jan</option>
+                        <option value="2">Feb</option>
+                        <option value="3">March</option>
+                        <option value="4">Apr</option>
+                        <option value="5">May</option>
+                        <option value="6">June</option>
+                        <option value="7">July</option>
+                        <option value="8">Aug</option>
+                        <option value="9">Sept</option>
+                        <option value="10">Oct</option>
+                        <option value="11">Nov</option>
+                        <option value="12">Dec</option>
+                      </select>
+                    </div>
+                    <div class="col-auto" id="from_date_wrapper" style="display: none;">
+                      <input type="date" name="summary_insurer_from_date" class="form-field" id="summary_insurer_from_date" placeholder="From Date" autocomplete="off">
+                      <span class="error summary_insurer_from_date_err"></span>
+                    </div>
+                    <div class="col-auto" id="to_date_wrapper" style="display: none;">
+                      <input type="date" name="summary_insurer_to_date" class="form-field" id="summary_insurer_to_date" placeholder="To Date" autocomplete="off">
+                      <span class="error summary_insurer_to_date_err"></span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-12 px-0">
+                  <div class="card">
+                    <div class="card-body p-1">
+                      <div class="row">
+                          <div class="col-4 col-lg-4">
+                            <a href="$" class="anchor-card">
+                              <div class="card6 jd-icon tooltip-sec res-ht h-100 mb-0 border-right" data-title="Today's Quote">
+                                  <div class="card-body p-0">
+                                      <div class="row">
+                                        <div class="col-md-12">
+                                          <div class="d-flex align-items-center">
+                                            <div class="dashboard-icon text-success">
+                                                <i class="far fa-address-book"></i>
+                                            </div>
+                                            <h5 class="card-title" id="today_leads_div_id">4</h5>
+                                          </div>  
+                                        </div>
+                                        <div class="col-12">
+                                          <p class="card-text">
+                                              Today's Quote
+                                            </p>
+                                        </div>
+                                      </div>
+                                  </div>
+                              </div>
+                            </a>  
+                          </div>
+                          <div class="col-4 col-lg-4">
+                            <a href="#" class="anchor-card">
+                              <div class="card6 jd-icon tooltip-sec res-ht h-100 mb-0 border-right" data-title="Duplicate Quote">
+                                  <div class="card-body p-0">
+                                      <div class="row">
+                                        <div class="col-md-12">
+                                          <div class="d-flex align-items-center">
+                                            <div class="dashboard-icon text-warning">
+                                              <i class="far fa-address-book"></i>
+                                            </div>
+                                            <h5 class="card-title" >0</h5>
+                                          </div>  
+                                        </div>
+                                        <div class="col pr-0">
+                                          <p class="card-text">
+                                              Duplicate Quote
+                                            </p>
+                                        </div>
+                                      </div>
+                                  </div>
+                              </div>
+                            </a>
+                          </div>
+                          <div class="col-4 col-lg-4">
+                            <a href="#" class="anchor-card">
+                              <div class="card6 jd-icon tooltip-sec res-ht h-100 mb-0" data-title="Fresh Quote">
+                                  <div class="card-body p-0">
+                                      <div class="row">
+                                        <div class="col-md-12">
+                                          <div class="d-flex align-items-center">
+                                            <div class="dashboard-icon text-primary">
+                                              <i class="fas fa-calendar-day"></i>
+                                            </div>
+                                            <h5 class="card-title">3</h5>
+                                          </div>  
+                                        </div>
+                                        <div class="col-12">
+                                          <p class="card-text">
+                                              Fresh Quote
+                                            </p>
+                                        </div>
+                                      </div>
+                                  </div>
+                              </div>
+                            </a>
+                          </div>
+                      </div>
+                    </div>  
+                  </div>    
+              </div>
+          
+                <!-- <hr class="my-2"> -->
+                <div style="position: relative; height: 400px; max-height: 300px;">
+                  <canvas id="quote_bar_chart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="col-sm-6 col-md-6">  
             <div class="card">
               <div class="card-body">
@@ -1828,6 +2078,160 @@ document.getElementById('select_product').addEventListener('change', function() 
   });
 </script>
 
+<script>
+  const ctxfour = document.getElementById('lead_bar_chart').getContext('2d');
+    new Chart(ctxfour, {
+        data: {
+            datasets: [{
+                    type: 'bar'
+                    , label: 'Today Leads'
+                    , data: [10, 15, 35, 40, 80]
+                    , backgroundColor: "#17a2b8"
+
+                }
+                , {
+                    type: 'bar'
+                    , label: 'Duplicate Leads'
+                    , data: [30, 50, 20, 1, 10],
+                    //borderWidth: 0,
+                    backgroundColor: "#a5ceac"
+                }
+                , {
+                    type: 'bar'
+                    , label: 'Fresh Leads'
+                    , data: [15, 20, 8, 4, 12],
+                    //borderWidth: 0,
+                    backgroundColor: "#969798"
+                }
+            ]
+            , labels: ['Motor', 'Health', 'Term', 'Life', 'Marine']
+        , }
+        , options: {
+            
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            
+                 plugins: {
+                  datalabels: {
+                      formatter: function(value, context) {
+                          return value;
+                      },
+                      color: '#000',
+                      anchor: 'end',
+                      // align: 'end',
+                      font: {
+                        weight: 'bold',
+                          // size: 16 // Increase the font size for labels
+                      },
+                      padding: {
+                          // top: 10, // Increase top padding for labels
+                          // bottom: 10 // Increase bottom padding for labels
+                      },
+                  }
+                    // datalabels: {
+                    //     // Position of the labels 
+                    //     // (start, end, center, etc.)
+                    //     anchor: 'end',
+                    //     // Alignment of the labels 
+                    //     // (start, end, center, etc.)
+                    //     align: 'end',
+                    //     // Color of the labels
+                    //     color: '#000',
+                    //     font: {
+                    //         weight: 'bold',
+                    //     },
+                    //     padding: {
+                    //         bottom:0
+                    //     },
+                    //     formatter: function (value, context) {
+                    //         // Display the actual data value
+                    //         return value;
+                    //     }
+                    // }
+                 }
+        }
+    });
+</script>
+<script>
+  const ctxquote = document.getElementById('quote_bar_chart').getContext('2d');
+    new Chart(ctxquote, {
+        data: {
+            datasets: [{
+                    type: 'bar'
+                    , label: 'Today Quote'
+                    , data: [10, 15, 35, 40, 80]
+                    , backgroundColor: "#17a2b8"
+
+                }
+                , {
+                    type: 'bar'
+                    , label: 'Duplicate Quote'
+                    , data: [30, 50, 20, 1, 10],
+                    //borderWidth: 0,
+                    backgroundColor: "#a5ceac"
+                }
+                , {
+                    type: 'bar'
+                    , label: 'Fresh Quote'
+                    , data: [15, 20, 8, 4, 12],
+                    //borderWidth: 0,
+                    backgroundColor: "#969798"
+                }
+            ]
+            , labels: ['Motor', 'Health', 'Term', 'Life', 'Marine']
+        , }
+        , options: {
+            
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            
+                 plugins: {
+                  datalabels: {
+                      formatter: function(value, context) {
+                          return value;
+                      },
+                      color: '#000',
+                      anchor: 'end',
+                      // align: 'end',
+                      font: {
+                        weight: 'bold',
+                          // size: 16 // Increase the font size for labels
+                      },
+                      padding: {
+                          // top: 10, // Increase top padding for labels
+                          // bottom: 10 // Increase bottom padding for labels
+                      },
+                  }
+                    // datalabels: {
+                    //     // Position of the labels 
+                    //     // (start, end, center, etc.)
+                    //     anchor: 'end',
+                    //     // Alignment of the labels 
+                    //     // (start, end, center, etc.)
+                    //     align: 'end',
+                    //     // Color of the labels
+                    //     color: '#000',
+                    //     font: {
+                    //         weight: 'bold',
+                    //     },
+                    //     padding: {
+                    //         bottom:0
+                    //     },
+                    //     formatter: function (value, context) {
+                    //         // Display the actual data value
+                    //         return value;
+                    //     }
+                    // }
+                 }
+        }
+    });
+</script>
 
 </body>
 
