@@ -170,7 +170,7 @@ urlpatterns = [
     path('lead/basic_info/<str:lead_id>', leads.basic_info, name='basic-info'),
     path('leads/lead-source/<str:lead_id>',leads.lead_source, name='lead-source'),
     path('leads/lead-location/<str:lead_id>',leads.lead_location, name='lead-location'),
-    path('leads/assignment/<str:lead_id>', leads.assignment, name='lead-assignment'),
+    path('leads/assignment/<str:lead_id>', leads.lead_assignment, name='lead-assignment'),
     path('leads/previous-policy-info/<str:lead_id>', leads.previous_policy_info, name='leads-previous-policy-info'),
 
     path('leads/product-info/lead-init/<str:lead_id>', leads.lead_init_edit, name='edit-lead-init'),
@@ -394,7 +394,7 @@ urlpatterns = [
     path('credential/', Credential.credential_list,name='credential_list'),
     path('credential/create/', Credential.credential_create, name='credential_create'),
     path('credential/edit/<int:credential_id>/', Credential.credential_edit, name='credential_edit'),
-    path('credential/delete/<int:credential_id>/', Credential.credential_delete, name='credential_delete'),
+    path('credential/delete/<int:credential_id>/toggle/', Credential.credential_delete, name='credential_delete'),
 
     path('get-pos-partners-by-bqp/', views.get_pos_partners_by_bqp,name="get-pos-partners-by-bqp"),
     
