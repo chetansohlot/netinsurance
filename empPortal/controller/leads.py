@@ -1228,7 +1228,7 @@ def lead_location(request,lead_id):
     
     return render(request, "leads/create-location-info.html",{"lead_data":lead_data,"states":states})
 
-def assignment(request,lead_id):
+def lead_assignment(request,lead_id):
     if not request.user.is_authenticated and request.user.is_active!=1:
         messages.error(request,'Please Login First')
         return redirect('login')
@@ -1241,9 +1241,16 @@ def assignment(request,lead_id):
     if not lead_data:
         messages.error(request,'Sorry Lead Data is missing')
         return redirect('leads-mgt')
+
+    user_role = request.user.role_id
+    user_dept = request.user.department_id
     
+    if user_role == 1:
+        assigner_list = Users.objects.filter(role_id=5,is_active=1)
+    else:
+        assigner_list = Users.objects.filter(role_id=user_role,is_active=1,department_id=user_dept)   
+        
     branches = Branch.objects.filter(status='Active') 
-    assigner_list = Users.objects.filter(role_id=5,is_active=1)
     return render(request, "leads/create-assignment.html",{"lead_data":lead_data,"branches":branches,"assigner_list":assigner_list})
 
 def previous_policy_info(request,lead_id):
