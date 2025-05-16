@@ -166,7 +166,13 @@
               <div class="col">
                 <p class="card-text">Activated Partners</p>
                 <h5 class="card-title card-number">
-                  {{ counters.activated }}</h5>
+                  {% if not request.user.department_id or request.user.department_id != "1" %}
+                    {{ counters.activated }}
+                  {% else %}
+                    {{ active_agents|default:0 }}
+                  {% endif %}
+
+                </h5>
               </div>
             </div>
           </div>
