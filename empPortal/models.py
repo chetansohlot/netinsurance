@@ -804,6 +804,10 @@ class Users(AbstractBaseUser):
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
     password = models.CharField(max_length=255, null=True)
+    annual_ctc = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    monthly_ctc = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    target_percent = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    target_amt = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     ## bqp id ##
     bqp = models.ForeignKey(BqpMaster, on_delete=models.SET_NULL, null=True, blank=True)
 

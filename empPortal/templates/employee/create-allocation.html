@@ -115,6 +115,25 @@ Update Allocation
                                 </select>
                             </div>
 
+                            <div class="form-group col-sm-6 col-md-4" id="annual_ctc_container">
+                                <label for="annual_ctc" class="form-lbl">Annual CTC</label>
+                                <input type="text" class="form-field number" name="annual_ctc" id="annual_ctc" placeholder="Enter Annual CTC" value="{{employee.annual_ctc|default:0}}" maxlength="8">
+                            </div>
+
+                            <div class="form-group col-sm-6 col-md-4" id="monthly_ctc_container">
+                                <label for="monthly_ctc" class="form-lbl">Monthly CTC</label>
+                                <input type="text" class="form-field number" name="monthly_ctc" id="monthly_ctc" placeholder="Enter Monthly CTC" value="{{employee.monthly_ctc|default:0}}" readonly>
+                            </div>
+
+                            <div class="form-group col-sm-6 col-md-4" id="target_percent_container">
+                                <label for="target_percent" class="form-lbl">Targeted Percentage</label>
+                                <input type="text" class="form-field percentage" name="target_percent" id="target_percent" placeholder="Target Percentage" value="{{employee.target_percent|default:0}}" max="5">
+                            </div>
+
+                            <div class="form-group col-sm-6 col-md-4" id="target_amt_container">
+                                <label for="target_amt" class="form-lbl">Targeted Amount</label>
+                                <input type="text" class="form-field number" name="target_amt" id="target_amt" placeholder="Enter Targeted Amount" value="{{employee.target_amt|default:0}}" readonly>
+                            </div>
 
                         </div>
 
@@ -124,10 +143,6 @@ Update Allocation
                             </button>
                         </div>
                     </form>
-
-
-
-
 
                   </div>
                 </div>
@@ -341,6 +356,56 @@ $(document).ready(function () {
         }
     }
 });
+
+function calculate_montly_ctc(){
+    let annual_ctc = $('#annual_ctc').val();
+    monthly_ctc = annual_ctc/12;
+    $('#monthly_ctc').val(monthly_ctc.toFixed(2))
+}
+
+function calculate_targeted_amount(){
+    let annual_ctc = $('#annual_ctc').val();
+    let target_percent = $('#target_percent').val();
+    monthly_ctc = annual_ctc*target_percent/100;
+    $('#target_amt').val(monthly_ctc.toFixed(2))
+}
+
+$('#annual_ctc').on('input',function(){
+    let val = $(this).val();
+    let isValid = true;
+    if (val.includes('.')) {
+        let parts = val.split('.');
+        if (parts[1].length > 2 ||parts[0].length > 10) {
+            isValid = false;
+        }
+    }else{
+      if (val.length > 10) {
+        isValid = false;
+      }
+    }
+    if (isValid) {
+        calculate_montly_ctc()
+    }
+});
+
+$('#target_percent').on('input',function(){
+    let val = $(this).val();
+    let isValid = true;
+    if (val.includes('.')) {
+        let parts = val.split('.');
+        if (parts[1].length > 2 ||parts[0].length > 2) {
+            isValid = false;
+        }
+    }else{
+      if (val.length > 2) {
+        isValid = false;
+      }
+    }
+    if (isValid) {
+        calculate_targeted_amount()
+    }
+});
+
 </script>
 
 
