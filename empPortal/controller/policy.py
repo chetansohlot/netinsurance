@@ -1053,9 +1053,10 @@ def policyData(request):
     else:
         policy_count = PolicyDocument.objects.filter(status=6).count()
 
-    count_qs = PolicyDocument.objects.order_by('-id')
 
-    status_counts = count_qs.values('operator_verification_status').annotate(count=Count('id'))
+    count_qs = PolicyDocument.objects.all()
+
+    status_counts = count_qs.values('operator_verification_status').annotate(count=Count('operator_verification_status'))
 
     pendingOperator = verifiedOperator = not_verifiedOperator = 0
 
