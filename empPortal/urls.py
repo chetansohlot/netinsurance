@@ -1,4 +1,5 @@
 from django.urls import path, include
+
 from . import views,export
 from . import views
 from . import authenticationView
@@ -69,9 +70,15 @@ urlpatterns = [
 
 
     path('franchise-management/', Franchises.index, name='franchise-management'),
-    path('franchise-management/create-franchise', Franchises.create_or_edit, name='franchise-management-create'),
-    path('franchise-management/<str:franchise_id>/', Franchises.create_or_edit, name='franchise-management-edit'),
+    # path('franchise-management/create-franchise', Franchises.create_or_edit, name='franchise-management-create'),
+    # path('franchise-management/<str:franchise_id>/', Franchises.create_or_edit, name='franchise-management-edit'),
     path("toggle-franchise-status/<int:franchise_id>/", Franchises.franchise_toggle_status, name="franchise-toggle-status"), #Anjali
+    path('franchise-management/create-franchise', Franchises.franchise_basic_info, name='franchise-management-create'),
+    path('franchise-management/<str:franchise_id>/contact_info/', Franchises.franchise_contact_info, name='franchise-management-contact-info'),
+    path('franchise-management/<str:franchise_id>/address-detail/', Franchises.franchise_address_details, name='franchise-management-address-details'),
+    path('franchise-management/<str:franchise_id>/regulatory-compliance/', Franchises.franchise_regulatory_compliance, name='franchise-management-regulatory-compliance'),
+    path('franchise-management/<str:franchise_id>/banking-detail/',Franchises.franchise_banking_details,name='franchise-management-banking-details'),
+
 
 
     path('branch-management/', Branches.index, name='branch-management'),

@@ -959,8 +959,83 @@ class Department(models.Model):
 
     def status_type(self):
         return "Active" if self.status == "Active" else "Inactive"
+    
+class Franchise(models.Model):
+    FRANCHISE_TYPE_CHOICES=(
+        ('Corporate','Corporate'),
+        ('Individual','Individual')
+    )    
+    
+    CHANNEL_TYPE_CHOICES=(
+        ('POSP','POSP'),
+        ('Agency','Agency'),
+        ('Broker','Broker'),
+        ('Sub-Broker','Sub-broker')
+    )
+    
+    STATUS_CHOICES =(
+    ('Active', 'Active'),
+    ('Inactive', 'Inactive'),
+    ('Suspended', 'Suspended'),
+    )
 
+    franchise_id = models.CharField(max_length=20, unique=True)
+    franchise_code = models.CharField(max_length=20, unique=True)
+    franchise_name = models.CharField(max_length=255)
+    franchise_type = models.CharField(max_length=20, choices=FRANCHISE_TYPE_CHOICES, null=True, blank=True)
+    channel_type = models.CharField(max_length=20, choices=CHANNEL_TYPE_CHOICES)
+    franchise_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Active', null=True, blank=True )
+    parent_broker_code = models.CharField(max_length=50, blank=True, null=True)
+    onboarding_date = models.DateField()
 
+    #  Contact Info fields
+    contact_person = models.CharField(max_length=100, blank=True, null=True)
+    mobile_number = models.CharField(max_length=15, blank=True, null=True)
+    franchise_email = models.EmailField(blank=True, null=True)
+    alternate_number = models.CharField(max_length=15, blank=True, null=True)
+    designation = models.CharField(max_length=100, blank=True, null=True)
+
+    # Step 3: Address Details fields
+    address_line_1 = models.CharField(max_length=255, blank=True, null=True)
+    address_line_2 = models.CharField(max_length=255, blank=True, null=True)
+    city = models.CharField(max_length=100, blank=True, null=True)
+    state = models.CharField(max_length=100, blank=True, null=True)
+    pincode = models.CharField(max_length=20, blank=True, null=True)
+    country = models.CharField(max_length=100, blank=True, null=True)
+    office_contact_number = models.CharField(max_length=20, blank=True, null=True)
+
+    # Regulatory & Compliance
+    pan_number = models.CharField(max_length=20, null=True, blank=True)
+    gst_number = models.CharField(max_length=20, null=True, blank=True)
+    aadhar_number = models.CharField(max_length=12, null=True, blank=True)
+
+    # Banking & Payout Details
+    account_holder_name = models.CharField(max_length=100, null=True, blank=True)
+    bank_name           = models.CharField(max_length=100, null=True, blank=True)
+    account_number      = models.CharField(max_length=30,  null=True, blank=True)
+    ifsc_code           = models.CharField(max_length=11,  null=True, blank=True)
+    upi_id              = models.CharField(max_length=100, null=True, blank=True)
+    PAYMENT_MODES = [
+        ('NEFT', 'NEFT'),
+        ('IMPS', 'IMPS'),
+        ('UPI',  'UPI'),
+    ]
+    payment_mode = models.CharField(
+                             max_length=4,
+                             choices=PAYMENT_MODES,
+                             null=True,
+                             blank=True
+                            )
+
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.franchise_name} ({self.franchise_code})"
+    
+    class Meta:
+        db_table="franchise"
 
 class UserFiles(models.Model):
     user = models.ForeignKey('Users', on_delete=models.CASCADE, related_name='files')
