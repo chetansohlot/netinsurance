@@ -148,7 +148,7 @@ urlpatterns = [
     path('update-commission/', commissions.update_commission, name='update-commission'),
     path('add-partner/', members.add_partner, name='add-partner'),
     path('upload-partners/', members.upload_excel_users, name='upload-partners-excel'),
-
+    path('member/v1/my-team',members.myTeamView,name="my-team"),
     
     # LEADS 
     path('lead-mgt/', leads.index, name='leads-mgt'),
