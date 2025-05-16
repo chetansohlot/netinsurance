@@ -35,9 +35,27 @@ def indian_currency(value):
 
 
 @register.filter
+def dict_key(d, key):
+    # safely get dict value by key
+    if isinstance(d, dict):
+        return d.get(key, '')
+    return ''
+
+@register.filter
 def replace_underscore_with_space(value):
     """Replaces underscores with spaces in a string."""
     return value.replace('_', ' ')
+
+
+@register.filter
+def replace(value, args):
+    """
+    Replace all occurrences of first string with the second string.
+    Usage: {{ value|replace:"_ , " " }}
+    Args is a string like "old,new" separated by a comma.
+    """
+    old, new = args.split(',')
+    return value.replace(old, new)
 
 @register.filter
 def split(value, key):
@@ -70,6 +88,12 @@ def format_date(value, output_format="%Y-%m-%d"):
         return "Invalid Date"
 
    
+@register.filter
+def str_replace(value, args):
+    """Replace old substring with new substring. Args format: 'old,new'"""
+    old, new = args.split(',')
+    return value.replace(old, new)
+
 @register.filter
 def title_case(value):
     """Convert a string to title case (first letter capitalized)."""

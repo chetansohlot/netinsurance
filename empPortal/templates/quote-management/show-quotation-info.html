@@ -101,8 +101,10 @@
                   </div>
                 </div>
                 
-                <form method="POST" action="#">
+                <form method="POST" id="store-quotation-form" action="#">
                     {% csrf_token %}
+                    <input type="hidden" name="customer_id" value="{{ customer.customer_id }}">
+
                     <table class="table table-design table-bordered" id="comparison-table">
                         <tbody>
                             <!-- Insurer Names -->
@@ -113,7 +115,6 @@
                                 {% endfor %}
                             </tr>
 
-                            {% comment %} List of dynamic policy fields {% endcomment %}
                             {% with policy_string="plan_name,premium,policy_type,idv,ncb,own_damage,third_party,addons,claim_ratio,garage_network,tenure,deductibles" %}
                                 {% for field in policy_string|split:"," %}
                                     <tr>
@@ -136,26 +137,31 @@
                                             </strong>
                                         </td>
                                         {% for i in selected_policy_companies %}
-                                            <td>
-                                                <input type="text"
-                                                    name="{{ field }}_{{ forloop.counter0 }}"
-                                                    class="form-control form-control-sm policy-input"
-                                                    placeholder="Enter {{ field|replace_underscore_with_space }}"
-                                                    value="{{ data_dict|get_item:field|get_index:forloop.counter0 }}">
-                                            </td>
+                                            {% with idx=forloop.counter0|stringformat:"s" %}
+                                                {% with key=field|stringformat:"s"|add:"_"|add:idx %}
+                                                    <td>
+                                                        <input type="text"
+                                                                name="{{ key }}"
+                                                                class="form-control form-control-sm policy-input"
+                                                                placeholder="Enter {{ field|str_replace:'_, ' }}"
+                                                                value="{{ data_dict|dict_key:key }}">
+                                                    </td>
+                                                {% endwith %}
+                                            {% endwith %}
                                         {% endfor %}
+
                                     </tr>
                                 {% endfor %}
                             {% endwith %}
-
                         </tbody>
                     </table>
 
 
+
                     <div class="text-end mt-3">
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <button type="submit" class="wrap-btn ms-2">Save Changes</button>
                     </div>
-                    </form>
+                </form>
 
               
                 <form method="post" id="shareForm">
@@ -209,6 +215,24 @@
     </div>
     
   </div>
+
+<script>
+  const saveQuotationUrl = "{% url 'save-quotation-form' %}";
+
+  $('#store-quotation-form').on('submit', function(e) {
+      e.preventDefault();
+
+      let formData = $(this).serialize();
+
+      $.post(saveQuotationUrl, formData, function(response) {
+          Swal.fire('Success', response.message, 'success').then(() => {
+              location.reload();  // Reload the page after user closes the alert
+          });
+      }).fail(function(xhr) {
+          Swal.fire('Error', xhr.responseJSON?.message || 'Something went wrong.', 'error');
+      });
+  });
+</script>
 
 
 {% endblock %}

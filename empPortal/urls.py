@@ -13,6 +13,7 @@ from django.urls import re_path
 
 motor_patterns = [
     path('quote-management/', quoteManagement.index, name='quote-management'),
+    path('quotation-mgmt/save-quotation-form/', quoteManagement.saveQuotationData, name='save-quotation-form'),
     path('fetch-customer/', quoteManagement.fetch_customer, name='fetch-customer'),
     path('fetch-vehicle-info/', quoteManagement.fetch_vehicle_info, name='fetch-vehicle-info'),
     path('download-quotation-pdf/<str:cus_id>/', quoteManagement.downloadQuotationPdf, name='download-quotation-pdf'),

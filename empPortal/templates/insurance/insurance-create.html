@@ -65,6 +65,7 @@ Insurance Company- {% if insurance %}Edit Insurance Company{% else %}Create Insu
                                       action="{% if insurance %}{% url 'insurance_edit' insurance.id %}{% else %}{% url 'create-insurance' %}{% endif %}"
                                       method="post">
                                     {% csrf_token %}
+                                        
                                     <div class="row">
                                         <!-- Insurance Company -->
                                         <div class="form-group col-sm-6 col-md-4">
@@ -72,7 +73,8 @@ Insurance Company- {% if insurance %}Edit Insurance Company{% else %}Create Insu
                                             <input type="text" class="form-field" name="insurance_company" id="insurance_company"
                                                    placeholder="Enter Insurance Company Name"
                                                    value="{{ insurance.insurance_company|default:'' }}" >
-                                            <span class="error insurance_company_err"></span>
+                                                   
+                                               
                                         </div>
                                     </div>
                                     <h5>Registered Address</h5>
@@ -86,9 +88,10 @@ Insurance Company- {% if insurance %}Edit Insurance Company{% else %}Create Insu
                                                         {% if insurance and insurance.state.id == state.id %}selected{% endif %}>
                                                         {{ state.name }}
                                                     </option>
+                                                    
                                                 {% endfor %}
                                             </select>
-                                            <span class="error state_err"></span>
+                                           
                                         </div>
                                         
                                         <!-- Optional: hidden field to pre-load selected city -->
@@ -99,15 +102,15 @@ Insurance Company- {% if insurance %}Edit Insurance Company{% else %}Create Insu
                                             <select class="form-field" name="registered_city" id="registered_city" >
                                                 <option value="">Select City</option>
                                             </select>
-                                            <span class="error city_err"></span>
+                                            
                                         </div>
                                         
                                         <div class="form-group col-sm-6 col-md-4">
                                             <label class="form-lbl" for="pincode">Pincode</label>
                                             <input type="number" class="form-field" name="registered_pincode" 
-                                            id="registered_pincode" placeholder="Enter Pincode" maxlength="6" 
-                                            value="{{ insurance.pincode|default:'' }}" >
-                                            <span class="error pincode_err"></span>
+                                            id="registered_pincode" placeholder="Enter Pincode" 
+                                            value="{{ insurance.pincode|default:'' }}" maxlength="6" >
+                                            
                                         </div>
                                     </div>
                                         
@@ -116,7 +119,7 @@ Insurance Company- {% if insurance %}Edit Insurance Company{% else %}Create Insu
                                         <textarea class="form-field" name="registered_address" 
                                         id="registered_address" placeholder="Enter Address" >
                                         {{ insurance.address|default:'' }}</textarea>
-                                        <span class="error address_err"></span>
+                                      
                                     </div>
                                     
                                     <!-- Checkbox for Same Address -->
@@ -131,7 +134,7 @@ Insurance Company- {% if insurance %}Edit Insurance Company{% else %}Create Insu
                                         <!-- Billing State Dropdown -->
                                     <div class="form-group col-sm-6 col-md-4">
                                         <label class="form-lbl" for="billing_state">State</label>
-                                        <select class="form-field" name="billing_state" id="billing_state" required>
+                                        <select class="form-field" name="billing_state" id="billing_state" >
                                         <option value="">Select State</option>
                                             {% for state in states %}
                                             <option value="{{ state.id }}"
@@ -140,7 +143,7 @@ Insurance Company- {% if insurance %}Edit Insurance Company{% else %}Create Insu
                                         </option>
                                         {% endfor %}
                                         </select>
-                                        <span class="error state_err"></span>
+                                      
                                     </div>
 
                                     <!-- Hidden field to store selected billing city id -->
@@ -149,19 +152,19 @@ Insurance Company- {% if insurance %}Edit Insurance Company{% else %}Create Insu
                                     <!-- Billing City Dropdown -->
                                         <div class="form-group col-sm-6 col-md-4">
                                              <label class="form-lbl" for="billing_city">City</label>
-                                            <select class="form-field" name="billing_city" id="billing_city" required>
+                                            <select class="form-field" name="billing_city" id="billing_city" >
                                                 <option value="">Select City</option>
                                              </select>
-                                            <span class="error city_err"></span>
+                                            
                                         </div>
 
                                         
                                         <div class="form-group col-sm-6 col-md-4">
                                             <label class="form-lbl" for="pincode">Pincode</label>
                                             <input type="number" class="form-field" name="billing_pincode" 
-                                            id="billing_pincode" placeholder="Enter Pincode"  maxlength="6" 
-                                            value="{{ insurance.billing_pincode|default:'' }}">
-                                            <span class="error pincode_err"></span>
+                                            id="billing_pincode" placeholder="Enter Pincode" 
+                                            value="{{ insurance.billing_pincode|default:'' }}"  maxlength="6">
+                                            
                                         </div>
                                     </div>
                                         
@@ -169,7 +172,7 @@ Insurance Company- {% if insurance %}Edit Insurance Company{% else %}Create Insu
                                         <label class="form-lbl" for="address">Address</label>
                                         <textarea class="form-field" name="billing_address" id="billing_address" 
                                         placeholder="Enter Address">{{ insurance.billing_address|default:'' }}</textarea>
-                                        <span class="error address_err"></span>
+                                        
                                     </div>
                             
                                     <!-- Date of Commencement -->
@@ -177,7 +180,7 @@ Insurance Company- {% if insurance %}Edit Insurance Company{% else %}Create Insu
                                         <label class="form-lbl" for="commencement_date">Date of Commencement</label>
                                         <input type="date" class="form-field" name="commencement_date" id="commencement_date"
                                                value="{{ insurance.commencement_date|date:'Y-m-d' }}">
-                                        <span class="error commencement_date_err"></span>
+                                        
                                     </div>
                                     <!-- Submit Button -->
                                     <div class="d-flex justify-content-end">
@@ -296,52 +299,6 @@ Insurance Company- {% if insurance %}Edit Insurance Company{% else %}Create Insu
         });
     });   
 
-
-    document.addEventListener("DOMContentLoaded", function () {
-        const pincodeInput = document.getElementById("registered_pincode");
-        const addressInput = document.getElementById("registered_address");
-    
-        // Pincode Validation (Only 6-digit numbers)
-        pincodeInput.addEventListener("input", function () {
-            let value = this.value;
-    
-            // Remove non-digit characters
-            value = value.replace(/\D/g, "");
-    
-            // Limit to 6 digits
-            if (value.length > 6) {
-                value = value.slice(0, 6);
-            }
-    
-            this.value = value;
-    
-            const errorSpan = document.querySelector(".pincode_err");
-            if (value.length !== 6) {
-                errorSpan.textContent = "Pincode must be a 6-digit number.";
-            } else {
-                errorSpan.textContent = "";
-            }
-        });
-    
-        // Address Validation (No special characters except comma and period)
-        addressInput.addEventListener("input", function () {
-            let value = this.value;
-    
-            // Allow only letters, numbers, spaces, commas, and periods
-            const cleaned = value.replace(/[^a-zA-Z0-9\s,\.]/g, '');
-    
-            if (value !== cleaned) {
-                this.value = cleaned;
-            }
-    
-            const errorSpan = document.querySelector(".address_err");
-            if (/[^a-zA-Z0-9\s,\.]/.test(value)) {
-                errorSpan.textContent = "Special characters are not allowed in address.";
-            } else {
-                errorSpan.textContent = "";
-            }
-        });
-    });
 </script>
 </body>
 {% endblock %}

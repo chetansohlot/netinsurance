@@ -1725,3 +1725,16 @@ class InsurerBulkUploadPolicyLog(models.Model):
 
     class Meta:
         db_table = 'insurer_bulk_upload_policy_log'
+
+
+        
+class QuotationFormData(models.Model):
+    customer_id = models.CharField(max_length=100, blank=True, null=True)
+    form_data = models.TextField()  # LONGTEXT in MySQL
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Form Data for {self.customer_id} on {self.created_at.strftime('%Y-%m-%d')}"
+    
+    class Meta:
+        db_table = 'quotation_form_data'  # Matches your MySQL table name

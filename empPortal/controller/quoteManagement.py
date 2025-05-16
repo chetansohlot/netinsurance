@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect, get_object_or_404
-from ..models import Commission, Users, QuotationCustomer, VehicleInfo, QuotationVehicleDetail
+from ..models import Commission, Users, QuotationCustomer, VehicleInfo, QuotationVehicleDetail, QuotationFormData
 
 from empPortal.model import Quotation
 
@@ -628,6 +628,18 @@ def showQuotation(request, cus_id):
     tenure = ["1 Year", "1 Year", "1 Year"]
     deductibles = ["INR1,000", "INR750", "INR1,500"]
 
+    # Fetch saved quotation form data (if exists)
+    try:
+        quotation_data_obj = QuotationFormData.objects.get(customer_id=cus_id)
+        saved_form_data = json.loads(quotation_data_obj.form_data)
+    except QuotationFormData.DoesNotExist:
+        saved_form_data = {}
+
+    if saved_form_data:
+        data_dict = saved_form_data
+    else:
+        data_dict = {}
+
     return render(request, 'quote-management/show-quotation-info.html', {
         'products': products,
         'members': members,
@@ -643,6 +655,8 @@ def showQuotation(request, cus_id):
         'third_party_premium': third_party_premium,
         'addons': addons,
         'claim_ratio': claim_ratio,
+        'saved_form_data': saved_form_data,
+        'data_dict': data_dict,  # add this
         'garage_network': garage_network,
         'tenure': tenure,
         'deductibles': deductibles,
@@ -651,6 +665,26 @@ def showQuotation(request, cus_id):
         'addon_names': addon_names,  # Pass formatted add-ons list
     })
 
+
+def saveQuotationData(request):
+    if request.method == 'POST':
+        form_data = request.POST.dict()
+        customer_id = form_data.pop('customer_id', None)
+
+        if not customer_id:
+            return JsonResponse({'message': 'Customer ID is missing.'}, status=400)
+
+        # Save or update the serialized data
+        form_data_json = json.dumps(form_data)
+        quotation, created = QuotationFormData.objects.update_or_create(
+            customer_id=customer_id,
+            defaults={'form_data': form_data_json}
+        )
+
+        message = 'Quotation data created successfully.' if created else 'Quotation data updated successfully.'
+        return JsonResponse({'message': message})
+
+    return JsonResponse({'message': 'Invalid request method.'}, status=405)
 
 def downloadQuotationPdf(request, cus_id):
     if not request.user.is_authenticated:
@@ -706,6 +740,20 @@ def downloadQuotationPdf(request, cus_id):
     tenure = ["1 Year", "1 Year", "1 Year"]
     deductibles = ["INR1,000", "INR750", "INR1,500"]
 
+
+
+    # Fetch saved quotation form data (if exists)
+    try:
+        quotation_data_obj = QuotationFormData.objects.get(customer_id=cus_id)
+        saved_form_data = json.loads(quotation_data_obj.form_data)
+    except QuotationFormData.DoesNotExist:
+        saved_form_data = {}
+
+    if saved_form_data:
+        data_dict = saved_form_data
+    else:
+        data_dict = {}
+
     context = {
         "customer": customer,
         "vehicle_info": vehicle_info,
@@ -725,6 +773,7 @@ def downloadQuotationPdf(request, cus_id):
         "garage_network": garage_network,
         "tenure": tenure,
         "deductibles": deductibles,
+        "data_dict": data_dict,
         "addons_map": ADDONS_MAP,
         "logo_url": request.build_absolute_uri(static('dist/img/logo2.png')),
     }
@@ -802,6 +851,19 @@ def sendQuotationPdfEmail(request, cus_id):
     tenure = ["1 Year", "1 Year", "1 Year"]
     deductibles = ["INR1,000", "INR750", "INR1,500"]
 
+
+    # Fetch saved quotation form data (if exists)
+    try:
+        quotation_data_obj = QuotationFormData.objects.get(customer_id=cus_id)
+        saved_form_data = json.loads(quotation_data_obj.form_data)
+    except QuotationFormData.DoesNotExist:
+        saved_form_data = {}
+
+    if saved_form_data:
+        data_dict = saved_form_data
+    else:
+        data_dict = {}
+
     context = {
         "customer": customer,
         "vehicle_info": vehicle_info,
@@ -821,6 +883,7 @@ def sendQuotationPdfEmail(request, cus_id):
         "garage_network": garage_network,
         "tenure": tenure,
         "deductibles": deductibles,
+        "data_dict": data_dict,
         "addons_map": ADDONS_MAP,
         "logo_url": request.build_absolute_uri(static('dist/img/logo2.png')),
     }
