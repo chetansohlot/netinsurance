@@ -63,7 +63,7 @@ def index(request):
             user_ids = list(team_leaders.values_list('id', flat=True)) + \
                     list(relationship_managers.values_list('id', flat=True)) 
             customer_ids = Quotation.objects.filter(
-                senior_id__in=user_ids
+                created_by__in=user_ids
             ).values_list('customer_id', flat=True)
 
         elif role_id == 6:  # Team Leader
@@ -71,7 +71,7 @@ def index(request):
             user_ids = list(relationship_managers.values_list('id', flat=True))
             # Only show quotations created by the logged-in user
             customer_ids = Quotation.objects.filter(
-                senior_id__in=user_ids
+                created_by__in=user_ids
             ).values_list('customer_id', flat=True)
         elif role_id == 7:  # Relationship Manager
             customer_ids = Quotation.objects.filter(
