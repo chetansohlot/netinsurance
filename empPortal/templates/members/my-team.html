@@ -78,43 +78,9 @@ My Team
                                                         aria-expanded="false">
                                                     <ul class="dropdown-menu table-dropdown-menu">
                                                         <li><a class="dropdown-item"
-                                                                href="{% url 'member-view' user_id=user.id %}">View
-                                                                member</a></li>
-                                                        {% if user.examRes %}
-                                                        {% if intraining %}
-                                                        <li><a class="dropdown-item"
-                                                                href="{% url 'download-training-certificate' user_id=user.id %}">Download
-                                                                Training Certificate</a></li>
-                                                        {% endif %}
-
-
-                                                        {% if inexam %}
-                                                        <li><a class="dropdown-item"
-                                                                href="{% url 'download-certificate' user_id=user.id %}">Download
-                                                                Certificate</a></li>
-                                                        <li><a class="dropdown-item"
-                                                                href="{% url 'download-training-certificate' user_id=user.id %}">Download
-                                                                Training Certificate</a></li>
-                                                        {% endif %}
-                                                        {% endif %}
-                                                        <li>
-                                                            {% if docpendingupload %}
-                                                            <a href="{% url 'request-for-doc' user_id=user.id %}"
-                                                                class="request-for-doc dropdown-item"
-                                                                data-title="Request For Doc">
-                                                                Request For Document
-                                                            </a>
-                                                            {% endif %}
-                                                        </li>
-                                                        {% if request.user.role_id == 1 %}
-                                                        <li>
-                                                            <a href="{% url 'delete-member' user_id=user.id %}"
-                                                                class="deleteMemberBtn dropdown-item"
-                                                                data-title="Delete Policy">
-                                                                Delete
-                                                            </a>
-                                                        </li>
-                                                        {% endif %}
+                                                                href="{% url 'employee-management-view' employee_id=user.id %}">View
+                                                                Employee</a></li>
+                                                        
                                                     </ul>
                                                 </div>
                                             </td>
