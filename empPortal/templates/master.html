@@ -2012,6 +2012,142 @@
 
   <script>
     $(document).ready(function () {
+            $("#insuranceForm").validate({
+              rules: {
+                insurance_company:{
+                  required: true,
+                },
+                registered_state:{
+                  required: true,
+                },
+                registered_city:{
+                  required: true,
+                },
+                registered_pincode:{
+                  required: true,
+                },
+                registered_address:{
+                  required: true,
+                },
+              
+              },
+              messages: {
+                insurance_company: {
+                    required: "Insurance Company Name is required"
+                },
+                registered_state: {
+                    required: "State is required"
+                },
+                registered_city: {
+                    required: "City is required"
+                },
+                registered_pincode: {
+                    required: "Pincode is required",
+                },
+                registered_address: {
+                    required: "Address must be required",
+                }
+              },
+              errorElement: "div",
+              errorPlacement: function (error, element) {
+                  error.addClass("text-danger");
+                  error.insertAfter(element);
+              },
+              submitHandler: function (form) {
+                  $("#loader").show();
+                  form.submit();
+              }
+            });
+      });
+  </script>
+
+  <script>
+    $(document).ready(function () {
+        $("#insurer_mgt_contact_details").validate({
+            rules: {
+            primary_name: {
+                required: true,
+            },
+            primary_designation: {
+                required: true,
+            },
+            primary_contact: {
+                required: true,
+                digits: true,
+                minlength: 10,
+                maxlength: 10,
+            },
+            primary_email: {
+                required: true,
+                email: true,
+            },
+            secondary_name: {
+                required: true,
+            },
+            secondary_designation: {
+                required: true,
+            },
+            secondary_contact: {
+                required: true,
+                digits: true,
+                minlength: 10,
+                maxlength: 10,
+            },
+            secondary_email: {
+                required: true,
+                email: true,
+            },
+            },
+            messages: {
+            primary_name: {
+                required: "Primary name is required.",
+            },
+            primary_designation: {
+                required: "Primary designation is required.",
+            },
+            primary_contact: {
+                required: "Primary mobile number is required.",
+                digits: "Only digits are allowed.",
+                minlength: "Must be 10 digits.",
+                maxlength: "Must be 10 digits.",
+            },
+            primary_email: {
+                required: "Primary email is required.",
+                email: "Enter a valid email.",
+            },
+            secondary_name: {
+                required: "Secondary name is required.",
+            },
+            secondary_designation: {
+                required: "Secondary designation is required.",
+            },
+            secondary_contact: {
+                required: "Secondary mobile number is required.",
+                digits: "Only digits are allowed.",
+                minlength: "Must be 10 digits.",
+                maxlength: "Must be 10 digits.",
+            },
+            secondary_email: {
+                required: "Secondary email is required.",
+                email: "Enter a valid email.",
+            },
+            },
+            errorElement: "div",
+            errorPlacement: function (error, element) {
+                error.addClass("text-danger");
+                error.insertAfter(element);
+            },
+            submitHandler: function (form) {
+                $("#loader").show();
+                    form.submit();
+                },
+            });
+        });
+
+  </script>
+
+  <script>
+    $(document).ready(function () {
         $.validator.addMethod("referralRequired", function (value, element) {
             let leadSource = $('#lead_source_type').val();
             // Required only if lead source is 9 (Referral)
