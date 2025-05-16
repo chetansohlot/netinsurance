@@ -8,6 +8,9 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+
 def insurance_list(request):
     if not request.user.is_authenticated and request.user.is_active!=1:
         messages.error(request,'Please Login First')
@@ -116,20 +119,17 @@ def insurance_create(request):
 
     return render(request, 'insurance/insurance-create.html', {'states': states, 'cities': cities})
 
-
 def insurance_contact_details(request, id):
     if not request.user.is_authenticated or not request.user.is_active:
-        messages.error(request, 'Please Login First')
+        messages.error(request, 'Please login first.')
         return redirect('login')
 
-    # Get the existing Insurance object using the passed ID
     insurance = Insurance.objects.filter(id=id).first()
     if not insurance:
         messages.error(request, "Invalid Insurance ID.")
         return redirect('insurance-create')
 
     if request.method == "POST":
-        # Get data from POST
         primary_name = request.POST.get('primary_name')
         primary_designation = request.POST.get('primary_designation')
         primary_contact = request.POST.get('primary_contact_no')
@@ -140,22 +140,66 @@ def insurance_contact_details(request, id):
         secondary_contact = request.POST.get('secondary_contact')
         secondary_email = request.POST.get('secondary_email')
 
-        #Update the existing insurance object
-        insurance.primary_contact_name = primary_name
-        insurance.primary_designation = primary_designation 
-        insurance.primary_contact_no = primary_contact
-        insurance.primary_contact_email = primary_email
-        insurance.secondary_contact_name = secondary_name
-        insurance.secondary_designation = secondary_designation
-        insurance.secondary_contact_no = secondary_contact
-        insurance.secondary_contact_email = secondary_email
-        insurance.created_by = request.user
-        insurance.save()
+        has_error = False
 
-        messages.success(request, "Insurance contact details saved successfully.")
-        return redirect('insurance_index')  
+        # Validate Primary Contact Details
+        if not primary_name:
+            messages.error(request, 'Primary contact name is required.')
+            has_error = True
 
-    return render(request, "insurance/create-contact-detail.html", {'insurance_id': id})
+        if not primary_designation:
+            messages.error(request, 'Primary contact designation is required.')
+            has_error = True
+
+        if not primary_contact:
+            messages.error(request, 'Primary contact number is required.')
+            has_error = True
+        elif not primary_contact.isdigit() or len(primary_contact) != 10:
+            messages.error(request, 'Primary contact number must be a valid 10-digit number.')
+            has_error = True
+
+        if not primary_email:
+            messages.error(request, 'Primary email is required.')
+            has_error = True
+        else:
+            try:
+                validate_email(primary_email)
+            except ValidationError:
+                messages.error(request, 'Primary email is invalid.')
+                has_error = True
+
+        # Validate Secondary Contact if provided
+        if secondary_contact:
+            if not secondary_contact.isdigit() or len(secondary_contact) != 10:
+                messages.error(request, 'Secondary contact number must be a valid 10-digit number.')
+                has_error = True
+
+        if secondary_email:
+            try:
+                validate_email(secondary_email)
+            except ValidationError:
+                messages.error(request, 'Secondary email is invalid.')
+                has_error = True
+
+        if not has_error:
+            insurance.primary_contact_name = primary_name
+            insurance.primary_designation = primary_designation
+            insurance.primary_contact_no = primary_contact
+            insurance.primary_contact_email = primary_email
+            insurance.secondary_contact_name = secondary_name
+            insurance.secondary_designation = secondary_designation
+            insurance.secondary_contact_no = secondary_contact
+            insurance.secondary_contact_email = secondary_email
+            insurance.created_by = request.user
+            insurance.save()
+
+            messages.success(request, "Insurance contact details saved successfully.")
+            return redirect('insurance_index')
+        else:
+            return redirect('create-contact-detail',id=id)
+    
+    else:
+        return render(request, "insurance/create-contact-detail.html", {'insurance_id': id})
 
 
 def insurance_edit(request, insurance_id):

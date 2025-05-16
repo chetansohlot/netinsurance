@@ -106,7 +106,7 @@ Insurance Company- {% if insurance %}Edit Insurance Company{% else %}Create Insu
                                         </div>
                                         
                                         <div class="form-group col-sm-6 col-md-4">
-                                            <label class="form-lbl" for="pincode">Pincode</label>
+                                            <label class="form-lbl" for="registered_pincode">Pincode</label>
                                             <input type="number" class="form-field" name="registered_pincode" 
                                             id="registered_pincode" placeholder="Enter Pincode" 
                                             value="{{ insurance.pincode|default:'' }}" maxlength="6" >
@@ -115,7 +115,7 @@ Insurance Company- {% if insurance %}Edit Insurance Company{% else %}Create Insu
                                     </div>
                                         
                                     <div class="form-group col-sm-6 col-md-4">
-                                        <label class="form-lbl" for="address">Address</label>
+                                        <label class="form-lbl" for="registered_address">Address</label>
                                         <textarea class="form-field" name="registered_address" 
                                         id="registered_address" placeholder="Enter Address" >
                                         {{ insurance.address|default:'' }}</textarea>
