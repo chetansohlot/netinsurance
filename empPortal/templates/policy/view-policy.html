@@ -43,28 +43,27 @@ View Policy
               <div class="card-body box-profile">
                 <div class="d-flex justify-content-center align-items-center">
                     <h3 class="profile-username m-0">
-                        <span class="text-capitalize">mohammad shadab alam</span>
-                        <span class="text-muted ms-1">(Male)</span>
+                        <span class="text-capitalize">{{policy_info.insured_name}}</span>
+                        <!-- <span class="text-muted ms-1">(Male)</span> -->
                     </h3>
                 </div>
                 <div class="d-flex justify-content-center align-items-center">
                     <span class="text-muted m-0">
-                        Insured Mobile: 9876543210
+                        Insured Mobile: {{policy_info.insured_mobile}}
                     </span>
                 </div>
                 <hr>
                 
                 
                 <ul class="member-detail-list">
-                    <li><span class="list">Policy Number</span><span class="list-output"> 131522523110112225</span></li>
-                    <li><span class="list">Policy Issue Date</span><span class="list-output">2025-04-16 11:11:00</span></li>
-                    <li><span class="list">Policy Start Date</span><span class="list-output">2022-02-28 00:00:00</span></li>
-                    <li><span class="list">Policy Expiry Date</span><span class="list-output">2024-02-28 00:00:00</span></li>
-                    <li><span class="list">Insured Email</span><span class="list-output">vinod.kumar@netleafinfosoft.com</span></li>
-                    <li><span class="list">Insured Address</span><span class="list-output">19, Jawahar Colony, NIT Faridabad</span></li>
-                    <li><span class="list">Insured PAN</span><span class="list-output text-uppercase">baxpk1234K</span></li>
-                    <li><span class="list">Insured Aadhaar</span><span class="list-output">769390222008</span></li>
-                    
+                    <li><span class="list">Policy Number</span><span class="list-output"> {{policy_info.policy_number}}</span></li>
+                    <li><span class="list">Policy Issue Date</span><span class="list-output">{{policy_info.policy_issue_date}}</span></li>
+                    <li><span class="list">Policy Start Date</span><span class="list-output">{{policy_info.policy_start_date}}</span></li>
+                    <li><span class="list">Policy Expiry Date</span><span class="list-output">{{policy_info.policy_expiry_date}}</span></li>
+                    <li><span class="list">Insured Email</span><span class="list-output">{{policy_info.insured_email}}</span></li>
+                    <li><span class="list">Insured Address</span><span class="list-output">{{policy_info.insured_address}}</span></li>
+                    <li><span class="list">Insured PAN</span><span class="list-output text-uppercase">{{policy_info.insured_pan}}</span></li>
+                    <li><span class="list">Insured Aadhaar</span><span class="list-output">{{policy_info.insured_aadhaar}}</span></li> 
                 </ul>
             </div>
         </div>
@@ -222,7 +221,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Vehicle Type</p>
                                   <p class="userdetail-highligt">
-                                      Four wheeler
+                                      {{ policy_vehicle.vehicle_type }}
                                   </p>
                               </div>  
                           </div>
@@ -230,7 +229,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Make</p>
                                   <p class="userdetail-highligt">
-                                      AUDI
+                                      {{ policy_vehicle.vehicle_make }}
                                   </p>
                               </div>  
                           </div>
@@ -238,7 +237,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Model</p>
                                   <p class="userdetail-highligt">
-                                      Q7
+                                      {{ policy_vehicle.vehicle_model }}
                                   </p>
                               </div>  
                           </div>
@@ -247,7 +246,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Variant</p>
                                   <p class="userdetail-highligt">
-                                      55 TFSI PREMIUM PLUS
+                                      {{ policy_vehicle.vehicle_variant }}
                                   </p>
                               </div>  
                           </div>
@@ -255,7 +254,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Fuel Type</p>
                                   <p class="userdetail-highligt">
-                                      Petrol
+                                     {{ policy_vehicle.fuel_type }}
                                   </p>
                               </div>  
                           </div>
@@ -263,7 +262,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">GVW</p>
                                   <p class="userdetail-highligt">
-                                      N/A
+                                      {{ policy_vehicle.gvw }}
                                   </p>
                               </div>  
                           </div>
@@ -271,7 +270,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">NCB</p>
                                   <p class="userdetail-highligt">
-                                      N/A
+                                     {{ policy_vehicle.ncb }}
                                   </p>
                               </div>  
                           </div>
@@ -279,7 +278,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Cubic Capacity</p>
                                   <p class="userdetail-highligt">
-                                      2995
+                                     {{ policy_vehicle.cubic_capacity }}
                                   </p>
                               </div>  
                           </div>
@@ -287,7 +286,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Seating Capacity</p>
                                   <p class="userdetail-highligt">
-                                      4
+                                     {{ policy_vehicle.seating_capacity }}
                                   </p>
                               </div>  
                           </div>
@@ -295,7 +294,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Reg Number</p>
                                   <p class="userdetail-highligt">
-                                      UP14EZ4141
+                                     {{ policy_vehicle.registration_number }}
                                   </p>
                               </div>  
                           </div>
@@ -303,7 +302,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Engine Number</p>
                                   <p class="userdetail-highligt">
-                                    DCB406628
+                                    {{ policy_vehicle.engine_number }}
                                   </p>
                               </div>  
                           </div>
@@ -311,7 +310,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Chassis Number</p>
                                   <p class="userdetail-highligt">
-                                      WAUZAN4M6NY000055
+                                      {{ policy_vehicle.chassis_number }}
                                   </p>
                               </div>  
                           </div>
@@ -319,7 +318,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Manufacture Date</p>
                                   <p class="userdetail-highligt">
-                                      2022                                       
+                                     {{ policy_vehicle.manufacture_year }}                                      
                                   </p>
                               </div>  
                           </div>
