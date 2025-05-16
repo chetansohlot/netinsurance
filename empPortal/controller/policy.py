@@ -172,6 +172,9 @@ def operator_verify_policy(request):
                 policy.quality_check_status = status
                 policy.quality_policy_check_by = request.user.id
                 policy.quality_remark = remark
+                if status == '2':
+                    policy.operator_verification_status = '0'
+
             else:
                 return JsonResponse({'success': False, 'error': 'Invalid type.'})
 
