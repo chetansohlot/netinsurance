@@ -1681,20 +1681,20 @@ def memberView(request, user_id):
     
 def get_branch_managers(request):
     branch_id = request.GET.get('branch_id')
-    branch_managers = Users.objects.filter(branch_id=branch_id, role_id=2).values('id', 'first_name', 'last_name')
+    branch_managers = Users.objects.filter(branch_id=branch_id, department_id=1, role_id=5).values('id', 'first_name', 'last_name')
     managers_list = [{'id': manager['id'], 'full_name': f"{manager['first_name']} {manager['last_name']}"} for manager in branch_managers]
     return JsonResponse({'branch_managers': managers_list})
 
 def get_sales_managers(request):
     branch_manager_id = request.GET.get('branch_manager_id')
-    sales_managers = Users.objects.filter(senior_id=branch_manager_id, role_id=3).values('id', 'first_name', 'last_name')
+    sales_managers = Users.objects.filter(senior_id=branch_manager_id, role_id=6).values('id', 'first_name', 'last_name')
     sales_list = [{'id': manager['id'], 'full_name': f"{manager['first_name']} {manager['last_name']}"} for manager in sales_managers]
     return JsonResponse({'sales_managers': sales_list})
 
 
 def get_rm_list(request):
     tlId = request.GET.get('tlId')
-    sales_managers = Users.objects.filter(senior_id=tlId, role_id=5).values('id', 'first_name', 'last_name')
+    sales_managers = Users.objects.filter(senior_id=tlId, role_id=7).values('id', 'first_name', 'last_name')
     rm_list = [{'id': manager['id'], 'full_name': f"{manager['first_name']} {manager['last_name']}"} for manager in sales_managers]
     return JsonResponse({'rm_list': rm_list})
 

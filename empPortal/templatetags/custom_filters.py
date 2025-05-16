@@ -32,12 +32,25 @@ def indian_currency(value):
             return f"{rest},{last3}.{decimal_part}" if rest else f"{last3}.{decimal_part}"
     except:
         return value
-    
-    
+
+
+@register.filter
+def replace_underscore_with_space(value):
+    """Replaces underscores with spaces in a string."""
+    return value.replace('_', ' ')
+
+@register.filter
+def split(value, key):
+    """Returns the value turned into a list split by the key."""
+    if value:
+        return value.split(key)
+    return [] 
+
 @register.filter
 def get_item(dictionary, key):
-    """Returns the value from a dictionary given a key."""
-    return dictionary.get(key, "-")
+    if isinstance(dictionary, dict):
+        return dictionary.get(key)
+    return None
 
 @register.filter
 def format_date(value, output_format="%Y-%m-%d"):
