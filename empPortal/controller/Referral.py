@@ -111,9 +111,8 @@ def index(request):
         'per_page': per_page,
         'sort_by': sort_by,
         'referrals':referrals,
-        
     })
-
+    
 def create_or_edit(request, referral_id=None):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -127,17 +126,16 @@ def create_or_edit(request, referral_id=None):
 
     branchs = Branch.objects.filter(status='Active')
     sales_managers = Users.objects.filter(department_id=1,is_active=1)
-    supervisors = Users.objects.filter(department_id=1,is_active=1)
-    franchises = Franchises.objects.filter(status="Active")
-    
+    relationship_managers = Users.objects.filter(department_id=1,is_active=1,role_id=7)  #only sales dept relationship manager 
+    # franchises = Franchises.objects.filter(status="Active")
     if request.method == "GET":
         return render(request, 'referral/create.html', {
             'referral': referral,
             'is_editing': is_editing,
             'branchs': branchs,
             'sales_managers':sales_managers,
-            'franchises':franchises,
-            'supervisors':supervisors
+            # 'franchises':franchises,
+            'relationship_managers':relationship_managers
         })
 
     elif request.method == "POST":
@@ -151,13 +149,6 @@ def create_or_edit(request, referral_id=None):
         date_of_anniversary = request.POST.get("date_of_anniversary", "").strip()
         pan_card_number = request.POST.get("pan_card_number", "").strip()
         aadhar = request.POST.get("aadhar", "").strip()
-
-
-
-       
-
-        # print(aadhar)
-
 
         user_role = request.POST.get("user_role", "").strip()
         branch = request.POST.get("branch", "").strip()
