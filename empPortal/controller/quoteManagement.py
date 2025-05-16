@@ -48,15 +48,35 @@ def index(request):
     ncb = request.GET.get('ncb', '').strip()
     insurer_name = request.GET.get('insurer_name', '').strip()
 
+    
     # Get customer_ids from Quotation based on user role
     if request.user.role_id == 1:
         # Admin or superuser: show all quotations
         customer_ids = Quotation.objects.values_list('customer_id', flat=True)
     else:
-        # Only show quotations created by the logged-in user
-        customer_ids = Quotation.objects.filter(
-            created_by=str(request.user.id)
-        ).values_list('customer_id', flat=True)
+        role_id = request.user.role_id
+        user_id = request.user.id
+
+        if role_id == 5:  # Manager
+            team_leaders = Users.objects.filter(role_id=6, senior_id=user_id)
+            relationship_managers = Users.objects.filter(role_id=7, senior_id__in=team_leaders.values_list('id', flat=True))
+            user_ids = list(team_leaders.values_list('id', flat=True)) + \
+                    list(relationship_managers.values_list('id', flat=True)) 
+            customer_ids = Quotation.objects.filter(
+                senior_id__in=user_ids
+            ).values_list('customer_id', flat=True)
+
+        elif role_id == 6:  # Team Leader
+            relationship_managers = Users.objects.filter(role_id=7, senior_id=user_id)
+            user_ids = list(relationship_managers.values_list('id', flat=True))
+            # Only show quotations created by the logged-in user
+            customer_ids = Quotation.objects.filter(
+                senior_id__in=user_ids
+            ).values_list('customer_id', flat=True)
+        elif role_id == 7:  # Relationship Manager
+            customer_ids = Quotation.objects.filter(
+                created_by=str(request.user.id)
+            ).values_list('customer_id', flat=True)
 
     # Base QuerySet, filtered by role
     quotations = QuotationCustomer.objects.filter(customer_id__in=customer_ids)
