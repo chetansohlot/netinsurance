@@ -8,6 +8,7 @@ from ..models import Commission,Users, PolicyUploadDoc,Branch,PolicyInfo,PolicyD
 from ..models import BulkPolicyLog,ExtractedFile, BqpMaster, SingleUploadFile
 from empPortal.model import Referral
 from datetime import datetime, timedelta
+from django.db.models import OuterRef, Subquery, Count
 
 from empPortal.model import BankDetails
 from ..forms import DocumentUploadForm
@@ -1052,6 +1053,25 @@ def policyData(request):
     else:
         policy_count = PolicyDocument.objects.filter(status=6).count()
 
+
+    count_qs = PolicyDocument.objects.all()
+
+    status_counts = count_qs.values('operator_verification_status').annotate(count=Count('operator_verification_status'))
+
+    pendingOperator = verifiedOperator = not_verifiedOperator = 0
+
+    # Map status values to named variables
+    for entry in status_counts:
+        status = entry['operator_verification_status']
+        count = entry['count']
+        if status == '0':
+            pendingOperator = count
+        elif status == '1':
+            verifiedOperator = count
+        elif status == '2':
+            not_verifiedOperator = count
+
+
     # Pagination
     per_page = request.GET.get('per_page', 10)
     try:
@@ -1074,6 +1094,9 @@ def policyData(request):
         "branches": branches,
         "referrals": referrals,
         "bqpList": bqpList,
+        'pendingOperator': pendingOperator,
+        'verifiedOperator': verifiedOperator,
+        'not_verifiedOperator': not_verifiedOperator,
         "partners": partners,
         "per_page": per_page,
         'filters': {k: request.GET.get(k,'') for k in filters}

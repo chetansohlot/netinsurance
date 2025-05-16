@@ -7,6 +7,7 @@ from django.template import loader
 from ..models import Roles,Users, Department,PolicyDocument,BulkPolicyLog, PolicyInfo, Branch, UserFiles,UnprocessedPolicyFiles, Commission, Branch, FileAnalysis, ExtractedFile, ChatGPTLog, AgentPaymentDetails,Leads
 from django.contrib.auth import authenticate, login ,logout
 from empPortal.model import Quotation
+from empPortal.model import Partner
 
 from django.core.files.storage import FileSystemStorage
 import re, logging
@@ -72,11 +73,22 @@ def dashboard(request):
     
     base_qs = PolicyDocument.objects.filter(status=6)
 
-     
+    if request.user.department_id == "1":
+        aggregation_qs = base_qs.filter(policy_info__isnull=False, rm_id=request.user.id).distinct()
+    else:
+        aggregation_qs = base_qs.filter(policy_info__isnull=False).distinct()
 
-    aggregation_qs = base_qs.filter(policy_info__isnull=False).distinct()
+    if request.user.role_id == 1:
+        # Admin or superuser: show all quotations
+        quotation = Quotation.objects.all()
+    else:
+        # Only show quotations created by the logged-in user
+        quotation = Quotation.objects.filter(
+            created_by=str(request.user.id)
+        )
 
-   
+    # Get the count from the 'quotation' variable
+    total_quotation_count = quotation.count()
 
     # Grouped summary by insurance provider
     provider_summary = (
@@ -343,9 +355,37 @@ def dashboard(request):
     shared_quotes = quotes.filter(active=True).count()
     pending_quotes = quotes.filter(active=False).count()
     
-    total_partners = 0
+
+
+    # PARTNER COUNTS 
+    partners = Partner.objects.filter(partner_status='4').exclude(active=0)
+    partner_ids = partners.values_list('user_id', flat=True)  # Get user IDs
+    
+    users = Users.objects.filter(id__in=partner_ids, activation_status=1)
+
+    if role_id == 5:  # Manager
+        team_leaders = Users.objects.filter(role_id=6, senior_id=user_id)
+        relationship_managers = Users.objects.filter(role_id=7, senior_id__in=team_leaders.values_list('id', flat=True))
+
+        user_ids = list(team_leaders.values_list('id', flat=True)) + \
+                list(relationship_managers.values_list('id', flat=True)) 
+        users = users.filter(senior_id__in=user_ids)
+        total_partners = users.count()
+    elif role_id == 6:  # Team Leader
+        relationship_managers = Users.objects.filter(role_id=7, senior_id=user_id)
+        user_ids = list(relationship_managers.values_list('id', flat=True))
+        users = users.filter(senior_id__in=user_ids)
+        total_partners = users.count()
+
+    elif role_id == 7:  # Relationship Manager
+        users = users.filter(senior_id=user_id)
+        total_partners = users.count()
+    else:
+        total_partners = 0
+
     active_partners = 0
     inactive_partners = 0
+    # PARTNER COUNTS 
     
     return render(request, 'dashboard.html', {
         'user': user,
@@ -353,6 +393,8 @@ def dashboard(request):
         'branch_summary': branch_summary,
         'formatted_pos_summary': formatted_pos_summary,
         'referral_summary': referral_summary,
+        'total_quotation_count': total_quotation_count,
+        
         'policies_insurer_wise': policies_insurer_wise,
         'consolidated_month_labels': consolidated_month_labels,
         'consolidated_month_counts': consolidated_month_counts,
