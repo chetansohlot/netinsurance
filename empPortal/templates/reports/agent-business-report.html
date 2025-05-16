@@ -114,8 +114,8 @@
                               <th class="nowrap">Agent Incentive Amount</th>
                               <th class="nowrap">Agent Total Comm Amount</th>
                               <th class="nowrap">Agent Remarks</th>
-                              <th class="nowrap">Created By</th>
-                              <th class="nowrap">Updated By</th>
+                              <!-- <th class="nowrap">Created By</th>
+                              <th class="nowrap">Updated By</th> -->
                             </tr>
                         </thead>
                         <tbody>
@@ -162,8 +162,8 @@
                               <td>{{ data.policy_agent_info.agent_incentive_amount|floatformat:2|default:"-" }}</td>
                               <td>{{ data.policy_agent_info.agent_total_comm_amount|floatformat:2|default:"-" }}</td>
                               <td>{{ data.policy_agent_info.agent_remarks|default:"-" }}</td>
-                              <td>{{ data.policy.rm_name }}</td>
-                              <td>{{ data.policy_agent_info.updated_by.full_name }}</td>
+                              <!-- <td>{{ data.policy.rm_name }}</td>
+                              <td>{{ data.policy_agent_info.updated_by.full_name }}</td> -->
                             </tr>
                             {% endif %}
                          
