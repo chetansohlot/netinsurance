@@ -873,8 +873,8 @@ def update_allocation(request, employee_id=None):
         if not annual_ctc:
             messages.error(request, 'Annual CTC is required.')
             has_error = True
-        elif len(str(annual_ctc)) > 10:
-            messages.error(request, 'Annual CTC must be at most 10 characters long.')
+        elif len(str(annual_ctc)) > 16:
+            messages.error(request, 'Annual CTC must be at most 16 characters long.')
             has_error = True
         else:
             try:
@@ -886,8 +886,8 @@ def update_allocation(request, employee_id=None):
         if not monthly_ctc:
             messages.error(request, 'Monthly CTC is required.')
             has_error = True
-        elif len(str(monthly_ctc)) > 10:
-            messages.error(request, 'Monthly CTC must be at most 10 digit long.')
+        elif len(str(monthly_ctc)) > 16:
+            messages.error(request, 'Monthly CTC must be at most 16 digit long.')
             has_error = True
         else:
             try:
@@ -913,8 +913,8 @@ def update_allocation(request, employee_id=None):
         if not target_amt:
             messages.error(request, 'Target Amount is required.')
             has_error = True
-        elif len(str(target_amt))>10:
-            messages.error(request, 'Target Amount must be at most 10 characters long.')
+        elif len(str(target_amt))>16:
+            messages.error(request, 'Target Amount must be at most 16 characters long.')
             has_error = True
         else:
             try:

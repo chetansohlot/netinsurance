@@ -132,7 +132,7 @@ def insurance_contact_details(request, id):
     if request.method == "POST":
         primary_name = request.POST.get('primary_name')
         primary_designation = request.POST.get('primary_designation')
-        primary_contact = request.POST.get('primary_contact_no')
+        primary_contact = request.POST.get('primary_contact')
         primary_email = request.POST.get('primary_email')
 
         secondary_name = request.POST.get('secondary_name')
