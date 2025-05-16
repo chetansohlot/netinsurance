@@ -289,7 +289,7 @@
               </div>
             </div>
           </div>
-          {% if request.user.department_id and request.user.department_id != "2" %}
+          {% if request.user.department_id and request.user.department_id|stringformat:"s" != "2" %}
 
           <div class="col-sm-6 col-md-6">  
             <div class="card">
@@ -417,7 +417,7 @@
             </div>
           </div>
           {% endif %}
-          {% if request.user.department_id and request.user.department_id != "2" %}
+          {% if request.user.department_id and request.user.department_id|stringformat:"s" != "2" %}
 
           <div class="col-sm-6 col-md-6">  
             <div class="card">
