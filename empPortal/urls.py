@@ -4,7 +4,7 @@ from . import views,export
 from . import views
 from . import authenticationView
 from .controller import commissions, profile,policy,Dashboard, Referral, globalController, helpAndSupport, Employee, leads, sellMotor, sellHealth, sellTerm, Franchises, Department, Branches, members, customers, quoteManagement, healthQuoteManagement, homeManagement, exams,SourceMaster,BQP,Credential
-from .controller import reports, PolicyCommission, PolicyPayment, insurance, dispositions
+from .controller import reports, PolicyCommission, PolicyPayment, insurance, dispositions, common
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import re_path
@@ -13,6 +13,7 @@ from django.urls import re_path
 
 motor_patterns = [
     path('quote-management/', quoteManagement.index, name='quote-management'),
+    path('quotation-mgmt/save-quotation-form/', quoteManagement.saveQuotationData, name='save-quotation-form'),
     path('fetch-customer/', quoteManagement.fetch_customer, name='fetch-customer'),
     path('fetch-vehicle-info/', quoteManagement.fetch_vehicle_info, name='fetch-vehicle-info'),
     path('download-quotation-pdf/<str:cus_id>/', quoteManagement.downloadQuotationPdf, name='download-quotation-pdf'),
@@ -107,7 +108,9 @@ urlpatterns = [
     path('employee-management/<str:employee_id>/', Employee.create_or_edit, name='employee-management-edit'),
     path('employee-management/employee-allocation-employee/<str:employee_id>', Employee.create_or_edit_allocation, name='employee-allocation-update'),
      
-
+    path('v1/get-refferals-for-select',common.get_referrals,name="get-refferals-for-select"),
+    path('v1/get-posp-for-select',common.get_posp,name="get-posp-for-select"),
+    
     path('my-account/', profile.myAccount, name='my-account'),
     path('download-certificate-pdf/<str:cus_id>/', profile.downloadCertificatePdf, name='download-certificate'),
 

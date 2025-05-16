@@ -254,7 +254,12 @@ class Leads(models.Model):
     vehicle_model = models.CharField(max_length=255,null=True,blank=True)
     vehicle_make = models.CharField(max_length=255,null=True,blank=True)
     policy_end_date = models.DateField(null=True, blank=True)
-
+    posp = models.ForeignKey( settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='posp_user_id'
+    )
     lead_type = models.CharField(
         max_length=10, 
         choices=[('MOTOR', 'MOTOR'), ('HEALTH', 'HEALTH'), ('TERM', 'TERM')], 
@@ -1720,3 +1725,16 @@ class InsurerBulkUploadPolicyLog(models.Model):
 
     class Meta:
         db_table = 'insurer_bulk_upload_policy_log'
+
+
+        
+class QuotationFormData(models.Model):
+    customer_id = models.CharField(max_length=100, blank=True, null=True)
+    form_data = models.TextField()  # LONGTEXT in MySQL
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Form Data for {self.customer_id} on {self.created_at.strftime('%Y-%m-%d')}"
+    
+    class Meta:
+        db_table = 'quotation_form_data'  # Matches your MySQL table name
