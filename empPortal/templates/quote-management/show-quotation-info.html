@@ -101,140 +101,62 @@
                   </div>
                 </div>
                 
-                <table class="table table-design table-bordered">
-                  <tbody>
-                      <!-- Insurer Name -->
-                      <tr>
-                          <td class="table-thead-bg-light"><strong>Insurer Name</strong></td>
-                          {% for company in selected_policy_companies %}
-                              {% if forloop.counter <= 3 %}
-                                  <td>{{ company }}</td>
-                              {% endif %}
-                          {% endfor %}
-                      </tr>
-              
-                      <!-- Plan Name -->
-                      <tr>
-                          <td class="table-thead-bg-light"><strong>Plan Name</strong></td>
-                          {% for company in selected_policy_companies %}
-                              {% if forloop.counter <= 3 %}
-                                  <td>{{ plan_names|get_index:forloop.counter0 }}</td>
-                              {% endif %}
-                          {% endfor %}
-                      </tr>
-              
-                      <!-- Premium Amount -->
-                      <tr>
-                          <td class="table-thead-bg-light"><strong>Premium Amount (INR)</strong></td>
-                          {% for company in selected_policy_companies %}
-                              {% if forloop.counter <= 3 %}
-                                  <td>{{ premium_amounts|get_index:forloop.counter0 }}</td>
-                              {% endif %}
-                          {% endfor %}
-                      </tr>
-              
-                      <!-- Policy Type -->
-                      <tr>
-                          <td class="table-thead-bg-light"><strong>Policy Type</strong></td>
-                          {% for company in selected_policy_companies %}
-                              {% if forloop.counter <= 3 %}
-                                  <td>{{ policy_types|get_index:forloop.counter0 }}</td>
-                              {% endif %}
-                          {% endfor %}
-                      </tr>
-              
-                      <!-- IDV -->
-                      <tr>
-                          <td class="table-thead-bg-light"><strong>IDV (INR)</strong></td>
-                          {% for company in selected_policy_companies %}
-                              {% if forloop.counter <= 3 %}
-                                  <td>{{ idv|get_index:forloop.counter0 }}</td>
-                              {% endif %}
-                          {% endfor %}
-                      </tr>
-              
-                      <!-- NCB Discount -->
-                      <tr>
-                          <td class="table-thead-bg-light"><strong>NCB Discount (%)</strong></td>
-                          {% for company in selected_policy_companies %}
-                              {% if forloop.counter <= 3 %}
-                                  <td>{{ ncb_discount|get_index:forloop.counter0 }}</td>
-                              {% endif %}
-                          {% endfor %}
-                      </tr>
-              
-                      <!-- Own Damage Premium -->
-                      <tr>
-                          <td class="table-thead-bg-light"><strong>Own Damage Premium (INR)</strong></td>
-                          {% for company in selected_policy_companies %}
-                              {% if forloop.counter <= 3 %}
-                                  <td>{{ own_damage_premium|get_index:forloop.counter0 }}</td>
-                              {% endif %}
-                          {% endfor %}
-                      </tr>
-              
-                      <!-- Third-Party Premium -->
-                      <tr>
-                          <td class="table-thead-bg-light"><strong>Third-Party Premium (INR)</strong></td>
-                          {% for company in selected_policy_companies %}
-                              {% if forloop.counter <= 3 %}
-                                  <td>{{ third_party_premium|get_index:forloop.counter0 }}</td>
-                              {% endif %}
-                          {% endfor %}
-                      </tr>
-              
-                      <!-- Add-Ons Included -->
-                      <tr>
-                          <td class="table-thead-bg-light"><strong>Add-Ons Included</strong></td>
-                          {% for company in selected_policy_companies %}
-                              {% if forloop.counter <= 3 %}
-                                  <td>{{ addons|get_index:forloop.counter0 }}</td>
-                              {% endif %}
-                          {% endfor %}
-                      </tr>
-              
-                      <!-- Claim Settlement Ratio -->
-                      <tr>
-                          <td class="table-thead-bg-light"><strong>Claim Settlement Ratio (%)</strong></td>
-                          {% for company in selected_policy_companies %}
-                              {% if forloop.counter <= 3 %}
-                                  <td>{{ claim_ratio|get_index:forloop.counter0 }}</td>
-                              {% endif %}
-                          {% endfor %}
-                      </tr>
-              
-                      <!-- Cashless Garage Network -->
-                      <tr>
-                          <td class="table-thead-bg-light"><strong>Cashless Garage Network</strong></td>
-                          {% for company in selected_policy_companies %}
-                              {% if forloop.counter <= 3 %}
-                                  <td>{{ garage_network|get_index:forloop.counter0 }}</td>
-                              {% endif %}
-                          {% endfor %}
-                      </tr>
-              
-                      <!-- Policy Tenure -->
-                      <tr>
-                          <td class="table-thead-bg-light"><strong>Policy Tenure</strong></td>
-                          {% for company in selected_policy_companies %}
-                              {% if forloop.counter <= 3 %}
-                                  <td>{{ tenure|get_index:forloop.counter0 }}</td>
-                              {% endif %}
-                          {% endfor %}
-                      </tr>
-              
-                      <!-- Deductibles -->
-                      <tr>
-                          <td class="table-thead-bg-light"><strong>Deductibles (INR)</strong></td>
-                          {% for company in selected_policy_companies %}
-                              {% if forloop.counter <= 3 %}
-                                  <td>{{ deductibles|get_index:forloop.counter0 }}</td>
-                              {% endif %}
-                          {% endfor %}
-                      </tr>
-              
-                  </tbody>
-                </table>
+                <form method="POST" action="#">
+                    {% csrf_token %}
+                    <table class="table table-design table-bordered" id="comparison-table">
+                        <tbody>
+                            <!-- Insurer Names -->
+                            <tr>
+                                <td class="table-thead-bg-light"><strong>Insurer Name</strong></td>
+                                {% for company in selected_policy_companies %}
+                                    <td>{{ company }}</td>
+                                {% endfor %}
+                            </tr>
+
+                            {% comment %} List of dynamic policy fields {% endcomment %}
+                            {% with policy_string="plan_name,premium,policy_type,idv,ncb,own_damage,third_party,addons,claim_ratio,garage_network,tenure,deductibles" %}
+                                {% for field in policy_string|split:"," %}
+                                    <tr>
+                                        <td class="table-thead-bg-light">
+                                            <strong>
+                                                {% if field == "plan_name" %}Plan Name
+                                                {% elif field == "premium" %}Premium Amount (INR)
+                                                {% elif field == "policy_type" %}Policy Type
+                                                {% elif field == "idv" %}IDV (INR)
+                                                {% elif field == "ncb" %}NCB Discount (%)
+                                                {% elif field == "own_damage" %}Own Damage Premium (INR)
+                                                {% elif field == "third_party" %}Third-Party Premium (INR)
+                                                {% elif field == "addons" %}Add-Ons Included
+                                                {% elif field == "claim_ratio" %}Claim Settlement Ratio (%)
+                                                {% elif field == "garage_network" %}Cashless Garage Network
+                                                {% elif field == "tenure" %}Policy Tenure
+                                                {% elif field == "deductibles" %}Deductibles (INR)
+                                                {% else %}{{ field|capfirst }}
+                                                {% endif %}
+                                            </strong>
+                                        </td>
+                                        {% for i in selected_policy_companies %}
+                                            <td>
+                                                <input type="text"
+                                                    name="{{ field }}_{{ forloop.counter0 }}"
+                                                    class="form-control form-control-sm policy-input"
+                                                    placeholder="Enter {{ field|replace_underscore_with_space }}"
+                                                    value="{{ data_dict|get_item:field|get_index:forloop.counter0 }}">
+                                            </td>
+                                        {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                            {% endwith %}
+
+                        </tbody>
+                    </table>
+
+
+                    <div class="text-end mt-3">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                    </form>
+
               
                 <form method="post" id="shareForm">
                     {% csrf_token %}

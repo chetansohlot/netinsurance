@@ -831,6 +831,13 @@ class Users(AbstractBaseUser):
         except Department.DoesNotExist:
             return None
         
+    @property
+    def branch(self):
+        try:
+            return Branch.objects.get(id=self.branch_id)
+        except Branch.DoesNotExist:
+            return None
+        
     def bqpData(self):
         try:
             return BqpMaster.objects.get(id=self.bqp_id)

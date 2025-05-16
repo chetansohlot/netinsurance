@@ -181,6 +181,7 @@ urlpatterns = [
     path('leads/previous-policy-info/<str:lead_id>', leads.previous_policy_info, name='leads-previous-policy-info'),
 
     path('leads/product-info/lead-init/<str:lead_id>', leads.lead_init_edit, name='edit-lead-init'),
+    path('leads/v1/product-info/lead-allocation/<str:lead_id>', leads.lead_allocation, name='lead-allocation'),
     
     #save lead steps 
     path('leads/v1/save-lead-insurance-info',leads.save_leads_insurance_info,name="save-lead-insurance-info"), 
@@ -189,13 +190,15 @@ urlpatterns = [
     path('leads/v1/save-lead-source-info',leads.save_leads_source_info,name="save-lead-source-info"), 
     path('leads/v1/save-lead-location-info',leads.save_leads_location_info,name="save-lead-location-info"), 
     path('leads/v1/save-lead-assignment-info',leads.save_leads_assignment_info,name="save-lead-assignment-info"), 
+    path('leads/v1/save-lead-allocation-info',leads.save_leads_allocation_info,name="save-lead-allocation-info"), 
     path('leads/v1/save-lead-previous-policy-info',leads.save_leads_previous_policy_info,name="save-lead-previous-policy-info"), 
     
     path('leads/v1/save-lead-dispositions',leads.save_leads_dispositions,name="save-lead-dispositions"),
     #Insurance
     path('insurance/', insurance.insurance_list, name='insurance_index'),
     path('insurance/v1/create-insurance/', insurance.insurance_create, name='create-insurance'),
-    path('insurance/edit/<int:insurance_id>/', insurance.insurance_edit, name='insurance_edit'),
+    path('insurance/v1/create-contact-details/<int:id>/', insurance.insurance_contact_details, name='create-contact-detail'),
+    path('insurance/v1/edit/<int:insurance_id>/', insurance.insurance_edit, name='insurance_edit'),
     path('toggle-insurance-status/<int:insurance_id>/', insurance.toggle_insurance_status, name='insurance-toggle-status'),  #Anjali
     path('get-state/', insurance.get_state, name='get_state'),
     path('get-cities/', insurance.get_cities, name='get_cities'),
@@ -349,6 +352,7 @@ urlpatterns = [
     path('operator-verify-policy/', policy.operator_verify_policy, name='operator-verify-policy'),
 
     path('edit-policy-data/<str:id>', views.editPolicy, name='edit-policy'),
+    path('view-policy-data/<str:id>', policy.viewPolicy, name='view-policy'),
     path('delete-policy-data/<str:id>', policy.deletePolicy, name='delete-policy'),
     path('edit-policy/<str:policy_id>/', policy.edit_policy, name='edit-policy-data'),
     re_path(r'^edit-policy-vehicle-details/(?P<policy_id>.+)/$', policy.edit_vehicle_details, name='edit-policy-vehicle-details'),

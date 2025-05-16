@@ -49,9 +49,9 @@
                             <div class="col-md-4 px-0">
                                 <div class="card member-detail-left-card">
                                     <div class="card-body box-profile">
-                                        <div class="d-flex justify-content-between align-items-center">
+                                        <div class="d-flex justify-content-center align-items-center">
                                             <h3 class="profile-username m-0">
-                                                {{ lead.name_as_per_pan }}
+                                                <span class="text-capitalize">{{ lead.name_as_per_pan }}</span>
                                                 {% if lead.lead_customer_gender == 1 %}
                                                     <span class="text-muted ms-1">(Male)</span>
                                                 {% elif lead.lead_customer_gender == 2 %}
@@ -60,7 +60,8 @@
                                                     <span class="text-muted ms-1">(Other)</span>
                                                 {% endif %}
                                             </h3>
-                                        
+                                        </div>
+                                        <div class="d-flex justify-content-center align-items-center">
                                             <span class="text-muted m-0">
                                                 Customer Since:
                                                 {% if lead.created_at.date == today %}
@@ -111,7 +112,7 @@
                                             <li><span class="list">Sub Disposition</span><span class="list-output">{{ lead_disposition.sub_disp.sub_disp_name|default:"N/A" }}</span></li>
                                             <li><span class="list">Disposition Followup Date</span><span class="list-output">{{ lead_disposition.followup_date|default:"N/A" }}</span></li>
                                             <li><span class="list">Disposition Followup Time</span><span class="list-output">{{ lead_disposition.followup_time|default:"N/A" }}</span></li>
-                                            <li><span class="list">Disposition Remark</span><span class="list-output">{{ lead_disposition.remark|default:"N/A" }}</span></li>
+                                            <li><span class="list">Disposition Remark</span><span class="list-output left-card-remark">{{ lead_disposition.remark|default:"N/A" }}</span></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -119,15 +120,17 @@
 
                             <div class="col-md-8 px-0">
                                 <div class="card member-detail-right-card">
-                                    <ul class="nav nav-pills profile-tab">
-                                        <li class="nav-item text-bold"><a class="nav-link active" href="#activity-tab" data-toggle="tab">Activity</a></li>
-                                        <li class="nav-item text-bold"><a class="nav-link" href="#lead-details-tab" data-toggle="tab">Lead Deatils</a></li>
-                                        <li class="nav-item text-bold"><a class="nav-link" href="#previous-policy-info-tab" data-toggle="tab">Previous Policy Information </a></li>
-                                        <li class="nav-item text-bold"><a class="nav-link" href="#quote-tab" data-toggle="tab">Quote </a></li>
-                                        <li class="nav-item text-bold"><a class="nav-link" href="#booking-tab" data-toggle="tab">Booking</a></li>
-                                        <li class="nav-item text-bold"><a class="nav-link" href="#policy-issued-tab" data-toggle="tab">Policy Issued </a></li>
-                                        <li class="nav-item text-bold"><a class="nav-link" href="#disposition-logs" data-toggle="tab">Disposition Logs </a></li>
-                                    </ul>
+                                    <div class="tabarea-scrollbar">
+                                        <ul class="nav nav-pills profile-tab tabarea-scrollbar-singleline">
+                                            <li class="nav-item text-bold"><a class="nav-link active" href="#activity-tab" data-toggle="tab">Activity</a></li>
+                                            <li class="nav-item text-bold"><a class="nav-link" href="#lead-details-tab" data-toggle="tab">Lead Deatils</a></li>
+                                            <li class="nav-item text-bold"><a class="nav-link" href="#previous-policy-info-tab" data-toggle="tab">Previous Policy Information </a></li>
+                                            <li class="nav-item text-bold"><a class="nav-link" href="#quote-tab" data-toggle="tab">Quote </a></li>
+                                            <li class="nav-item text-bold"><a class="nav-link" href="#booking-tab" data-toggle="tab">Booking</a></li>
+                                            <li class="nav-item text-bold"><a class="nav-link" href="#policy-issued-tab" data-toggle="tab">Policy Issued </a></li>
+                                            <li class="nav-item text-bold"><a class="nav-link" href="#disposition-logs" data-toggle="tab">Disposition Logs </a></li>
+                                        </ul>
+                                    </div>
                                     <div class="card-body">
                                         <div class="tab-content tab-scrollbar">
                                             <div class="active tab-pane" id="activity-tab">
@@ -846,56 +849,57 @@
                         <form id="update-dispostion-form-id">
                             {% csrf_token %}
                             <input type="hidden" name="lead_id" id="disposition_lead_id" value="{{lead.lead_id}}">
-                                        
-                            <div class="col-sm-6">
-                                <div class="form-group ">
-                                    <label for="main_disposition model-form-lbl">Main Disposition <span class="text-red">*</span></label>
-                                    <select class="form-field" name="main_disposition" id="main_disposition">
-                                        <option value="">Select Main Disposition</option>
-                                        {% if disposition_list %}
-                                            {% for dispositions in disposition_list %}
-                                                <option value="{{dispositions.disp_id}}">{{dispositions.disp_name}}</option>
-                                            {% endfor %}
-                                        {% endif %}
-                                    </select>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="form-group ">
+                                        <label for="main_disposition model-form-lbl">Main Disposition <span class="text-red">*</span></label>
+                                        <select class="form-field" name="main_disposition" id="main_disposition">
+                                            <option value="">Select Main Disposition</option>
+                                            {% if disposition_list %}
+                                                {% for dispositions in disposition_list %}
+                                                    <option value="{{dispositions.disp_id}}">{{dispositions.disp_name}}</option>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </select>
+                                    </div>
                                 </div>
-                            </div>
+                                    
+                                <div class="col-sm-6">
+                                    <div class="form-group ">
+                                        <label for="sub_disposition model-form-lbl">Sub Disposition <span class="text-red">*</span></label>
+                                        <select class="form-field sub-disposition-class" name="sub_disposition" id="sub_disposition">
+                                            <option value="">Select Sub Disposition</option>
+                                        </select>
+                                    </div>
+                                </div>
                                 
-                            <div class="col-sm-6">
-                                <div class="form-group ">
-                                    <label for="sub_disposition model-form-lbl">Sub Disposition <span class="text-red">*</span></label>
-                                    <select class="form-field sub-disposition-class" name="sub_disposition" id="sub_disposition">
-                                        <option value="">Select Sub Disposition</option>
-                                    </select>
+                                <div class="col-sm-6">
+                                    <div class="form-group ">
+                                        <label for="model-form-lbl">Follow Up Date <span class="text-red">*</span></label>
+                                        <input type="date" class="form-field" name="follow_up_date" id="follow_up_date">
+                                    </div>
                                 </div>
-                            </div>
-                            
-                            <div class="col-sm-6">
-                                <div class="form-group ">
-                                    <label for="model-form-lbl">Follow Up Date <span class="text-red">*</span></label>
-                                    <input type="date" class="form-field" name="follow_up_date" id="follow_up_date">
-                                </div>
-                            </div>
 
-                            <div class="col-sm-6">
-                                <div class="form-group ">
-                                    <label for="model-form-lbl">Follow Up Time <span class="text-red">*</span></label>
-                                    <input type="time" class="form-field" name="follow_up_time" id="follow_up_time">
+                                <div class="col-sm-6">
+                                    <div class="form-group ">
+                                        <label for="model-form-lbl">Follow Up Time <span class="text-red">*</span></label>
+                                        <input type="time" class="form-field" name="follow_up_time" id="follow_up_time">
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="col-sm-6">
-                                <div class="form-group ">
-                                    <label for="model-form-lbl">Remark <span class="text-red">*</span></label>
-                                    <input type="text" class="form-field" name="remark" id="remark">
+                                <div class="col-sm-12">
+                                    <div class="form-group ">
+                                        <label for="model-form-lbl">Remark <span class="text-red">*</span></label>
+                                        <textarea rows="3" class="form-field" name="remark" id="remark"></textarea>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="col-sm-12">
-                                <div class="form-group text-right">
-                                    <button type="submit" class="dashboard-applybtn px-4" id="update-dispostion-form-btn" disabled>Save Changes</button>
+                                <div class="col-sm-12">
+                                    <div class="form-group text-right">
+                                        <button type="submit" class="form-submit-btn" id="update-dispostion-form-btn" disabled>Save Changes</button>
+                                    </div>
                                 </div>
-                            </div>
+                            </div>                    
                         </form>
                     </div>
                 </div>
@@ -918,7 +922,7 @@
                             disposition_id: main_disp_id,
                         },
                         success: function(response) {
-                            let options = '';
+                            let options = '<option value="">Select Sub Disposition</option>';
                             $.each(response.sub_disposition_list, function(index, sub_disposition) {
                                 options += `<option value="${sub_disposition.sub_disp_id}">${sub_disposition.sub_disp_name}</option>`;
                             });

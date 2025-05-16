@@ -198,12 +198,12 @@ def update_exam_eligible_status():
 def members(request):
     if not request.user.is_authenticated:
         return redirect('login')
-    # update_partner_status()
+    
     update_exam_eligible_status()
     
     user = request.user
 
-    if user.role_id == 1 or str(user.department_id) in ["3"]:
+    if user.role_id == 1 or str(user.department_id) in ["1"]:    #admin and sales dept view only
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -236,18 +236,11 @@ def members(request):
                 Q(phone__icontains=global_search)  
             )
 
-        """# Apply filtering
-        if search_field and search_query:
-            filter_args = {f"{search_field}__icontains": search_query}
-            users = users.filter(**filter_args)"""
-        
         partners = Partner.objects.exclude(active=0)  # Status '2' represents training
         partner_ids = partners.values_list('user_id', flat=True)  # Get user IDs
 
         # Base QuerySet: Users who are in training (partner_status='2')
         users = Users.objects.filter(id__in=partner_ids)
-
-        
 
     # Get filter values from GET request
         user_gen_id = request.GET.get('user_gen_id', '').strip()
@@ -267,11 +260,6 @@ def members(request):
             users = users.filter(phone__icontains=phone)
         if pan_no:
             users = users.filter(pan_no__icontains=pan_no)
-
-        """context = {
-            'users': users
-         }"""
-        
 
         # Apply sorting
         if sorting == "name_a_z":
@@ -336,7 +324,7 @@ def members_requested(request):
 
     user = request.user
 
-    if user.role_id == 1 or str(user.department_id) in ["3"]:
+    if user.role_id == 1 or str(user.department_id) in ["1"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -455,7 +443,7 @@ def members_document_pending_upload(request):
 
     user = request.user
 
-    if user.role_id == 1 or str(user.department_id) in ["3"]:
+    if user.role_id == 1 or str(user.department_id) in ["1"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -674,7 +662,7 @@ def members_inprocess(request):
 
     user = request.user
 
-    if user.role_id == 1 or str(user.department_id) in ["3"]:
+    if user.role_id == 1 or str(user.department_id) in ["1"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -780,7 +768,7 @@ def members_document_upload(request):
     
     user = request.user
 
-    if user.role_id == 1 or str(user.department_id) in ["3"]:
+    if user.role_id == 1 or str(user.department_id) in ["1"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -886,7 +874,7 @@ def members_document_inpending(request):
     
     user = request.user
 
-    if user.role_id == 1 or str(user.department_id) in ["3"]:
+    if user.role_id == 1 or str(user.department_id) in ["1"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -1016,7 +1004,7 @@ def members_intraining(request):
     
     user = request.user
 
-    if user.role_id == 1 or str(user.department_id) in ["3"]:
+    if user.role_id == 1 or str(user.department_id) in ["1"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -1139,7 +1127,7 @@ def members_inexam(request):
     
     user = request.user
 
-    if user.role_id == 1 or str(user.department_id) in ["3"]:  # Admin role ID
+    if user.role_id == 1 or str(user.department_id) in ["1"]:  # Admin role ID
         # Define role IDs for the user filter
         role_ids = [4]
         
@@ -1262,7 +1250,7 @@ def members_activated(request):
     
     user = request.user
 
-    if user.role_id == 1 or str(user.department_id) in ["3"]:
+    if user.role_id == 1 or str(user.department_id) in ["1"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -1365,7 +1353,7 @@ def members_rejected(request):
     
     user = request.user
 
-    if user.role_id == 1 or str(user.department_id) in ["3"]:
+    if user.role_id == 1 or str(user.department_id) in ["1"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -1470,7 +1458,7 @@ def members_inactive(request):
     
     user = request.user
 
-    if user.role_id == 1 or str(user.department_id) in ["3"]:
+    if user.role_id == 1 or str(user.department_id) in ["1"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -1681,20 +1669,20 @@ def memberView(request, user_id):
     
 def get_branch_managers(request):
     branch_id = request.GET.get('branch_id')
-    branch_managers = Users.objects.filter(branch_id=branch_id, role_id=2).values('id', 'first_name', 'last_name')
+    branch_managers = Users.objects.filter(branch_id=branch_id, department_id=1, role_id=5).values('id', 'first_name', 'last_name')
     managers_list = [{'id': manager['id'], 'full_name': f"{manager['first_name']} {manager['last_name']}"} for manager in branch_managers]
     return JsonResponse({'branch_managers': managers_list})
 
 def get_sales_managers(request):
     branch_manager_id = request.GET.get('branch_manager_id')
-    sales_managers = Users.objects.filter(senior_id=branch_manager_id, role_id=3).values('id', 'first_name', 'last_name')
+    sales_managers = Users.objects.filter(senior_id=branch_manager_id, role_id=6).values('id', 'first_name', 'last_name')
     sales_list = [{'id': manager['id'], 'full_name': f"{manager['first_name']} {manager['last_name']}"} for manager in sales_managers]
     return JsonResponse({'sales_managers': sales_list})
 
 
 def get_rm_list(request):
     tlId = request.GET.get('tlId')
-    sales_managers = Users.objects.filter(senior_id=tlId, role_id=5).values('id', 'first_name', 'last_name')
+    sales_managers = Users.objects.filter(senior_id=tlId, role_id=7).values('id', 'first_name', 'last_name')
     rm_list = [{'id': manager['id'], 'full_name': f"{manager['first_name']} {manager['last_name']}"} for manager in sales_managers]
     return JsonResponse({'rm_list': rm_list})
 

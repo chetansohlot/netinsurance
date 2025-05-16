@@ -4,8 +4,10 @@ from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.template import loader
-from ..models import Roles,Users, Department,PolicyDocument,BulkPolicyLog, PolicyInfo, Branch, UserFiles,UnprocessedPolicyFiles, Commission, Branch, FileAnalysis, ExtractedFile, ChatGPTLog, AgentPaymentDetails
+from ..models import Roles,Users, Department,PolicyDocument,BulkPolicyLog, PolicyInfo, Branch, UserFiles,UnprocessedPolicyFiles, Commission, Branch, FileAnalysis, ExtractedFile, ChatGPTLog, AgentPaymentDetails,Leads
 from django.contrib.auth import authenticate, login ,logout
+from empPortal.model import Quotation
+
 from django.core.files.storage import FileSystemStorage
 import re, logging
 import requests
@@ -192,6 +194,37 @@ def dashboard(request):
 
     # Totals
     total_policies = aggregation_qs.count()
+    status_counts = aggregation_qs.values('operator_verification_status').annotate(count=Count('id'))
+
+    pendingOperator = verifiedOperator = not_verifiedOperator = 0
+
+    # Map status values to named variables
+    for entry in status_counts:
+        status = entry['operator_verification_status']
+        count = entry['count']
+        if status == '0':
+            pendingOperator = count
+        elif status == '1':
+            verifiedOperator = count
+        elif status == '2':
+            not_verifiedOperator = count
+
+            
+    status_counts_quality = aggregation_qs.values('quality_check_status').annotate(count=Count('id'))
+
+    pendingQuality = verifiedQuality = not_verifiedQuality = 0
+
+    # Map status values to named variables
+    for entry in status_counts_quality:
+        status = entry['quality_check_status']
+        count = entry['count']
+        if status == '0':
+            pendingQuality = count
+        elif status == '1':
+            verifiedQuality = count
+        elif status == '2':
+            not_verifiedQuality = count
+
     total_revenue = aggregation_qs.aggregate(
         total=Sum(Cast('policy_premium', output_field=FloatField()))
     )['total'] or 0
@@ -252,7 +285,68 @@ def dashboard(request):
     agent_labels, agent_counts = partner_policy_summary(request)
     summary = business_summary_product_wise(request)
 
+    user_id = request.user.id
+    role_id = request.user.role_id
+    
+    quotes = Quotation.objects.all()
 
+    if role_id == 2:  # Management
+        leads = Leads.objects.all()
+
+    elif role_id == 3:  # Branch Manager
+        managers = Users.objects.filter(role_id=5, senior_id=user_id)
+        team_leaders = Users.objects.filter(role_id=6, senior_id__in=managers.values_list('id', flat=True))
+        relationship_managers = Users.objects.filter(role_id=7, senior_id__in=team_leaders.values_list('id', flat=True))
+
+        user_ids = list(managers.values_list('id', flat=True)) + \
+                list(team_leaders.values_list('id', flat=True)) + \
+                list(relationship_managers.values_list('id', flat=True)) + \
+                [user_id]
+
+        leads = Leads.objects.filter(Q(created_by_id__in=user_ids) | Q(assigned_to_id__in=user_ids))
+    elif role_id == 4:  # Agent
+        leads = Leads.objects.filter(Q(created_by_id=user_id) | Q(assigned_to_id=user_id))
+
+    elif role_id == 5:  # Manager
+        team_leaders = Users.objects.filter(role_id=6, senior_id=user_id)
+        relationship_managers = Users.objects.filter(role_id=7, senior_id__in=team_leaders.values_list('id', flat=True))
+
+        team_leader_ids = team_leaders.values_list('id', flat=True)
+        rm_ids = relationship_managers.values_list('id', flat=True)
+        user_ids = list(team_leader_ids) + list(rm_ids) + [user_id]
+
+        leads = Leads.objects.filter(
+            Q(created_by_id__in=user_ids) | Q(assigned_to_id__in=user_ids)
+        )
+
+    elif role_id == 6:  # Team Leader
+        relationship_managers = Users.objects.filter(role_id=7, senior_id=user_id)
+        rm_ids = relationship_managers.values_list('id', flat=True)
+        user_ids = list(rm_ids) + [user_id]
+        leads = Leads.objects.filter(
+            Q(created_by_id__in=user_ids) | Q(assigned_to_id__in=user_ids)
+        )
+
+    elif role_id == 7:  # Relationship Manager
+        leads = Leads.objects.filter(
+            Q(created_by_id=user_id) | Q(assigned_to_id=user_id)
+        )
+
+    else:
+        leads = Leads.objects.all()
+
+    total_leads = leads.count()
+    assigned_leads = leads.filter(assigned_to__isnull=False).count()
+    fresh_leads = leads.filter(assigned_to__isnull=True).count()
+
+    total_quotes = quotes.count()
+    shared_quotes = quotes.filter(active=True).count()
+    pending_quotes = quotes.filter(active=False).count()
+    
+    total_partners = 0
+    active_partners = 0
+    inactive_partners = 0
+    
     return render(request, 'dashboard.html', {
         'user': user,
         'provider_summary': provider_summary,
@@ -276,9 +370,22 @@ def dashboard(request):
         'total_revenue': total_revenue,
         'total_net_premium': total_net_premium,
         'total_gross_premium': total_gross_premium,
+        'pendingOperator': pendingOperator,
+        'verifiedOperator': verifiedOperator,
+        'not_verifiedOperator': not_verifiedOperator,
+        'pendingQuality': pendingQuality,
+        'verifiedQuality': verifiedQuality,
+        'not_verifiedQuality': not_verifiedQuality,
+        'total_leads': total_leads,
+        'assigned_leads': assigned_leads,
+        'fresh_leads': fresh_leads,
+        'total_quotes': total_quotes,
+        'shared_quotes': shared_quotes,
+        'pending_quotes': pending_quotes,
+        'total_partners': total_partners,
+        'active_partners': active_partners,
+        'inactive_partners': inactive_partners
     })
-
-
 
 def insurer_wise_date(request):
     

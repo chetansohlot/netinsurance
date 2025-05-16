@@ -29,7 +29,7 @@ Policy Data
             </ul>
           </div>
           <div class="col-sm-6">
-            {% if request.user.role_id == 1 or request.user.department_id|stringformat:"s" == "5" or request.user.department_id|stringformat:"s" == "3"%}
+            {% if request.user.role_id == 1 or request.user.department_id|stringformat:"s" == "5" or request.user.department_id|stringformat:"s" == "3" or request.user.department_id|stringformat:"s" == "2"%}
               <div class="d-flex justify-content-end">
                 {% if request.user.department_id|stringformat:"s" != "5" and request.user.department_id|stringformat:"s" != "3" %}
                 <a href="{% url 'bulk-upload-logs' %}" class="breadcrump-addbtn mx-1">View Bulk Logs</a>
@@ -416,6 +416,10 @@ Policy Data
                                       <i class="fas fa-times-circle"></i>
                                     </a>
                                   {% endif %}
+                                  <a href="{% url 'view-policy' id=data.id %}" class="tooltip-sec text-info" title="View Policy">
+                                    <i class="fas fa-eye"></i>
+                                  </a>
+
                                 </div>
                               </td>
 
