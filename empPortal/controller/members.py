@@ -198,12 +198,12 @@ def update_exam_eligible_status():
 def members(request):
     if not request.user.is_authenticated:
         return redirect('login')
-    # update_partner_status()
+    
     update_exam_eligible_status()
     
     user = request.user
 
-    if user.role_id == 1 or str(user.department_id) in ["3"]:
+    if user.role_id == 1 or str(user.department_id) in ["1"]:    #admin and sales dept view only
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -236,18 +236,11 @@ def members(request):
                 Q(phone__icontains=global_search)  
             )
 
-        """# Apply filtering
-        if search_field and search_query:
-            filter_args = {f"{search_field}__icontains": search_query}
-            users = users.filter(**filter_args)"""
-        
         partners = Partner.objects.exclude(active=0)  # Status '2' represents training
         partner_ids = partners.values_list('user_id', flat=True)  # Get user IDs
 
         # Base QuerySet: Users who are in training (partner_status='2')
         users = Users.objects.filter(id__in=partner_ids)
-
-        
 
     # Get filter values from GET request
         user_gen_id = request.GET.get('user_gen_id', '').strip()
@@ -267,11 +260,6 @@ def members(request):
             users = users.filter(phone__icontains=phone)
         if pan_no:
             users = users.filter(pan_no__icontains=pan_no)
-
-        """context = {
-            'users': users
-         }"""
-        
 
         # Apply sorting
         if sorting == "name_a_z":

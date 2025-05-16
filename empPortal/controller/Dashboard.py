@@ -343,6 +343,10 @@ def dashboard(request):
     shared_quotes = quotes.filter(active=True).count()
     pending_quotes = quotes.filter(active=False).count()
     
+    total_partners = 0
+    active_partners = 0
+    inactive_partners = 0
+    
     return render(request, 'dashboard.html', {
         'user': user,
         'provider_summary': provider_summary,
@@ -377,10 +381,11 @@ def dashboard(request):
         'fresh_leads': fresh_leads,
         'total_quotes': total_quotes,
         'shared_quotes': shared_quotes,
-        'pending_quotes': pending_quotes
+        'pending_quotes': pending_quotes,
+        'total_partners': total_partners,
+        'active_partners': active_partners,
+        'inactive_partners': inactive_partners
     })
-
-
 
 def insurer_wise_date(request):
     
