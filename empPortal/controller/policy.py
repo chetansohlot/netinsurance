@@ -186,8 +186,35 @@ def operator_verify_policy(request):
 
     return JsonResponse({'success': False, 'error': 'Invalid request method.'})
 
-def viewPolicy(request, id):
-    return render(request, 'policy/view-policy.html')
+def viewPolicy(request,id):
+    if not request.user.is_authenticated and request.user.is_active !=1:
+        messages.error(request, "Please Login First")
+        return redirect('login')
+    try:
+        policy_doc=get_object_or_404(PolicyDocument,id=id)
+        policy_number=policy_doc.policy_number
+
+        policy_info =PolicyInfo.objects.filter(policy_id=id, policy_number=policy_number).last()
+
+        # policy_vechicle details #
+        policy_vehicle =PolicyVehicleInfo.objects.filter(policy_id=id, policy_number=policy_number).first()
+
+        #policy agents details #
+        policy_agent_details =AgentPaymentDetails.objects.filter(policy_id=id, policy_number=policy_number).first()
+
+
+        context={
+            'policy_doc':policy_doc,
+            'policy_info' : policy_info,
+            'policy_vehicle' :policy_vehicle,
+             'policy_agent_details ' : policy_agent_details,
+        }
+        return render(request, 'policy/view-policy.html',context)
+    
+    except Exception as e:
+        messages.error(request, f"Something went wrong: {str(e)}")
+        return redirect('policy-data') 
+    
 
 def edit_vehicle_details(request, policy_id):
     

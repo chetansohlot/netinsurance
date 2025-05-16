@@ -355,7 +355,7 @@ urlpatterns = [
     path('operator-verify-policy/', policy.operator_verify_policy, name='operator-verify-policy'),
 
     path('edit-policy-data/<str:id>', views.editPolicy, name='edit-policy'),
-    path('view-policy-data/<str:id>', policy.viewPolicy, name='view-policy'),
+    path('view-policy-data/<str:id>/', policy.viewPolicy, name='view-policy'),
     path('delete-policy-data/<str:id>', policy.deletePolicy, name='delete-policy'),
     path('edit-policy/<str:policy_id>/', policy.edit_policy, name='edit-policy-data'),
     re_path(r'^edit-policy-vehicle-details/(?P<policy_id>.+)/$', policy.edit_vehicle_details, name='edit-policy-vehicle-details'),
