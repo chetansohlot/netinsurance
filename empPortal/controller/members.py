@@ -1267,6 +1267,7 @@ def members_activated(request):
         # Base QuerySet
         
         role_id = request.user.role_id
+        department_id = request.user.department_id
         user_id = request.user.id
 
         partners = Partner.objects.filter(partner_status='4').exclude(active=0)
@@ -1290,7 +1291,7 @@ def members_activated(request):
         elif role_id == 4:  # Agent
             users = users.filter(senior_id=user_id)  # Agent can only see themselves
 
-        elif role_id == 5:  # Manager
+        elif str(department_id) == '1' and role_id == 5:  # Manager
             team_leaders = Users.objects.filter(role_id=6, senior_id=user_id)
             relationship_managers = Users.objects.filter(role_id=7, senior_id__in=team_leaders.values_list('id', flat=True))
 
@@ -1298,12 +1299,12 @@ def members_activated(request):
                     list(relationship_managers.values_list('id', flat=True)) 
             users = users.filter(senior_id__in=user_ids)
 
-        elif role_id == 6:  # Team Leader
+        elif str(department_id) == '1' and role_id == 6:  # Team Leader
             relationship_managers = Users.objects.filter(role_id=7, senior_id=user_id)
             user_ids = list(relationship_managers.values_list('id', flat=True))
             users = users.filter(senior_id__in=user_ids)
 
-        elif role_id == 7:  # Relationship Manager
+        elif str(department_id) == '1' and role_id == 7:  # Relationship Manager
             users = users.filter(senior_id=user_id)
 
         else:
