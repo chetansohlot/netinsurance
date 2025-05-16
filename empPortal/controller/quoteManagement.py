@@ -775,7 +775,7 @@ def downloadQuotationPdf(request, cus_id):
         "deductibles": deductibles,
         "data_dict": data_dict,
         "addons_map": ADDONS_MAP,
-        "logo_url": request.build_absolute_uri(static('dist/img/logo2.png')),
+        "logo_url": os.path.join(settings.BASE_DIR, getattr(settings, 'LOGO_WITH_EMP_PORTAL', 'empPortal/static/dist/img/logo2.png')),
     }
 
     html_content = render_to_string("quote-management/show-quotation-pdf.html", context)
