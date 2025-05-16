@@ -79,7 +79,9 @@ Add Employment Info
                         </div>
                     </div>
 
-                    <div class="d-flex justify-content-end">
+                    <div class="d-flex justify-content-between mt-4">
+                    <a href="{% url 'employee-management-family-details' employee_id=employee_id %}" class="btn btn-secondary"> Back</a>
+
                         <button type="submit" class="form-submit-btn">
                             {% if employment %}Update Employee{% else %}Save Employee{% endif %}
                         </button>

@@ -124,7 +124,8 @@ Add Family Details
                       </div>
                       {% endif %}
 
-                      <div class="d-flex justify-content-end">
+                      <div class="d-flex justify-content-between mt-4">
+                       <a href="{% url 'employee-management-update-address' employee_id=employee_id %}" class="btn btn-secondary"> Back</a>
                           <button type="submit" class="form-submit-btn">Update Family Details</button>
                       </div>
                   </form>
