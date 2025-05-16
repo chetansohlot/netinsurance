@@ -324,7 +324,7 @@ def members_requested(request):
 
     user = request.user
 
-    if user.role_id == 1 or str(user.department_id) in ["3"]:
+    if user.role_id == 1 or str(user.department_id) in ["1"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -443,7 +443,7 @@ def members_document_pending_upload(request):
 
     user = request.user
 
-    if user.role_id == 1 or str(user.department_id) in ["3"]:
+    if user.role_id == 1 or str(user.department_id) in ["1"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -662,7 +662,7 @@ def members_inprocess(request):
 
     user = request.user
 
-    if user.role_id == 1 or str(user.department_id) in ["3"]:
+    if user.role_id == 1 or str(user.department_id) in ["1"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -768,7 +768,7 @@ def members_document_upload(request):
     
     user = request.user
 
-    if user.role_id == 1 or str(user.department_id) in ["3"]:
+    if user.role_id == 1 or str(user.department_id) in ["1"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -874,7 +874,7 @@ def members_document_inpending(request):
     
     user = request.user
 
-    if user.role_id == 1 or str(user.department_id) in ["3"]:
+    if user.role_id == 1 or str(user.department_id) in ["1"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -1004,7 +1004,7 @@ def members_intraining(request):
     
     user = request.user
 
-    if user.role_id == 1 or str(user.department_id) in ["3"]:
+    if user.role_id == 1 or str(user.department_id) in ["1"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -1127,7 +1127,7 @@ def members_inexam(request):
     
     user = request.user
 
-    if user.role_id == 1 or str(user.department_id) in ["3"]:  # Admin role ID
+    if user.role_id == 1 or str(user.department_id) in ["1"]:  # Admin role ID
         # Define role IDs for the user filter
         role_ids = [4]
         
@@ -1250,7 +1250,7 @@ def members_activated(request):
     
     user = request.user
 
-    if user.role_id == 1 or str(user.department_id) in ["3"]:
+    if user.role_id == 1 or str(user.department_id) in ["1"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -1353,7 +1353,7 @@ def members_rejected(request):
     
     user = request.user
 
-    if user.role_id == 1 or str(user.department_id) in ["3"]:
+    if user.role_id == 1 or str(user.department_id) in ["1"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -1458,7 +1458,7 @@ def members_inactive(request):
     
     user = request.user
 
-    if user.role_id == 1 or str(user.department_id) in ["3"]:
+    if user.role_id == 1 or str(user.department_id) in ["1"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
