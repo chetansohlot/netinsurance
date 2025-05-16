@@ -1265,12 +1265,50 @@ def members_activated(request):
             per_page = 10  # Default to 10 if invalid value is given
 
         # Base QuerySet
-        users = Users.objects.filter(role_id__in=role_ids, activation_status=1)
+        
+        role_id = request.user.role_id
+        user_id = request.user.id
 
         partners = Partner.objects.filter(partner_status='4').exclude(active=0)
         partner_ids = partners.values_list('user_id', flat=True)  # Get user IDs
+        
+        users = Users.objects.filter(id__in=partner_ids, activation_status=1)
+        
+        if role_id == 2:  # Management
+            users = users
 
-        users = Users.objects.filter(id__in=partner_ids)
+        elif role_id == 3:  # Branch Manager
+            managers = Users.objects.filter(role_id=5, senior_id=user_id)
+            team_leaders = Users.objects.filter(role_id=6, senior_id__in=managers.values_list('id', flat=True))
+            relationship_managers = Users.objects.filter(role_id=7, senior_id__in=team_leaders.values_list('id', flat=True))
+
+            user_ids = list(managers.values_list('id', flat=True)) + \
+                    list(team_leaders.values_list('id', flat=True)) + \
+                    list(relationship_managers.values_list('id', flat=True))
+            users = users.filter(senior_id__in=user_ids)
+
+        elif role_id == 4:  # Agent
+            users = users.filter(senior_id=user_id)  # Agent can only see themselves
+
+        elif role_id == 5:  # Manager
+            team_leaders = Users.objects.filter(role_id=6, senior_id=user_id)
+            relationship_managers = Users.objects.filter(role_id=7, senior_id__in=team_leaders.values_list('id', flat=True))
+
+            user_ids = list(team_leaders.values_list('id', flat=True)) + \
+                    list(relationship_managers.values_list('id', flat=True)) 
+            users = users.filter(senior_id__in=user_ids)
+
+        elif role_id == 6:  # Team Leader
+            relationship_managers = Users.objects.filter(role_id=7, senior_id=user_id)
+            user_ids = list(relationship_managers.values_list('id', flat=True))
+            users = users.filter(senior_id__in=user_ids)
+
+        elif role_id == 7:  # Relationship Manager
+            users = users.filter(senior_id=user_id)
+
+        else:
+            users = users
+
         
         if global_search:
             users = users.annotate(
@@ -1314,10 +1352,10 @@ def members_activated(request):
         else:
             users = users.order_by("-updated_at")
 
-        total_agents = Users.objects.filter(role_id__in=role_ids).count()
-        active_agents = Users.objects.filter(role_id__in=role_ids,activation_status='1').count()
+        total_agents = users.filter(role_id__in=role_ids).count()
+        active_agents = users.filter(role_id__in=role_ids,activation_status='1').count()
         
-        deactive_agents = Users.objects.filter(
+        deactive_agents = users.filter(
             role_id__in=role_ids
         ).exclude(
             activation_status='1'
@@ -1329,7 +1367,7 @@ def members_activated(request):
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
         counters = partnerCounters()
-
+        
         return render(request, 'members/members-activated.html', {
             'page_obj': page_obj,
             'total_agents': total_agents,

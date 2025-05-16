@@ -56,10 +56,7 @@ def index(request):
         per_page = 10
 
     # department_id = request.user.department_id
-    user_id = request.user.id
-    role_id = request.user.role_id
-    
-    
+   
     role_id = request.user.role_id
     user_id = request.user.id
 
