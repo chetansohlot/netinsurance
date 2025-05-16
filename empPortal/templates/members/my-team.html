@@ -46,7 +46,7 @@ My Team
                                 <table class="table table-design table-trlink">
                                     <thead class="table-thead-bg-light table-header-fix">
                                         <tr>
-                                           
+                                            <th>User Id</th>
                                             <th>Name / Pan No</th>
                                             <th>Contact Details</th>
                                             <th>Role</th>
@@ -56,6 +56,9 @@ My Team
                                     <tbody>
                                         {% for user in my_team %}
                                         <tr>
+                                            <td>
+                                                #{{user.user_gen_id}}
+                                            </td>
                                             <td>
                                                 <a href="{% url 'member-view' user_id=user.id %}" class="trlink">{{user.full_name }}
                                                     <span class="text-gray d-block small">{{ user.pan_no }}</span>
