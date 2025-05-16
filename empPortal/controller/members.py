@@ -2461,3 +2461,50 @@ def upload_excel_users(request):
         return redirect("upload-partners-excel")
 
     return render(request, "members/upload_excel.html")
+
+def myTeamView(request):
+    if not request.user.is_authenticated or request.user.is_active != 1:
+        messages.error(request, 'Login First')
+        return redirect('login')
+
+    role_id = request.user.role_id
+    user_id = request.user.id
+
+    my_team = Users.objects.none()  # Default empty queryset
+
+    if role_id == 2:  # Management
+        my_team = Users.objects.all()
+
+    elif role_id == 3:  # Branch Manager
+        managers = Users.objects.filter(role_id=5, senior_id=user_id)
+        team_leaders = Users.objects.filter(role_id=6, senior_id__in=managers.values_list('id', flat=True))
+        relationship_managers = Users.objects.filter(role_id=7, senior_id__in=team_leaders.values_list('id', flat=True))
+
+        user_ids = list(managers.values_list('id', flat=True)) + \
+                   list(team_leaders.values_list('id', flat=True)) + \
+                   list(relationship_managers.values_list('id', flat=True))
+        my_team = Users.objects.filter(id__in=user_ids)
+
+    elif role_id == 4:  # Agent
+        my_team = Users.objects.filter(id=user_id)  # Agent can only see themselves
+
+    elif role_id == 5:  # Manager
+        team_leaders = Users.objects.filter(role_id=6, senior_id=user_id)
+        relationship_managers = Users.objects.filter(role_id=7, senior_id__in=team_leaders.values_list('id', flat=True))
+
+        user_ids = list(team_leaders.values_list('id', flat=True)) + \
+                   list(relationship_managers.values_list('id', flat=True)) 
+        my_team = Users.objects.filter(id__in=user_ids)
+
+    elif role_id == 6:  # Team Leader
+        relationship_managers = Users.objects.filter(role_id=7, senior_id=user_id)
+        user_ids = list(relationship_managers.values_list('id', flat=True))
+        my_team = Users.objects.filter(id__in=user_ids)
+
+    elif role_id == 7:  # Relationship Manager
+        my_team = Users.objects.filter(id=user_id)
+
+    else:
+        my_team = Users.objects.all()
+
+    return render(request, 'members/my-team.html', {'my_team': my_team})

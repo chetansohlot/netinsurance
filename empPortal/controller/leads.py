@@ -255,26 +255,11 @@ def index(request):
             messages.warning(request, "Please select at least one filter to export data.")
             return redirect('leads-mgt')
     
-    # Count
-    all_leads = Leads.objects.all()
-    total_leads = all_leads.count()  
-    motor_leads = Leads.objects.filter(lead_type='MOTOR').count()
-    health_leads = Leads.objects.filter(lead_type='HEALTH').count()
-    term_leads = Leads.objects.filter(lead_type='TERM').count()
-
-    # Base queryset
-    if request.user.role_id != 1:
-        all_leads = Leads.objects.filter(created_by=request.user.id)
-        total_leads = all_leads.filter(created_by=request.user.id).count()  
-        motor_leads = Leads.objects.filter(created_by=request.user.id,lead_type='MOTOR').count()
-        health_leads = Leads.objects.filter(created_by=request.user.id,lead_type='HEALTH').count()
-        term_leads = Leads.objects.filter(created_by=request.user.id,lead_type='TERM').count()
-    else:
-        all_leads = Leads.objects.all()
-        total_leads = all_leads.count()  
-        motor_leads = Leads.objects.filter(lead_type='MOTOR').count()
-        health_leads = Leads.objects.filter(lead_type='HEALTH').count()
-        term_leads = Leads.objects.filter(lead_type='TERM').count()
+   
+    total_leads = leads.count()  
+    motor_leads = leads.filter(lead_type='MOTOR').count()
+    health_leads = leads.filter(lead_type='HEALTH').count()
+    term_leads = leads.filter(lead_type='TERM').count()
 
     # Pagination
     paginator = Paginator(leads, per_page)
