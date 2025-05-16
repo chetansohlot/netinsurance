@@ -55,6 +55,41 @@ def insurance_create(request):
 
         billing_same_as_registered = True if billing_same_as_registered == 'on' else False
 
+        # Backend Validation
+        """errors = []
+
+        if not name:
+            errors.append("Insurance company name is required.")
+
+        if not state_id:
+            errors.append("Registered state is required.")
+
+        if not city_id:
+            errors.append("Registered city is required.")
+
+        if not pincode:
+            errors.append("Registered pincode is required.")
+
+        if not address:
+            errors.append("Registered address is required.")
+
+        if not billing_same_as_registered:
+            if not billing_state_id:
+                errors.append("Billing state is required.")
+            if not billing_city_id:
+                errors.append("Billing city is required.")
+            if not billing_pincode:
+                errors.append("Billing pincode is required.")
+            if not billing_address:
+                errors.append("Billing address is required.")
+
+        # If errors, show messages and return to form
+        if errors:
+            for error in errors:
+                messages.error(request, error)
+            return render(request, 'insurance/insurance-create.html', {'states': states, 'cities': cities, })"""
+
+
         # Get ForeignKey instances
         state = State.objects.filter(id=state_id).first() if state_id else None
         city = City.objects.filter(id=city_id).first() if city_id else None
@@ -70,7 +105,7 @@ def insurance_create(request):
             city=city,
             billing_state=billing_state,
             billing_city=billing_city,
-            billing_pincode=billing_pincode,
+            billing_pincode=billing_pincode if billing_pincode else None,
             billing_address=billing_address,
             commencement_date=commencement_date if commencement_date else None,
             billing_same_as_registered=billing_same_as_registered,
@@ -97,7 +132,7 @@ def insurance_contact_details(request, id):
         # Get data from POST
         primary_name = request.POST.get('primary_name')
         primary_designation = request.POST.get('primary_designation')
-        primary_contact = request.POST.get('primary_contact')
+        primary_contact = request.POST.get('primary_contact_no')
         primary_email = request.POST.get('primary_email')
 
         secondary_name = request.POST.get('secondary_name')
@@ -107,7 +142,7 @@ def insurance_contact_details(request, id):
 
         #Update the existing insurance object
         insurance.primary_contact_name = primary_name
-        insurance.primary_designation = primary_designation
+        insurance.primary_designation = primary_designation 
         insurance.primary_contact_no = primary_contact
         insurance.primary_contact_email = primary_email
         insurance.secondary_contact_name = secondary_name
@@ -145,8 +180,10 @@ def insurance_edit(request, insurance_id):
         state = State.objects.filter(id=state_id).first() if state_id else None
         city = City.objects.filter(id=city_id).first() if city_id else None
 
-        insurance.state = state
-        insurance.city = city
+        #insurance.state = state
+        #insurance.city = city
+        insurance.state = state.name if state else None
+        insurance.city = city.city if city else None
         insurance.pincode = pincode if pincode else None
         insurance.address = address
 
@@ -160,8 +197,10 @@ def insurance_edit(request, insurance_id):
         billing_state = State.objects.filter(id=billing_state_id).first() if billing_state_id else None
         billing_city = City.objects.filter(id=billing_city_id).first() if billing_city_id else None
 
-        insurance.billing_state = billing_state
-        insurance.billing_city = billing_city
+        #insurance.billing_state = billing_state
+        #insurance.billing_city = billing_city
+        insurance.billing_state = billing_state.name if billing_state else None
+        insurance.billing_city = billing_city.city if billing_city else None
         insurance.billing_pincode = billing_pincode
         insurance.billing_address = billing_address
         insurance.commencement_date = commencement_date
