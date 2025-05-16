@@ -72,11 +72,22 @@ def dashboard(request):
     
     base_qs = PolicyDocument.objects.filter(status=6)
 
-     
+    if request.user.role_id == 1:
+        aggregation_qs = base_qs.filter(policy_info__isnull=False).distinct()
+    else:
+        aggregation_qs = base_qs.filter(policy_info__isnull=False, rm_id=request.user.id).distinct()
 
-    aggregation_qs = base_qs.filter(policy_info__isnull=False).distinct()
+    if request.user.role_id == 1:
+        # Admin or superuser: show all quotations
+        quotation = Quotation.objects.all()
+    else:
+        # Only show quotations created by the logged-in user
+        quotation = Quotation.objects.filter(
+            created_by=str(request.user.id)
+        )
 
-   
+    # Get the count from the 'quotation' variable
+    total_quotation_count = quotation.count()
 
     # Grouped summary by insurance provider
     provider_summary = (
@@ -353,6 +364,8 @@ def dashboard(request):
         'branch_summary': branch_summary,
         'formatted_pos_summary': formatted_pos_summary,
         'referral_summary': referral_summary,
+        'total_quotation_count': total_quotation_count,
+        
         'policies_insurer_wise': policies_insurer_wise,
         'consolidated_month_labels': consolidated_month_labels,
         'consolidated_month_counts': consolidated_month_counts,
