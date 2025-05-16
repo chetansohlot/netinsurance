@@ -858,6 +858,10 @@ def update_allocation(request, employee_id=None):
         team_leader = request.POST.get('manager', '').strip()
         team_leader_insert = request.POST.get('team_leader', '').strip()
         is_branch_head = request.POST.get('is_branch_head', '0')
+        annual_ctc = request.POST.get('annual_ctc', 0)
+        monthly_ctc = request.POST.get('monthly_ctc', 0)
+        target_percent = request.POST.get('target_percent', 0)
+        target_amt = request.POST.get('target_amt', 0)
 
         has_error = False
 
@@ -865,7 +869,60 @@ def update_allocation(request, employee_id=None):
         if not branch_id:
             messages.error(request, 'Branch is required.')
             has_error = True
+            
+        if not annual_ctc:
+            messages.error(request, 'Annual CTC is required.')
+            has_error = True
+        elif len(str(annual_ctc)) > 10:
+            messages.error(request, 'Annual CTC must be at most 10 characters long.')
+            has_error = True
+        else:
+            try:
+                float(annual_ctc)
+            except ValueError:
+                messages.error(request, 'Annual CTC must be a valid number.')
+                has_error = True
 
+        if not monthly_ctc:
+            messages.error(request, 'Monthly CTC is required.')
+            has_error = True
+        elif len(str(monthly_ctc)) > 10:
+            messages.error(request, 'Monthly CTC must be at most 10 digit long.')
+            has_error = True
+        else:
+            try:
+                float(monthly_ctc)
+            except ValueError:
+                messages.error(request, 'Monthly CTC must be a valid number.')
+                has_error = True
+
+
+        if not target_percent:
+            messages.error(request, 'Target Percentage is required.')
+            has_error = True
+        elif len(str(target_percent))>5:
+            messages.error(request, 'Target Percentage must be at most 4 characters long.')
+            has_error = True
+        else:
+            try:
+                float(target_percent)
+            except ValueError:
+                messages.error(request, 'Target Percentage must be a valid number.')
+                has_error = True
+
+        if not target_amt:
+            messages.error(request, 'Target Amount is required.')
+            has_error = True
+        elif len(str(target_amt))>10:
+            messages.error(request, 'Target Amount must be at most 10 characters long.')
+            has_error = True
+        else:
+            try:
+                float(target_amt)
+            except ValueError:
+                messages.error(request, 'Target Amount must be a valid number.')
+                has_error = True
+            
         if not role_id and is_branch_head == '0':
             messages.error(request, 'Role is required.')
             has_error = True
@@ -903,6 +960,10 @@ def update_allocation(request, employee_id=None):
             user_data.department_id = department_id if role_id_int > 4 else None
             user_data.branch_id = branch_id
             user_data.role_id = role_id
+            user_data.annual_ctc = annual_ctc
+            user_data.monthly_ctc = monthly_ctc
+            user_data.target_percent = target_percent
+            user_data.target_amt = target_amt
             user_data.senior_id = senior_id if senior_id else None
             user_data.branch_head = 1 if is_branch_head == '1' else 0
             user_data.save()
