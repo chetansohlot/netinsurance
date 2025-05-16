@@ -56,18 +56,47 @@ def index(request):
     # department_id = request.user.department_id
     user_id = request.user.id
     role_id = request.user.role_id
-    # if department_id == 1:
-    if role_id != 1:
-        referrals = Referral.objects.filter(sales=str(user_id))
-    else:
-        referrals = Referral.objects.all()
+    
+    
+    role_id = request.user.role_id
+    user_id = request.user.id
 
-    referrals = Referral.objects.filter(referral_is_delete=False)
-        
-    # Filtering
-    # if search_field and search_query:
-    #     filter_args = {f"{search_field}__icontains": search_query}
-    #     referrals = referrals.filter(**filter_args)
+    referrals = Referral.objects.filter(referral_is_delete=False)  # Default empty queryset
+
+    if role_id == 2:  # Management
+        referrals = referrals
+
+    elif role_id == 3:  # Branch Manager
+        managers = Users.objects.filter(role_id=5, senior_id=user_id)
+        team_leaders = Users.objects.filter(role_id=6, senior_id__in=managers.values_list('id', flat=True))
+        relationship_managers = Users.objects.filter(role_id=7, senior_id__in=team_leaders.values_list('id', flat=True))
+
+        user_ids = list(managers.values_list('id', flat=True)) + \
+                   list(team_leaders.values_list('id', flat=True)) + \
+                   list(relationship_managers.values_list('id', flat=True))
+        referrals = referrals.filter(supervisor__in=user_ids)
+
+    elif role_id == 4:  # Agent
+        referrals = referrals.filter(supervisor=user_id)  # Agent can only see themselves
+
+    elif role_id == 5:  # Manager
+        team_leaders = Users.objects.filter(role_id=6, senior_id=user_id)
+        relationship_managers = Users.objects.filter(role_id=7, senior_id__in=team_leaders.values_list('id', flat=True))
+
+        user_ids = list(team_leaders.values_list('id', flat=True)) + \
+                   list(relationship_managers.values_list('id', flat=True)) 
+        referrals = referrals.filter(supervisor__in=user_ids)
+
+    elif role_id == 6:  # Team Leader
+        relationship_managers = Users.objects.filter(role_id=7, senior_id=user_id)
+        user_ids = list(relationship_managers.values_list('id', flat=True))
+        referrals = referrals.filter(supervisor__in=user_ids)
+
+    elif role_id == 7:  # Relationship Manager
+        referrals = referrals.filter(supervisor=user_id)
+
+    else:
+        referrals = referrals
 
     # Apply Filter on fields  ##
     if 'name' in request.GET and request.GET['name']:
