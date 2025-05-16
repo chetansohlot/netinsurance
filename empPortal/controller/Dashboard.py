@@ -72,10 +72,10 @@ def dashboard(request):
     
     base_qs = PolicyDocument.objects.filter(status=6)
 
-    if request.user.role_id == 1:
-        aggregation_qs = base_qs.filter(policy_info__isnull=False).distinct()
-    else:
+    if request.user.department_id == "1":
         aggregation_qs = base_qs.filter(policy_info__isnull=False, rm_id=request.user.id).distinct()
+    else:
+        aggregation_qs = base_qs.filter(policy_info__isnull=False).distinct()
 
     if request.user.role_id == 1:
         # Admin or superuser: show all quotations
