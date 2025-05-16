@@ -28,6 +28,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django_q.tasks import async_task
 # from empPortal.tasks.referral_task import ref_BulkUpload
 from django.contrib.auth.decorators import login_required
+from empPortal.model import Employees
+from django.db.models import Exists, OuterRef
 
 
 
@@ -154,7 +156,18 @@ def create_or_edit(request, referral_id=None):
         is_editing = True
 
     branchs = Branch.objects.filter(status='Active')
-    sales_managers = Users.objects.filter(department_id=1,role_id=5,is_active=1)
+    # sales_managers = Users.objects.filter(department_id=1,role_id=5,is_active=1)
+        
+    sales_managers = Users.objects.annotate(
+        employee_exists=Exists(
+            Employees.objects.filter(user_id=OuterRef('id'))
+        )
+    ).filter(
+        department_id='1',  # Use string if department_id is varchar in DB
+        role_id=5,
+        employee_exists=True,
+        is_active=1
+    )
     relationship_managers = Users.objects.filter(department_id=1,is_active=1,role_id=7)  #only sales dept relationship manager 
     # franchises = Franchises.objects.filter(status="Active")
     if request.method == "GET":
