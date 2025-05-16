@@ -26,11 +26,14 @@
                     <li>Activated Partner</li>
                   </ul>
                 </div>
+                
+                {% if request.user.department_id|stringformat:"s" != "1" %}
                 <div class="col-sm-6">
                   <div class="d-flex justify-content-end">
                     <a href="{% url 'add-members' %}" class="breadcrump-addbtn"><i class="fas fa-plus"></i> Add Partner</a>
                   </div>
                 </div>
+                {% endif %} 
               </div>
               
               
