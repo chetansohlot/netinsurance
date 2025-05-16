@@ -154,7 +154,7 @@ def create_or_edit(request, referral_id=None):
         is_editing = True
 
     branchs = Branch.objects.filter(status='Active')
-    sales_managers = Users.objects.filter(department_id=1,is_active=1)
+    sales_managers = Users.objects.filter(department_id=1,role_id=5,is_active=1)
     relationship_managers = Users.objects.filter(department_id=1,is_active=1,role_id=7)  #only sales dept relationship manager 
     # franchises = Franchises.objects.filter(status="Active")
     if request.method == "GET":
