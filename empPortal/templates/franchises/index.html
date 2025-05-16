@@ -239,11 +239,10 @@ Franchise
                                             <label for="checkall"></label>
                                         </th>
                                         <th>Franchise Name</th>
-                                        <th>Contact Person</th>
-                                        <th>Mobile</th>
-                                        <th>Email</th>
-                                        <th>City</th>
-                                        <th>State</th>
+                                        <th>Franchise Type</th>
+                                        <th>Channel Type</th>
+                                        <th>Parent Broker Code</th>
+                                        <th>Onboarding Date</th>
                                         <th>Status</th>
                                         <th>Info</th>
                                         <th>Action</th>
@@ -256,20 +255,19 @@ Franchise
                                             <input type="checkbox" id="check{{ franchise.id }}" class="table-chk">
                                             <label for="check{{ franchise.id }}"></label>
                                         </td>
-                                        <td>
-                                            <a href="{% url 'franchise-management-edit' franchise_id=franchise.id %}" class="trlink">
-                                                {{ franchise.name }}
-                                                <span class="text-gray d-block small">#{{ franchise.id }}</span>
+                                        
+                                        <td>{{ franchise.franchise_name }}
+                                           <a href="#" class="trlink">
+                                               <span class="text-gray d-block small">#{{ franchise.franchise_id }}</span>
                                             </a>
                                         </td>
-                                        <td>{{ franchise.contact_person }}</td>
-                                        <td>{{ franchise.mobile }}</td>
-                                        <td>{{ franchise.email }}</td>
-                                        <td>{{ franchise.city }}</td>
-                                        <td>{{ franchise.state }}</td>
+                                        <td>{{ franchise.franchise_type }}</td>
+                                        <td>{{ franchise.channel_type }}</td>
+                                        <td>{{ franchise.parent_broker_code }}</td>
+                                        <td>{{ franchise.onboarding_date }}</td>
                                         <td>
-                                          <span id="status-badge-{{ franchise.id }}" class="badge {% if franchise.status == 'Active' %}badge-success{% else %}badge-danger{% endif %}">
-                                            {{ franchise.status }}
+                                          <span id="status-badge-{{ franchise.id }}" class="badge {% if franchise.franchise_status == 'Active' %}badge-success{% else %}badge-danger{% endif %}">
+                                            {{ franchise.franchise_status }}
                                         </span>
                                         </td>
                                         <td>
@@ -278,7 +276,7 @@ Franchise
                                         </td>
                                         <td>
                                           <div style="display: flex; gap: 5px; justify-content: center; align-items: center;">
-                                            <a href="{% url 'franchise-management-edit' franchise_id=franchise.id %}" class="btn btn-xs btn-warning ">
+                                            <a href="#" class="btn btn-xs btn-warning ">
                                                 <i class="fas fa-edit"></i> 
                                             </a>
                                            
@@ -286,7 +284,7 @@ Franchise
                                             <a href="#" class="btn btn-xs btn-info toggle-status"
                                             data-url="{% url 'franchise-toggle-status' franchise.id %}"
                                             data-action="activate"
-                                            {% if franchise.status == "Active" %}style="display: none;"{% endif %}
+                                            {% if franchise.franchise_status == "Active" %}style="display: none;"{% endif %}
                                             id="activate-btn-{{ franchise.id }}">
                                              <i class="fas fa-check-circle"></i>
                                          </a>
@@ -295,7 +293,7 @@ Franchise
                                          <a href="#" class="btn btn-xs btn-danger toggle-status"
                                             data-url="{% url 'franchise-toggle-status' franchise.id %}"
                                             data-action="deactivate"
-                                            {% if franchise.status == "Inactive" %}style="display: none;"{% endif %}
+                                            {% if franchise.franchise_status == "Inactive" %}style="display: none;"{% endif %}
                                             id="deactivate-btn-{{ franchise.id }}">
                                              <i class="fas fa-trash"></i>
                                          </a>
