@@ -311,52 +311,73 @@ View Employee
                           </div>
                           {% if user.role_id|stringformat:"s" >= "5" %}
                           
+                            <div class="col-md-4">
+                              <div class="userdetail-group">
+                                <p class="userdetail-lbl">Department</p>
+                                <p class="userdetail-highligt">
+                                  {% if user.department %}
+                                    {{ user.department.name }}
+                                  {% else %}
+                                    N/A
+                                  {% endif %}
+                                </p>
+                              </div>
+                            </div>
+                          {% elif user.role_id|stringformat:"s" >= "6" %}
+
+                            <div class="col-md-4">
+                              <div class="userdetail-group">
+                                <p class="userdetail-lbl">Manager</p>
+                                <p class="userdetail-highligt">
+                                  {% if manager_details %}
+                                    {{ manager_details.first_name }} {{ manager_details.last_name }}
+                                  {% else %}
+                                    N/A
+                                  {% endif %}
+                                </p>
+                              </div>
+                            </div>
+                          {% elif user.role_id|stringformat:"s" == "7" %}
+
+                            <div class="col-md-4">
+                              <div class="userdetail-group">
+                                <p class="userdetail-lbl">Team Leader</p>
+                                <p class="userdetail-highligt">
+                                  {% if senior_details %}
+                                    {{ senior_details.first_name }} {{ senior_details.last_name }}
+                                  {% else %}
+                                    N/A
+                                  {% endif %}
+                                </p>
+                              </div>
+                            </div>
+                          {% endif %}
+                          
                           <div class="col-md-4">
                             <div class="userdetail-group">
-                              <p class="userdetail-lbl">Department</p>
+                              <p class="userdetail-lbl">Annual CTC</p>
                               <p class="userdetail-highligt">
-                                {% if user.department %}
-                                  {{ user.department.name }}
-                                {% else %}
-                                  N/A
-                                {% endif %}
+                                {{ user.annual_ctc|default:"N/A" }}
                               </p>
                             </div>
                           </div>
-                          {% if user.role_id|stringformat:"s" >= "6" %}
-
                           <div class="col-md-4">
                             <div class="userdetail-group">
-                              <p class="userdetail-lbl">Manager</p>
+                              <p class="userdetail-lbl">Monthly CTC</p>
                               <p class="userdetail-highligt">
-                                {% if manager_details %}
-                                  {{ manager_details.first_name }} {{ manager_details.last_name }}
-                                {% else %}
-                                  N/A
-                                {% endif %}
+                                {{ user.monthly_ctc|default:"N/A" }}
                               </p>
                             </div>
                           </div>
-                          {% if user.role_id|stringformat:"s" == "7" %}
-
                           <div class="col-md-4">
                             <div class="userdetail-group">
-                              <p class="userdetail-lbl">Team Leader</p>
+                              <p class="userdetail-lbl">Annual Target</p>
                               <p class="userdetail-highligt">
-                                {% if senior_details %}
-                                  {{ senior_details.first_name }} {{ senior_details.last_name }}
-                                {% else %}
-                                  N/A
-                                {% endif %}
+                                {{ user.target_amt|default:"N/A" }}
                               </p>
                             </div>
                           </div>
-                          {% endif %}
-                          {% endif %}
-
-                          {% endif %}
                         </div>
-
                       </div>
                     </div>
                   </div>
