@@ -7,6 +7,7 @@ from django.template import loader
 from ..models import Roles,Users, Department,PolicyDocument,BulkPolicyLog, PolicyInfo, Branch, UserFiles,UnprocessedPolicyFiles, Commission, Branch, FileAnalysis, ExtractedFile, ChatGPTLog, AgentPaymentDetails,Leads
 from django.contrib.auth import authenticate, login ,logout
 from empPortal.model import Quotation
+from empPortal.model import Partner
 
 from django.core.files.storage import FileSystemStorage
 import re, logging
@@ -354,9 +355,37 @@ def dashboard(request):
     shared_quotes = quotes.filter(active=True).count()
     pending_quotes = quotes.filter(active=False).count()
     
-    total_partners = 0
+
+
+    # PARTNER COUNTS 
+    partners = Partner.objects.filter(partner_status='4').exclude(active=0)
+    partner_ids = partners.values_list('user_id', flat=True)  # Get user IDs
+    
+    users = Users.objects.filter(id__in=partner_ids, activation_status=1)
+
+    if role_id == 5:  # Manager
+        team_leaders = Users.objects.filter(role_id=6, senior_id=user_id)
+        relationship_managers = Users.objects.filter(role_id=7, senior_id__in=team_leaders.values_list('id', flat=True))
+
+        user_ids = list(team_leaders.values_list('id', flat=True)) + \
+                list(relationship_managers.values_list('id', flat=True)) 
+        users = users.filter(senior_id__in=user_ids)
+        total_partners = users.count()
+    elif role_id == 6:  # Team Leader
+        relationship_managers = Users.objects.filter(role_id=7, senior_id=user_id)
+        user_ids = list(relationship_managers.values_list('id', flat=True))
+        users = users.filter(senior_id__in=user_ids)
+        total_partners = users.count()
+
+    elif role_id == 7:  # Relationship Manager
+        users = users.filter(senior_id=user_id)
+        total_partners = users.count()
+    else:
+        total_partners = 0
+
     active_partners = 0
     inactive_partners = 0
+    # PARTNER COUNTS 
     
     return render(request, 'dashboard.html', {
         'user': user,
