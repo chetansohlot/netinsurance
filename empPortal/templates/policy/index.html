@@ -39,10 +39,6 @@ Policy Data
                 <a href="{% url 'single-policy-log' %}" class="breadcrump-addbtn mx-1">View S. Policy Logs</a>
               </div>
             {% endif %}
-            {% if request.user.department_id|stringformat:"s" == "2" %}
-              <a href="{% url 'policy-mgt' %}" class="breadcrump-addbtn mx-1">Add Policy</a>
-              <a href="{% url 'single-policy-log' %}" class="breadcrump-addbtn mx-1">View Policy Logs</a>
-            {% endif %}
           </div>
         </div>
         <div class="row">
