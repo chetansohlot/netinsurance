@@ -2012,45 +2012,53 @@
 
   <script>
     $(document).ready(function () {
+        $.validator.addMethod("referralRequired", function (value, element) {
+            let leadSource = $('#lead_source_type').val();
+            // Required only if lead source is 9 (Referral)
+            return (leadSource == '9') ? $.trim(value) !== "" : true;
+        }, "This field is required");
+
+        $.validator.addMethod("pospRequired", function (value, element) {
+            let leadSource = $('#lead_source_type').val();
+            // Required only if lead source is 7 (POSP)
+            return (leadSource == '7') ? $.trim(value) !== "" : true;
+        }, "This field is required");
+
+        $.validator.addMethod("leadSourceNameRequired", function (value, element) {
+            let leadSource = $('#lead_source_type').val();
+            // Required only if lead source is 12 (Other)
+            return (leadSource == '12') ? $.trim(value) !== "" : true;
+        }, "This field is required");
+        
             $("#leadSourceForm").validate({
               rules: {
-                lead_source_type:{
-                  required: true,
+                    lead_source_type: {
+                        required: true
+                    },
+                    refered_by: {
+                        referralRequired: true
+                    },
+                    posp_by: {
+                        pospRequired: true
+                    },
+                    lead_source_name: {
+                        leadSourceNameRequired: true
+                    }
                 },
-               
-                refered_by:{
-                  required: true,
+                messages: {
+                    lead_source_type: {
+                        required: "This field is required"
+                    },
+                    refered_by: {
+                        referralRequired: "This field is required"
+                    },
+                    posp_by: {
+                        pospRequired: "This field is required"
+                    },
+                    lead_source_name: {
+                        leadSourceNameRequired: "This field is required"
+                    }
                 },
-                referral_name:{
-                  required: true,
-                },
-                source_medium:{
-                  required: true,
-                },
-                referral_mobile_number:{
-                  required: true,
-                }
-              },
-              messages: {
-                lead_source_type: {
-                    required: "This field is required"
-                },
-                lead_source_name: {
-                    required: "This field is required"
-                },
-                refered_by: {
-                    required: "This field is required"
-                },
-                referral_name: {
-                    required: "This field is required"
-                },
-                referral_mobile_number: {
-                    required: "This field is required"
-                },
-                source_medium: {
-                    required: "This field is required"
-                }
-              },
               errorElement: "div",
               errorPlacement: function (error, element) {
                   error.addClass("text-danger");

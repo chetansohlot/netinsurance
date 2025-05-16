@@ -1433,6 +1433,7 @@ def save_leads_source_info(request):
     refered_by = request.POST.get('refered_by') or None
     referral_name = request.POST.get('referral_name') or None
     referral_mobile_number = request.POST.get('referral_mobile_number') or None
+    posp_by = request.POST.get('posp_by') or None
     source_medium = request.POST.get('source_medium') or None
     
     if not lead_id or lead_id == 0:
@@ -1446,6 +1447,7 @@ def save_leads_source_info(request):
         lead_data.referral_by = clean(refered_by)
         lead_data.referral_name = clean(referral_name)
         lead_data.referral_mobile_no = clean(referral_mobile_number)
+        lead_data.posp_id = int(posp_by) if posp_by else None
         lead_data.lead_source_medium = clean(source_medium)
         lead_data.save()
         

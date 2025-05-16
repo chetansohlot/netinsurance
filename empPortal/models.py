@@ -254,7 +254,12 @@ class Leads(models.Model):
     vehicle_model = models.CharField(max_length=255,null=True,blank=True)
     vehicle_make = models.CharField(max_length=255,null=True,blank=True)
     policy_end_date = models.DateField(null=True, blank=True)
-
+    posp = models.ForeignKey( settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='posp_user_id'
+    )
     lead_type = models.CharField(
         max_length=10, 
         choices=[('MOTOR', 'MOTOR'), ('HEALTH', 'HEALTH'), ('TERM', 'TERM')], 
