@@ -203,7 +203,7 @@ Department
                                         <th>Department Name</th>
                                         <th>Status</th>
                                         <th>Info</th>
-                                        <th>Action</th>
+                                        {% comment %} <th>Action</th> {% endcomment %}
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -228,7 +228,7 @@ Department
                                             <i class="fas fa-clock text-primary"></i> {{ department.updated_at|date:"d M Y, H:i:s" }} <br>
                                             <i class="fas fa-calendar-alt text-secondary"></i> {{ department.created_at|date:"d M Y, H:i:s" }}
                                         </td>
-                                        <td>
+                                        {% comment %} <td>
                                           <div>
                                             <div style="display: flex; gap: 5px; justify-content: center; align-items: center;">
                                               <a href="{% url 'department-management-edit' department_id=department.id %}" class="btn btn-xs btn-warning">
@@ -256,7 +256,7 @@ Department
 
                                
                                               </div>
-                                        </td>
+                                        </td> {% endcomment %}
                                     </tr>
                                     {% endfor %}
                                 </tbody>
