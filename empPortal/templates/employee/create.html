@@ -30,6 +30,11 @@ Add Employee
                   <li>Add Employee</li>
                 </ul>
               </div>
+              <div class="col-sm-6 d-flex justify-content-end align-items-start">
+                  <a href="{% url 'employee-management' %}" class="breadcrump-addbtn mt-2">
+                     Back
+                  </a>
+                </div>
             </div>
           </div>
         </div>
@@ -160,6 +165,7 @@ Add Employee
                         <div class="d-flex justify-content-end">
                             <button type="submit" class="form-submit-btn">{% if user %}Update Employee{% else %}Save Employee{% endif %}</button>
                         </div>
+                        
                     </form>
 
 
