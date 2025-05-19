@@ -21,14 +21,14 @@
                 <div class="col-sm-6">
                   <h1 class="admin-title m-0 pt-2">Lead Mgt.</h1>
                   <ul class="breadcrump">
-                    <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
-                    <li>Lead Mgt.</li>
+                    <li> <a href="{% url 'dashboard' %}">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
+                    <li>Lead Mgt</li>
                   </ul>
                 </div>
                 <div class="col-sm-6">
                   <div class="d-flex justify-content-end">
                     <a href="{% url 'lead-init' %}" class="breadcrump-addbtn mx-1"><i class="fas fa-plus"></i> Add lead</a> 
-                    <a href="{% url 'bulk-upload-leads' %}" class="breadcrump-addbtn mx-1"><i class="fas fa-plus"></i> Add Bulk lead</a>
+                    <!-- <a href="{% url 'bulk-upload-leads' %}" class="breadcrump-addbtn mx-1"><i class="fas fa-plus"></i> Add Bulk lead</a> -->
                   </div>
                 </div>
               </div>
@@ -108,184 +108,184 @@
                     <div class="card box-shadow-none">
                       <div class="card-body px-0 pb-0"> 
 
-<div class="card mb-4">
-  <div class="card-body pb-0">
-    <form method="get">
+                        <div class="card mb-4">
+                          <div class="card-body pb-0">
+                            <form method="get">
 
-      <!-- Row 1: 5 Lead filters (plus one empty col to balance 6 slots) -->
-      <div class="row mb-3">
-        <div class="col-sm-6 col-md-2">
-          <input class="form-field" name="lead_id" type="text" placeholder="Lead ID" value="{{ request.GET.lead_id }}">
-        </div>
-        <div class="col-sm-6 col-md-2">
-          <input class="form-field" name="name_as_per_pan" type="text" placeholder="Name (as per PAN)" value="{{ request.GET.name_as_per_pan }}">
-        </div>
-        <div class="col-sm-6 col-md-2">
-          <input class="form-field" name="pan_card_number" type="text" placeholder="PAN Card Number" value="{{ request.GET.pan_card_number }}">
-        </div>
-        <div class="col-sm-6 col-md-2">
-          <input class="form-field" name="email_address" type="email" placeholder="Email Address" value="{{ request.GET.email_address }}">
-        </div>
-        <div class="col-sm-6 col-md-2">
-          <input class="form-field" name="mobile_number" type="tel" placeholder="Mobile Number" value="{{ request.GET.mobile_number }}">
-        </div>
-        <!-- blank 6th column -->
-        <div class="col-sm-6 col-md-2">
-          <select name="sales_manager" class="form-field">
-            <option value="">Select Sales Manager</option>
-            {% for manager in sales_managers %}
-              <option value="{{ manager.user_name }}" {% if manager.user_name == selected_sales_manager %}selected{% endif %}>
-                {{ manager.first_name }} {{ manager.last_name }}
-              </option>
-            {% endfor %}
-          </select>
-          
-        </div>
-      </div>
-      <!-- Row 2: 6 Insurance-related filters -->
-      <div class="row mb-3">
-        <!-- <div class="col-sm-6 col-md-2">
-          <select class="form-field" name="sales_manager">
-            <option value="">Select Sales Manager</option>
-          </select>
-        </div> -->
-               
-        <div class="col-sm-6 col-md-2">
-          <input class="form-field" name="policy_number" type="text"
-                 placeholder="Policy/Registration Number"
-                 value="">
-        </div>
-       
-        <!--<div class="col-sm-6 col-md-2">
-          <label for="start_date" class="custom-label">Start Date</label>
-          <input class="form-field" name="start_date" id="start_date" type="date" value="{{ request.GET.start_date }} placeholder="Start Date"" readonly>
-        </div>
-        
-        <div class="col-sm-6 col-md-2">
-          <label for="end_date" class="custom-label">End Date</label>
-          <input class="form-field" name="end_date" id="end_date" type="date" value="{{ request.GET.end_date }}" placeholder="End Date" readonly>
-        </div>-->
-   
-        <div class="col-sm-6 col-md-2">
-          <input 
-            type="text"
-            id="start_date"
-            name="start_date"
-            class="form-field"
-            placeholder="Start Date"
-            onkeydown="return false;"
-            onfocus="(this.type='date'); this.showPicker && this.showPicker()"
-            onblur="if(this.value===''){this.type='text'}"
-            value="{{ request.GET.start_date }}">
-        </div>
-        
-        <div class="col-sm-6 col-md-2">
-          <input 
-            type="text"
-            id="end_date"
-            name="end_date"
-            class="form-field"
-            placeholder="End Date"
-            onkeydown="return false;"
-            onfocus="(this.type='date'); this.showPicker && this.showPicker()"
-            onblur="if(this.value===''){this.type='text'}"
-            value="{{ request.GET.end_date }}">
-        </div>
-        
+                              <!-- Row 1: 5 Lead filters (plus one empty col to balance 6 slots) -->
+                              <div class="row mb-3">
+                                <div class="col-sm-6 col-md-2">
+                                  <input class="form-field" name="lead_id" type="text" placeholder="Lead ID" value="{{ request.GET.lead_id }}">
+                                </div>
+                                <div class="col-sm-6 col-md-2">
+                                  <input class="form-field" name="name_as_per_pan" type="text" placeholder="Name (as per PAN)" value="{{ request.GET.name_as_per_pan }}">
+                                </div>
+                                <div class="col-sm-6 col-md-2">
+                                  <input class="form-field" name="pan_card_number" type="text" placeholder="Identity Number" value="{{ request.GET.pan_card_number }}">
+                                </div>
+                                <div class="col-sm-6 col-md-2">
+                                  <input class="form-field" name="email_address" type="email" placeholder="Email Address" value="{{ request.GET.email_address }}">
+                                </div>
+                                <div class="col-sm-6 col-md-2">
+                                  <input class="form-field" name="mobile_number" type="tel" placeholder="Mobile Number" value="{{ request.GET.mobile_number }}">
+                                </div>
+                                <!-- blank 6th column -->
+                                <div class="col-sm-6 col-md-2">
+                                  <select name="sales_manager" class="form-field">
+                                    <option value="">Select Sales Manager</option>
+                                    {% for manager in sales_managers %}
+                                      <option value="{{ manager.user_name }}" {% if manager.user_name == selected_sales_manager %}selected{% endif %}>
+                                        {{ manager.first_name }} {{ manager.last_name }}
+                                      </option>
+                                    {% endfor %}
+                                  </select>
+                                  
+                                </div>
+                              </div>
+                              <!-- Row 2: 6 Insurance-related filters -->
+                              <div class="row mb-3">
+                                <!-- <div class="col-sm-6 col-md-2">
+                                  <select class="form-field" name="sales_manager">
+                                    <option value="">Select Sales Manager</option>
+                                  </select>
+                                </div> -->
+                                      
+                                <div class="col-sm-6 col-md-2">
+                                  <input class="form-field" name="policy_number" type="text"
+                                        placeholder="Policy/Registration Number"
+                                        value="">
+                                </div>
+                              
+                                <!--<div class="col-sm-6 col-md-2">
+                                  <label for="start_date" class="custom-label">Start Date</label>
+                                  <input class="form-field" name="start_date" id="start_date" type="date" value="{{ request.GET.start_date }} placeholder="Start Date"" readonly>
+                                </div>
+                                
+                                <div class="col-sm-6 col-md-2">
+                                  <label for="end_date" class="custom-label">End Date</label>
+                                  <input class="form-field" name="end_date" id="end_date" type="date" value="{{ request.GET.end_date }}" placeholder="End Date" readonly>
+                                </div>-->
+                          
+                                <div class="col-sm-6 col-md-2">
+                                  <input 
+                                    type="text"
+                                    id="start_date"
+                                    name="start_date"
+                                    class="form-field"
+                                    placeholder="Start Date"
+                                    onkeydown="return false;"
+                                    onfocus="(this.type='date'); this.showPicker && this.showPicker()"
+                                    onblur="if(this.value===''){this.type='text'}"
+                                    value="{{ request.GET.start_date }}">
+                                </div>
+                                
+                                <div class="col-sm-6 col-md-2">
+                                  <input 
+                                    type="text"
+                                    id="end_date"
+                                    name="end_date"
+                                    class="form-field"
+                                    placeholder="End Date"
+                                    onkeydown="return false;"
+                                    onfocus="(this.type='date'); this.showPicker && this.showPicker()"
+                                    onblur="if(this.value===''){this.type='text'}"
+                                    value="{{ request.GET.end_date }}">
+                                </div>
+                                
 
-        
-        <div class="col-sm-6 col-md-2">
-          <select class="form-field" name="insurance_company">
-            <option value="">Select Insurance Company</option>
-            {% for company in insurance_companies %}
-              <option value="{{ company }}" {% if request.GET.insurance_company == company %}selected{% endif %}>{{ company }}</option>
-            {% endfor %}
-          </select>
-          
-        </div>
-        
-        <div class="col-sm-6 col-md-2">
-          <select class="form-field" name="policy_type">
-            <option value="">Select Policy Type</option>
-            {% for type in policy_types %}
-              <option value="{{ type }}" {% if request.GET.policy_type == type %}selected{% endif %}>{{ type }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div class="col-sm-6 col-md-2">
-          <select name="agent_name" class="form-field">
-            <option value="">Select Agent</option>
-            {% for agent in agents %}
-              <option value="{{ agent }}" {% if selected_agent == agent %}selected{% endif %}>{{ agent }}</option>
-            {% endfor %}
-          </select>        
-        </div>     
-      </div>
+                                
+                                <div class="col-sm-6 col-md-2">
+                                  <select class="form-field" name="insurance_company">
+                                    <option value="">Select Insurance Company</option>
+                                    {% for company in insurance_companies %}
+                                      <option value="{{ company }}" {% if request.GET.insurance_company == company %}selected{% endif %}>{{ company }}</option>
+                                    {% endfor %}
+                                  </select>
+                                  
+                                </div>
+                                
+                                <div class="col-sm-6 col-md-2">
+                                  <select class="form-field" name="policy_type">
+                                    <option value="">Select Policy Type</option>
+                                    {% for type in policy_types %}
+                                      <option value="{{ type }}" {% if request.GET.policy_type == type %}selected{% endif %}>{{ type }}</option>
+                                    {% endfor %}
+                                  </select>
+                                </div>
+                                <div class="col-sm-6 col-md-2">
+                                  <select name="agent_name" class="form-field">
+                                    <option value="">Select Agent</option>
+                                    {% for agent in agents %}
+                                      <option value="{{ agent }}" {% if selected_agent == agent %}selected{% endif %}>{{ agent }}</option>
+                                    {% endfor %}
+                                  </select>        
+                                </div>     
+                              </div>
 
-      <!-- Row 3: remaining filters + Apply/Reset in the final slot -->
-      <div class="row mb-3">
-        <!-- <div class="col-sm-6 col-md-2">
-          <select class="form-field" name="policy_type">
-            <option value="">Select Policy Type</option>
-          </select>
-        </div> -->
-        <div class="col-sm-6 col-md-2">
-          <select class="form-field" name="vehicle_type">
-            <option value="">Select Vehicle Type</option>
-            {% for vehicle in vehicle_types %}
-              <option value="{{ vehicle }}" {% if request.GET.vehicle_type == vehicle %}selected{% endif %}>{{ vehicle }}</option>
-            {% endfor %}
-          </select>
-          
-        </div>
-        <div class="col-sm-6 col-md-2">
-          <select class="form-field" name="upcoming_renewals">
-            <option value="">Select Upcoming Renewals</option>
-            <option value="0" {% if request.GET.upcoming_renewals == '0' %}selected{% endif %}>Today</option>
-            <option value="3" {% if request.GET.upcoming_renewals == '3' %}selected{% endif %}>In 3 Days</option>
-            <option value="7" {% if request.GET.upcoming_renewals == '7' %}selected{% endif %}>In 7 Days</option>
-            <option value="10" {% if request.GET.upcoming_renewals == '10' %}selected{% endif %}>In 10 Days</option>
-            <option value="15" {% if request.GET.upcoming_renewals == '15' %}selected{% endif %}>In 15 Days</option>
-            <option value="30" {% if request.GET.upcoming_renewals == '30' %}selected{% endif %}>In 30 Days</option>
-          </select>
-                   
-        </div>
-        <!-- Lead Type Dropdown -->
-        <div class="col-sm-6 col-md-2">
-          <select class="form-field" name="lead_type" id="lead_type" onchange="toggleMotorType()">
-            <option value="">Select Lead Type</option>
-            <option value="MOTOR" {% if request.GET.lead_type == 'MOTOR' %}selected{% endif %}>Motor</option>
-            <option value="HEALTH" {% if request.GET.lead_type == 'HEALTH' %}selected{% endif %}>Health</option>
-            <option value="TERM" {% if request.GET.lead_type == 'TERM' %}selected{% endif %}>Term</option>
-          </select>
-        </div>
+                              <!-- Row 3: remaining filters + Apply/Reset in the final slot -->
+                              <div class="row mb-3">
+                                <!-- <div class="col-sm-6 col-md-2">
+                                  <select class="form-field" name="policy_type">
+                                    <option value="">Select Policy Type</option>
+                                  </select>
+                                </div> -->
+                                <div class="col-sm-6 col-md-2">
+                                  <select class="form-field" name="vehicle_type">
+                                    <option value="">Select Vehicle Type</option>
+                                    {% for vehicle in vehicle_types %}
+                                      <option value="{{ vehicle }}" {% if request.GET.vehicle_type == vehicle %}selected{% endif %}>{{ vehicle }}</option>
+                                    {% endfor %}
+                                  </select>
+                                  
+                                </div>
+                                <div class="col-sm-6 col-md-2">
+                                  <select class="form-field" name="upcoming_renewals">
+                                    <option value="">Select Upcoming Renewals</option>
+                                    <option value="0" {% if request.GET.upcoming_renewals == '0' %}selected{% endif %}>Today</option>
+                                    <option value="3" {% if request.GET.upcoming_renewals == '3' %}selected{% endif %}>In 3 Days</option>
+                                    <option value="7" {% if request.GET.upcoming_renewals == '7' %}selected{% endif %}>In 7 Days</option>
+                                    <option value="10" {% if request.GET.upcoming_renewals == '10' %}selected{% endif %}>In 10 Days</option>
+                                    <option value="15" {% if request.GET.upcoming_renewals == '15' %}selected{% endif %}>In 15 Days</option>
+                                    <option value="30" {% if request.GET.upcoming_renewals == '30' %}selected{% endif %}>In 30 Days</option>
+                                  </select>
+                                          
+                                </div>
+                                <!-- Lead Type Dropdown -->
+                                <div class="col-sm-6 col-md-2">
+                                  <select class="form-field" name="lead_type" id="lead_type" onchange="toggleMotorType()">
+                                    <option value="">Select Lead Type</option>
+                                    <option value="MOTOR" {% if request.GET.lead_type == 'MOTOR' %}selected{% endif %}>Motor</option>
+                                    <option value="HEALTH" {% if request.GET.lead_type == 'HEALTH' %}selected{% endif %}>Health</option>
+                                    <option value="TERM" {% if request.GET.lead_type == 'TERM' %}selected{% endif %}>Term</option>
+                                  </select>
+                                </div>
 
-<!-- Motor Type Dropdown (Only shows if MOTOR is selected) -->
-<div id="motor_type_container" class="col-sm-6 col-md-2">
-  <select class="form-field" name="motor_type">
-    <option value="">Select Motor Type</option>
-    <option value="2_WHEELER" {% if request.GET.motor_type == '2_WHEELER' %}selected{% endif %}>2 Wheeler</option>
-    <option value="4_WHEELER" {% if request.GET.motor_type == '4_WHEELER' %}selected{% endif %}>4 Wheeler</option>
-    <option value="COMMERCIAL" {% if request.GET.motor_type == 'COMMERCIAL' %}selected{% endif %}>Commercial</option>
-  </select>
-</div>   
-        <!-- 6th col: Apply / Reset -->
-        <div class="col-sm-6 col-md-2">
-          <div class="form-group d-flex">
-            <button type="submit" class="wrap-btn w-100">Apply</button>
-            <a href="{% url 'leads-mgt' %}" class="wrap-btn w-100 bg-danger ml-2 text-center">Reset</a>
-            <!--<button type="submit" name="export" value="1" class="wrap-btn w-100 ml-2 bg-success text-white">Export</button>-->
-            <form method="get" action="{% url 'lead_mgt_export' %}">
-              <button type="submit" name="export" value="1" class="wrap-btn w-100 ml-2 bg-success text-white">Export</button>
-          </form>
-          </div>
-        </div>
-      </div>
+                        <!-- Motor Type Dropdown (Only shows if MOTOR is selected) -->
+                        <div id="motor_type_container" class="col-sm-6 col-md-2">
+                          <select class="form-field" name="motor_type">
+                            <option value="">Select Motor Type</option>
+                            <option value="2_WHEELER" {% if request.GET.motor_type == '2_WHEELER' %}selected{% endif %}>2 Wheeler</option>
+                            <option value="4_WHEELER" {% if request.GET.motor_type == '4_WHEELER' %}selected{% endif %}>4 Wheeler</option>
+                            <option value="COMMERCIAL" {% if request.GET.motor_type == 'COMMERCIAL' %}selected{% endif %}>Commercial</option>
+                          </select>
+                        </div>   
+                                <!-- 6th col: Apply / Reset -->
+                                <div class="col-sm-6 col-md-2">
+                                  <div class="form-group d-flex">
+                                    <button type="submit" class="wrap-btn w-100">Apply</button>
+                                    <a href="{% url 'leads-mgt' %}" class="wrap-btn w-100 bg-danger ml-2 text-center">Reset</a>
+                                    <!--<button type="submit" name="export" value="1" class="wrap-btn w-100 ml-2 bg-success text-white">Export</button>-->
+                                    <form method="get" action="{% url 'lead_mgt_export' %}">
+                                      <button type="submit" name="export" value="1" class="wrap-btn w-100 ml-2 bg-success text-white">Export</button>
+                                  </form>
+                                  </div>
+                                </div>
+                              </div>
 
-    </form>
-  </div>
-</div>
-<!-- Filter End -->    
+                            </form>
+                          </div>
+                        </div>
+                        <!-- Filter End -->    
                             <!-- <div class="col-md-auto">
                               <div class="form-group d-flex justify-content-end">
                                 <div class="dropdown">

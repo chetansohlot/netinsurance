@@ -257,6 +257,7 @@ LICENSE_CATEGORY = os.getenv('LICENSE_CATEGORY', 'DIRECT LIFE AND GENERAL')
 
 # ___________________________________________________________
 
+CUSTOMER_PREFIX = os.getenv('CUSTOMER_PREFIX', 'CUS-NLS-')
 
 
 AUTHENTICATION_BACKENDS = ['empPortal.authentication.EmailAuthBackend']
