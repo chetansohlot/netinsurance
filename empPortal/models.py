@@ -368,6 +368,7 @@ class PolicyDocument(models.Model):
     sum_insured = models.CharField(max_length=255)
     rm_name = models.CharField(max_length=255)
     rm_id = models.IntegerField()
+    insurance_company_id = models.IntegerField(null=True)
     extracted_text = models.JSONField()
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.IntegerField()
@@ -804,10 +805,11 @@ class Users(AbstractBaseUser):
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
     password = models.CharField(max_length=255, null=True)
-    annual_ctc = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    monthly_ctc = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    target_percent = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    target_amt = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    annual_ctc = models.DecimalField(max_digits=20, decimal_places=2, default=0.00)
+    monthly_ctc = models.DecimalField(max_digits=20, decimal_places=2, default=0.00)
+    target_percent = models.DecimalField(max_digits=20, decimal_places=2, default=0.00)
+    target_amt = models.DecimalField(max_digits=20, decimal_places=2, default=0.00)
+    monthly_target_amt = models.DecimalField(max_digits=20, decimal_places=2, default=0.00)
     ## bqp id ##
     bqp = models.ForeignKey(BqpMaster, on_delete=models.SET_NULL, null=True, blank=True)
 
@@ -1279,6 +1281,7 @@ class BulkPolicyLog(models.Model):
     status = models.SmallIntegerField(default=0)
     created_at = models.DateTimeField(default=timezone.now)
     rm_id = models.IntegerField(null=True)
+    insurance_company_id = models.IntegerField(null=True)
     product_type = models.IntegerField(null=True)
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,

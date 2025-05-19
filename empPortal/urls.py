@@ -199,10 +199,10 @@ urlpatterns = [
     
     path('leads/v1/save-lead-dispositions',leads.save_leads_dispositions,name="save-lead-dispositions"),
     #Insurance
-    path('insurance/', insurance.insurance_list, name='insurance_index'),
-    path('insurance/v1/create-insurance/', insurance.insurance_create, name='create-insurance'),
-    path('insurance/v1/create-contact-details/<int:id>/', insurance.insurance_contact_details, name='create-contact-detail'),
-    path('insurance/v1/edit/<int:insurance_id>/', insurance.insurance_edit, name='insurance_edit'),
+    path('insurance-mgt/', insurance.insurance_list, name='insurance_index'),
+    path('insurance-mgt/v1/create-insurance/', insurance.insurance_create, name='create-insurance'),
+    path('insurance-mgt/v1/create-contact-details/<int:id>/', insurance.insurance_contact_details, name='create-contact-detail'),
+    path('insurance-mgt/v1/edit/<int:insurance_id>/', insurance.insurance_edit, name='insurance_edit'),
     path('toggle-insurance-status/<int:insurance_id>/', insurance.toggle_insurance_status, name='insurance-toggle-status'),  #Anjali
     path('get-state/', insurance.get_state, name='get_state'),
     path('get-cities/', insurance.get_cities, name='get_cities'),
@@ -356,7 +356,7 @@ urlpatterns = [
     path('operator-verify-policy/', policy.operator_verify_policy, name='operator-verify-policy'),
 
     path('edit-policy-data/<str:id>', views.editPolicy, name='edit-policy'),
-    path('view-policy-data/<str:id>/', policy.viewPolicy, name='view-policy'),
+    path('view-policy-data/<str:id>', policy.viewPolicy, name='view-policy'),
     path('delete-policy-data/<str:id>', policy.deletePolicy, name='delete-policy'),
     path('edit-policy/<str:policy_id>/', policy.edit_policy, name='edit-policy-data'),
     re_path(r'^edit-policy-vehicle-details/(?P<policy_id>.+)/$', policy.edit_vehicle_details, name='edit-policy-vehicle-details'),

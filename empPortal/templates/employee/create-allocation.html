@@ -126,13 +126,18 @@ Update Allocation
                             </div>
 
                             <div class="form-group col-sm-6 col-md-4" id="target_percent_container">
-                                <label for="target_percent" class="form-lbl">Targeted Percentage</label>
-                                <input type="text" class="form-field percentage" name="target_percent" id="target_percent" placeholder="Target Percentage" value="{{employee.target_percent|default:0}}" max="5">
+                                <label for="target_percent" class="form-lbl">Targeted Times</label>
+                                <input type="text" class="form-field percentage" name="target_percent" id="target_percent" placeholder="Target Percentage" value="{{employee.target_percent|default:0}}" min="1" max="10" maxlength="2">
                             </div>
 
                             <div class="form-group col-sm-6 col-md-4" id="target_amt_container">
                                 <label for="target_amt" class="form-lbl">Targeted Amount</label>
                                 <input type="text" class="form-field number" name="target_amt" id="target_amt" placeholder="Enter Targeted Amount" value="{{employee.target_amt|default:0}}" readonly>
+                            </div>
+
+                            <div class="form-group col-sm-6 col-md-4" id="monthly_target_amt_container">
+                                <label for="monthly_target_amt" class="form-lbl"> Monthly Targeted Amount</label>
+                                <input type="text" class="form-field number" name="monthly_target_amt" id="monthly_target_amt" placeholder="Enter Monthly Targeted Amount"  readonly>
                             </div>
 
                         </div>
@@ -367,8 +372,10 @@ function calculate_montly_ctc(){
 function calculate_targeted_amount(){
     let annual_ctc = $('#annual_ctc').val();
     let target_percent = $('#target_percent').val();
-    monthly_ctc = annual_ctc*target_percent/100;
-    $('#target_amt').val(monthly_ctc.toFixed(2))
+    target_amt = annual_ctc*target_percent;
+    monthly_target_amt = target_amt/12;
+    $('#target_amt').val(target_amt.toFixed(2))
+    $('#monthly_target_amt').val(monthly_target_amt.toFixed(2))
 }
 
 $('#annual_ctc').on('input',function(){

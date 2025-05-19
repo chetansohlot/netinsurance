@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.template import loader
 from ..models import Commission,Users, PolicyUploadDoc,Branch,PolicyInfo,PolicyDocument, DocumentUpload, FranchisePayment, InsurerPaymentDetails, PolicyVehicleInfo, AgentPaymentDetails, UploadedExcel, UploadedZip
 from ..models import BulkPolicyLog,ExtractedFile, BqpMaster, SingleUploadFile
+from ..model import Insurance
 from empPortal.model import Referral
 from datetime import datetime, timedelta
 from django.db.models import OuterRef, Subquery, Count
@@ -172,6 +173,9 @@ def operator_verify_policy(request):
                 policy.quality_check_status = status
                 policy.quality_policy_check_by = request.user.id
                 policy.quality_remark = remark
+                if status == '2':
+                    policy.operator_verification_status = '0'
+
             else:
                 return JsonResponse({'success': False, 'error': 'Invalid type.'})
 
@@ -657,7 +661,13 @@ def bulkPolicyMgt(request):
         return redirect('login')
     rms = Users.objects.all()
     product_types = policy_product()
-    return render(request,'policy/bulk-policy-mgt.html',{'users':rms,'product_types':product_types})
+    insurers = Insurance.objects.all().order_by('-created_at')
+
+    return render(request,'policy/bulk-policy-mgt.html',{
+        'insurers':insurers,
+        'users':rms,
+        'product_types':product_types
+    })
 
 def bulkBrowsePolicy(request):
     if request.user.is_authenticated:
@@ -668,6 +678,7 @@ def bulkBrowsePolicy(request):
                 zip_file = None
             camp_name = request.POST.get("camp_name")
             rm_id = request.POST.get("rm_id")
+            insurance_company = request.POST.get("insurance_company")
             product_type = request.POST.get("product_type")
             # Validate ZIP file format
             if not zip_file or not zip_file.name.lower().endswith(".zip"):
@@ -714,6 +725,7 @@ def bulkBrowsePolicy(request):
                 file=ContentFile(zip_bytes.getvalue(), name=zip_file.name),
                 camp_name=camp_name,
                 rm_id=rm_id,
+                insurance_company_id=insurance_company,
                 rm_name=rm_name,
                 created_by=request.user,
                 count_total_files=total_files,

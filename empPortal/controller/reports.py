@@ -5,6 +5,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from datetime import datetime
 from empPortal.model import Referral
+from django.db.models import Q
 
 from ..models import PolicyDocument,Users, Branch
 from empPortal.export import export_commission_data_v1
@@ -582,20 +583,20 @@ def pending_insurer_commission_report(request):
     branch_name = request.GET.get('branch_name', '').strip()
     referred_by = request.GET.get('referred_by', '').strip()
     
-    # make filters firstly
-    filters_q = None
+
+    filters_q = Q()  # Initialize as an empty Q object
 
     if role_id != 1 and str(request.user.department_id) not in ["3", "5"]:
         filters_q &= Q(rm_id=user_id)
 
-    
     branch = Branch.objects.filter(branch_name__iexact=branch_name).first()
     referral = Referral.objects.filter(name__iexact=referred_by).first()
-    
+
     if branch:
         filters_q &= Q(policy_info__branch_name=str(branch.id))
     if referral:
         filters_q &= Q(policy_agent_info__referral_id=str(referral.id))
+
         
         
     exclude_q = Q(policy_insurer_info__insurer_od_comm__isnull=False) | \
@@ -733,7 +734,7 @@ def pending_insurer_commission_report(request):
         per_page = 20
 
     paginator = Paginator(filtered, per_page)
-    page_number = request.GET.get('page',20)
+    page_number = request.GET.get('page',1)
     page_obj = paginator.get_page(page_number)
 
 

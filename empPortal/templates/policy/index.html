@@ -302,9 +302,17 @@ Policy Data
                                     <span class="d-block">{{ data.policy_infos.insurance_company|default:data.insurance_provider }}</span>
                                     <span class="text-info d-inline-block"><strong>Policy No.:</strong> {{ data.policy_number|default:"-" }}</span>
                                   </div>  
+                                  {% if request.user.department_id|stringformat:"s" == "2" and data.operator_verification_status|stringformat:"s" == "1" and data.quality_check_status|stringformat:"s" != "2" %}
+                                  
+                                  {% elif request.user.department_id|stringformat:"s" == "5" and data.quality_check_status|stringformat:"s" == "1" %}
+                                  
+
+                                  {% else %}
                                   <a href="{% url 'edit-policy' id=data.id %}" class="tooltip-sec ml-2 text-danger" data-title="Edit Policy">
                                     <i class="fa-solid fa-edit"></i>
                                   </a>
+                                  {% endif %}
+
                                 </div>  
                               </td>
                               <!-- <td>{{ data.vehicle_number }}</td> -->
@@ -434,11 +442,17 @@ Policy Data
                                   <a href="{{ data.filepath }}" class="tooltip-sec text-success" data-title="Download {{ data.filename }}" target="_blank" download>
                                     <i class="fas fa-download"></i>
                                   </a>
+                                  {% if request.user.department_id|stringformat:"s" == "2" and data.operator_verification_status|stringformat:"s" == "1" and data.quality_check_status|stringformat:"s" != "2" %}
+                                  
+                                  {% elif request.user.department_id|stringformat:"s" == "5" and data.quality_check_status|stringformat:"s" == "1" %}
 
-                                  <!-- Edit -->
+                                  {% else %}
+                                  
                                   <a href="{% url 'edit-policy' id=data.id %}" class="tooltip-sec text-warning" data-title="Edit Policy">
                                     <i class="fa-solid fa-edit"></i>
                                   </a>
+                                  {% endif %}
+                                  <!-- Edit -->
 
                                   <!-- Delete (Admin or RM only) -->
                                   {% if request.user.role_id == 1 or request.user.id == data.rm_id %}
@@ -449,10 +463,10 @@ Policy Data
 
                                   <!-- Operator Verification (Department 2) -->
                                   {% if request.user.role_id|stringformat:"s" not in "1,4" and request.user.department_id|stringformat:"s" == "2" and data.operator_verification_status|stringformat:"s" == "0" %}
-                                    <a href="javascript:void(0);" class="tooltip-sec text-primary" data-title="Approve with Remark" onclick="approveWithRemark('{{ data.id }}', '1')">
+                                    <a href="javascript:void(0);" class="tooltip-sec text-primary" data-title="Approve with Remark" onclick="approveWithRemark('{{ data.id }}', '1', 'operator')">
                                       <i class="fas fa-check-circle"></i>
                                     </a>
-                                    <a href="javascript:void(0);" class="tooltip-sec text-danger" data-title="Reject with Remark" onclick="rejectWithRemark('{{ data.id }}', '2')">
+                                    <a href="javascript:void(0);" class="tooltip-sec text-danger" data-title="Reject with Remark" onclick="rejectWithRemark('{{ data.id }}', '2', 'operator')">
                                       <i class="fas fa-times-circle"></i>
                                     </a>
                                   {% endif %}

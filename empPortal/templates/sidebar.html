@@ -17,11 +17,15 @@
     <!-- Brand Logo -->
    
       <a href="/dashboard" class="brand-link">
-        <img src="{% static SIDEBAR_MINI_LOGO %}" alt=" Logo" class="brand-image">
+        {% if SIDEBAR_MINI_LOGO != "BLANK" %}
+          <img src="{% static SIDEBAR_MINI_LOGO %}" alt="Logo" class="brand-image">
+        {% endif %}
+        
         <span class="brand-text font-weight-light">
           <img src="{% static SIDEBAR_LOGO %}" alt="Logo" class="admin-logoname">
         </span>
-      </a>  
+      </a>
+  
     
 
     <div class="sidebar">
