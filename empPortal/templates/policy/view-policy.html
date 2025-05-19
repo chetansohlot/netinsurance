@@ -93,7 +93,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Insurance Company</p>
                                   <p class="userdetail-highligt">
-                                      {{policy_info.insurance_company}}
+                                      {{policy_info.insurance_company|default:'None'}}
                                   </p>
                               </div>  
                           </div>
@@ -101,7 +101,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Branch Name</p>
                                   <p class="userdetail-highligt">
-                                      {{policy_info.branch_name}}
+                                      {{policy_info.branch.branch_name|default:'None'}}
                                   </p>
                               </div>  
                           </div>
@@ -125,7 +125,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Be-Fuel Amount</p>
                                   <p class="userdetail-highligt">
-                                      {{policy_info.be_fuel_amount}}
+                                      {{ policy_info.be_fuel_amount }}
                                   </p>
                               </div>  
                           </div>
@@ -133,7 +133,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Sum Insured</p>
                                   <p class="userdetail-highligt">
-                                      {{policy_info.sum_insured}}
+                                      {{ policy_info.sum_insured }}
                                   </p>
                               </div>  
                           </div>
@@ -141,7 +141,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">OD Premium</p>
                                   <p class="userdetail-highligt">
-                                      {{policy_info.od_premium}}
+                                      {{ policy_info.od_premium }}
                                   </p>
                               </div>  
                           </div>
@@ -149,7 +149,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">TP Premium</p>
                                   <p class="userdetail-highligt">
-                                      {{policy_info.tp_premium}}
+                                      {{ policy_info.tp_premium }}
                                   </p>
                               </div>  
                           </div>
@@ -157,7 +157,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">PA Count</p>
                                   <p class="userdetail-highligt">
-                                      {{policy_info.pa_count}}
+                                      {{ policy_info.pa_count }}
                                   </p>
                               </div>  
                           </div>
@@ -165,7 +165,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">PA Amount</p>
                                   <p class="userdetail-highligt">
-                                     {{policy_info.pa_amount}}
+                                     {{ policy_info.pa_amount }}
                                   </p>
                               </div>  
                           </div>
@@ -173,7 +173,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Driver Count</p>
                                   <p class="userdetail-highligt">
-                                      {{policy_info.driver_count}}
+                                      {{ policy_info.driver_count }}
                                   </p>
                               </div>  
                           </div>
@@ -181,7 +181,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Driver Amount</p>
                                   <p class="userdetail-highligt">
-                                      {{policy_info.driver_amount}}
+                                      {{ policy_info.driver_amount }}
                                   </p>
                               </div>  
                           </div>
@@ -189,7 +189,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Gross Premium</p>
                                   <p class="userdetail-highligt">
-                                      {{policy_info.gross_premium}}
+                                      {{ policy_info.gross_premium }}
                                   </p>
                               </div>  
                           </div>
@@ -197,7 +197,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Net Premium</p>
                                   <p class="userdetail-highligt">
-                                      {{policy_info.net_premium}}
+                                      {{ policy_info.net_premium }}
                                   </p>
                               </div>  
                           </div>
@@ -205,7 +205,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">GST</p>
                                   <p class="userdetail-highligt">
-                                      {{policy_info.gst_premium}}
+                                      {{ policy_info.gst_premium }}
                                   </p>
                               </div>  
                           </div>
@@ -335,7 +335,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Re Other Endorsement</p>
                                   <a href="#" class="userdetail-highligt">
-                                      {{policy_doc.re_other_endorsement}}
+                                      {{ policy_doc.re_other_endorsement|default:'None' }}
                                   </a>
                               </div>  
                           </div>
@@ -343,7 +343,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Previous Policy</p>
                                   <a href="#" class="userdetail-highligt">
-                                      {{policy_upload_docs.previous_policy}}
+                                      {{ policy_upload_docs.previous_policy|default:'None' }}
                                   </a>
                               </div>  
                           </div>
@@ -351,7 +351,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">KYC Document</p>
                                   <a href="#" class="userdetail-highligt">
-                                      {{policy_upload_docs.kyc_document}}
+                                      {{ policy_upload_docs.kyc_document|default:'None' }}
                                   </a>
                               </div>  
                           </div>
@@ -359,7 +359,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Proposal Document</p>
                                   <a href="#" class="userdetail-highligt">
-                                     {{policy_upload_docs.proposal_document}}
+                                     {{ policy_upload_docs.proposal_document|default:'None' }}
                                   </a>
                               </div>  
                           </div>
@@ -392,7 +392,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">POS Name</p>
                                   <p class="userdetail-highligt">
-                                      {{policy_info.pos_name}}
+                                      {{pos_user.user_name|default:'None'}}   <!--user name is pos name-->
                                   </p>
                               </div>  
                           </div>
@@ -432,7 +432,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Agent Remarks</p>
                                   <p class="userdetail-highligt">
-                                     {{policy_agent_details.agent_remarks}}
+                                     {{policy_agent_details.agent_remarks|default:'None'}}
                                   </p>
                               </div>  
                           </div>

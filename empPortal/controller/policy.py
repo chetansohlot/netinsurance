@@ -199,7 +199,15 @@ def viewPolicy(request,id):
         policy_doc=get_object_or_404(PolicyDocument,id=id)
         policy_number=policy_doc.policy_number
 
-        policy_info =PolicyInfo.objects.filter(policy_id=policy_doc, policy_number=policy_number).select_related('bqp').order_by('-id').first()
+        policy_info =PolicyInfo.objects.filter(policy_id=policy_doc, policy_number=policy_number).select_related('bqp','branch').order_by('-id').first()
+
+         # Get POS user (if pos_name stores user ID)
+        pos_user = None
+        if policy_info and policy_info.pos_name:
+            try:
+                pos_user = Users.objects.get(id=policy_info.pos_name)
+            except Users.DoesNotExist:
+                pos_user = None
 
         # policy_vechicle details #
         policy_vehicle =PolicyVehicleInfo.objects.filter(policy_id=id, policy_number=policy_number).first()
@@ -229,7 +237,7 @@ def viewPolicy(request,id):
             'policy_upload_docs' :policy_upload_docs,
             'policy_insurer_details':policy_insurer_details,
             'policy_franchise_details':policy_franchise_details, 
-
+            'pos_user':pos_user,
         }
         return render(request, 'policy/view-policy.html',context)
     
