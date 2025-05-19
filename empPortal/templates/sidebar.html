@@ -186,14 +186,14 @@
                    
                   <!--Source parth-->
                   <li class="nav-item">
-                    <a href="{% url 'source_list' %}" class="nav-link {% if '/source/' in request.path %} active {% endif %}">
+                    <a href="{% url 'source_list' %}" 
+                      class="nav-link {% if '/source/' in request.path %} active {% endif %}">
                       <svg class="sidbarmenu-svg">
                         <use xlink:href="#view-policy" />
                       </svg>
                       <p>Source Master</p>
                     </a>
                   </li>
-
                   <li class="nav-item">
                       <a href="{% url 'branch-management' %}" class="nav-link {% if '/branch-management/' in request.path %} active {% endif %}">
                           <!-- <i class="nav-icon fa-solid fa-code-branch"></i> -->
