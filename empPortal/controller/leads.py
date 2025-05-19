@@ -1896,31 +1896,38 @@ def get_lead_activity_logs(request):
         activity_logs = LeadActivity.objects.filter(lead_ref_id=lead_id).order_by('-created_at')
 
         html = ''
-        for activity in activity_logs:
-
-            html += f'''
-                <tr>
-                    <td>
-                        <div class="d-flex">
-                            <div class="activity-circle">
-                                {activity.created_by.full_name[0].upper() if activity.created_by and activity.created_by.full_name else 'U'}
-                            </div>
-                            <div class="ml-2">
-                                <span class="d-block">{activity.create_date}</span>
-                                <span class="text-muted">{activity.create_time}</span>
+        if activity_logs.exists():
+            for activity in activity_logs:
+                html += f'''
+                    <tr>
+                        <td>
+                            <div class="d-flex">
+                                <div class="activity-circle">
+                                    {activity.created_by.full_name[0].upper() if activity.created_by and activity.created_by.full_name else 'U'}
+                                </div>
+                                <div class="ml-2">
+                                    <span class="d-block">{activity.create_date}</span>
+                                    <span class="text-muted">{activity.create_time}</span>
+                                </div>    
                             </div>    
-                        </div>    
-                    </td>
-                    <td>
-                        <div class="d-flex flex-wrap">
-                            <span class="d-block text-primary">{activity.message}</span>
-                        </div>    
-                        <span class="text-muted d-block">
-                            Added by {activity.created_by.full_name if activity.created_by else 'Unknown'} on {activity.created_at.strftime('%d %b %Y %I:%M %p')}
-                        </span>
-                    </td>
+                        </td>
+                        <td>
+                            <div class="d-flex flex-wrap">
+                                <span class="d-block text-primary">{activity.message}</span>
+                            </div>    
+                            <span class="text-muted d-block">
+                                Added by {activity.created_by.full_name if activity.created_by else 'Unknown'} on {activity.created_at.strftime('%d %b %Y %I:%M %p')}
+                            </span>
+                        </td>
+                    </tr>
+                '''
+        else:
+            html = '''
+                <tr>
+                    <td colspan="2" class="text-center text-muted">No data found</td>
                 </tr>
             '''
         return JsonResponse({'html': html})
     else:
-        return JsonResponse({'html': ''})
+        return JsonResponse({'html': 'Please Login First'})
+    
