@@ -17,6 +17,7 @@ class Customer(models.Model):
     email_address = models.CharField(max_length=255, null=True, blank=True)
     name_as_per_pan = models.CharField(max_length=255, null=True, blank=True)
     pan_card_number = models.CharField(max_length=10, null=True, blank=True)
+    identity_no = models.CharField(max_length=255, null=True, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
     state = models.CharField(max_length=100, null=True, blank=True)
     city = models.CharField(max_length=100, null=True, blank=True)

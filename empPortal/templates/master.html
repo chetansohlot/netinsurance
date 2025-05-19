@@ -1964,6 +1964,17 @@
 
   <script>
     $(document).ready(function () {
+        $.validator.addMethod("ageLimit", function(value, element) {
+            var dob = new Date(value);
+            var today = new Date();
+            var age = today.getFullYear() - dob.getFullYear();
+            var m = today.getMonth() - dob.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+                age--;
+            }
+            return age >= 18;
+        }, "You must be at least 18 years old");
+
             $("#leadBasicInfo").validate({
               rules: {
                 customer_name:{
@@ -1977,6 +1988,7 @@
                 },
                 date_of_birth:{
                   required: true,
+                  ageLimit: true
                 }
               
               },
@@ -1992,6 +2004,7 @@
                 },
                 date_of_birth: {
                     required: "DOB is required",
+                    ageLimit: "Age must be 18 years or older"
                 },
                 identity_no: {
                     required: "Aadhar or PAN must be required",
