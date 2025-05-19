@@ -22,12 +22,12 @@
             <div class="row py-2">
               <div class="col-sm-6">
                 <div class="d-flex align-items-center">
-                  <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">{% if lead %}Edit Lead{% else %}Add New Lead{% endif %}</a>
+                  <a href="javascript:void(0)" class="admin-title m-0 pt-2 text-dark">Lead Mgt</a>
                 </div>
                 <ul class="breadcrump">
-                  <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
-                  <li> <a href="#">Lead</a> <i class="fas fa-chevron-right"></i></li>
-                  <li>{% if lead %}Edit Lead{% else %}Add Lead{% endif %}</li>
+                  <li> <a href="{% url 'dashboard' %}">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
+                  <li> <a href="{% url 'leads-mgt' %}">Lead Mgt</a> <i class="fas fa-chevron-right"></i></li>
+                  <li>Edit Lead : <strong>#{{lead_data.lead_id|default:"-"}}</strong></li>
                 </ul>
               </div>
             </div>

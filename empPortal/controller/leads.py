@@ -37,6 +37,9 @@ from pprint import pprint
 from django.core.paginator import Paginator
 from django.db.models import Q
 from empPortal.model import Referral, Partner
+from empPortal.model.customer import Customer
+from empPortal.model.leadActivity import LeadActivity
+
 
 import pandas as pd
 from django.core.files.storage import default_storage
@@ -90,8 +93,10 @@ def index(request):
     role_id = request.user.role_id
     user_id = request.user.id
 
+    leads = Leads.objects.filter(status=True)
+    
     if role_id == 2:  # Management
-        leads = Leads.objects.all()
+        leads = leads
 
     elif role_id == 3:  # Branch Manager
         managers = Users.objects.filter(role_id=5, senior_id=user_id)
@@ -103,9 +108,9 @@ def index(request):
                 list(relationship_managers.values_list('id', flat=True)) + \
                 [user_id]
 
-        leads = Leads.objects.filter(Q(created_by_id__in=user_ids) | Q(assigned_to_id__in=user_ids))
+        leads = leads.filter(Q(created_by_id__in=user_ids) | Q(assigned_to_id__in=user_ids))
     elif role_id == 4:  # Agent
-        leads = Leads.objects.filter(Q(created_by_id=user_id) | Q(assigned_to_id=user_id))
+        leads = leads.filter(Q(created_by_id=user_id) | Q(assigned_to_id=user_id))
 
     elif role_id == 5:  # Manager
         team_leaders = Users.objects.filter(role_id=6, senior_id=user_id)
@@ -115,7 +120,7 @@ def index(request):
         rm_ids = relationship_managers.values_list('id', flat=True)
         user_ids = list(team_leader_ids) + list(rm_ids) + [user_id]
 
-        leads = Leads.objects.filter(
+        leads = leads.filter(
             Q(created_by_id__in=user_ids) | Q(assigned_to_id__in=user_ids)
         )
 
@@ -123,17 +128,17 @@ def index(request):
         relationship_managers = Users.objects.filter(role_id=7, senior_id=user_id)
         rm_ids = relationship_managers.values_list('id', flat=True)
         user_ids = list(rm_ids) + [user_id]
-        leads = Leads.objects.filter(
+        leads = leads.filter(
             Q(created_by_id__in=user_ids) | Q(assigned_to_id__in=user_ids)
         )
 
     elif role_id == 7:  # Relationship Manager
-        leads = Leads.objects.filter(
+        leads =leads.filter(
             Q(created_by_id=user_id) | Q(assigned_to_id=user_id)
         )
 
     else:
-        leads = Leads.objects.all()
+        leads =leads
 
     # Global search
     if global_search:
@@ -155,7 +160,7 @@ def index(request):
     # Get filter inputs
     lead_id = request.GET.get('lead_id', '')
     name = request.GET.get('name_as_per_pan', '')
-    pan = request.GET.get('pan_card_number', '')
+    identity_no = request.GET.get('pan_card_number', '')
     email = request.GET.get('email_address', '')
     mobile = request.GET.get('mobile_number', '')
     sales_manager = request.GET.get('sales_manager', '')
@@ -172,7 +177,7 @@ def index(request):
 
     # Collect filter inputs
     filters_applied = any([
-        lead_id, name, pan, email, mobile,
+        lead_id, name, identity_no, email, mobile,
         sales_manager, agent_name, policy_number,
         start_date, end_date, insurance_company,
         policy_type, vehicle_type, upcoming_renewals,
@@ -186,8 +191,8 @@ def index(request):
         leads = leads.filter(lead_id__icontains=lead_id)
     if name:
         leads = leads.filter(name_as_per_pan__icontains=name)
-    if pan:
-        leads = leads.filter(pan_card_number__icontains=pan)
+    if identity_no:
+        leads = leads.filter(lead_customer_identity_no__icontains=identity_no)
     if email:
         leads = leads.filter(email_address__icontains=email)
     if mobile:
@@ -635,7 +640,6 @@ def create_or_edit_lead(request, lead_id=None):
         name_as_per_pan = request.POST.get("name_as_per_pan", "").strip()
         pan_card_number = request.POST.get("pan_card_number", "").strip() or None
 
-
         source_leads_id = request.POST.get("source_leads", "").strip() or None
         source_leads = SourceMaster.objects.get(id=source_leads_id) if source_leads_id else None
         
@@ -663,11 +667,7 @@ def create_or_edit_lead(request, lead_id=None):
         if lead_source != 'pos_partner':
             partner_id = None
         lead_description = request.POST.get("lead_description", "").strip()
-        # lead_type = request.POST.get("lead_type", "MOTOR").strip()
         lead_type = request.POST.get("lead_type", "").strip()
-        #motor_leads = Leads.objects.filter(lead_type='MOTOR', created_by=request.user).order_by('-id')
-        #health_leads = Leads.objects.filter(lead_type='HEALTH', created_by=request.user).order_by('-id')
-        #term_leads = Leads.objects.filter(lead_type='TERM', created_by=request.user).order_by('-id')
 
         if lead_type == "MOTOR":
             registration_number = request.POST.get("registration_number", "").strip()
@@ -703,7 +703,7 @@ def create_or_edit_lead(request, lead_id=None):
         vehicle_type_db = None
         sum_insured = None
         policy_date = None
-
+    
         # If matching policy found, extract details
         if policy_document:
             insurance_company = policy_document.insurance_provider
@@ -782,10 +782,19 @@ def create_or_edit_lead(request, lead_id=None):
             # Step 3: Save it to the lead
             new_lead.lead_id = lead_id
             new_lead.save()
+            
+            message = 'New lead is created'
+            
+            LeadActivity.objects.create(
+                lead_id = new_lead.id,
+                lead_ref_id = lead_id,
+                message = message,
+                created_by = request.user.id,
+            )
             messages.success(request, f"Lead created successfully!  {lead_id}")
 
         return redirect("leads-mgt")
-
+    
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from datetime import datetime
@@ -1312,6 +1321,15 @@ def save_leads_insurance_info(request):
     lead_last_name = request.POST.get('last_name') or None
     mobile_number = request.POST.get('mobile') or None
     
+    
+    customer_data = {
+        'customer_f_name': lead_first_name,
+        'customer_l_name': lead_last_name,
+        'mobile_number': mobile_number,
+    }
+
+    customer_id = customer_details(customer_data)
+    
     # Apply cleaning
     lead_insurance_type_id = clean(lead_insurance_type_id)
     lead_insurance_category_id = clean(lead_insurance_category_id)
@@ -1321,27 +1339,103 @@ def save_leads_insurance_info(request):
     mobile_number = clean(mobile_number)
     
     try:
-        leads_insert = Leads.objects.create(
-            lead_id = int(time.time()),
-            lead_insurance_type_id = lead_insurance_type_id,
-            lead_insurance_category_id = lead_insurance_category_id,
-            lead_insurance_product_id = lead_insurance_product_id,
-            lead_first_name = lead_first_name,
-            lead_last_name = lead_last_name,
-            name_as_per_pan = lead_first_name +' '+ lead_last_name,
-            mobile_number = mobile_number,
-            created_by_id = request.user.id
-        )
+        parent_existing_lead = Leads.objects.filter(lead_customer_id=customer_id,lead_insurance_product_id=lead_insurance_product_id,parent_lead_id__isnull=True).last()
+        if parent_existing_lead:
+            if parent_existing_lead.status == True:
+                parent_existing_lead.status = False
+                parent_existing_lead.save()
+            
+        existing_lead = Leads.objects.filter(lead_customer_id=customer_id,lead_insurance_product_id=lead_insurance_product_id).last()
+        if existing_lead:
+            existing_lead.status = False
+            existing_lead.save()
+            leads_insert = clone_lead(existing_lead, request.user.id,parent_existing_lead)
+            lead_ref_id = leads_insert.lead_id
+            
+            message = f"New lead is created and reborn from lead: #{existing_lead.lead_id}"
+        else:
+            leads_insert = Leads.objects.create(
+                lead_id = int(time.time()),
+                lead_insurance_type_id = lead_insurance_type_id,
+                lead_insurance_category_id = lead_insurance_category_id,
+                lead_insurance_product_id = lead_insurance_product_id,
+                lead_customer_id = customer_id,
+                lead_first_name = lead_first_name,
+                lead_last_name = lead_last_name,
+                name_as_per_pan = lead_first_name +' '+ lead_last_name,
+                mobile_number = mobile_number,
+                created_by_id = request.user.id
+            )
+            
+            lead_ref_id = leads_insert.lead_id
+            
+            message = 'New lead is created'
         
-        lead_ref_id = leads_insert.lead_id
+        LeadActivity.objects.create(
+            lead_id = leads_insert.id,
+            lead_ref_id = leads_insert.lead_id,
+            message = message,
+            created_by_id = request.user.id,
+        )
         
         messages.success(request,f"Saved Succesfully")
         return redirect('basic-info',lead_id=lead_ref_id)
         
     except Exception as e:
         logger.error(f"Error in save_leads_insurance_info error: {str(e)}")
-        messages.error(request,'Something Went Wrong Please Try After Sometime')
+        messages.error(request,f'Something Went Wrong Please Try After Sometime {str(e)}')
         return redirect('leads-mgt')
+    
+def clone_lead(existing_lead, created_by_id, parent_existing_lead):
+    return Leads.objects.create(
+        lead_id = int(time.time()),
+        lead_insurance_type_id = existing_lead.lead_insurance_type_id,
+        lead_insurance_category_id = existing_lead.lead_insurance_category_id,
+        lead_insurance_product_id = existing_lead.lead_insurance_product_id,
+        lead_customer_id = existing_lead.lead_customer_id,
+        lead_first_name = existing_lead.lead_first_name,
+        lead_last_name = existing_lead.lead_last_name,
+        name_as_per_pan = existing_lead.name_as_per_pan,
+        mobile_number = existing_lead.mobile_number,
+        created_by_id = created_by_id,
+        parent_lead_id = parent_existing_lead.id,
+        
+        email_address =  existing_lead.email_address,
+        lead_customer_gender =  existing_lead.lead_customer_gender,
+        date_of_birth =  existing_lead.date_of_birth,
+        lead_customer_identity_no =  existing_lead.lead_customer_identity_no,
+        lead_source_type_id = existing_lead.lead_source_type_id,           
+        lead_source = existing_lead.lead_source,           
+        referral_by = existing_lead.referral_by,           
+        referral_name = existing_lead.referral_name,           
+        referral_mobile_no = existing_lead.referral_mobile_no,           
+        posp_id = existing_lead.posp_id,
+        lead_source_medium = existing_lead.lead_source_medium, 
+        state_id = existing_lead.state_id,
+        city_id = existing_lead.city_id,
+        pincode = existing_lead.pincode,
+        previous_insurer_name = existing_lead.previous_insurer_name,
+        policy_number = existing_lead.policy_number,
+        policy_type = existing_lead.policy_type,
+        policy_date = existing_lead.policy_date,
+        policy_end_date = existing_lead.policy_end_date,
+        expiry_status = existing_lead.expiry_status,
+        ncb = existing_lead.ncb,
+        previous_idv_amount = existing_lead.previous_idv_amount,
+        previous_sum_insured = existing_lead.previous_sum_insured,
+        claim_made = existing_lead.claim_made,
+        claim_amount = existing_lead.claim_amount,
+        previous_policy_source = existing_lead.previous_policy_source,
+        vehicle_type = existing_lead.vehicle_type,
+        vehicle_class = existing_lead.vehicle_class,
+        insurance_type = existing_lead.insurance_type,
+        product_category = existing_lead.product_category,
+        vehicle_reg_no = existing_lead.vehicle_reg_no,
+        vehicle_make = existing_lead.vehicle_make,
+        vehicle_model = existing_lead.vehicle_model,
+        mgf_year = existing_lead.mgf_year,
+        sum_insured = existing_lead.sum_insured,          
+    )
     
 def update_leads_insurance_info(request):
     if not request.user.is_authenticated and request.user.is_active != 1:
@@ -1497,6 +1591,7 @@ def save_leads_assignment_info(request):
     
     lead_id = request.POST.get('lead_ref_id') or None
     assigned_to = request.POST.get('assigned_to') or None
+    assigned_manager = request.POST.get('assigned_manager') or None
     branch = request.POST.get('branch') or None
     lead_status_type = request.POST.get('lead_status_type') or None
     lead_tag = request.POST.get('lead_tag') or None
@@ -1508,12 +1603,22 @@ def save_leads_assignment_info(request):
     lead_data = Leads.objects.filter(lead_id = lead_id).first()
     try:
         lead_data.assigned_to_id = assigned_to
+        lead_data.assigned_manager_id = assigned_manager
         lead_data.branch_id = clean(branch)
         lead_data.lead_status_type = clean(lead_status_type)
         lead_data.lead_tag = clean(lead_tag)
         lead_data.save()
         
         lead_ref_id = lead_data.lead_id
+        
+        message = f'Lead is allocated to {lead_data.assigned_to.full_name} in branch {lead_data.branch.branch_name}'
+        LeadActivity.objects.create(
+            lead_id = lead_data.id,
+            lead_ref_id = lead_data.lead_id,
+            message = message,
+            created_by_id = request.user.id,
+        )
+         
         messages.success(request,f"Saved Succesfully")
         return redirect('leads-previous-policy-info',lead_id=lead_ref_id)
         
@@ -1521,8 +1626,7 @@ def save_leads_assignment_info(request):
         logger.error(f"Error in save_leads_assignment_info error: {str(e)}")
         messages.error(request,'Something Went Wrong Please Try After Sometime')
         return redirect('leads-mgt')
-    
-    
+       
 def save_leads_allocation_info(request):
     if not request.user.is_authenticated and request.user.is_active != 1:
         messages.error(request,'Please Login First')
@@ -1530,6 +1634,7 @@ def save_leads_allocation_info(request):
     
     lead_id = request.POST.get('lead_ref_id') or None
     assigned_to = request.POST.get('assigned_to') or None
+    assigned_manager = request.POST.get('assigned_manager') or None
     branch = request.POST.get('branch') or None
     lead_status_type = request.POST.get('lead_status_type') or None
     lead_tag = request.POST.get('lead_tag') or None
@@ -1541,12 +1646,22 @@ def save_leads_allocation_info(request):
     lead_data = Leads.objects.filter(lead_id = lead_id).first()
     try:
         lead_data.assigned_to_id = assigned_to
+        lead_data.assigned_manager_id = assigned_manager
         lead_data.branch_id = clean(branch)
         lead_data.lead_status_type = clean(lead_status_type)
         lead_data.lead_tag = clean(lead_tag)
         lead_data.save()
         
         lead_ref_id = lead_data.lead_id
+        
+        message = f'Lead is allocated to {lead_data.assigned_to.full_name} in branch {lead_data.branch.branch_name}'
+        LeadActivity.objects.create(
+            lead_id = lead_data.id,
+            lead_ref_id = lead_ref_id,
+            message = message,
+            created_by_id = request.user.id,
+        )
+         
         messages.success(request,f"Allocated Succesfully")
         return redirect('leads-mgt')
         
@@ -1688,6 +1803,9 @@ def save_leads_dispositions(request):
         try:
             lead_disp_data = LeadDisposition.objects.filter(lead_id=lead_id).first()
             if lead_disp_data:
+                dispo_name = lead_disp_data.disp.disp_name
+                sub_disp_name = lead_disp_data.sub_disp.sub_disp_name
+                
                 lead_disp_data.disp_id = main_disposition
                 lead_disp_data.sub_disp_id = sub_disposition
                 lead_disp_data.updated_by_id = request.user.id
@@ -1696,6 +1814,8 @@ def save_leads_dispositions(request):
                 lead_disp_data.remark = remark
                 lead_disp_data.save()
                 status = "Updated"
+                message = f'Lead is Disposed by {lead_disp_data.created_by.full_name} , disposition form {dispo_name} to {lead_disp_data.disp.disp_name} and  sub disposition from {sub_disp_name} to {lead_disp_data.sub_disp.sub_disp_name} '
+                
             else:
                 lead_disp_data = LeadDisposition.objects.create(
                     lead_id = lead_id,
@@ -1706,7 +1826,9 @@ def save_leads_dispositions(request):
                     followup_time = follow_up_time,
                     remark = remark
                 )
-                status = "Updated"
+                status = "Created"
+                message = f'Lead is Disposed by {lead_disp_data.created_by.full_name} , disposition name: {lead_disp_data.disp.disp_name}, sub disposition name: {lead_disp_data.sub_disp.sub_disp_name} '
+                
                  
             logs = LeadDispositionLogs.objects.create(
                 log_lead_disp_id = lead_disp_data.id,
@@ -1719,6 +1841,13 @@ def save_leads_dispositions(request):
                 log_remark = remark
             )
             
+            LeadActivity.objects.create(
+                lead_id = lead_data.id,
+                lead_ref_id = lead_data.lead_id,
+                message = message,
+                created_by_id = request.user.id,
+            )
+        
             messages.success(request,'Saved Successfully')
             return JsonResponse({
                     'statusCode': 200,
@@ -1742,4 +1871,63 @@ def save_leads_dispositions(request):
             'status': 'failed',
             'message': 'Invalid request method'
         })
+    
+def customer_details(data):
+    mobile = data.get('mobile_number')
+
+    if not mobile:
+        return None
+    
+    customer = Customer.objects.filter(mobile_number=mobile).first()
+
+    if customer:
+        return customer.id
+
+    customer = Customer.objects.create(
+        name_as_per_pan=f"{data.get('customer_f_name', '')} {data.get('customer_l_name', '')}".strip(),
+        mobile_number=mobile
+    )
+
+    return customer.id
+
+def get_lead_activity_logs(request):
+    if request.user.is_authenticated and request.user.is_active == 1:
+        lead_id = request.POST.get('lead_id')
+        activity_logs = LeadActivity.objects.filter(lead_ref_id=lead_id).order_by('-created_at')
+
+        html = ''
+        if activity_logs.exists():
+            for activity in activity_logs:
+                html += f'''
+                    <tr>
+                        <td>
+                            <div class="d-flex">
+                                <div class="activity-circle">
+                                    {activity.created_by.full_name[0].upper() if activity.created_by and activity.created_by.full_name else 'U'}
+                                </div>
+                                <div class="ml-2">
+                                    <span class="d-block">{activity.create_date}</span>
+                                    <span class="text-muted">{activity.create_time}</span>
+                                </div>    
+                            </div>    
+                        </td>
+                        <td>
+                            <div class="d-flex flex-wrap">
+                                <span class="d-block text-primary">{activity.message}</span>
+                            </div>    
+                            <span class="text-muted d-block">
+                                Added by {activity.created_by.full_name if activity.created_by else 'Unknown'} on {activity.created_at.strftime('%d %b %Y %I:%M %p')}
+                            </span>
+                        </td>
+                    </tr>
+                '''
+        else:
+            html = '''
+                <tr>
+                    <td colspan="2" class="text-center text-muted">No data found</td>
+                </tr>
+            '''
+        return JsonResponse({'html': html})
+    else:
+        return JsonResponse({'html': 'Please Login First'})
     
