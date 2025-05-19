@@ -16,3 +16,25 @@ def get_posp(request):
         user_id__in=valid_user_ids
     ).values('user_id', 'name')
     return JsonResponse(list(partners), safe=False)
+
+def get_branch_sales_manager(request):
+    branch_id = request.POST.get('branch_id')
+    managers = Users.objects.filter(
+        role_id='5',
+        branch_id = branch_id,
+        department_id = 1,
+        is_active = True
+    ).values('id', 'first_name','last_name')
+    return JsonResponse(list(managers), safe=False)
+
+def get_sales_relation_manager(request):
+    assigned_manager = request.POST.get('assigned_manager')
+    branch_id = request.POST.get('branch_id')
+    
+    relation_managers = Users.objects.filter(
+        branch_id = branch_id,
+        senior_id = assigned_manager,
+        department_id = 1,
+        is_active = True
+    ).values('id', 'first_name','last_name')
+    return JsonResponse(list(relation_managers), safe=False)

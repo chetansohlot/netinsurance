@@ -1,18 +1,16 @@
 # from sre_parse import State
-from empPortal.model.StateCity import State
-from empPortal.model.StateCity import City
+from empPortal.model.StateCity import State,City
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from datetime import datetime
 from django.utils.timezone import now
 from django.utils.timezone import localtime
-from empPortal.model import Referral
-from empPortal.model import Partner
+from empPortal.model import Referral, Partner, InsuranceType, InsuranceCategory, InsuranceProduct
 from datetime import timedelta
 from django.utils import timezone
-from empPortal.model import InsuranceType, InsuranceCategory, InsuranceProduct
 from django.conf import settings
+from empPortal.model.customer import Customer
 
 class Roles(models.Model):
     roleGenID = models.CharField(max_length=255)
@@ -202,6 +200,7 @@ class Leads(models.Model):
     referral_by = models.CharField(max_length=25, null=True, blank=True)  
     
     assigned_to = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.SET_NULL,null=True,blank=True, related_name='leads_assigned')  
+    assigned_manager = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.SET_NULL,null=True,blank=True, related_name='leads_assigned_manager')  
     branch = models.ForeignKey(Branch, on_delete=models.SET_NULL, null=True, blank=True)  
     lead_status_type = models.IntegerField( null=True, blank=True)  
     lead_tag = models.IntegerField( null=True, blank=True)  
@@ -210,7 +209,6 @@ class Leads(models.Model):
     referral_name = models.CharField(max_length=255,null=True,blank=True)
     lead_source_medium = models.IntegerField(null=True, blank=True)
     
-    status = models.CharField(max_length=50, default='new')  # Status of the lead (new, contacted, converted, etc.)
     policy_date = models.DateField(null=True, blank=True)
     sales_manager = models.CharField(max_length=100, null=True, blank=True)
     agent_name = models.CharField(max_length=100, null=True, blank=True)
@@ -229,7 +227,6 @@ class Leads(models.Model):
     net_premium = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     gross_premium = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     risk_start_date = models.DateField(null=True, blank=True)
-    
     lead_insurance_type = models.ForeignKey(InsuranceType,on_delete=models.SET_NULL,null=True,blank=True)
     lead_insurance_category = models.ForeignKey(InsuranceCategory, on_delete=models.SET_NULL, null=True, blank=True)
     lead_insurance_product = models.ForeignKey(InsuranceProduct, on_delete=models.SET_NULL, null=True, blank=True)
@@ -298,6 +295,15 @@ class Leads(models.Model):
         related_name='leads_created'
     )
     updated_at = models.DateTimeField(auto_now=True)  
+    lead_customer = models.ForeignKey(Customer,on_delete=models.SET_NULL,null=True,blank=True,related_name='fk_lead_customer_id')
+    parent_lead = models.ForeignKey(
+        'self',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='child_lead'
+    )
+    status = models.BooleanField(default=True)
     class Meta:
         db_table = 'leads'  
 
