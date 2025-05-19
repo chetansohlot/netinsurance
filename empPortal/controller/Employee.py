@@ -1041,8 +1041,10 @@ def update_allocation(request, employee_id=None):
                 'id', 'first_name', 'last_name', 'senior_id'
             ).first()
 
+    employee_instance = Employees.objects.filter(user_id=employee.id).first()
     return render(request, 'employee/create-allocation.html', {
         'employee': employee,
+        'employee_data': employee_instance,
         'departments': departments,
         'branches': branches,
         'roles': roles,
