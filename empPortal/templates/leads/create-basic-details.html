@@ -102,7 +102,7 @@
                           </div>
                           <div class="form-group col-md-4">
                             <label class="form-lbl" for="identity_no">PAN/Aadhaar (Optional)</label>
-                            <input type="text" class="form-field" maxlength="12" name="identity_no" id="identity_no" value="{{lead_data.lead_customer_identity_no|default:'' }}" placeholder="Enter Indentity No.">
+                            <input type="text" class="form-field" maxlength="12" name="identity_no" id="identity_no" value="{{lead_data.lead_customer_identity_no|default:customer_data.identity_no|default:'' }}" placeholder="Enter Indentity No.">
                           </div>
                         
                         <script>
