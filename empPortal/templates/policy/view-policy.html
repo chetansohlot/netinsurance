@@ -93,7 +93,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Insurance Company</p>
                                   <p class="userdetail-highligt">
-                                      Reliance General Insurance Company Limited
+                                      {{policy_info.insurance_company|default:'None'}}
                                   </p>
                               </div>  
                           </div>
@@ -101,7 +101,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Branch Name</p>
                                   <p class="userdetail-highligt">
-                                      Delhi
+                                      {{policy_info.branch.branch_name|default:'None'}}
                                   </p>
                               </div>  
                           </div>
@@ -109,7 +109,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Policy Type</p>
                                   <p class="userdetail-highligt">
-                                      Package Policy
+                                     {{policy_info.policy_type}}
                                   </p>
                               </div>  
                           </div>
@@ -117,7 +117,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Fuel Type</p>
                                   <p class="userdetail-highligt">
-                                      Petrol
+                                      {{policy_info.fuel_type}}
                                   </p>
                               </div>  
                           </div>
@@ -125,7 +125,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Be-Fuel Amount</p>
                                   <p class="userdetail-highligt">
-                                      N/A
+                                      {{ policy_info.be_fuel_amount }}
                                   </p>
                               </div>  
                           </div>
@@ -133,7 +133,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Sum Insured</p>
                                   <p class="userdetail-highligt">
-                                      5540475
+                                      {{ policy_info.sum_insured }}
                                   </p>
                               </div>  
                           </div>
@@ -141,7 +141,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">OD Premium</p>
                                   <p class="userdetail-highligt">
-                                      0
+                                      {{ policy_info.od_premium }}
                                   </p>
                               </div>  
                           </div>
@@ -149,7 +149,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">TP Premium</p>
                                   <p class="userdetail-highligt">
-                                      7897
+                                      {{ policy_info.tp_premium }}
                                   </p>
                               </div>  
                           </div>
@@ -157,7 +157,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">PA Count</p>
                                   <p class="userdetail-highligt">
-                                      0
+                                      {{ policy_info.pa_count }}
                                   </p>
                               </div>  
                           </div>
@@ -165,7 +165,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">PA Amount</p>
                                   <p class="userdetail-highligt">
-                                      0
+                                     {{ policy_info.pa_amount }}
                                   </p>
                               </div>  
                           </div>
@@ -173,7 +173,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Driver Count</p>
                                   <p class="userdetail-highligt">
-                                      0
+                                      {{ policy_info.driver_count }}
                                   </p>
                               </div>  
                           </div>
@@ -181,7 +181,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Driver Amount</p>
                                   <p class="userdetail-highligt">
-                                      0
+                                      {{ policy_info.driver_amount }}
                                   </p>
                               </div>  
                           </div>
@@ -189,7 +189,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Gross Premium</p>
                                   <p class="userdetail-highligt">
-                                      0
+                                      {{ policy_info.gross_premium }}
                                   </p>
                               </div>  
                           </div>
@@ -197,7 +197,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Net Premium</p>
                                   <p class="userdetail-highligt">
-                                      7897
+                                      {{ policy_info.net_premium }}
                                   </p>
                               </div>  
                           </div>
@@ -205,7 +205,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">GST</p>
                                   <p class="userdetail-highligt">
-                                      0
+                                      {{ policy_info.gst_premium }}
                                   </p>
                               </div>  
                           </div>
@@ -335,7 +335,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Re Other Endorsement</p>
                                   <a href="#" class="userdetail-highligt">
-                                      View
+                                      {{ policy_doc.re_other_endorsement|default:'None' }}
                                   </a>
                               </div>  
                           </div>
@@ -343,7 +343,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Previous Policy</p>
                                   <a href="#" class="userdetail-highligt">
-                                      View
+                                      {{ policy_upload_docs.previous_policy|default:'None' }}
                                   </a>
                               </div>  
                           </div>
@@ -351,7 +351,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">KYC Document</p>
                                   <a href="#" class="userdetail-highligt">
-                                      View
+                                      {{ policy_upload_docs.kyc_document|default:'None' }}
                                   </a>
                               </div>  
                           </div>
@@ -359,7 +359,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Proposal Document</p>
                                   <a href="#" class="userdetail-highligt">
-                                      View
+                                     {{ policy_upload_docs.proposal_document|default:'None' }}
                                   </a>
                               </div>  
                           </div>
@@ -376,7 +376,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Referral Name</p>
                                   <p class="userdetail-highligt">
-                                      Inderjeet Singh - REF256
+                                      {{policy_agent_details.referral.name}}
                                   </p>
                               </div>  
                           </div>
@@ -384,7 +384,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">BQP</p>
                                   <p class="userdetail-highligt">
-                                      Sunil Mehra
+                                      {{policy_info.bqp.bqp_name}}
                                   </p>
                               </div>  
                           </div>
@@ -392,7 +392,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">POS Name</p>
                                   <p class="userdetail-highligt">
-                                      Jaydev Sharma
+                                      {{pos_user.user_name|default:'None'}}   <!--user name is pos name-->
                                   </p>
                               </div>  
                           </div>
@@ -400,7 +400,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Agent Payment Mode</p>
                                   <p class="userdetail-highligt">
-                                      Online
+                                       {{policy_agent_details.agent_payment_mod}}
                                   </p>
                               </div>  
                           </div>
@@ -408,7 +408,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Transaction ID / Check Number</p>
                                   <p class="userdetail-highligt">
-                                      0
+                                        {{policy_agent_details.transaction_id}}
                                   </p>
                               </div>  
                           </div>
@@ -416,7 +416,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Agent Payment Date</p>
                                   <p class="userdetail-highligt">
-                                      16-4-2025
+                                      {{policy_agent_details.agent_payment_date}}  
                                   </p>
                               </div>  
                           </div>
@@ -424,7 +424,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Agent Amount</p>
                                   <p class="userdetail-highligt">
-                                      87495
+                                      {{policy_agent_details.agent_amount}}
                                   </p>
                               </div>  
                           </div>
@@ -432,7 +432,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Agent Remarks</p>
                                   <p class="userdetail-highligt">
-                                      N/A
+                                     {{policy_agent_details.agent_remarks|default:'None'}}
                                   </p>
                               </div>  
                           </div>
@@ -443,7 +443,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Agent OD Comm (in %)</p>
                                   <p class="userdetail-highligt">
-                                      20.0
+                                      {{policy_agent_details.agent_od_comm}}
                                   </p>
                               </div>  
                           </div>
@@ -451,7 +451,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Agent OD Comm Amount</p>
                                   <p class="userdetail-highligt">
-                                      0.0
+                                       {{policy_agent_details.agent_od_amount}}
                                   </p>
                               </div>  
                           </div>
@@ -459,7 +459,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Agent TP Comm (in %)</p>
                                   <p class="userdetail-highligt">
-                                      2.0
+                                       {{policy_agent_details.agent_tp_comm}}
                                   </p>
                               </div>  
                           </div>
@@ -467,7 +467,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Agent TP Comm Amount</p>
                                   <p class="userdetail-highligt">
-                                      157.94
+                                       {{policy_agent_details.agent_tp_amount}}
                                   </p>
                               </div>  
                           </div>
@@ -475,7 +475,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Agent Net Comm (in %)</p>
                                   <p class="userdetail-highligt">
-                                      30.0
+                                       {{policy_agent_details.agent_net_comm}}
                                   </p>
                               </div>  
                           </div>
@@ -483,7 +483,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Agent Net Comm Amount</p>
                                   <p class="userdetail-highligt">
-                                      2369.10
+                                       {{policy_agent_details.agent_net_amount}}
                                   </p>
                               </div>  
                           </div>
@@ -491,7 +491,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Agent Incentive Amount</p>
                                   <p class="userdetail-highligt">
-                                      0.0
+                                       {{policy_agent_details.agent_incentive_amount}}
                                   </p>
                               </div>  
                           </div>
@@ -499,7 +499,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Agent Total Comm Amount</p>
                                   <p class="userdetail-highligt">
-                                      2527.04
+                                       {{policy_agent_details.agent_total_comm_amount}}
                                   </p>
                               </div>  
                           </div>
@@ -507,7 +507,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Agent TDS (in %)</p>
                                   <p class="userdetail-highligt">
-                                      20
+                                       {{policy_agent_details.agent_tds}}
                                   </p>
                               </div>  
                           </div>
@@ -515,7 +515,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Agent TDS Amount</p>
                                   <p class="userdetail-highligt">
-                                      20.0
+                                       {{policy_agent_details.agent_tds_amount}}
                                   </p>
                               </div>  
                           </div>
@@ -523,7 +523,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Agent Net Payable Amount</p>
                                   <p class="userdetail-highligt">
-                                      2527.04
+                                       {{policy_agent_details.agent_net_payable_amount}}
                                   </p>
                               </div>  
                           </div>
@@ -539,7 +539,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Insurer Payment Mode</p>
                                   <p class="userdetail-highligt">
-                                      Online
+                                      {{policy_insurer_details.insurer_payment_mode}}
                                   </p>
                               </div>  
                           </div>
@@ -547,7 +547,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Insurer Payment Date</p>
                                   <p class="userdetail-highligt">
-                                      16-4-2025
+                                      {{policy_insurer_details.insurer_payment_date}}
                                   </p>
                               </div>  
                           </div>
@@ -555,7 +555,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Insurer Amount</p>
                                   <p class="userdetail-highligt">
-                                      87495
+                                      {{policy_insurer_details.insurer_amount}}
                                   </p>
                               </div>  
                           </div>
@@ -563,7 +563,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Insurer Remarks</p>
                                   <p class="userdetail-highligt">
-                                      N/A
+                                      {{policy_insurer_details.insurer_remarks}}
                                   </p>
                               </div>  
                           </div>
@@ -571,7 +571,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Insurer OD Comm (in %)</p>
                                   <p class="userdetail-highligt">
-                                      20.0
+                                      {{policy_insurer_details.insurer_od_comm}}
                                   </p>
                               </div>  
                           </div>
@@ -579,7 +579,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Insurer OD Amount</p>
                                   <p class="userdetail-highligt">
-                                      0.00
+                                      {{policy_insurer_details.insurer_od_amount}}
                                   </p>
                               </div>  
                           </div>
@@ -587,7 +587,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Insurer TP Comm (in %)</p>
                                   <p class="userdetail-highligt">
-                                      2.0
+                                      {{policy_insurer_details.insurer_tp_comm}}
                                   </p>
                               </div>  
                           </div>
@@ -595,7 +595,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Insurer TP Amount</p>
                                   <p class="userdetail-highligt">
-                                      157.94
+                                      {{policy_insurer_details.insurer_tp_amount}}
                                   </p>
                               </div>  
                           </div>
@@ -603,7 +603,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Insurer Net Comm (in %)</p>
                                   <p class="userdetail-highligt">
-                                      30.0
+                                      {{policy_insurer_details.insurer_net_comm}}
                                   </p>
                               </div>  
                           </div>
@@ -611,7 +611,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Insurer Net Amount</p>
                                   <p class="userdetail-highligt">
-                                      2369.10
+                                      {{policy_insurer_details.insurer_net_amount}}
                                   </p>
                               </div>  
                           </div>
@@ -619,7 +619,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Insurer Incentive Amount</p>
                                   <p class="userdetail-highligt">
-                                      N/A
+                                     {{policy_insurer_details.insurer_incentive_amount}}
                                   </p>
                               </div>  
                           </div>
@@ -627,7 +627,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Total Commission Amount</p>
                                   <p class="userdetail-highligt">
-                                      2527.04
+                                      {{policy_insurer_details.insurer_total_commission}}
                                   </p>
                               </div>  
                           </div>
@@ -635,7 +635,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Insurer TDS (in %)</p>
                                   <p class="userdetail-highligt">
-                                      20
+                                      {{policy_insurer_details.insurer_tds}}
                                   </p>
                               </div>  
                           </div>
@@ -643,7 +643,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">TDS Amount</p>
                                   <p class="userdetail-highligt">
-                                      N/A
+                                      {{policy_insurer_details.insurer_tds_amount}}
                                   </p>
                               </div>  
                           </div>
@@ -651,7 +651,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Net Payable Amount</p>
                                   <p class="userdetail-highligt">
-                                      2527.04
+                                      {{policy_insurer_details.insurer_net_payable_amount}} 
                                   </p>
                               </div>  
                           </div>
@@ -663,7 +663,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Total Commission</p>
                                   <p class="userdetail-highligt">
-                                      2527.04
+                                     {{policy_insurer_details.insurer_total_commission}} 
                                   </p>
                               </div>  
                           </div>
@@ -671,7 +671,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Received Amount</p>
                                   <p class="userdetail-highligt">
-                                      2527.04
+                                      {{policy_insurer_details.insurer_receive_amount}} 
                                   </p>
                               </div>  
                           </div>
@@ -679,7 +679,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Balance Amount</p>
                                   <p class="userdetail-highligt">
-                                      0.00
+                                      {{policy_insurer_details.insurer_balance_amount}} 
                                   </p>
                               </div>  
                           </div>
@@ -695,7 +695,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Franchise OD Comm</p>
                                   <p class="userdetail-highligt">
-                                      N/A
+                                     {{policy_franchise_details.franchise_od_comm}}
                                   </p>
                               </div>  
                           </div>
@@ -703,7 +703,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Franchise OD Amount</p>
                                   <p class="userdetail-highligt">
-                                    N/A
+                                    {{policy_franchise_details.franchise_od_amount}}
                                   </p>
                               </div>  
                           </div>
@@ -711,7 +711,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Franchise TP Comm</p>
                                   <p class="userdetail-highligt">
-                                      N/A
+                                      {{policy_franchise_details.franchise_tp_comm}}
                                   </p>
                               </div>  
                           </div>
@@ -719,7 +719,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Franchise TP Amount</p>
                                   <p class="userdetail-highligt">
-                                      N/A
+                                      {{policy_franchise_details.franchise_tp_amount}}
                                   </p>
                               </div>  
                           </div>
@@ -727,7 +727,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Franchise Net Comm</p>
                                   <p class="userdetail-highligt">
-                                      N/A
+                                     {{policy_franchise_details.franchise_net_comm}}
                                   </p>
                               </div>  
                           </div>
@@ -735,7 +735,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Franchise Net Amount</p>
                                   <p class="userdetail-highligt">
-                                      N/A
+                                     {{policy_franchise_details.franchise_net_amount}}
                                   </p>
                               </div>  
                           </div>
@@ -743,7 +743,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Franchise Incentive Amount</p>
                                   <p class="userdetail-highligt">
-                                      N/A
+                                      {{policy_franchise_details.franchise_incentive_amount}}
                                   </p>
                               </div>  
                           </div>
@@ -751,7 +751,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Total Comm Amount</p>
                                   <p class="userdetail-highligt">
-                                      N/A
+                                      {{policy_franchise_details.franchise_total_comm_amount}}
                                   </p>
                               </div>  
                           </div>
@@ -759,7 +759,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Franchise TDS</p>
                                   <p class="userdetail-highligt">
-                                      N/A
+                                      {{policy_franchise_details.franchise_tp_comm}}
                                   </p>
                               </div>  
                           </div>
@@ -767,7 +767,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">TDS Amount</p>
                                   <p class="userdetail-highligt">
-                                      N/A
+                                      {{policy_franchise_details.franchise_tds_amount}}
                                   </p>
                               </div>  
                           </div>
@@ -775,7 +775,7 @@ View Policy
                               <div class="userdetail-group">
                                   <p class="userdetail-lbl">Net Payable Amount</p>
                                   <p class="userdetail-highligt">
-                                      N/A
+                                     {{policy_franchise_details.franchise_net_payable_amount}}
                                   </p>
                               </div>  
                           </div>

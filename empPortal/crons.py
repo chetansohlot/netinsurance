@@ -594,6 +594,7 @@ class CreateNewPolicy(CronJobBase):
                                     else:
                                         try:
                                             rm_id = bulk_policy_log.rm_id
+                                            insurance_company_id = bulk_policy_log.insurance_company_id
                                             rm_name = bulk_policy_log.rm_name
                                             commision_rate = commisionRateByMemberId(rm_id)
                                             insurer_rate = insurercommisionRateByMemberId(1)
@@ -652,6 +653,7 @@ class CreateNewPolicy(CronJobBase):
                                                 filename=file.filename,
                                                 filepath=file.file_url,
                                                 rm_id=rm_id,
+                                                insurance_company_id=insurance_company_id,
                                                 rm_name=rm_name,
                                                 od_percent=od_percentage,
                                                 tp_percent=tp_percentage,

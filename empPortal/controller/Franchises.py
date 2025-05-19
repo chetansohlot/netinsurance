@@ -183,13 +183,21 @@ def franchise_toggle_status(request, franchise_id):
 
 
 
-def franchise_basic_info(request):
+def franchise_basic_info(request,franchise_id=None):
     if not request.user.is_authenticated and request.user.is_active !=1 :
         messages.error(request,'Please Login First')
         return redirect('login')
     
-    if request.method == 'POST':
+    franchise= None
+    if franchise_id:
+        try:
+            franchise= Franchise.objects.get(franchise_id=franchise_id)
+        except Franchise.DoesNotExist:
+            messages.error(request,"Invalid Franchise ID")
+            return redirect('franchise-management-create')
 
+
+    if request.method == 'POST':
         franchise_name =request.POST.get('franchise_name')
         franchise_type =request.POST.get('franchise_type')
         channel_type =request.POST.get('channel_type')
@@ -199,45 +207,65 @@ def franchise_basic_info(request):
         franchise_id =request.POST.get('franchise_id') or None
         franchise_code =request.POST.get('franchise_code') or None
 
-        if not franchise_id or not franchise_code:
-            last_franchise = Franchise.objects.order_by('-id').first()
-            next_id = 1 if not last_franchise else last_franchise.id + 1
-            franchise_id = f"FID{next_id:05d}"
-            franchise_code = f"FC{next_id:05d}"
+        # if not franchise_id or not franchise_code:
+        #     last_franchise = Franchise.objects.order_by('-id').first()
+        #     next_id = 1 if not last_franchise else last_franchise.id + 1
+        #     franchise_id = f"FID{next_id:05d}"
+        #     franchise_code = f"FC{next_id:05d}"
 
         # # Basic validation
         # if not franchise_name or not franchise_type or not channel_type or not status:
         #     messages.error(request, 'Please fill in all required fields')
-        #     return redirect('add-franchise') 
+        #     return redirect('franchise-management-create') 
 
-        # Save to DB
-        franchise = Franchise.objects.create(
-            franchise_id=franchise_id,
-            franchise_code=franchise_code,
-            franchise_name=franchise_name,
-            franchise_type=franchise_type,
-            channel_type=channel_type,
-            franchise_status=franchise_status,
-            parent_broker_code=parent_broker_code,
-            onboarding_date=onboarding_date if onboarding_date else timezone.now().date()
-        )  
-        messages.success(request, 'Franchise added successfully')
-        return redirect('franchise-management-contact-info', franchise_id=franchise_id) 
+        if franchise:
+            franchise.franchise_name = franchise_name
+            franchise.franchise_type = franchise_type
+            franchise.channel_type = channel_type
+            franchise.franchise_status = franchise_status
+            franchise.parent_broker_code = parent_broker_code
+            franchise.onboarding_date = onboarding_date or timezone.now().date()
+            franchise.save()
+            messages.success(request,'Franchise updated sucessfully')
+        else:
+            last_franchise = Franchise.objects.order_by('-id').first()
+            next_id = 1 if not last_franchise else last_franchise.id + 1
+            franchise_id = f"FID{next_id:05d}"
+            franchise_code = f"FC{next_id:05d}"
+   
+             # Save to DB
+            franchise = Franchise.objects.create(
+                franchise_id=franchise_id,
+                franchise_code=franchise_code,
+                franchise_name=franchise_name,
+                franchise_type=franchise_type,
+                channel_type=channel_type,
+                franchise_status=franchise_status,
+                parent_broker_code=parent_broker_code,
+                onboarding_date=onboarding_date if onboarding_date else timezone.now().date()
+            )  
+            messages.success(request, 'Franchise added successfully')
+
+        return redirect('franchise-management-contact-info', franchise_id=franchise.franchise_id) 
     
-    return render(request, 'franchises/create-basic-detail.html')
+    return render(request, 'franchises/create-basic-detail.html',{ 
+        'franchise':franchise,
+        'franchise_id':franchise_id
+    })
 
 def franchise_contact_info(request,franchise_id=None):
     if not request.user.is_authenticated and request.user.is_active !=1 :
         messages.error(request,'Please Login First')
         return redirect('login')
     
-    try:
-        franchise= Franchise.objects.get(franchise_id=franchise_id)
-    except Franchise.DoesNotExist:
-        messages.error(request,"Invalid Franchise ID")
-        return ('franchise-basic-info')
+    franchise = None
+    if franchise_id:
+        try:
+            franchise = Franchise.objects.get(franchise_id=franchise_id)
+        except Franchise.DoesNotExist:
+            messages.error(request, "Invalid Franchise ID")
+            return redirect('franchise-management-create')
     
-    franchise_code = franchise.franchise_code 
 
     if request.method == 'POST':
         contact_person = request.POST.get('contact_person')
@@ -247,20 +275,23 @@ def franchise_contact_info(request,franchise_id=None):
         designation = request.POST.get('designation')
 
         # Save contact info (use your actual model name)
-        # Update existing franchise object
-        franchise.contact_person_id = contact_person
-        franchise.mobile_number = mobile_number
-        franchise.franchise_email =franchise_email
-        franchise.alternate_number = alternate_number
-        franchise.designation = designation
-        franchise.save()
-
-        messages.success(request, 'Contact Information Saved')
+        if franchise:
+            franchise.contact_person = contact_person
+            franchise.mobile_number = mobile_number
+            franchise.franchise_email = franchise_email
+            franchise.alternate_number = alternate_number
+            franchise.designation = designation
+            franchise.save()
+            messages.success(request, 'Contact Information updated successfully')
+        else:
+            messages.error(request, "Franchise not found to update contact info")
+            return redirect('franchise-management-create')
+        
         return redirect('franchise-management-address-details', franchise_id=franchise_id)  # Step 3
 
     return render(request, 'franchises/create-contact-info.html', {
         'franchise_id': franchise_id,
-        'franchise_code': franchise_code,
+        'franchise_code': franchise.franchise_code if franchise else '',
         'franchise': franchise,
     })
         
@@ -270,11 +301,13 @@ def franchise_address_details(request, franchise_id=None):
         messages.error(request, 'Please Login First')
         return redirect('login')
     
-    try:
-        franchise = Franchise.objects.get(franchise_id=franchise_id)
-    except Franchise.DoesNotExist:
-        messages.error(request, "Invalid Franchise ID")
-        return redirect('franchise-basic-info')
+    franchise = None
+    if franchise_id:
+        try:
+            franchise = Franchise.objects.get(franchise_id=franchise_id)
+        except Franchise.DoesNotExist:
+            messages.error(request, "Invalid Franchise ID")
+            return redirect('franchise-management-create')
 
     if request.method == 'POST':
         # get data from form
@@ -286,9 +319,21 @@ def franchise_address_details(request, franchise_id=None):
         franchise.country = request.POST.get('country')
         franchise.office_contact_number = request.POST.get('office_contact_number')
 
-        franchise.save()
-        messages.success(request, 'Address Details Saved')
-        return redirect('franchise-management-regulatory-compliance', franchise_id=franchise_id)  # Next step URL
+        if franchise:
+            franchise.address_line_1 = request.POST.get('address_line_1')
+            franchise.address_line_2 = request.POST.get('address_line_2')
+            franchise.city = request.POST.get('city')
+            franchise.state = request.POST.get('state')
+            franchise.pincode = request.POST.get('pincode')
+            franchise.country = request.POST.get('country')
+            franchise.office_contact_number = request.POST.get('office_contact_number')
+
+            franchise.save()
+            messages.success(request, 'Address Details Saved')
+            return redirect('franchise-management-regulatory-compliance', franchise_id=franchise_id)
+        else:
+            messages.error(request, "Franchise not found to update address details")
+            return redirect('franchise-management-create')
 
     return render(request, 'franchises/create-address-detail.html', {
         'franchise': franchise,
@@ -301,20 +346,29 @@ def franchise_regulatory_compliance(request, franchise_id=None):
         return redirect('login')
 
     # franchise = get_object_or_404(Franchise, franchise_id=franchise_id)
-    try:
-        franchise = Franchise.objects.get(franchise_id=franchise_id)
-    except Franchise.DoesNotExist:
-        messages.error(request, "Invalid Franchise ID")
-        return redirect('franchise-basic-info')
+    franchise = None
+    if franchise_id:
+        try:
+            franchise = Franchise.objects.get(franchise_id=franchise_id)
+        except Franchise.DoesNotExist:
+            messages.error(request, "Invalid Franchise ID")
+            return redirect('franchise-management-create')
 
     if request.method == 'POST':
         franchise.pan_number = request.POST.get('pan_number')
         franchise.gst_number = request.POST.get('gst_number')
         franchise.aadhar_number = request.POST.get('aadhar_number')
-        
-        franchise.save()
-        messages.success(request, 'Regulatory & Compliance Details Saved')
-        return redirect('franchise-management-banking-details', franchise_id=franchise_id)
+
+        if franchise:
+            franchise.pan_number = request.POST.get('pan_number')
+            franchise.gst_number = request.POST.get('gst_number')
+            franchise.aadhar_number = request.POST.get('aadhar_number')
+            franchise.save()
+            messages.success(request, 'Regulatory & Compliance Details Saved')
+            return redirect('franchise-management-banking-details', franchise_id=franchise_id)
+        else:
+            messages.error(request, "Franchise not found to update regulatory compliance details")
+            return redirect('franchise-management-create')
 
     return render(request, 'franchises/create-regulatory-compliance.html', {
         'franchise': franchise,
@@ -325,8 +379,14 @@ def franchise_banking_details(request, franchise_id=None):
     if not request.user.is_authenticated or request.user.is_active != 1:
         messages.error(request, 'Please Login First')
         return redirect('login')
-
-    franchise = get_object_or_404(Franchise, franchise_id=franchise_id)
+    
+    franchise = None
+    if franchise_id:
+        try:
+            franchise = Franchise.objects.get(franchise_id=franchise_id)
+        except Franchise.DoesNotExist:
+            messages.error(request, "Invalid Franchise ID")
+            return redirect('franchise-management-create')
 
     if request.method == 'POST':
         franchise.account_holder_name = request.POST.get('account_holder_name')
@@ -335,11 +395,21 @@ def franchise_banking_details(request, franchise_id=None):
         franchise.ifsc_code           = request.POST.get('ifsc_code')
         franchise.upi_id              = request.POST.get('upi_id')
         franchise.payment_mode        = request.POST.get('payment_mode')
-        franchise.save()
 
-        messages.success(request, 'Banking & Payout Details Saved')
-        # redirect to wherever your flow goes next
-        return redirect('franchise-management')
+
+        if franchise:
+            franchise.account_holder_name = request.POST.get('account_holder_name')
+            franchise.bank_name = request.POST.get('bank_name')
+            franchise.account_number = request.POST.get('account_number')
+            franchise.ifsc_code = request.POST.get('ifsc_code')
+            franchise.upi_id = request.POST.get('upi_id')
+            franchise.payment_mode = request.POST.get('payment_mode')
+            franchise.save()
+            messages.success(request, 'Banking & Payout Details Saved')
+            return redirect('franchise-management')
+        else:
+            messages.error(request, "Franchise not found to update banking details")
+            return redirect('franchise-management-create')
 
     return render(request, 'franchises/create-banking-detail.html', {
         'franchise': franchise,

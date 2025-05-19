@@ -23,8 +23,8 @@ Policy Management
               <div class="col-sm-12 col-md-6">
                 <h2 class="admin-title m-0 pt-2 text-dark">Add Bulk Policy </h2>
                 <ul class="breadcrump">
-                  <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
-                  <li> <a href="#">Post Policies Mgt</a> <i class="fas fa-chevron-right"></i></li>
+                  <li> <a href="{% url 'dashboard' %}">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
+                  <li> <a href="{% url 'policy-data' %}">Post Policies Mgt</a> <i class="fas fa-chevron-right"></i></li>
                   <li>Bulk Policy Mgt</li>
                 </ul>
               </div>
@@ -104,6 +104,24 @@ Policy Management
                                 <span class="error rm_id_err"></span>
                                 {% if form.rm_id.errors %}
                                     <span class="text-danger">{{ form.rm_id.errors.0 }}</span>
+                                {% endif %}
+                            </div>
+                          </div>
+                          
+                          <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="form-lbl" for="rm_name">Insurance Company</label>
+                                <select name="insurance_company" id="insurance_company" class="form-field">
+                                  <option value="">Select Insurance Company</option>
+                                  {% for insurer in insurers %}
+                                      <option value="{{ insurer.id }}" {% if insurer.id == request.insurer.id %}selected{% endif %}>
+                                          {{ insurer.insurance_company }}
+                                      </option>
+                                  {% endfor %}
+                                </select>
+                                <span class="error insurance_company_err"></span>
+                                {% if form.insurance_company.errors %}
+                                    <span class="text-danger">{{ form.insurance_company.errors.0 }}</span>
                                 {% endif %}
                             </div>
                           </div>

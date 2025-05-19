@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.template import loader
 from ..models import Commission,Users, PolicyUploadDoc,Branch,PolicyInfo,PolicyDocument, DocumentUpload, FranchisePayment, InsurerPaymentDetails, PolicyVehicleInfo, AgentPaymentDetails, UploadedExcel, UploadedZip
 from ..models import BulkPolicyLog,ExtractedFile, BqpMaster, SingleUploadFile
+from ..model import Insurance
 from empPortal.model import Referral
 from datetime import datetime, timedelta
 from django.db.models import OuterRef, Subquery, Count
@@ -198,20 +199,45 @@ def viewPolicy(request,id):
         policy_doc=get_object_or_404(PolicyDocument,id=id)
         policy_number=policy_doc.policy_number
 
-        policy_info =PolicyInfo.objects.filter(policy_id=id, policy_number=policy_number).last()
+        policy_info =PolicyInfo.objects.filter(policy_id=policy_doc, policy_number=policy_number).select_related('bqp','branch').order_by('-id').first()
+
+         # Get POS user (if pos_name stores user ID)
+        pos_user = None
+        if policy_info and policy_info.pos_name:
+            try:
+                pos_user = Users.objects.get(id=policy_info.pos_name)
+            except Users.DoesNotExist:
+                pos_user = None
 
         # policy_vechicle details #
         policy_vehicle =PolicyVehicleInfo.objects.filter(policy_id=id, policy_number=policy_number).first()
 
         #policy agents details #
-        policy_agent_details =AgentPaymentDetails.objects.filter(policy_id=id, policy_number=policy_number).first()
+        # policy_agent_details =AgentPaymentDetails.objects.filter(policy_id=id).select_related('referral').first()
+        # print(policy_agent_details)
+
+        # Agent payment info
+        policy_agent_details = AgentPaymentDetails.objects.filter(policy=policy_doc).select_related('referral', 'policy').first()
+        
+        #policy_upload docs #
+        policy_upload_docs=PolicyUploadDoc.objects.filter(policy_id=id).first()
+
+        # Insurer & Franchise payments
+        policy_insurer_details=InsurerPaymentDetails.objects.filter(policy_id=id).first()
+        policy_franchise_details=FranchisePayment.objects.filter(policy_id=id).first()
+
 
 
         context={
             'policy_doc':policy_doc,
             'policy_info' : policy_info,
-            'policy_vehicle' :policy_vehicle,
-             'policy_agent_details ' : policy_agent_details,
+            'policy_vehicle':policy_vehicle,
+            'policy_agent_details':policy_agent_details,
+            'policy_doc': policy_doc,
+            'policy_upload_docs' :policy_upload_docs,
+            'policy_insurer_details':policy_insurer_details,
+            'policy_franchise_details':policy_franchise_details, 
+            'pos_user':pos_user,
         }
         return render(request, 'policy/view-policy.html',context)
     
@@ -643,7 +669,13 @@ def bulkPolicyMgt(request):
         return redirect('login')
     rms = Users.objects.all()
     product_types = policy_product()
-    return render(request,'policy/bulk-policy-mgt.html',{'users':rms,'product_types':product_types})
+    insurers = Insurance.objects.all().order_by('-created_at')
+
+    return render(request,'policy/bulk-policy-mgt.html',{
+        'insurers':insurers,
+        'users':rms,
+        'product_types':product_types
+    })
 
 def bulkBrowsePolicy(request):
     if request.user.is_authenticated:
@@ -654,6 +686,7 @@ def bulkBrowsePolicy(request):
                 zip_file = None
             camp_name = request.POST.get("camp_name")
             rm_id = request.POST.get("rm_id")
+            insurance_company = request.POST.get("insurance_company")
             product_type = request.POST.get("product_type")
             # Validate ZIP file format
             if not zip_file or not zip_file.name.lower().endswith(".zip"):
@@ -700,6 +733,7 @@ def bulkBrowsePolicy(request):
                 file=ContentFile(zip_bytes.getvalue(), name=zip_file.name),
                 camp_name=camp_name,
                 rm_id=rm_id,
+                insurance_company_id=insurance_company,
                 rm_name=rm_name,
                 created_by=request.user,
                 count_total_files=total_files,

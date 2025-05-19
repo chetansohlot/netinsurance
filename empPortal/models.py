@@ -374,6 +374,7 @@ class PolicyDocument(models.Model):
     sum_insured = models.CharField(max_length=255)
     rm_name = models.CharField(max_length=255)
     rm_id = models.IntegerField()
+    insurance_company_id = models.IntegerField(null=True)
     extracted_text = models.JSONField()
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.IntegerField()
@@ -1286,6 +1287,7 @@ class BulkPolicyLog(models.Model):
     status = models.SmallIntegerField(default=0)
     created_at = models.DateTimeField(default=timezone.now)
     rm_id = models.IntegerField(null=True)
+    insurance_company_id = models.IntegerField(null=True)
     product_type = models.IntegerField(null=True)
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
