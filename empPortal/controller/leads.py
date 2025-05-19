@@ -1201,7 +1201,8 @@ def basic_info(request,lead_id):
         messages.error(request,'Sorry Lead Data is missing')
         return redirect('leads-mgt')
     
-    return render(request, "leads/create-basic-details.html", {'lead_data': lead_data})
+    customer_data = Customer.objects.filter(id=lead_data.lead_customer_id).last()
+    return render(request, "leads/create-basic-details.html", {'lead_data': lead_data,'customer_data':customer_data})
     
 def lead_source(request,lead_id):
     if not request.user.is_authenticated and request.user.is_active!=1:
@@ -1500,6 +1501,15 @@ def save_leads_basic_info(request):
     
     lead_data = Leads.objects.filter(lead_id = lead_id).first()
     try:
+        lead_customer_id = lead_data.lead_customer_id
+        if lead_customer_id:
+            customer_data = Customer.objects.filter(id = lead_customer_id).last()
+            customer_data.email_address = clean(email_address)
+            customer_data.date_of_birth = clean(date_of_birth)
+            customer_data.gender = clean(gender)
+            customer_data.identity_no = clean(identity_no)
+            customer_data.save()
+        
         lead_data.name_as_per_pan = clean(customer_name)
         lead_data.email_address = clean(email_address)
         lead_data.lead_customer_gender = clean(gender)
