@@ -27,8 +27,8 @@ Insurance Company- {% if insurance %}Edit Insurance Company{% else %}Create Insu
                             </a>
                         </div>
                         <ul class="breadcrump">
-                            <li><a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
-                            <li><a href="#">Insurance</a> <i class="fas fa-chevron-right"></i></li>
+                            <li><a href="{% url 'dashboard' %}">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
+                            <li><a href="{% url 'insurance_index' %}">Insurance</a> <i class="fas fa-chevron-right"></i></li>
                             <li>{% if insurance %}Edit Insurance Company{% else %}Create Insurance Company{% endif %}</li>
                         </ul>
                     </div>
