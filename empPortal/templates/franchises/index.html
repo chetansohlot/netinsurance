@@ -161,7 +161,7 @@ Franchise
                                 </div>
                               </div>
                           <!-- Franchise Filter End -->
-                          <div class="col-md-12">
+                          <!-- <div class="col-md-12">
                             <div class=" d-flex justify-content-between mb-2">
                               <div class="dropdown">
                                 <div class="shorting-select"  data-toggle="dropdown" aria-expanded="false">
@@ -170,7 +170,7 @@ Franchise
                                   <img src="{% static 'dist/img/svg/down-arrow-icon.svg' %}" alt="" class="change-arrow">
                                 </div>
 
-                                <form action="">
+                                <!-- <form action="">
                                   <ul class="dropdown-menu shorting-dropdown-menu">
                                     <p class="border-bottom pb-1 title2">Short</p>
                                     <li><input type="radio" name="shorting" id="name-a_z"> <label for="name-a_z">Name A &gt; Z</label></li>
@@ -181,13 +181,11 @@ Franchise
                                       <button type="submit" class="dashboard-addbtn w-100">Apply</button>
                                     </div>   
                                   </ul>
-                                </form> 
+                                </form>  -->
 
-                                <form method="GET" action="">
-                                  <ul class="dropdown-menu shorting-dropdown-menu">
-                                    <p class="border-bottom pb-1 title2">Sort</p>
                                 
-                                    <li>
+                                
+                                    <!-- <li>
                                       <input type="radio" name="sort_by" id="name-a_z" value="name_asc"
                                              {% if request.GET.sort_by == "name_asc" %}checked{% endif %}>
                                       <label for="name-a_z">Name A &gt; Z</label>
@@ -214,7 +212,7 @@ Franchise
                                     <div class="d-flex justify-content-center border-top pt-3 mt-2 pb-2">
                                       <button type="submit" class="dashboard-addbtn w-100">Apply</button>
                                     </div>
-                                  </ul>
+                                  </ul> -->
                                 
                                   <!-- Preserve search and pagination -->
                                   <input type="hidden" name="search_field" value="{{ request.GET.search_field }}">
@@ -256,8 +254,8 @@ Franchise
                                             <label for="check{{ franchise.id }}"></label>
                                         </td>
                                         
-                                        <td>{{ franchise.franchise_name }}
-                                           <a href="#" class="trlink">
+                                        <td><a href="{% url 'franchise-management-edit' franchise.franchise_id %}" class="trlink">
+                                          {{ franchise.franchise_name }}
                                                <span class="text-gray d-block small">#{{ franchise.franchise_id }}</span>
                                             </a>
                                         </td>
@@ -276,7 +274,7 @@ Franchise
                                         </td>
                                         <td>
                                           <div style="display: flex; gap: 5px; justify-content: center; align-items: center;">
-                                            <a href="#" class="btn btn-xs btn-warning ">
+                                            <a href="{% url 'franchise-management-edit' franchise.franchise_id %}" class="btn btn-xs btn-warning ">
                                                 <i class="fas fa-edit"></i> 
                                             </a>
                                            

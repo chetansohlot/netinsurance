@@ -195,20 +195,37 @@ def viewPolicy(request,id):
         policy_doc=get_object_or_404(PolicyDocument,id=id)
         policy_number=policy_doc.policy_number
 
-        policy_info =PolicyInfo.objects.filter(policy_id=id, policy_number=policy_number).last()
+        policy_info =PolicyInfo.objects.filter(policy_id=policy_doc, policy_number=policy_number).select_related('bqp').order_by('-id').first()
 
         # policy_vechicle details #
         policy_vehicle =PolicyVehicleInfo.objects.filter(policy_id=id, policy_number=policy_number).first()
 
         #policy agents details #
-        policy_agent_details =AgentPaymentDetails.objects.filter(policy_id=id, policy_number=policy_number).first()
+        # policy_agent_details =AgentPaymentDetails.objects.filter(policy_id=id).select_related('referral').first()
+        # print(policy_agent_details)
+
+        # Agent payment info
+        policy_agent_details = AgentPaymentDetails.objects.filter(policy=policy_doc).select_related('referral', 'policy').first()
+        
+        #policy_upload docs #
+        policy_upload_docs=PolicyUploadDoc.objects.filter(policy_id=id).first()
+
+        # Insurer & Franchise payments
+        policy_insurer_details=InsurerPaymentDetails.objects.filter(policy_id=id).first()
+        policy_franchise_details=FranchisePayment.objects.filter(policy_id=id).first()
+
 
 
         context={
             'policy_doc':policy_doc,
             'policy_info' : policy_info,
-            'policy_vehicle' :policy_vehicle,
-             'policy_agent_details ' : policy_agent_details,
+            'policy_vehicle':policy_vehicle,
+            'policy_agent_details':policy_agent_details,
+            'policy_doc': policy_doc,
+            'policy_upload_docs' :policy_upload_docs,
+            'policy_insurer_details':policy_insurer_details,
+            'policy_franchise_details':policy_franchise_details, 
+
         }
         return render(request, 'policy/view-policy.html',context)
     

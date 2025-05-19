@@ -103,10 +103,10 @@
                       <div class="form-group col-md-4">
                         <label for="payment_mode">Payment Mode</label>
                         <select name="payment_mode" id="payment_mode" class="form-field">
-                          <option value="">Select Mode</option>
-                          <option value="NEFT">NEFT</option>
-                          <option value="IMPS">IMPS</option>
-                          <option value="UPI">UPI</option>
+                           <option value="">Select Mode</option>
+                            <option value="NEFT" {% if franchise.payment_mode == 'NEFT' %}selected{% endif %}>NEFT</option>
+                            <option value="IMPS" {% if franchise.payment_mode == 'IMPS' %}selected{% endif %}>IMPS</option>
+                            <option value="UPI" {% if franchise.payment_mode == 'UPI' %}selected{% endif %}>UPI</option>
                         </select>
                       </div>
 
