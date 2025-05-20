@@ -173,7 +173,8 @@
                 <thead class="table-thead-bg-light table-header-fix">
                     <tr>
                       <th>Sr.No</th>
-                      <th>Insurer Details</th>
+                      <th>Insurer Co.</th>
+                      <th>Insurer Co. Short Name</th>
                       <th>Branch Details</th>
                       <th>Registered / Billing Address</th>
                       <th>Residential/Corporate Address</th>
@@ -187,6 +188,7 @@
                     <tr>
                         <td>{{ forloop.counter }}</td>
                         <td>{{ insurance.insurance_company|default:"N/A" }}</td>
+                        <td>{{ insurance.ins_short_name|default:"N/A" }}</td>
                         <td>
                           {% if object.branch %}
                               <a href="#">View Branch</a>

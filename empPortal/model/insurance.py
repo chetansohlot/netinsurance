@@ -8,6 +8,7 @@ class Insurance(models.Model):
     ]
 
     insurance_company = models.CharField(max_length=255)
+    ins_short_name =models.CharField(max_length=50)
     #active = models.CharField(max_length=1, choices=ACTIVE_CHOICES, default='1')
     active = models.CharField(max_length=8, choices=ACTIVE_CHOICES, default='Active')
     created_at = models.DateTimeField(auto_now_add=True)
