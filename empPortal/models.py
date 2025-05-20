@@ -1397,6 +1397,7 @@ class SingleUploadFile(models.Model):
     retry_creating_policy_count = models.IntegerField(default=0)
     is_completed = models.BooleanField(default=False)
     is_failed = models.BooleanField(default=False)
+    insurance_company_id = models.IntegerField(null=True)
     
 
     upload_at = models.DateTimeField(default=timezone.now)

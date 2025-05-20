@@ -90,6 +90,24 @@ Policy Management
                                 {% endif %}
                             </div>
                           </div>
+                          
+                          <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="form-lbl" for="rm_name">Insurance Company</label>
+                                <select name="insurance_company" id="insurance_company" class="form-field">
+                                  <option value="">Select Insurance Company</option>
+                                  {% for insurer in insurers %}
+                                      <option value="{{ insurer.id }}" {% if insurer.id == request.insurer.id %}selected{% endif %}>
+                                          {{ insurer.insurance_company }}
+                                      </option>
+                                  {% endfor %}
+                                </select>
+                                <span class="error insurance_company_err"></span>
+                                {% if form.insurance_company.errors %}
+                                    <span class="text-danger">{{ form.insurance_company.errors.0 }}</span>
+                                {% endif %}
+                            </div>
+                          </div>
                           <div class="col-sm-12">
                             <div class="d-flex justify-content-end">
                               <button type="submit" class="form-submit-btn" id="submitButton">Upload Policy</button>
