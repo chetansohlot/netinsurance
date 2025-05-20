@@ -72,11 +72,17 @@ Insurance Company- {% if insurance %}Edit Insurance Company{% else %}Create Insu
                                             <label class="form-lbl" for="insurance_company">Insurance Company</label>
                                             <input type="text" class="form-field" name="insurance_company" id="insurance_company"
                                                    placeholder="Enter Insurance Company Name"
-                                                   value="{{ insurance.insurance_company|default:'' }}" >
-                                                   
-                                               
+                                                   value="{{ insurance.insurance_company|default:'' }}" >     
+                                        </div>
+                                        <!-- Insurance Company -->
+                                        <div class="form-group col-sm-6 col-md-4">
+                                            <label class="form-lbl" for="ins_short_name">Insurance Company Short Name</label>
+                                            <input type="text" class="form-field" name="ins_short_name" id="ins_short_name"
+                                                   placeholder="Enter Insurance Company Short Name"
+                                                   value="{{ insurance.ins_short_name|default:'' }}">      
                                         </div>
                                     </div>
+
                                     <h5>Registered Address</h5>
                                     <div class="form-row">
                                         <div class="form-group col-sm-6 col-md-4">
@@ -297,7 +303,17 @@ Insurance Company- {% if insurance %}Edit Insurance Company{% else %}Create Insu
             const stateId = $(this).val();
             loadBillingCities(stateId);
         });
-    });   
+
+
+    //     $('#ins_short_name').on('input', function () {
+    //         let value = $(this).val();
+
+    //         // Remove spaces and trim to 10 characters
+    //         value = value.replace(/\s/g, '').substring(0, 10);
+
+    //         $(this).val(value);
+    //     });
+    // });
 
 </script>
 </body>

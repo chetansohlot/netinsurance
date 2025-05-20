@@ -39,6 +39,7 @@ def insurance_create(request):
 
     if request.method == 'POST':
         name = request.POST.get('insurance_company')
+        ins_short_name =request.POST.get('ins_short_name')
         status = request.POST.get('active', 'Active')
 
         # Registered Address (match template field names)
@@ -101,6 +102,7 @@ def insurance_create(request):
 
         insurance = Insurance.objects.create(
             insurance_company=name,
+            ins_short_name=ins_short_name,
             active=status,
             pincode=pincode if pincode else None,
             address=address,
