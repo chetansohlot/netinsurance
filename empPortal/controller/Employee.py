@@ -564,6 +564,23 @@ def save_or_update_employment_info(request, employee_id):
 
 
 
+def toggle_employee_status(request, employee_id, action):
+    employee = get_object_or_404(Users, id=employee_id)
+
+    if action == 'activate':
+        employee.user_active = 1
+        messages.success(request, "Employee activated successfully.")
+    elif action in ['deactivate', 'delete']:
+        employee.user_active = 0
+        print(f"Employee ID: {employee_id} deactivated")
+        messages.success(request, "Employee deactivated successfully.")
+    else:
+        messages.error(request, "Invalid action.")
+        return redirect('employee-management')
+
+    employee.save()
+    return redirect('employee-management')
+
 def save_or_update_refrences(request, employee_id):
     if not request.user.is_authenticated:
         return redirect('login')
