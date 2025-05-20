@@ -172,7 +172,10 @@
             <table class="table table-design table-trlink">
                 <thead class="table-thead-bg-light table-header-fix">
                     <tr>
-                      <th>Sr.No</th>
+                      <th width="10">
+                        <input type="checkbox" id="checkall" class="table-chk">
+                        <label for="checkall"></label>
+                      </th>
                       <th>Insurer Co.</th>
                       <th>Insurer Co. Short Name</th>
                       <th>Branch Details</th>
@@ -184,9 +187,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for insurance in insurance_qs %}
+                    {% for insurance in page_obj %}
                     <tr>
-                        <td>{{ forloop.counter }}</td>
+                      <td>
+                          <input type="checkbox" id="check{{ insurance.id }}" class="table-chk">
+                          <label for="check{{ insurance.id }}"></label>
+                      </td>
                         <td>{{ insurance.insurance_company|default:"N/A" }}</td>
                         <td>{{ insurance.ins_short_name|default:"N/A" }}</td>
                         <td>
@@ -226,8 +232,9 @@
                             N/A
                           {% endif %}
                         </td>
-                        
+
                         <td>
+                           <div class="d-flex">
                             <a href="{% url 'insurance_edit' insurance.id %}" class="btn btn-xs btn-warning"><i class="fas fa-edit"></i></a>
                             {% if insurance.active == 'Active' %}
                                 <a href="{% url 'insurance-toggle-status' insurance.id %}" class="btn btn-xs btn-danger toggle-status mx-1" data-active="Inactive">
@@ -249,24 +256,43 @@
             </table>
         </div>
         
-
-          {% if insurance_qs.has_other_pages %}
+          {% if page_obj.has_other_pages %}
           <div class="bottom-fix-pagination">
             <div class="d-flex justify-content-between align-items-center">
               <ul class="pagination">
-                {% if insurance_qs.has_previous %}
-                <li class="page-item"><a class="page-link" href="?page=1&per_page={{ per_page }}">&laquo;&laquo;</a></li>
-                <li class="page-item"><a class="page-link" href="?page={{ insurance_qs.previous_page_number }}&per_page={{ per_page }}">&laquo;</a></li>
+                {% if page_obj.has_previous %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page=1&per_page={{ per_page }}{% if search_query %}&search_query={{ search_query }}{% endif %}{% if search_field %}&search_field={{ search_field }}{% endif %}">&laquo;&laquo;</a>
+                  </li>
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}&per_page={{ per_page }}{% if search_query %}&search_query={{ search_query }}{% endif %}{% if search_field %}&search_field={{ search_field }}{% endif %}">&laquo;</a>
+                  </li>
                 {% endif %}
-                {% for num in insurance_qs.paginator.page_range %}
-                <li class="page-item {% if num == insurance_qs.number %}active{% endif %}"><a class="page-link" href="?page={{ num }}&per_page={{ per_page }}">{{ num }}</a></li>
+
+                {% for num in page_obj.paginator.page_range %}
+                  <li class="page-item {% if num == page_obj.number %}active{% endif %}">
+                    <a class="page-link" href="?page={{ num }}&per_page={{ per_page }}{% if search_query %}&search_query={{ search_query }}{% endif %}{% if search_field %}&search_field={{ search_field }}{% endif %}">{{ num }}</a>
+                  </li>
                 {% endfor %}
-                {% if insurance_qs.has_next %}
-                <li class="page-item"><a class="page-link" href="?page={{ insurance_qs.next_page_number }}&per_page={{ per_page }}">&raquo;</a></li>
-                <li class="page-item"><a class="page-link" href="?page={{ insurance_qs.paginator.num_pages }}&per_page={{ per_page }}">&raquo;&raquo;</a></li>
+
+                {% if page_obj.has_next %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}&per_page={{ per_page }}{% if search_query %}&search_query={{ search_query }}{% endif %}{% if search_field %}&search_field={{ search_field }}{% endif %}">&raquo;</a>
+                  </li>
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&per_page={{ per_page }}{% if search_query %}&search_query={{ search_query }}{% endif %}{% if search_field %}&search_field={{ search_field }}{% endif %}">&raquo;&raquo;</a>
+                  </li>
                 {% endif %}
               </ul>
+
+              <!-- Per Page Dropdown Form -->
               <form method="get" class="d-flex">
+                {% if search_query %}
+                  <input type="hidden" name="search_query" value="{{ search_query }}">
+                {% endif %}
+                {% if search_field %}
+                  <input type="hidden" name="search_field" value="{{ search_field }}">
+                {% endif %}
                 <select class="pagination-dropdown form-select" name="per_page" onchange="this.form.submit()">
                   <option value="10" {% if per_page == '10' %}selected{% endif %}>10 / Page</option>
                   <option value="20" {% if per_page == '20' %}selected{% endif %}>20 / Page</option>
@@ -278,6 +304,7 @@
             </div>
           </div>
           {% endif %}
+
 
         </div>
       </div>
