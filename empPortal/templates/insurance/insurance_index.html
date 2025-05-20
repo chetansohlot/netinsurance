@@ -183,6 +183,7 @@
                       <th>Residential/Corporate Address</th>
                       <th>Date Of Commencement</th>
                       <th width="200">Primary / Secondary</th>
+                      <th>Status</th>
                       <th>Action</th>
                     </tr>
                 </thead>
@@ -243,6 +244,14 @@
                             N/A
                           {% endif %}
                         </td>
+                        
+                          <td>
+                            {% if insurance.active == 'Active' %}
+                              <span style="color: green; font-weight: bold;">Active</span>
+                            {% else %}
+                              <span style="color: red; font-weight: bold;">Inactive</span>
+                            {% endif %}
+                          </td>
 
                         <td>
                           <div class="dropdown">
