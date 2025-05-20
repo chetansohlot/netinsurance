@@ -123,9 +123,7 @@ Insurance Company- {% if insurance %}Edit Insurance Company{% else %}Create Insu
                                     <div class="form-group col-sm-6 col-md-4">
                                         <label class="form-lbl" for="registered_address">Address</label>
                                         <textarea class="form-field" name="registered_address" 
-                                        id="registered_address" placeholder="Enter Address" >
-                                        {{ insurance.address|default:'' }}</textarea>
-                                      
+                                        id="registered_address" placeholder="Enter Address">{{ insurance.address|default:'' }}</textarea>
                                     </div>
                                     
                                     <!-- Checkbox for Same Address -->
