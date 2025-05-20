@@ -442,12 +442,20 @@ class PolicyDocument(models.Model):
         
     @property
     def insurer_payment_details(self):
-        from .models import InsurerPaymentDetails  # Lazy import inside the method to avoid circular import
+        from .models import InsurerPaymentDetails 
         try:
             return InsurerPaymentDetails.objects.get(policy_id=self.id)
         except InsurerPaymentDetails.DoesNotExist:
-            return None
+            return None 
         
+    @property
+    def insurerInfo(self):
+        from empPortal.model import Insurance  
+        try:
+            return Insurance.objects.get(id=self.insurance_company_id)
+        except Insurance.DoesNotExist:
+            return None
+
     @property
     def franchise_payment_details(self):
         from .models import FranchisePayment  # Lazy import inside the method to avoid circular import
