@@ -255,9 +255,12 @@ PRINCIPAL_OFFICER = os.getenv('PRINCIPAL_OFFICER', 'Mr. Subhash Chander Bishnoi'
 LICENSE_CATEGORY = os.getenv('LICENSE_CATEGORY', 'DIRECT LIFE AND GENERAL')
 
 
-# ___________________________________________________________
-
 CUSTOMER_PREFIX = os.getenv('CUSTOMER_PREFIX', 'CUS-NLS-')
+COMPANY_CFT = os.getenv('COMPANY_CFT', 'ELVTIN')
+COMPANY_EMP = os.getenv('COMPANY_EMP', 'ELE')
+SIGNATURE_ELEVATE = os.getenv('SIGNATURE_ELEVATE', 'empPortal/static/dist/img/elevate-signature.png')
+IRDA_LICENSE_PATH = os.getenv('IRDA_LICENSE_PATH', 'home/assets/image/IRDA-License.jpeg')
+# ___________________________________________________________
 
 
 AUTHENTICATION_BACKENDS = ['empPortal.authentication.EmailAuthBackend']

@@ -526,7 +526,7 @@ def save_or_update_family_details(request, employee_id):
 def save_or_update_employment_info(request, employee_id):
     if not request.user.is_authenticated:
         return redirect('login')
-
+    company_emp = settings.COMPANY_EMP
     if request.user.role_id != 1:
         messages.error(request, "You do not have permission to update employment info.")
         return redirect('employee-management')
@@ -547,7 +547,7 @@ def save_or_update_employment_info(request, employee_id):
         else:
             doj = None
         
-        employee_code = f"ELE-{10000 + int(employee_id)}"
+        employee_code = f"{company_emp}-{10000 + int(employee_id)}"
 
         # Update model fields
         employment.employee_code = employee_code
@@ -558,7 +558,7 @@ def save_or_update_employment_info(request, employee_id):
         messages.success(request, "Employment information updated successfully.")
         return redirect('employee-management-update-refrences', employee_id=employee_id)
 
-    employment_code = f"ELE-{10000 + int(employee_id)}"
+    employment_code = f"{company_emp}-{10000 + int(employee_id)}"
 
     return render(request, 'employee/create-employee-info.html', {'employment': employment, 'employee_id': employee_id, 'employment_code': employment_code })
 
