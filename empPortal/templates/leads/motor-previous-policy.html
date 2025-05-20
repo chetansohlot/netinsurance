@@ -25,7 +25,7 @@
                                 <div class="col-sm-6 col-md-3">
                                     <div class="form-group">
                                             <label class="form-lbl">Registration Date</label>
-                                            <input class="form-field common_datepicker" type="date" name="registration_date" id="registration_date" value="{{lead_previous_policy.registration_date|default_if_none:''}}">
+                                            <input class="form-field common_datepicker" type="date" name="registration_date" id="registration_date" value="{{lead_previous_policy.registration_date|default_if_none:''|date:'Y-m-d'}}">
                                     </div>
                                 </div>
                                 <div class="col-sm-6 col-md-3">
@@ -261,14 +261,14 @@
                                   <div class="form-group">
                                       <label class="form-lbl">RC Expiry Date</label>
                                       <input class="form-field common_datepicker" type="date" name="rc_expiry_date" id="rc_expiry_date"
-                                          value="{{lead_previous_policy.rc_expiry_date|default_if_none:''}}">
+                                          value="{{lead_previous_policy.rc_expiry_date|default_if_none:''|date:'Y-m-d'}}">
                                   </div>
                               </div>
                               <div class="col-sm-6 col-md-3">
                                   <div class="form-group">
                                       <label class="form-lbl">PUCC Expiry Date</label>
                                       <input class="form-field common_datepicker" type="date" name="rc_pucc_expiry_date" id="rc_pucc_expiry_date"
-                                          value="{{lead_previous_policy.rc_pucc_expiry_date|default_if_none:''}}">
+                                          value="{{lead_previous_policy.rc_pucc_expiry_date|default_if_none:''|date:'Y-m-d'}}">
                                   </div>
                               </div>
                             </div>
@@ -283,7 +283,7 @@
                                         <option value="">Select Insurance Company</option>
                                         {% if insurance_company_list %}
                                             {% for insurance_cmpny in insurance_company_list %}
-                                              <option value="{{insurance_cmpny.id}}" {% if lead_previous_policy.insurance_company == insurance_cmpny.id %} selected {% endif %}>{{insurance_cmpny.insurance_company}}</option>
+                                              <option value="{{insurance_cmpny.id}}" {% if lead_previous_policy.insurance_company_id == insurance_cmpny.id %} selected {% endif %}>{{insurance_cmpny.insurance_company}}</option>
                                             {% endfor %}
                                         {% endif %}
                                       </select>
@@ -293,7 +293,7 @@
                                   <div class="form-group">
                                       <label class="form-lbl">Insurance Expiry Date</label>
                                       <input class="form-field common_datepicker" type="date" name="insurance_expiry_date" id="insurance_expiry_date"
-                                          value="{{lead_previous_policy.insurance_expiry_date|default_if_none:''}}">
+                                          value="{{lead_previous_policy.insurance_expiry_date|default_if_none:''|date:'Y-m-d'}}">
                                   </div>
                               </div>
                               <div class="col-sm-6 col-md-3">
@@ -319,5 +319,4 @@
         </div>
       </div>  
     </div>
-    
   </div>
