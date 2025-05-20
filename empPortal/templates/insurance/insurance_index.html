@@ -176,13 +176,13 @@
                         <input type="checkbox" id="checkall" class="table-chk">
                         <label for="checkall"></label>
                       </th>
-                      <th>Insurer Co.</th>
-                      <th>Insurer Co. Short Name</th>
-                      <th>Branch Details</th>
+                      <th>Insurer Co. Details</th>
+                      <!-- <th>Insurer Co. Short Name</th> -->
+                      <!-- <th>Branch Details</th> -->
                       <th>Registered / Billing Address</th>
                       <th>Residential/Corporate Address</th>
                       <th>Date Of Commencement</th>
-                      <th>Primary / Secondary</th>
+                      <th width="200">Primary / Secondary</th>
                       <th>Action</th>
                     </tr>
                 </thead>
@@ -193,15 +193,25 @@
                           <input type="checkbox" id="check{{ insurance.id }}" class="table-chk">
                           <label for="check{{ insurance.id }}"></label>
                       </td>
-                        <td>{{ insurance.insurance_company|default:"N/A" }}</td>
-                        <td>{{ insurance.ins_short_name|default:"N/A" }}</td>
                         <td>
+                          <span class="d-block">{{ insurance.insurance_company|default:"N/A" }}</span>
+                          <span class="d-block text-muted">Insurer Co. Short Name</span>
+                          {{ insurance.ins_short_name|default:"N/A" }}
+                          <span class="d-block text-muted">Branch Details</span>
                           {% if object.branch %}
                               <a href="#">View Branch</a>
                           {% else %}
                               N/A
                           {% endif %}
-                      </td>
+                        </td>
+                        <!-- <td>{{ insurance.ins_short_name|default:"N/A" }}</td> -->
+                        <!-- <td>
+                          {% if object.branch %}
+                              <a href="#">View Branch</a>
+                          {% else %}
+                              N/A
+                          {% endif %}
+                        </td> -->
                       
                         <td>
                             {{ insurance.billing_city }} {{ insurance.billing_state }} {{ insurance.billing_pincode }}<br>
@@ -220,21 +230,41 @@
                         </td>
                         <td>
                           {% if insurance.primary_contact_name or insurance.primary_designation or insurance.primary_contact_no or insurance.primary_contact_email or insurance.secondary_contact_name or insurance.secondary_designation or insurance.secondary_contact_no or insurance.secondary_contact_email %}
-                            {% if insurance.primary_contact_name %}{{ insurance.primary_contact_name }}<br>{% endif %}
-                            {% if insurance.primary_designation %}{{ insurance.primary_designation }}<br>{% endif %}
+                            <span class="text-primary">{% if insurance.primary_contact_name %}{{ insurance.primary_contact_name }}</span><br>{% endif %}
+                            <span class="text-muted">{% if insurance.primary_designation %}{{ insurance.primary_designation }}</span><br>{% endif %}
                             {% if insurance.primary_contact_no %}{{ insurance.primary_contact_no }}<br>{% endif %}
-                            {% if insurance.primary_contact_email %}{{ insurance.primary_contact_email }}<br>{% endif %}
-                            {% if insurance.secondary_contact_name %}{{ insurance.secondary_contact_name }}<br>{% endif %}
-                            {% if insurance.secondary_designation %}{{ insurance.secondary_designation }}<br>{% endif %}
+                            <span class="text-info">{% if insurance.primary_contact_email %}{{ insurance.primary_contact_email }}</span><br>{% endif %}
+                            <hr class="my-1">
+                            <span class="text-primary">{% if insurance.secondary_contact_name %}{{ insurance.secondary_contact_name }}</span><br>{% endif %}
+                            <span class="text-muted">{% if insurance.secondary_designation %}{{ insurance.secondary_designation }}</span><br>{% endif %}
                             {% if insurance.secondary_contact_no %}{{ insurance.secondary_contact_no }}<br>{% endif %}
-                            {% if insurance.secondary_contact_email %}{{ insurance.secondary_contact_email }}<br>{% endif %}
+                            <span class="text-info">{% if insurance.secondary_contact_email %}{{ insurance.secondary_contact_email }}</span><br>{% endif %}
                           {% else %}
                             N/A
                           {% endif %}
                         </td>
 
                         <td>
-                           <div class="d-flex">
+                          <div class="dropdown">
+                            <img src="{% static 'dist/img/svg/menu-dot-vr.svg' %}" alt="" class="table-doticon" data-toggle="dropdown" aria-expanded="false">
+                            <ul class="dropdown-menu table-dropdown-menu" style="">
+                              <li><a class="dropdown-item text-primary" href="{% url 'insurance_edit' insurance.id %}"><i class="fas fa-edit"></i> Edit</a></li>
+                              {% if insurance.active == 'Active' %} 
+                              <li>
+                                <a href="{% url 'insurance-toggle-status' insurance.id %}" class="dropdown-item text-danger">
+                                  <i class="fas fa-times-circle"></i> Inactive
+                                </a>
+                              </li>
+                              {% else %}
+                               <li>
+                                <a href="{% url 'insurance-toggle-status' insurance.id %}" class="dropdown-item text-success">
+                                  <i class="fas fa-check-circle"></i> Active
+                                </a>
+                              </li> 
+                              {% endif %}
+                            </ul>
+                          </div>
+                           <!-- <div class="d-flex">
                             <a href="{% url 'insurance_edit' insurance.id %}" class="btn btn-xs btn-warning"><i class="fas fa-edit"></i></a>
                             {% if insurance.active == 'Active' %}
                                 <a href="{% url 'insurance-toggle-status' insurance.id %}" class="btn btn-xs btn-danger toggle-status mx-1" data-active="Inactive">
@@ -244,7 +274,7 @@
                                 <a href="{% url 'insurance-toggle-status' insurance.id %}" class="btn btn-xs btn-primary toggle-status mx-1" data-active="Active">
                                     <i class="fas fa-check-circle"></i>
                                 </a>
-                            {% endif %}
+                            {% endif %} -->
                         </td>
                     </tr>
                     {% empty %}
