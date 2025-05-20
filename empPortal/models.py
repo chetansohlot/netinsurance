@@ -201,6 +201,7 @@ class Leads(models.Model):
     
     assigned_to = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.SET_NULL,null=True,blank=True, related_name='leads_assigned')  
     assigned_manager = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.SET_NULL,null=True,blank=True, related_name='leads_assigned_manager')  
+    assigned_teamleader = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.SET_NULL,null=True,blank=True, related_name='leads_assigned_teamleader')  
     branch = models.ForeignKey(Branch, on_delete=models.SET_NULL, null=True, blank=True)  
     lead_status_type = models.IntegerField( null=True, blank=True)  
     lead_tag = models.IntegerField( null=True, blank=True)  
@@ -442,12 +443,20 @@ class PolicyDocument(models.Model):
         
     @property
     def insurer_payment_details(self):
-        from .models import InsurerPaymentDetails  # Lazy import inside the method to avoid circular import
+        from .models import InsurerPaymentDetails 
         try:
             return InsurerPaymentDetails.objects.get(policy_id=self.id)
         except InsurerPaymentDetails.DoesNotExist:
-            return None
+            return None 
         
+    @property
+    def insurerInfo(self):
+        from empPortal.model import Insurance  
+        try:
+            return Insurance.objects.get(id=self.insurance_company_id)
+        except Insurance.DoesNotExist:
+            return None
+
     @property
     def franchise_payment_details(self):
         from .models import FranchisePayment  # Lazy import inside the method to avoid circular import
@@ -1389,6 +1398,7 @@ class SingleUploadFile(models.Model):
     retry_creating_policy_count = models.IntegerField(default=0)
     is_completed = models.BooleanField(default=False)
     is_failed = models.BooleanField(default=False)
+    insurance_company_id = models.IntegerField(null=True)
     
 
     upload_at = models.DateTimeField(default=timezone.now)

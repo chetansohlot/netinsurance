@@ -71,6 +71,13 @@
                       </div>
 
                       <div class="form-group col-md-4">
+                        <label class="form-lbl">Assigned Team Leader</label>
+                        <select class="form-field" name="assigned_teamleader" id="assigned_teamleader">
+                          <option value="">Select</option>
+                        </select>
+                      </div>
+                      
+                      <div class="form-group col-md-4">
                         <label class="form-lbl">Assigned To</label>
                         <select class="form-field" name="assigned_to" id="assigned_to">
                           <option value="">Select</option>
@@ -157,12 +164,42 @@
         });
       }
         
-      function fetchSalesRelationshipManager(assigned_manager=null,branch_id=null,selectedId=null){
+      function fetchSalesTeamLeader(assigned_manager=null,branch_id=null,selectedId=null){
         $.ajax({
-            url: "{% url 'get-sales-relation_managers' %}",
+            url: "{% url 'get-sales-teamleader' %}",
             method: 'POST',              
             data: {
                 assigned_manager: assigned_manager,
+                branch_id: branch_id,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            dataType: 'json',
+            success: function(response) {
+                let $select = $('#assigned_teamleader');
+                $select.empty(); // Clear existing options
+                $select.append('<option value="">Select</option>');
+                if (response && response.length > 0) {
+                    response.forEach(function(relation_managers) {
+                      let selected = (selectedId && parseInt(selectedId) == relation_managers.id) ? 'selected' : '';
+                      $select.append(
+                          `<option value="${relation_managers.id}" ${selected}>${relation_managers.first_name} ${relation_managers.last_name}</option>`
+                      );
+                  });
+                }
+            },
+            error: function(xhr, status, error) {
+                // Handle error here
+                console.error(error);
+            }
+        });
+      }
+      
+      function fetchSalesRelationshipManager(assigned_teamleader=null,branch_id=null,selectedId=null){
+        $.ajax({
+            url: "{% url 'get-sales-relation-managers' %}",
+            method: 'POST',              
+            data: {
+                assigned_teamleader: assigned_teamleader,
                 branch_id: branch_id,
                 csrfmiddlewaretoken: '{{ csrf_token }}'
             },
@@ -195,14 +232,22 @@
       $('#assigned_manager').on('change', function() {
         var assigned_manager = $(this).val();
         var branch_id = $('#branch').val();
-        fetchSalesRelationshipManager(assigned_manager,branch_id);
+        fetchSalesTeamLeader(assigned_manager,branch_id);
+      });
+
+      $('#assigned_teamleader').on('change', function() {
+        var assigned_teamleader = $(this).val();
+        var branch_id = $('#branch').val();
+        fetchSalesRelationshipManager(assigned_teamleader,branch_id);
       });
 
       let branch_id = "{{lead_data.branch_id}}";
       let assigned_manager = "{{lead_data.assigned_manager_id}}";
+      let assigned_teamleader = "{{lead_data.assigned_teamleader_id}}";
       let assigned_to = "{{lead_data.assigned_to_id}}";
       fetchBranchSalesManager(branch_id,assigned_manager)
-      fetchSalesRelationshipManager(assigned_manager,branch_id,assigned_to)
+      fetchSalesTeamLeader(assigned_manager,branch_id,assigned_teamleader)
+      fetchSalesRelationshipManager(assigned_teamleader,branch_id,assigned_to)
     });
   </script>
 </body>

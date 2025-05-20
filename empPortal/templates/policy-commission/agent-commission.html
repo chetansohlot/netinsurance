@@ -288,7 +288,16 @@ Pending Agent Commission
                               <td>
                                 <div class="d-flex align-items-start">
                                   <div>
-                                    <span class="d-block">{{ data.insurance_provider }}</span>
+                                    
+                                      <span class="d-block">
+                                          {% if data.insurerInfo.insurance_company %}
+                                              {{ data.insurerInfo.insurance_company }}
+                                          {% elif data.policy_infos.insurance_company %}
+                                              {{ data.policy_infos.insurance_company }}
+                                          {% else %}
+                                              {{ data.insurance_provider }}
+                                          {% endif %}
+                                      </span>
                                     <span class="text-info d-inline-block"><strong>Policy No.:</strong> {{ data.policy_number|default:"-" }}</span>
                                   </div>  
                                   <a href="{% url 'edit-policy' id=data.id %}" class="tooltip-sec ml-2 text-danger" data-title="Edit Policy">

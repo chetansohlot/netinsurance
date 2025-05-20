@@ -137,7 +137,15 @@
                               <td>{{ data.policy_agent_info.referral.name|default:"-" }}</td>
                               <td>{{ data.policy_agent_info.referral.sales|default:"-" }}</td>
                               <td>-</td>
-                              <td>{{ data.policy_infos.insurance_company|default:"-" }}</td>
+                              <td>
+                                {% if data.insurerInfo.insurance_company %}
+                                    {{ data.insurerInfo.insurance_company }}
+                                {% elif data.policy_infos.insurance_company %}
+                                    {{ data.policy_infos.insurance_company }}
+                                {% else %}
+                                    {{ data.insurance_provider }}
+                                {% endif %}
+                              </td>
                               <td>-</td>
                               <td>{{ data.policy_infos.policy_issue_date|default:"-" }}</td>
                               <td>{{ data.policy_infos.policy_start_date|default:"-" }}</td>

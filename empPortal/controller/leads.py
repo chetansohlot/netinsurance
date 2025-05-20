@@ -1,79 +1,74 @@
-from multiprocessing import Value
-from urllib import request
-from django.http import HttpResponse
-from django.contrib.auth.hashers import make_password
-from django.contrib.auth import update_session_auth_hash
-from django.shortcuts import render,redirect, get_object_or_404
-from django.contrib import messages
-from django.template import loader
-from ..models import Commission, LeadUploadExcel, SourceMaster,Users, DocumentUpload, Branch, Leads, QuotationCustomer
-from empPortal.model import BankDetails
-from ..forms import DocumentUploadForm
-from django.core.mail import send_mail
-from django.core.mail import EmailMessage
-from django.utils.timezone import now
-from django.contrib.auth import authenticate, login ,logout
-from django.core.files.storage import FileSystemStorage
+# Standard Library Imports
+import os
 import re
-import requests
-from fastapi import FastAPI, File, UploadFile
-import fitz
-import openai
 import time
 import json
-from django.http import JsonResponse
-import os
-import zipfile
-from django.conf import settings
-from django.contrib.auth.decorators import login_required
-from django.core.cache import cache
-from django.db import connection
 import logging
-logger = logging.getLogger(__name__)
-import os
-import pdfkit
+import zipfile
+from io import BytesIO
+from datetime import datetime, timedelta
+from pprint import pprint
+from urllib import request
+
+# Third-Party Imports
+import fitz  # PyMuPDF
+import openai
+import pandas as pd
+import openpyxl
+from dateutil import parser
+from openpyxl.utils import get_column_letter
+from openpyxl import Workbook
+from fastapi import FastAPI, File, UploadFile
+
+# Django Core Imports
+from django.conf import settings
+from django.db import connection
+from django.db.models import Q, F, Value, Max, CharField
+from django.db.models.functions import Concat, Coalesce
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render, redirect, get_object_or_404
+from django.template import loader
 from django.template.loader import render_to_string
-from pprint import pprint 
+from django.core.mail import send_mail, EmailMessage
+from django.core.files.storage import FileSystemStorage, default_storage
 from django.core.paginator import Paginator
-from django.db.models import Q
-from empPortal.model import Referral, Partner
+from django.contrib import messages
+from django.contrib.auth import (
+    authenticate, login, logout,
+    update_session_auth_hash,
+    hashers as auth_hashers
+)
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.timezone import now
+from django_q.tasks import async_task
+
+# Local App Imports
+from ..models import (
+    Users, Roles, Commission, LeadUploadExcel, SourceMaster,
+    DocumentUpload, Branch, Leads, QuotationCustomer,
+    PolicyInfo, PolicyDocument
+)
+from ..forms import DocumentUploadForm
+from ..model import (
+    State, City, InsuranceType,
+    InsuranceCategory, InsuranceProduct, Insurance
+)
+
+from empPortal.model import (
+    BankDetails, Referral, Partner
+)
 from empPortal.model.customer import Customer
 from empPortal.model.leadActivity import LeadActivity
-
-
-import pandas as pd
-from django.core.files.storage import default_storage
-import openpyxl
-from django.db.models import Max
-import re,logging
-from dateutil import parser
-logger = logging.getLogger(__name__)
-OPENAI_API_KEY = settings.OPENAI_API_KEY
-from django_q.tasks import async_task
-from ..models import Users, LeadUploadExcel
-from datetime import datetime, timedelta
-from django.db.models import F, Value, CharField
-from django.db.models.functions import Concat, Coalesce
-from ..models import PolicyInfo
-from ..models import Users, Roles,PolicyDocument
-from django.views.decorators.csrf import csrf_exempt
-from openpyxl.utils import get_column_letter
-import openpyxl
-from io import BytesIO
-from django.http import HttpResponse
-from openpyxl import Workbook
-from ..model import State, City
-app = FastAPI()
-from datetime import datetime
-from ..model import InsuranceType, InsuranceCategory, InsuranceProduct
 from empPortal.model.Dispositions import Disposition, SubDisposition
 from empPortal.model.LeadDisposition import LeadDisposition, LeadDispositionLogs
+
+logger = logging.getLogger(__name__)
 
 def dictfetchall(cursor):
     "Returns all rows from a cursor as a dict"
     columns = [col[0] for col in cursor.description]
     return [dict(zip(columns, row)) for row in cursor.fetchall()]
-
 
 def index(request):
     if not request.user.is_authenticated:
@@ -163,11 +158,17 @@ def index(request):
     identity_no = request.GET.get('pan_card_number', '')
     email = request.GET.get('email_address', '')
     mobile = request.GET.get('mobile_number', '')
-    sales_manager = request.GET.get('sales_manager', '')
-    agent_name = request.GET.get('agent_name', '')
-    policy_number = request.GET.get('policy_number', '')
     start_date = request.GET.get('start_date', '')
     end_date = request.GET.get('end_date', '')
+    
+    branch = request.GET.get('branch','')
+    sales_manager = request.GET.get('sales_manager', '')
+    sales_teamleader = request.GET.get('sales_teamleader', '')
+    sales_rm = request.GET.get('sales_rm', '')
+    
+    agent_name = request.GET.get('agent_name', '')
+    policy_number = request.GET.get('policy_number', '')
+    
     insurance_company = request.GET.get('insurance_company', '')
     policy_type = request.GET.get('policy_type', '')
     vehicle_type = request.GET.get('vehicle_type', '')
@@ -177,9 +178,10 @@ def index(request):
 
     # Collect filter inputs
     filters_applied = any([
-        lead_id, name, identity_no, email, mobile,
-        sales_manager, agent_name, policy_number,
-        start_date, end_date, insurance_company,
+        lead_id, name, identity_no, email, mobile, start_date, end_date, 
+        branch, sales_manager, sales_teamleader,sales_rm,
+        agent_name, policy_number,
+        insurance_company,
         policy_type, vehicle_type, upcoming_renewals,
         lead_type, motor_type
     ])
@@ -197,16 +199,22 @@ def index(request):
         leads = leads.filter(email_address__icontains=email)
     if mobile:
         leads = leads.filter(mobile_number__icontains=mobile)
-    if sales_manager:
-        leads = leads.filter(sales_manager__user_name=sales_manager)
-    if agent_name:
-        leads = leads.filter(agent_name=agent_name)
-    if policy_number:
-        leads = leads.filter(registration_number__icontains=policy_number)
     if start_date:
         leads = leads.filter(created_at__gte=start_date)
     if end_date:
         leads = leads.filter(created_at__lte=end_date)
+    if branch:
+        leads = leads.filter(branch=branch)
+    if sales_manager:
+        leads = leads.filter(assigned_manager_id=sales_manager)
+    if sales_teamleader:
+        leads = leads.filter(assigned_teamleader_id=sales_teamleader)
+    if sales_rm:
+        leads = leads.filter(assigned_to_id=sales_rm)
+    if agent_name:
+        leads = leads.filter(agent_name=agent_name)
+    if policy_number:
+        leads = leads.filter(registration_number__icontains=policy_number)
     if insurance_company:
         leads = leads.filter(insurance_company=insurance_company)
     if policy_type:
@@ -271,6 +279,8 @@ def index(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
+    branch = Branch.objects.filter(status="Active")
+    insurance_companies = Insurance.objects.filter(active="active")
     return render(request, 'leads/index.html', {
         'page_obj': page_obj,
         'total_leads': total_leads,
@@ -289,6 +299,7 @@ def index(request):
         'policy_types': policy_types,
         'vehicle_types': vehicle_types,
         'leads': leads,
+        'branchs': branch
     })
 
 def export_leads_to_excel(leads_queryset):
@@ -1602,6 +1613,7 @@ def save_leads_assignment_info(request):
     lead_id = request.POST.get('lead_ref_id') or None
     assigned_to = request.POST.get('assigned_to') or None
     assigned_manager = request.POST.get('assigned_manager') or None
+    assigned_teamleader = request.POST.get('assigned_teamleader') or None
     branch = request.POST.get('branch') or None
     lead_status_type = request.POST.get('lead_status_type') or None
     lead_tag = request.POST.get('lead_tag') or None
@@ -1614,6 +1626,7 @@ def save_leads_assignment_info(request):
     try:
         lead_data.assigned_to_id = assigned_to
         lead_data.assigned_manager_id = assigned_manager
+        lead_data.assigned_teamleader_id = assigned_teamleader
         lead_data.branch_id = clean(branch)
         lead_data.lead_status_type = clean(lead_status_type)
         lead_data.lead_tag = clean(lead_tag)
@@ -1645,6 +1658,7 @@ def save_leads_allocation_info(request):
     lead_id = request.POST.get('lead_ref_id') or None
     assigned_to = request.POST.get('assigned_to') or None
     assigned_manager = request.POST.get('assigned_manager') or None
+    assigned_teamleader = request.POST.get('assigned_teamleader') or None
     branch = request.POST.get('branch') or None
     lead_status_type = request.POST.get('lead_status_type') or None
     lead_tag = request.POST.get('lead_tag') or None
@@ -1657,6 +1671,7 @@ def save_leads_allocation_info(request):
     try:
         lead_data.assigned_to_id = assigned_to
         lead_data.assigned_manager_id = assigned_manager
+        lead_data.assigned_teamleader_id = assigned_teamleader
         lead_data.branch_id = clean(branch)
         lead_data.lead_status_type = clean(lead_status_type)
         lead_data.lead_tag = clean(lead_tag)

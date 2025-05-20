@@ -762,7 +762,9 @@ def policyMgt(request):
         messages.error(request, "Please Login First")
         return redirect('login')
     product_types = policy_product()
-    return render(request,'policy/single-policy-upload.html',{'product_types':product_types})
+    insurers = Insurance.objects.all().order_by('-created_at')
+
+    return render(request,'policy/single-policy-upload.html',{'product_types':product_types, 'insurers':insurers})
 
 
 # def browsePolicy(request):
@@ -902,6 +904,7 @@ def browsePolicy(request):
         file = None
         
     product_type = request.POST.get("product_type")
+    insurance_company = request.POST.get("insurance_company")
     if not file:
         messages.error(request, "Upload PDF file.")
         
@@ -913,6 +916,10 @@ def browsePolicy(request):
                         
     if not product_type:
         messages.error(request, "Product Type is mandatory.")
+
+    if not insurance_company:
+        messages.error(request, "Insurance Company is mandatory.")
+
         return redirect('policy-mgt')
     if messages.get_messages(request):
         return redirect('policy-mgt')
@@ -922,6 +929,7 @@ def browsePolicy(request):
         status=1,
         retry_source_count=0,
         product_type=product_type,
+        insurance_company_id=insurance_company,
         retry_chat_response_count=0,
         retry_creating_policy_count=0,
         create_by=request.user
