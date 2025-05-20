@@ -59,11 +59,11 @@ Add Employment Info
                             <h2 class="admin-title border-bottom pb-2 mb-4">Employment Info</h2>
                         </div>
 
-                        <div class="form-group col-sm-6 col-md-4">
+                        {% comment %} <div class="form-group col-sm-6 col-md-4">
                             <label class="form-lbl">Employee Code</label>
                             <input type="text" class="form-field" name="employee_code" placeholder="Employee Code"
                                   value="{{ employment.employee_code|default:'' }}">
-                        </div>
+                        </div> {% endcomment %}
 
                         <div class="form-group col-sm-6 col-md-4">
                             <label class="form-lbl">Designation</label>

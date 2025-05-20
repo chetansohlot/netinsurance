@@ -143,15 +143,12 @@ Add Family Details
                       var maritalStatus = "{{ employee.marital_status }}";
                       var spouseFields = {
                           spouse_first_name: {
-                              required: maritalStatus === 'Married',
                               minlength: 2
                           },
                           spouse_last_name: {
-                              required: maritalStatus === 'Married',
                               minlength: 2
                           },
                           spouse_dob: {
-                              required: maritalStatus === 'Married',
                               date: true
                           }
                       };
@@ -159,27 +156,21 @@ Add Family Details
                       $("#employeeFamilyForm").validate({
                           rules: {
                               father_first_name: {
-                                  required: true,
                                   minlength: 2
                               },
                               father_last_name: {
-                                  required: true,
                                   minlength: 2
                               },
                               father_dob: {
-                                  required: true,
                                   date: true
                               },
                               mother_first_name: {
-                                  required: true,
                                   minlength: 2
                               },
                               mother_last_name: {
-                                  required: true,
                                   minlength: 2
                               },
                               mother_dob: {
-                                  required: true,
                                   date: true
                               },
                               // Add spouse fields conditionally

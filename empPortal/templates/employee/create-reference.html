@@ -135,43 +135,22 @@ Add Reference
   $(document).ready(function () {
   $("#employeeForm").validate({
     rules: {
-      reference1_relation_type: {
-        required: true
-      },
-      reference1_first_name: {
-        required: true
-      },
-      reference1_last_name: {
-        required: true
-      },
+      
       reference1_mobile_number: {
-        required: true,
         digits: true,
         minlength: 10,
         maxlength: 10
       },
       reference1_email_address: {
-        required: true,
         email: true
       },
 
-      reference2_relation_type: {
-        required: true
-      },
-      reference2_first_name: {
-        required: true
-      },
-      reference2_last_name: {
-        required: true
-      },
       reference2_mobile_number: {
-        required: true,
         digits: true,
         minlength: 10,
         maxlength: 10
       },
       reference2_email_address: {
-        required: true,
         email: true
       }
     },
@@ -180,13 +159,11 @@ Add Reference
       reference1_first_name: "First name is required.",
       reference1_last_name: "Last name is required.",
       reference1_mobile_number: {
-        required: "Mobile number is required.",
         digits: "Enter only digits.",
         minlength: "Enter a valid 10-digit number.",
         maxlength: "Enter a valid 10-digit number."
       },
       reference1_email_address: {
-        required: "Email is required.",
         email: "Enter a valid email address."
       },
 
