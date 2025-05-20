@@ -82,7 +82,11 @@
 			padding: 0;
 			margin: 0;
 		}
-		.training-certificate-logo {width: 120px;}
+		{% if COMPANY_EMP == "ELE" %}
+		.training-certificate-logo { width: 120px; }
+		{% else %}
+		.training-certificate-logo { width: 200px; }
+		{% endif %}
 	</style>
 	
 </head>
@@ -94,7 +98,7 @@
 			<tbody>
 				<tr>
 					<td>
-						<p class="training-certificate-number">Certificate No.: LI_ELEVETE10{{ customer.user_gen_id }}</p>
+						<p class="training-certificate-number">Certificate No.: {{ COMPANY_CFT }}10{{ customer.user_gen_id }}</p>
 					</td>
 				</tr>
 				<tr>
