@@ -105,6 +105,7 @@ urlpatterns = [
     path('employee-management/employment-info/<str:employee_id>/', Employee.save_or_update_employment_info, name='employee-management-employment-info'),
     path('employee-management/update-refrences/<str:employee_id>/', Employee.save_or_update_refrences, name='employee-management-update-refrences'),
     path('employee-management/update-allocation/<str:employee_id>/', Employee.update_allocation, name='employee-management-update-allocation'),
+    path('employee-management/toggle-status/<str:employee_id>/<str:action>/', Employee.toggle_employee_status, name='employee-toggle-status'),
 
     path('employee-management/<str:employee_id>/', Employee.create_or_edit, name='employee-management-edit'),
     path('employee-management/employee-allocation-employee/<str:employee_id>', Employee.create_or_edit_allocation, name='employee-allocation-update'),

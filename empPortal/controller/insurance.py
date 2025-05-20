@@ -18,15 +18,47 @@ def insurance_list(request):
 
     insurance_qs = Insurance.objects.all().order_by('-created_at')
 
+
+    # Pagination
+    page_number = request.GET.get('page', 1)
+    per_page = request.GET.get('per_page', 10)
+    search_field = request.GET.get('search_field', '')  # Field to search
+    search_query = request.GET.get('search_query', '') 
+
+    try:
+        per_page = int(per_page)
+    except ValueError:
+        per_page = 10  # Default to 10 if invalid value is given
+
+    # Apply filtering
+    # if search_field and search_query:
+    #     if search_field in [f.name for f in Insurance._meta.get_fields()]:
+    #         filter_args = {f"{search_field}__icontains": search_query}
+    #         insurance_qs = insurance_qs.filter(**filter_args)
+    #     else:
+    #         messages.warning(request, f"Invalid search field: {search_field}")
+
+    if search_field and search_query:
+            filter_args = {f"{search_field}__icontains": search_query}
+            insurance_qs = insurance_qs.filter(**filter_args)        
+    
+   # Paginate results
+    paginator = Paginator(insurance_qs, per_page)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     total_count = insurance_qs.count()
     active_count = insurance_qs.filter(active='Active').count()    # updated value
     inactive_count = insurance_qs.filter(active='Inactive').count()  # updated value
     return render(request, 'insurance/insurance_index.html',
                   {
-                      'insurance_qs': insurance_qs,
+                      'page_obj': page_obj,
                       'total_count': total_count,
                       'active_count': active_count,
                       'inactive_count': inactive_count,
+                      'per_page': per_page,
+                      'search_field': search_field,
+                      'search_query': search_query,
                   })
 
 def insurance_create(request):
@@ -39,6 +71,7 @@ def insurance_create(request):
 
     if request.method == 'POST':
         name = request.POST.get('insurance_company')
+        ins_short_name =request.POST.get('ins_short_name')
         status = request.POST.get('active', 'Active')
 
         # Registered Address (match template field names)
@@ -101,6 +134,7 @@ def insurance_create(request):
 
         insurance = Insurance.objects.create(
             insurance_company=name,
+            ins_short_name=ins_short_name,
             active=status,
             pincode=pincode if pincode else None,
             address=address,
@@ -213,6 +247,7 @@ def insurance_edit(request, insurance_id):
 
     if request.method == 'POST':
         insurance.insurance_company = request.POST.get('insurance_company')
+        insurance.ins_short_name =request.POST.get('ins_short_name')
         insurance.active = request.POST.get('active', 'Active')
 
         # Registered Address

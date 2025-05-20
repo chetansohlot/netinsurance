@@ -739,9 +739,9 @@ def partner_policy_summary(request):
         policies_sold=Count('policy_id', distinct=True)
     ).order_by('-policies_sold')
 
+    
     if not pos_qs:
-        return JsonResponse({'message': 'No data found for the given filters'}, status=200)
-
+        return [], []
     # Step 3: Prepare agent IDs safely
     agent_ids = [
         int(item['agent_name']) for item in pos_qs
