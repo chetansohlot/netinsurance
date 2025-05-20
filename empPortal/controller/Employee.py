@@ -360,7 +360,7 @@ def save_or_update_address(request, employee_id):
         return redirect('employee-management')
 
     if request.method == "POST":
-        for address_type in ["permanent", "correspondence"]:
+        for address_type in ["permanent"]:
             addr = request.POST.get(f"{address_type}_address", "").strip()
             state = request.POST.get(f"{address_type}_state", "").strip()
             city = request.POST.get(f"{address_type}_city", "").strip()
@@ -535,7 +535,6 @@ def save_or_update_employment_info(request, employee_id):
     employment, created = EmploymentInfo.objects.get_or_create(employee_id=employee_id)
 
     if request.method == "POST":
-        employee_code = request.POST.get("employee_code", "").strip()
         department = request.POST.get("department", "").strip()
         date_of_joining = request.POST.get("date_of_joining", "").strip()
 
@@ -547,6 +546,8 @@ def save_or_update_employment_info(request, employee_id):
                 return redirect(request.META.get('HTTP_REFERER', '/'))
         else:
             doj = None
+        
+        employee_code = f"ELE-{10000 + int(employee_id)}"
 
         # Update model fields
         employment.employee_code = employee_code
@@ -557,9 +558,28 @@ def save_or_update_employment_info(request, employee_id):
         messages.success(request, "Employment information updated successfully.")
         return redirect('employee-management-update-refrences', employee_id=employee_id)
 
-    return render(request, 'employee/create-employee-info.html', {'employment': employment, 'employee_id': employee_id })
+    employment_code = f"ELE-{10000 + int(employee_id)}"
+
+    return render(request, 'employee/create-employee-info.html', {'employment': employment, 'employee_id': employee_id, 'employment_code': employment_code })
 
 
+
+def toggle_employee_status(request, employee_id, action):
+    employee = get_object_or_404(Users, id=employee_id)
+
+    if action == 'activate':
+        employee.user_active = 1
+        messages.success(request, "Employee activated successfully.")
+    elif action in ['deactivate', 'delete']:
+        employee.user_active = 0
+        print(f"Employee ID: {employee_id} deactivated")
+        messages.success(request, "Employee deactivated successfully.")
+    else:
+        messages.error(request, "Invalid action.")
+        return redirect('employee-management')
+
+    employee.save()
+    return redirect('employee-management')
 
 def save_or_update_refrences(request, employee_id):
     if not request.user.is_authenticated:

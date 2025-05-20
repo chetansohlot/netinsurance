@@ -248,16 +248,32 @@ Employee Management
                                         </td>
                                         
                                         <td>{{ branches|get_item:employee.branch_id|default:"-" }}</td>
+                                        
                                         <td>
-                                          <div class="d-flex">
+                                            <div class="d-flex">
                                               <a href="{% url 'employee-management-update' employee_id=employee.id %}" class="btn btn-xs btn-warning mx-1">
-                                                  <i class="fas fa-edit"></i>
+                                                <i class="fas fa-edit"></i>
                                               </a>
                                               <a href="{% url 'employee-management-view' employee_id=employee.id %}" class="btn btn-xs btn-primary mx-1">
-                                                  <i class="fas fa-eye"></i>
+                                                <i class="fas fa-eye"></i>
                                               </a>
+
+                                              {% if employee.user_active == 1 %}
+                                                <!-- Deactivate -->
+                                                <a href="javascript:void(0);" onclick="handleEmployeeAction('{{ employee.id }}', 'deactivate')" class="btn btn-xs btn-danger mx-1">
+                                                  <i class="fas fa-trash"></i>                                                  
+                                                </a>
+                                              {% else %}
+                                                <!-- Activate -->
+                                                <a href="javascript:void(0);" onclick="handleEmployeeAction('{{ employee.id }}', 'activate')" class="btn btn-xs btn-success mx-1">
+                                                  <i class="fas fa-check"></i>
+                                                </a>
+                                              {% endif %}
                                             </div>
-                                        </td>
+                                          </td>
+
+
+
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -383,8 +399,45 @@ Employee Management
     
     {% include 'footer-script.html' %}
     
-    
-    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+      function handleEmployeeAction(employeeId, action) {
+        let config = {
+          title: '',
+          text: '',
+          icon: '',
+          confirmButtonText: '',
+        };
+
+        if (action === 'activate') {
+          config.title = 'Activate employee?';
+          config.text = 'This will activate the employee.';
+          config.icon = 'question';
+          config.confirmButtonText = 'Yes, activate!';
+        } else {
+          config.title = 'Are you sure?';
+          config.text = 'This will deactivate the employee.';
+          config.icon = 'warning';
+          config.confirmButtonText = 'Yes, deactivate!';
+        }
+
+        Swal.fire({
+          title: config.title,
+          text: config.text,
+          icon: config.icon,
+          showCancelButton: true,
+          confirmButtonColor: '#d33',
+          cancelButtonColor: '#3085d6',
+          confirmButtonText: config.confirmButtonText
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = `/employee-management/toggle-status/${employeeId}/${action}/`;
+          }
+        });
+      }
+    </script>
+
+ 
     
     </body>
 

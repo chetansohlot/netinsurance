@@ -101,7 +101,7 @@ Add Address
                         </div>
                         <div class="form-group col-sm-6 col-md-4">
                           <label class="form-lbl">State</label>
-                          <select name="correspondence_state" id="correspondence_state" class="form-field" required>
+                          <select name="correspondence_state" id="correspondence_state" class="form-field" >
                             <option value="">Select State</option>
                             {% for state in states %}
                               <option value="{{ state.id }}" {% if state.id|stringformat:"s" == correspondence.state|stringformat:"s" %}selected{% endif %}>
@@ -116,7 +116,7 @@ Add Address
                                                 
                         <div class="form-group col-sm-6 col-md-4">
                           <label class="form-lbl">City</label>
-                          <select name="correspondence_city" id="correspondence_city" class="form-field" required>
+                          <select name="correspondence_city" id="correspondence_city" class="form-field" >
                             <option value="">Select City</option>
                             {% for city in correspondence_cities %}
                               <option value="{{ city.id }}" {% if city.id|stringformat:"s" == correspondence.city|stringformat:"s" %}selected{% endif %}>
@@ -163,17 +163,9 @@ $(document).ready(function () {
                 maxlength: 6
             },
             correspondence_address: {
-                required: true,
                 minlength: 5
             },
-            correspondence_state: {
-                required: true
-            },
-            correspondence_city: {
-                required: true
-            },
             correspondence_pincode: {
-                required: true,
                 digits: true,
                 minlength: 6,
                 maxlength: 6
@@ -189,11 +181,7 @@ $(document).ready(function () {
                 minlength: "6 digits required",
                 maxlength: "6 digits required"
             },
-            correspondence_address: "Enter correspondence address",
-            correspondence_state: "Enter state",
-            correspondence_city: "Enter city",
             correspondence_pincode: {
-                required: "Enter pincode",
                 digits: "Only digits allowed",
                 minlength: "6 digits required",
                 maxlength: "6 digits required"

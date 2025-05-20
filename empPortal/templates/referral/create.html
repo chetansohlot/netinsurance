@@ -134,7 +134,15 @@ Create Referral
                           placeholder="Enter User Role" value="{{ referral.user_role|default_if_none:'' }}">
                       </div> -->
 
-                      <!-- Branch -->
+                      <div class="form-group col-md-6 col-lg-4">
+                        <label class="form-lbl" for="bqp_id">BQP</label>
+                        <select class="form-field" name="bqp_id" id="bqp_id">
+                          <option value="">Select BQP</option>
+                          {% for bqp in bqps %}
+                            <option value="{{bqp.id}}" {% if bqp.id|stringformat:"s" == referral.bqp_id|stringformat:"s" %} selected {% endif %}>{{bqp.bqp_name}}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
                       <div class="form-group col-md-6 col-lg-4">
                         <label class="form-lbl" for="branch">Branch</label>
                         <select class="form-field" name="branch" id="branch">
