@@ -112,7 +112,8 @@ urlpatterns = [
     path('v1/get-refferals-for-select',common.get_referrals,name="get-refferals-for-select"),
     path('v1/get-posp-for-select',common.get_posp,name="get-posp-for-select"),
     path('v1/get-branch-sales-managers',common.get_branch_sales_manager,name="get-branch-sales-managers"),
-    path('v1/get-sales-relation_managers',common.get_sales_relation_manager,name="get-sales-relation_managers"),
+    path('v1/get-sales-teamleader',common.get_sales_team_leader,name="get-sales-teamleader"),
+    path('v1/get-sales-relation-managers',common.get_sales_relation_manager,name="get-sales-relation-managers"),
     
     path('my-account/', profile.myAccount, name='my-account'),
     path('download-certificate-pdf/<str:cus_id>/', profile.downloadCertificatePdf, name='download-certificate'),
