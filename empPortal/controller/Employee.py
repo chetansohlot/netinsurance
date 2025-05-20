@@ -547,7 +547,7 @@ def save_or_update_employment_info(request, employee_id):
         else:
             doj = None
         
-        employee_code = f"ELE{int(employee_id):05d}"
+        employee_code = f"ELE-{10000 + int(employee_id)}"
 
         # Update model fields
         employment.employee_code = employee_code
@@ -558,7 +558,7 @@ def save_or_update_employment_info(request, employee_id):
         messages.success(request, "Employment information updated successfully.")
         return redirect('employee-management-update-refrences', employee_id=employee_id)
 
-    employment_code = f"ELE{int(employee_id):05d}"
+    employment_code = f"ELE-{10000 + int(employee_id)}"
 
     return render(request, 'employee/create-employee-info.html', {'employment': employment, 'employee_id': employee_id, 'employment_code': employment_code })
 
