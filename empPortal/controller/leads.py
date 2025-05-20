@@ -23,7 +23,7 @@ from fastapi import FastAPI, File, UploadFile
 # Django Core Imports
 from django.conf import settings
 from django.db import connection
-from django.db.models import Q, F, Value, Max, CharField
+from django.db.models import Q, F, Value, Max, CharField, OuterRef, Subquery
 from django.db.models.functions import Concat, Coalesce
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -62,6 +62,7 @@ from empPortal.model.customer import Customer
 from empPortal.model.leadActivity import LeadActivity
 from empPortal.model.Dispositions import Disposition, SubDisposition
 from empPortal.model.LeadDisposition import LeadDisposition, LeadDispositionLogs
+from empPortal.model.leads import LeadPreviousPolicy
 
 logger = logging.getLogger(__name__)
 
@@ -165,7 +166,6 @@ def index(request):
     sales_manager = request.GET.get('sales_manager', '')
     sales_teamleader = request.GET.get('sales_teamleader', '')
     sales_rm = request.GET.get('sales_rm', '')
-    
     agent_name = request.GET.get('agent_name', '')
     policy_number = request.GET.get('policy_number', '')
     
@@ -216,7 +216,16 @@ def index(request):
     if policy_number:
         leads = leads.filter(registration_number__icontains=policy_number)
     if insurance_company:
-        leads = leads.filter(insurance_company=insurance_company)
+        lp_subquery = LeadPreviousPolicy.objects.filter(
+            lead=OuterRef('id')
+        ).values('insurance_company_id')[:1]
+
+        leads = leads.annotate(
+            policy_insurance_company=Subquery(lp_subquery)
+        ).filter(
+            Q(lead_insurance_product_id=32, policy_insurance_company=insurance_company) |
+            Q(~Q(lead_insurance_product_id=32), insurance_company=insurance_company)
+        )
     if policy_type:
         leads = leads.filter(policy_type=policy_type)
     if vehicle_type:
@@ -1316,7 +1325,12 @@ def previous_policy_info(request,lead_id):
         messages.error(request,'Sorry Lead Data is missing')
         return redirect('leads-mgt')
     
-    return render(request, "leads/create.html",{"lead_data":lead_data})
+    insurance_company_list = Insurance.objects.filter(active='Active')
+    
+    lead_previous_policy = None
+    if lead_data.lead_insurance_product_id == 32:
+        lead_previous_policy = LeadPreviousPolicy.objects.filter(lead_id=lead_data.id).last()
+    return render(request, "leads/create.html",{"lead_data":lead_data,"lead_previous_policy":lead_previous_policy,'insurance_company_list':insurance_company_list})
 
 def clean(val):
     return val.strip() if isinstance(val, str) and val.strip() else None
@@ -1760,6 +1774,50 @@ def save_leads_previous_policy_info(request):
         messages.error(request,'Something Went Wrong Please Try After Sometime')
         return redirect('leads-mgt')
     
+
+def save_leads_motor_previous_policy_info(request):
+    if not request.user.is_authenticated or request.user.is_active != 1:
+        messages.error(request, 'Please Login First')
+        return redirect('login')
+
+    lead_ref_id = request.POST.get('lead_ref_id') or None
+    if not lead_ref_id or lead_ref_id == "0":
+        messages.error(request, 'Lead ID is not found')
+        return redirect('leads-mgt')
+
+    lead = Leads.objects.filter(lead_id=lead_ref_id).first()
+    if not lead:
+        messages.error(request, 'Invalid Lead Reference')
+        return redirect('leads-mgt')
+
+    policy, created = LeadPreviousPolicy.objects.get_or_create(lead_id=lead.id)
+
+    fields = [
+        'registration_number', 'registration_date', 'vehicle_type', 'make', 'model', 'variant',
+        'year_of_manufacture', 'registration_state', 'registration_city', 'chassis_number',
+        'engine_number', 'claim_history', 'ncb', 'ncb_percentage', 'idv_value', 'policy_type',
+        'policy_duration', 'addons', 'owner_name', 'father_name', 'state_code', 'location',
+        'vehicle_category', 'vehicle_class_description', 'body_type_description', 'vehicle_color',
+        'vehicle_cubic_capacity', 'vehicle_gross_weight', 'vehicle_seating_capacity',
+        'vehicle_fuel_description', 'vehicle_owner_number', 'rc_expiry_date',
+        'rc_pucc_expiry_date', 'insurance_expiry_date', 'insurance_policy_number'
+    ]
+
+    for field in fields:
+        value = request.POST.get(field) or None
+        setattr(policy, field, clean(value))
+
+    try:
+        insurance_company = request.POST.get('insurance_company')
+        policy.insurance_company_id = clean(insurance_company)
+        policy.save()
+        messages.success(request, f"{'Created' if created else 'Updated'} successfully.")
+        return redirect('leads-mgt')
+    except Exception as e:
+        logger.error(f"Error saving LeadPreviousPolicy: {str(e)}")
+        messages.error(request, 'Something went wrong. Please try again later.')
+        return redirect('leads-mgt')
+
 def view_lead(request, lead_id):
     if not request.user.is_authenticated and request.user.is_active != 1:
         return redirect('login')
@@ -1769,7 +1827,10 @@ def view_lead(request, lead_id):
     disposition_list = Disposition.objects.filter(disp_is_active=True)
     lead_disposition = LeadDisposition.objects.filter(lead_id=lead.id).last()
     disposition_logs  = LeadDispositionLogs.objects.filter(log_lead_id=lead.id).order_by('-log_created_at')
-    return render(request, 'leads/lead-view.html', {'lead': lead,'disposition_list':disposition_list,'disposition_logs':disposition_logs,'lead_disposition':lead_disposition})
+    lead_previous_policy = None
+    if lead.lead_insurance_product_id == 32:
+        lead_previous_policy = LeadPreviousPolicy.objects.filter(lead_id=lead.id).last()
+    return render(request, 'leads/lead-view.html', {'lead': lead,'disposition_list':disposition_list,'disposition_logs':disposition_logs,'lead_disposition':lead_disposition,'lead_previous_policy':lead_previous_policy})
 
 def save_leads_dispositions(request):
     if not request.user.is_authenticated and request.user.is_active != 1:

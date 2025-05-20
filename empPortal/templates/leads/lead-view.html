@@ -139,7 +139,11 @@
                                         <div class="tab-content tab-scrollbar">
                                             {% include "components/leads/lead-activity-tab.html" %}
                                             {% include "components/leads/lead-details-tab.html" %}
-                                            {% include "components/leads/lead-previous-policy-info-tab.html" %}
+                                            {% if lead.lead_insurance_product_id and lead.lead_insurance_product_id == 32 %}
+                                                {% include "components/leads/lead-motor-previous-policy-tab.html" %}
+                                            {% else %}
+                                                {% include "components/leads/lead-previous-policy-info-tab.html" %}
+                                            {% endif %}
                                             {% include "components/leads/lead-quote-tab.html" %}
                                             {% include "components/leads/lead-booking-tab.html" %}
                                             {% include "components/leads/lead-policy-issue-tab.html" %}

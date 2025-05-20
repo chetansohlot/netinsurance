@@ -198,18 +198,15 @@ class Leads(models.Model):
     lead_description = models.TextField(null=True, blank=True)
     lead_source = models.CharField(max_length=25, null=True, blank=True)  
     referral_by = models.CharField(max_length=25, null=True, blank=True)  
-    
     assigned_to = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.SET_NULL,null=True,blank=True, related_name='leads_assigned')  
     assigned_manager = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.SET_NULL,null=True,blank=True, related_name='leads_assigned_manager')  
     assigned_teamleader = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.SET_NULL,null=True,blank=True, related_name='leads_assigned_teamleader')  
     branch = models.ForeignKey(Branch, on_delete=models.SET_NULL, null=True, blank=True)  
     lead_status_type = models.IntegerField( null=True, blank=True)  
     lead_tag = models.IntegerField( null=True, blank=True)  
-    
     referral_mobile_no = models.BigIntegerField(null=True, blank=True)
     referral_name = models.CharField(max_length=255,null=True,blank=True)
     lead_source_medium = models.IntegerField(null=True, blank=True)
-    
     policy_date = models.DateField(null=True, blank=True)
     sales_manager = models.CharField(max_length=100, null=True, blank=True)
     agent_name = models.CharField(max_length=100, null=True, blank=True)
@@ -231,12 +228,10 @@ class Leads(models.Model):
     lead_insurance_type = models.ForeignKey(InsuranceType,on_delete=models.SET_NULL,null=True,blank=True)
     lead_insurance_category = models.ForeignKey(InsuranceCategory, on_delete=models.SET_NULL, null=True, blank=True)
     lead_insurance_product = models.ForeignKey(InsuranceProduct, on_delete=models.SET_NULL, null=True, blank=True)
-    
     lead_first_name = models.CharField(max_length=255,null=True,blank=True)
     lead_last_name = models.CharField(max_length=255,null=True,blank=True)
     lead_customer_identity_no = models.CharField(max_length=255,null=True,blank=True)
     lead_customer_gender = models.IntegerField(null=True,blank=True)
-    
     previous_idv_amount = models.IntegerField(null=True,blank=True)
     previous_sum_insured = models.IntegerField(null=True,blank=True)
     claim_amount = models.IntegerField(null=True,blank=True)
@@ -252,20 +247,6 @@ class Leads(models.Model):
     vehicle_model = models.CharField(max_length=255,null=True,blank=True)
     vehicle_make = models.CharField(max_length=255,null=True,blank=True)
     policy_end_date = models.DateField(null=True, blank=True)
-    posp = models.ForeignKey( settings.AUTH_USER_MODEL,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name='posp_user_id'
-    )
-    lead_type = models.CharField(
-        max_length=10, 
-        choices=[('MOTOR', 'MOTOR'), ('HEALTH', 'HEALTH'), ('TERM', 'TERM')], 
-        default='MOTOR'
-    )  # Type of lead (MOTOR, HEALTH, TERM)
-    #source_leads = models.ForeignKey(SourceMaster,db_column='source_leads',on_delete=models.CASCADE)
-
-    # New fields added
     policy_date = models.DateField(null=True, blank=True)
     sales_manager = models.CharField(max_length=100, null=True, blank=True)
     agent_name = models.CharField(max_length=100, null=True, blank=True)
@@ -283,11 +264,26 @@ class Leads(models.Model):
     tp_premium = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     net_premium = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     gross_premium = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    # risk_start_date = models.DateField(null=True, blank=True)
     risk_start_date = models.CharField(max_length=255)
     lead_source_type = models.ForeignKey(SourceMaster,on_delete=models.SET_NULL,null=True,blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True) 
+    
+    updated_at = models.DateTimeField(auto_now=True)  
+    lead_customer = models.ForeignKey(Customer,on_delete=models.SET_NULL,null=True,blank=True,related_name='fk_lead_customer_id')
+    
+    status = models.BooleanField(default=True)
+    posp = models.ForeignKey( settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='posp_user_id'
+    )
+    lead_type = models.CharField(
+        max_length=10, 
+        choices=[('MOTOR', 'MOTOR'), ('HEALTH', 'HEALTH'), ('TERM', 'TERM')], 
+        default='MOTOR'
+    )
     created_by =  created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
@@ -295,8 +291,6 @@ class Leads(models.Model):
         blank=True,
         related_name='leads_created'
     )
-    updated_at = models.DateTimeField(auto_now=True)  
-    lead_customer = models.ForeignKey(Customer,on_delete=models.SET_NULL,null=True,blank=True,related_name='fk_lead_customer_id')
     parent_lead = models.ForeignKey(
         'self',
         on_delete=models.SET_NULL,
@@ -304,13 +298,11 @@ class Leads(models.Model):
         blank=True,
         related_name='child_lead'
     )
-    status = models.BooleanField(default=True)
     class Meta:
         db_table = 'leads'  
 
     def __str__(self):
         return f"Lead - {self.name_as_per_pan}"
-
 
 class QuotationVehicleDetail(models.Model):
     registration_number = models.CharField(max_length=20, null=True, blank=True)
@@ -327,8 +319,6 @@ class QuotationVehicleDetail(models.Model):
 
 from django.db import models
 from django.utils.timezone import now
-
-
 
 class PolicyDocument(models.Model):
     

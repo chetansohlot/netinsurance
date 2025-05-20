@@ -114,6 +114,7 @@ urlpatterns = [
     path('v1/get-branch-sales-managers',common.get_branch_sales_manager,name="get-branch-sales-managers"),
     path('v1/get-sales-teamleader',common.get_sales_team_leader,name="get-sales-teamleader"),
     path('v1/get-sales-relation-managers',common.get_sales_relation_manager,name="get-sales-relation-managers"),
+    path('v1/fetch-vehicle-details/', common.fetch_vehicle_info, name='fetch-vehicle-details'),
     
     path('my-account/', profile.myAccount, name='my-account'),
     path('download-certificate-pdf/<str:cus_id>/', profile.downloadCertificatePdf, name='download-certificate'),
@@ -200,6 +201,7 @@ urlpatterns = [
     path('leads/v1/save-lead-assignment-info',leads.save_leads_assignment_info,name="save-lead-assignment-info"), 
     path('leads/v1/save-lead-allocation-info',leads.save_leads_allocation_info,name="save-lead-allocation-info"), 
     path('leads/v1/save-lead-previous-policy-info',leads.save_leads_previous_policy_info,name="save-lead-previous-policy-info"), 
+    path('leads/v1/save-lead-motor-previous-policy-info',leads.save_leads_motor_previous_policy_info,name="save-lead-motor-previous-policy-info"), 
     
     path('leads/v1/save-lead-dispositions',leads.save_leads_dispositions,name="save-lead-dispositions"),
     #Insurance
