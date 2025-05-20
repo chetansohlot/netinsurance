@@ -129,7 +129,30 @@
                                 <div class="col-sm-6 col-md-2">
                                   <input class="form-field" name="mobile_number" type="tel" placeholder="Mobile Number" value="{{ request.GET.mobile_number }}">
                                 </div>
+                                <div class="col-sm-6 col-md-2">
+                                  <input class="form-field" name="policy_number" type="text"
+                                        placeholder="Policy/Registration Number"
+                                        value="">
+                                </div>
                                 <!-- blank 6th column -->
+                                
+                              </div>
+                              <!-- Row 2: 6 Insurance-related filters -->
+                              <div class="row mb-3">
+                                <div class="col-sm-6 col-md-2">
+                                  <input  type="text" id="start_date" name="start_date" class="form-field" placeholder="Start Date" onkeydown="return false;" onfocus="(this.type='date'); this.showPicker && this.showPicker()" onblur="if(this.value===''){this.type='text'}" value="{{ request.GET.start_date }}">
+                                </div>
+                                
+                                <div class="col-sm-6 col-md-2">
+                                  <input  type="text" id="end_date" name="end_date" class="form-field" placeholder="End Date" onkeydown="return false;" onfocus="(this.type='date'); this.showPicker && this.showPicker()" onblur="if(this.value===''){this.type='text'}" value="{{ request.GET.end_date }}">
+                                </div>
+                                
+                                <div class="col-sm-6 col-md-2">
+                                  <select name="branch" id="branch" class="form-field">
+                                    <option value="">Select Branch</option>
+                                  </select>
+                                </div>
+                                
                                 <div class="col-sm-6 col-md-2">
                                   <select name="sales_manager" class="form-field">
                                     <option value="">Select Sales Manager</option>
@@ -139,58 +162,8 @@
                                       </option>
                                     {% endfor %}
                                   </select>
-                                  
                                 </div>
-                              </div>
-                              <!-- Row 2: 6 Insurance-related filters -->
-                              <div class="row mb-3">
-                                <!-- <div class="col-sm-6 col-md-2">
-                                  <select class="form-field" name="sales_manager">
-                                    <option value="">Select Sales Manager</option>
-                                  </select>
-                                </div> -->
-                                      
-                                <div class="col-sm-6 col-md-2">
-                                  <input class="form-field" name="policy_number" type="text"
-                                        placeholder="Policy/Registration Number"
-                                        value="">
-                                </div>
-                              
-                                <!--<div class="col-sm-6 col-md-2">
-                                  <label for="start_date" class="custom-label">Start Date</label>
-                                  <input class="form-field" name="start_date" id="start_date" type="date" value="{{ request.GET.start_date }} placeholder="Start Date"" readonly>
-                                </div>
-                                
-                                <div class="col-sm-6 col-md-2">
-                                  <label for="end_date" class="custom-label">End Date</label>
-                                  <input class="form-field" name="end_date" id="end_date" type="date" value="{{ request.GET.end_date }}" placeholder="End Date" readonly>
-                                </div>-->
-                          
-                                <div class="col-sm-6 col-md-2">
-                                  <input 
-                                    type="text"
-                                    id="start_date"
-                                    name="start_date"
-                                    class="form-field"
-                                    placeholder="Start Date"
-                                    onkeydown="return false;"
-                                    onfocus="(this.type='date'); this.showPicker && this.showPicker()"
-                                    onblur="if(this.value===''){this.type='text'}"
-                                    value="{{ request.GET.start_date }}">
-                                </div>
-                                
-                                <div class="col-sm-6 col-md-2">
-                                  <input 
-                                    type="text"
-                                    id="end_date"
-                                    name="end_date"
-                                    class="form-field"
-                                    placeholder="End Date"
-                                    onkeydown="return false;"
-                                    onfocus="(this.type='date'); this.showPicker && this.showPicker()"
-                                    onblur="if(this.value===''){this.type='text'}"
-                                    value="{{ request.GET.end_date }}">
-                                </div>
+
                                 
 
                                 

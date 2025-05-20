@@ -1,71 +1,64 @@
-from multiprocessing import Value
-from urllib import request
-from django.http import HttpResponse
-from django.contrib.auth.hashers import make_password
-from django.contrib.auth import update_session_auth_hash
-from django.shortcuts import render,redirect, get_object_or_404
-from django.contrib import messages
-from django.template import loader
-from ..models import Commission, LeadUploadExcel, SourceMaster,Users, DocumentUpload, Branch, Leads, QuotationCustomer
-from empPortal.model import BankDetails
-from ..forms import DocumentUploadForm
-from django.core.mail import send_mail
-from django.core.mail import EmailMessage
-from django.utils.timezone import now
-from django.contrib.auth import authenticate, login ,logout
-from django.core.files.storage import FileSystemStorage
+# Standard Library Imports
+import os
 import re
-import requests
-from fastapi import FastAPI, File, UploadFile
-import fitz
-import openai
 import time
 import json
-from django.http import JsonResponse
-import os
-import zipfile
-from django.conf import settings
-from django.contrib.auth.decorators import login_required
-from django.core.cache import cache
-from django.db import connection
 import logging
-logger = logging.getLogger(__name__)
-import os
-import pdfkit
+import zipfile
+from io import BytesIO
+from datetime import datetime, timedelta
+from pprint import pprint
+from urllib import request
+
+# Third-Party Imports
+import fitz  # PyMuPDF
+import openai
+import pandas as pd
+import openpyxl
+from dateutil import parser
+from openpyxl.utils import get_column_letter
+from openpyxl import Workbook
+from fastapi import FastAPI, File, UploadFile
+
+# Django Core Imports
+from django.conf import settings
+from django.db import connection
+from django.db.models import Q, F, Value, Max, CharField
+from django.db.models.functions import Concat, Coalesce
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render, redirect, get_object_or_404
+from django.template import loader
 from django.template.loader import render_to_string
-from pprint import pprint 
+from django.core.mail import send_mail, EmailMessage
+from django.core.files.storage import FileSystemStorage, default_storage
 from django.core.paginator import Paginator
-from django.db.models import Q
-from empPortal.model import Referral, Partner
+from django.contrib import messages
+from django.contrib.auth import (
+    authenticate, login, logout,
+    update_session_auth_hash,
+    hashers as auth_hashers
+)
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.timezone import now
+from django_q.tasks import async_task
+
+# Local App Imports
+from ..models import (
+    Users, Roles, Commission, LeadUploadExcel, SourceMaster,
+    DocumentUpload, Branch, Leads, QuotationCustomer,
+    PolicyInfo, PolicyDocument
+)
+from ..forms import DocumentUploadForm
+from ..model import (
+    State, City, InsuranceType,
+    InsuranceCategory, InsuranceProduct
+)
+from empPortal.model import (
+    BankDetails, Referral, Partner
+)
 from empPortal.model.customer import Customer
 from empPortal.model.leadActivity import LeadActivity
-
-
-import pandas as pd
-from django.core.files.storage import default_storage
-import openpyxl
-from django.db.models import Max
-import re,logging
-from dateutil import parser
-logger = logging.getLogger(__name__)
-OPENAI_API_KEY = settings.OPENAI_API_KEY
-from django_q.tasks import async_task
-from ..models import Users, LeadUploadExcel
-from datetime import datetime, timedelta
-from django.db.models import F, Value, CharField
-from django.db.models.functions import Concat, Coalesce
-from ..models import PolicyInfo
-from ..models import Users, Roles,PolicyDocument
-from django.views.decorators.csrf import csrf_exempt
-from openpyxl.utils import get_column_letter
-import openpyxl
-from io import BytesIO
-from django.http import HttpResponse
-from openpyxl import Workbook
-from ..model import State, City
-app = FastAPI()
-from datetime import datetime
-from ..model import InsuranceType, InsuranceCategory, InsuranceProduct
 from empPortal.model.Dispositions import Disposition, SubDisposition
 from empPortal.model.LeadDisposition import LeadDisposition, LeadDispositionLogs
 
