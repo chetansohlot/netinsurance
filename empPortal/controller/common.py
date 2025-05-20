@@ -27,13 +27,25 @@ def get_branch_sales_manager(request):
     ).values('id', 'first_name','last_name')
     return JsonResponse(list(managers), safe=False)
 
-def get_sales_relation_manager(request):
+def get_sales_team_leader(request):
     assigned_manager = request.POST.get('assigned_manager')
+    branch_id = request.POST.get('branch_id')
+    
+    team_leaders = Users.objects.filter(
+        branch_id = branch_id,
+        senior_id = assigned_manager,
+        department_id = 1,
+        is_active = True
+    ).values('id', 'first_name','last_name')
+    return JsonResponse(list(team_leaders), safe=False)
+
+def get_sales_relation_manager(request):
+    assigned_teamleader = request.POST.get('assigned_teamleader')
     branch_id = request.POST.get('branch_id')
     
     relation_managers = Users.objects.filter(
         branch_id = branch_id,
-        senior_id = assigned_manager,
+        senior_id = assigned_teamleader,
         department_id = 1,
         is_active = True
     ).values('id', 'first_name','last_name')
