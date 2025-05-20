@@ -7,6 +7,7 @@ from ..models import Franchises, Department,RefUploadedExcel, Branch, Users
 from django.db.models import OuterRef, Subquery
 from django.contrib import messages
 from datetime import date, datetime
+from ..models import BulkPolicyLog,ExtractedFile, BqpMaster, SingleUploadFile
 from django.urls import reverse
 import pprint  # Import pprint for better formatting
 from django.http import JsonResponse
@@ -165,12 +166,16 @@ def create_or_edit(request, referral_id=None):
         employee_exists=True,
         is_active=1
     )
+
+    bqps = BqpMaster.objects.all().order_by('bqp_fname')
+
     relationship_managers = Users.objects.filter(department_id=1,is_active=1,role_id=7)  #only sales dept relationship manager 
     # franchises = Franchises.objects.filter(status="Active")
     if request.method == "GET":
         return render(request, 'referral/create.html', {
             'referral': referral,
             'is_editing': is_editing,
+            'bqps': bqps,
             'branchs': branchs,
             'sales_managers':sales_managers,
             # 'franchises':franchises,
@@ -190,6 +195,7 @@ def create_or_edit(request, referral_id=None):
         aadhar = request.POST.get("aadhar", "").strip()
 
         user_role = request.POST.get("user_role", "").strip()
+        bqp_id = request.POST.get("bqp_id", "").strip()
         branch = request.POST.get("branch", "").strip()
         sales = request.POST.get("sales", "").strip()
         supervisor = request.POST.get("supervisor", "").strip()
@@ -216,6 +222,7 @@ def create_or_edit(request, referral_id=None):
             "pan_card_number": pan_card_number,
             "aadhar_no": aadhar,
             "user_role": user_role,
+            "bqp_id": bqp_id,
             "branch": branch,
             "sales": sales,
             "supervisor": supervisor,
@@ -346,6 +353,7 @@ def create_or_edit(request, referral_id=None):
             referral.aadhar_no = aadhar
 
             referral.user_role = user_role
+            referral.bqp_id = bqp_id
             referral.branch = branch
             referral.sales = sales
             referral.supervisor = supervisor
@@ -479,6 +487,7 @@ def create_or_edit(request, referral_id=None):
                 aadhar_no=aadhar,
 
                 user_role=user_role,
+                bqp_id=bqp_id,
                 branch=branch,
                 sales=sales,
                 supervisor=supervisor,
