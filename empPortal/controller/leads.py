@@ -63,6 +63,8 @@ from empPortal.model.leadActivity import LeadActivity
 from empPortal.model.Dispositions import Disposition, SubDisposition
 from empPortal.model.LeadDisposition import LeadDisposition, LeadDispositionLogs
 from empPortal.model.leads import LeadPreviousPolicy
+from empPortal.model.policyTypes import PolicyType
+from empPortal.model.vehicleTypes import VehicleType
 
 logger = logging.getLogger(__name__)
 
@@ -227,15 +229,28 @@ def index(request):
             Q(~Q(lead_insurance_product_id=32), insurance_company=insurance_company)
         )
     if policy_type:
-        leads = leads.filter(policy_type=policy_type)
+        lp_subquery = LeadPreviousPolicy.objects.filter(
+            lead=OuterRef('id')
+        ).values('policy_type_id')[:1]
+
+        leads = leads.annotate(
+            policy_policy_type=Subquery(lp_subquery)
+        ).filter(
+            Q(lead_insurance_product_id=32, policy_policy_type=policy_type) |
+            Q(~Q(lead_insurance_product_id=32), policy_type=policy_type)
+        )
     if vehicle_type:
-        leads = leads.filter(vehicle_type=vehicle_type)
-    if lead_type:
-        leads = leads.filter(lead_type=lead_type)
+        lp_subquery = LeadPreviousPolicy.objects.filter(
+            lead=OuterRef('id')
+        ).values('vehicle_type_id')[:1]
 
-    if lead_type == 'MOTOR' and motor_type:
-        leads = leads.filter(vehicle_type=motor_type)
-
+        leads = leads.annotate(
+            policy_vehicle_type=Subquery(lp_subquery)
+        ).filter(
+            Q(lead_insurance_product_id=32, policy_vehicle_type=vehicle_type) |
+            Q(~Q(lead_insurance_product_id=32), vehicle_type=vehicle_type)
+        )
+    
     upcoming_renewals = request.GET.get('upcoming_renewals')
 
     if upcoming_renewals:
@@ -289,6 +304,8 @@ def index(request):
     page_obj = paginator.get_page(page_number)
 
     branch = Branch.objects.filter(status="Active")
+    policy_type_list = PolicyType.objects.filter(status=1)
+    vehicle_type_list = VehicleType.objects.filter(status=1)
     insurance_companies = Insurance.objects.filter(active="active")
     return render(request, 'leads/index.html', {
         'page_obj': page_obj,
@@ -305,10 +322,11 @@ def index(request):
         'agents': agents,
         'selected_agent': agent_name,
         'insurance_companies': insurance_companies,
-        'policy_types': policy_types,
         'vehicle_types': vehicle_types,
         'leads': leads,
-        'branchs': branch
+        'branchs': branch,
+        'policy_type_list': policy_type_list,
+        'vehicle_type_list': vehicle_type_list
     })
 
 def export_leads_to_excel(leads_queryset):
@@ -1326,11 +1344,13 @@ def previous_policy_info(request,lead_id):
         return redirect('leads-mgt')
     
     insurance_company_list = Insurance.objects.filter(active='Active')
+    policy_type_list = PolicyType.objects.filter(status=1)
+    vehicle_type_list = VehicleType.objects.filter(status=1)
     
     lead_previous_policy = None
     if lead_data.lead_insurance_product_id == 32:
         lead_previous_policy = LeadPreviousPolicy.objects.filter(lead_id=lead_data.id).last()
-    return render(request, "leads/create.html",{"lead_data":lead_data,"lead_previous_policy":lead_previous_policy,'insurance_company_list':insurance_company_list})
+    return render(request, "leads/create.html",{"lead_data":lead_data,"lead_previous_policy":lead_previous_policy,'insurance_company_list':insurance_company_list,'policy_type_list':policy_type_list,'vehicle_type_list':vehicle_type_list})
 
 def clean(val):
     return val.strip() if isinstance(val, str) and val.strip() else None
@@ -1793,9 +1813,9 @@ def save_leads_motor_previous_policy_info(request):
     policy, created = LeadPreviousPolicy.objects.get_or_create(lead_id=lead.id)
 
     fields = [
-        'registration_number', 'registration_date', 'vehicle_type', 'make', 'model', 'variant',
+        'registration_number', 'registration_date', 'make', 'model', 'variant',
         'year_of_manufacture', 'registration_state', 'registration_city', 'chassis_number',
-        'engine_number', 'claim_history', 'ncb', 'ncb_percentage', 'idv_value', 'policy_type',
+        'engine_number', 'claim_history', 'ncb', 'ncb_percentage', 'idv_value',
         'policy_duration', 'addons', 'owner_name', 'father_name', 'state_code', 'location',
         'vehicle_category', 'vehicle_class_description', 'body_type_description', 'vehicle_color',
         'vehicle_cubic_capacity', 'vehicle_gross_weight', 'vehicle_seating_capacity',
@@ -1809,7 +1829,11 @@ def save_leads_motor_previous_policy_info(request):
 
     try:
         insurance_company = request.POST.get('insurance_company')
+        vehicle_type = request.POST.get('vehicle_type')
+        policy_type = request.POST.get('policy_type')
         policy.insurance_company_id = clean(insurance_company)
+        policy.vehicle_type_id = clean(vehicle_type)
+        policy.policy_type_id = clean(policy_type)
         policy.save()
         messages.success(request, f"{'Created' if created else 'Updated'} successfully.")
         return redirect('leads-mgt')

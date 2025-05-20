@@ -1,12 +1,14 @@
 from django.db import models
 from ..models import Leads  
 from empPortal.model import Insurance
+from empPortal.model.vehicleTypes import VehicleType
+from empPortal.model.policyTypes import PolicyType
 
 class LeadPreviousPolicy(models.Model):
     lead = models.ForeignKey(Leads, on_delete=models.SET_NULL, null=True, blank=True,related_name='pk_lead_details')
     registration_number = models.CharField(max_length=50, null=True, blank=True)
     registration_date = models.DateField(null=True, blank=True)
-    vehicle_type = models.CharField(max_length=50, null=True, blank=True)
+    vehicle_type = models.ForeignKey(VehicleType, on_delete=models.SET_NULL,null=True,blank=True)
     make = models.CharField(max_length=100, null=True, blank=True)
     model = models.CharField(max_length=100, null=True, blank=True)
     variant = models.CharField(max_length=100, null=True, blank=True)
@@ -19,7 +21,7 @@ class LeadPreviousPolicy(models.Model):
     ncb = models.BooleanField(null=True, blank=True)
     ncb_percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
     idv_value = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
-    policy_type = models.CharField(max_length=50, null=True, blank=True)
+    policy_type = models.ForeignKey(PolicyType,on_delete=models.SET_NULL,null=True,blank=True,related_name="pk_policy_type")
     policy_duration = models.CharField(max_length=50, null=True, blank=True)
     addons = models.TextField(null=True, blank=True)
     owner_name = models.CharField(max_length=100, null=True, blank=True)

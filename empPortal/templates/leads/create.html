@@ -79,10 +79,13 @@
                             </div>
                             <div class="form-group col-md-4">
                               <label class="form-lbl">Previous Insurer Name</label>
-                              <select class="form-field" name="previous_insurer_name" id="previous_insurer_name">
-                                  <option value="">Select</option>
-                                  <option value="1" {% if lead_data.previous_insurer_name == "1" %} selected {% endif %}>ICICI Lombard</option>
-                                  <option value="2" {% if lead_data.previous_insurer_name == "2" %} selected {% endif %}>HDFC Ergo</option>                                
+                              <select name="insurance_company" id="insurance_company" class="form-field">
+                                    <option value="">Select Insurance Company</option>
+                                    {% if insurance_company_list %}
+                                        {% for insurance_cmpny in insurance_company_list %}
+                                          <option value="{{insurance_cmpny.id}}" {% if lead_previous_policy.insurance_company_id == insurance_cmpny.id %} selected {% endif %}>{{insurance_cmpny.insurance_company}}</option>
+                                        {% endfor %}
+                                    {% endif %}
                               </select>
                             </div>
                             

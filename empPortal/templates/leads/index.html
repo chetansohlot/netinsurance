@@ -183,8 +183,8 @@
                                 <div class="col-sm-6 col-md-2 mb-3">
                                   <select class="form-field" name="policy_type">
                                     <option value="">Select Policy Type</option>
-                                    {% for type in policy_types %}
-                                      <option value="{{ type }}" {% if request.GET.policy_type == type %}selected{% endif %}>{{ type }}</option>
+                                    {% for policy_type in policy_type_list %}
+                                      <option value="{{ policy_type.id }}" {% if request.GET.policy_type|stringformat:"s" == policy_type.id|stringformat:"s" %}selected{% endif %}>{{ policy_type.name  }}</option>
                                     {% endfor %}
                                   </select>
                                 </div>
@@ -192,11 +192,10 @@
                                 <div class="col-sm-6 col-md-2 mb-3">
                                   <select class="form-field" name="vehicle_type">
                                     <option value="">Select Vehicle Type</option>
-                                    {% for vehicle in vehicle_types %}
-                                      <option value="{{ vehicle }}" {% if request.GET.vehicle_type == vehicle %}selected{% endif %}>{{ vehicle }}</option>
+                                    {% for vehicle in vehicle_type_list %}
+                                      <option value="{{ vehicle.id }}" {% if request.GET.vehicle_type|stringformat:"s" == vehicle.id|stringformat:"s" %}selected{% endif %}>{{ vehicle.name }}</option>
                                     {% endfor %}
                                   </select>
-                                  
                                 </div>
 
                                 <div class="col-sm-6 col-md-2 mb-3">
@@ -209,19 +208,7 @@
                                     <option value="15" {% if request.GET.upcoming_renewals == '15' %}selected{% endif %}>In 15 Days</option>
                                     <option value="30" {% if request.GET.upcoming_renewals == '30' %}selected{% endif %}>In 30 Days</option>
                                   </select>
-                                          
                                 </div>
-                            
-                                <!-- Motor Type Dropdown (Only shows if MOTOR is selected) -->
-                                <div id="motor_type_container" class="col-sm-6 col-md-2 mb-3">
-                                  <select class="form-field" name="motor_type">
-                                    <option value="">Select Motor Type</option>
-                                    <option value="2_WHEELER" {% if request.GET.motor_type == '2_WHEELER' %}selected{% endif %}>2 Wheeler</option>
-                                    <option value="4_WHEELER" {% if request.GET.motor_type == '4_WHEELER' %}selected{% endif %}>4 Wheeler</option>
-                                    <option value="COMMERCIAL" {% if request.GET.motor_type == 'COMMERCIAL' %}selected{% endif %}>Commercial</option>
-                                  </select>
-                                </div>   
-
                               </div>
                               <div class="row mb-3">
                                 <!-- 6th col: Apply / Reset -->
