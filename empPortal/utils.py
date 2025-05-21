@@ -430,3 +430,39 @@ def getUserNameByUserId(user_id):
     except Users.DoesNotExist:
         return None
   
+def get_team_user_ids(user_id):
+    try:
+        user = Users.objects.get(id=user_id)
+    except Users.DoesNotExist:
+        return []
+
+    role_id = user.role_id
+
+    if role_id == 3:  # Branch Manager
+        user_ids = list(
+            Users.objects.filter(
+                branch_id=user.branch_id,
+                role_id__in=[5, 6, 7]
+            ).values_list('id', flat=True)
+        )
+        return user_ids + [user_id]
+
+    elif role_id == 5:  # Manager
+        team_leaders = Users.objects.filter(role_id=6, senior_id=user_id)
+        tl_ids = list(team_leaders.values_list('id', flat=True))
+
+        relationship_managers = Users.objects.filter(role_id=7, senior_id__in=tl_ids)
+        rm_ids = list(relationship_managers.values_list('id', flat=True))
+
+        return tl_ids + rm_ids + [user_id]
+
+    elif role_id == 6:  # Team Leader
+        rm_ids = list(
+            Users.objects.filter(role_id=7, senior_id=user_id).values_list('id', flat=True)
+        )
+        return rm_ids + [user_id]
+
+    elif role_id == 7:  # Relationship Manager
+        return [user_id]
+
+    return []
