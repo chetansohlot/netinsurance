@@ -188,7 +188,7 @@
                                   <div class="col-sm-6">
                                     <div class="form-group">
                                       <label class="form-lbl">Transaction ID / Check Number</label>
-                                      <input type="text" class="form-field" name="transaction_id" value="{{ agent_payment.transaction_id  }}" placeholder="Transaction Id / Check Number   (if None pass 0)">
+                                      <input type="text" class="form-field" name="transaction_id" value="{{ agent_payment.transaction_id|default:0  }}" placeholder="Transaction Id / Check Number   (if None pass 0)">
                                     </div>
                                   </div>
 
@@ -282,7 +282,7 @@
                                     <div class="col-sm-6">
                                       <div class="form-group">
                                         <label class="form-lbl">Agent TDS  (in %)</label>
-                                        <input type="text" class="form-field percentage" name="agent_tds" id="agent_tds" placeholder="Agent TDS" value="{{ agent_payment.agent_tds }}">
+                                        <input type="text" class="form-field percentage" name="agent_tds" id="agent_tds" placeholder="Agent TDS" value="{{ agent_payment.agent_tds|default:2 }}">
                                       </div>
                                     </div>
 
