@@ -32,9 +32,13 @@ View Employee
               </div>
                 
                 <div class="col-sm-6 d-flex justify-content-end align-items-start">
-                  <a href="{% url 'employee-management' %}" class="breadcrump-addbtn mt-2">
-                     Go Back
-                  </a>
+                          {% if request.user.role_id|stringformat:"s" == "1" %}
+
+                            <a href="{% url 'employee-management' %}" class="breadcrump-addbtn mt-2">
+                              Go Back
+                            </a>
+                          {% endif %}     
+
                 </div>
                 
               </div>
@@ -61,7 +65,7 @@ View Employee
 
                     <h3 class="profile-username text-center">
                         {{ employee.first_name }} {{ employee.last_name }} ({{ employee.gender }})
-                          {% if request.user.department_id|stringformat:"s" != "1" %}
+                          {% if request.user.role_id|stringformat:"s" == "1" %}
 
                           <a href="{% url 'employee-management-update' employee_id=employee.user_id %}" class="ms-2 text-primary" title="Edit Employee">
                             <i class="fa fa-edit"></i>

@@ -2515,14 +2515,7 @@ def myTeamView(request):
         my_team = Users.objects.all()
 
     elif role_id == 3:  # Branch Manager
-        managers = Users.objects.filter(role_id=5, senior_id=user_id)
-        team_leaders = Users.objects.filter(role_id=6, senior_id__in=managers.values_list('id', flat=True))
-        relationship_managers = Users.objects.filter(role_id=7, senior_id__in=team_leaders.values_list('id', flat=True))
-
-        user_ids = list(managers.values_list('id', flat=True)) + \
-                   list(team_leaders.values_list('id', flat=True)) + \
-                   list(relationship_managers.values_list('id', flat=True))
-        my_team = Users.objects.filter(id__in=user_ids)
+        my_team = Users.objects.filter(branch_id=request.user.branch_id, role_id__gte=5)
 
     elif role_id == 4:  # Agent
         my_team = Users.objects.filter(id=user_id)  # Agent can only see themselves

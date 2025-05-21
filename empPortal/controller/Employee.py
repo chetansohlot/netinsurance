@@ -345,8 +345,8 @@ def view_employee(request, employee_id):
         return render(request, 'employee/view-employee.html', context)
 
     except Exception as e:
-        # Optionally log the exception e here
-        return redirect('employee-management')
+        previous_url = request.META.get('HTTP_REFERER', 'employee-management')
+        return redirect(previous_url)
 
 
 def save_or_update_address(request, employee_id):
