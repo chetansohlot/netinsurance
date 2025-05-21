@@ -1,4 +1,4 @@
-{% if request.user.department_id|stringformat:"s" != "1" %}
+{% if request.user.department_id|stringformat:"s" != "1" and request.user.role_id|stringformat:"s" != "3" %}
 
 <div class="row">
     <div class="col-xs-6 col-sm-4 col-md-2">
@@ -166,10 +166,15 @@
               <div class="col">
                 <p class="card-text">Activated Partners</p>
                 <h5 class="card-title card-number">
-                  {% if not request.user.department_id or request.user.department_id != "1" %}
-                    {{ counters.activated }}
+                  {% if request.user.role_id != 3 %}
+
+                    {% if not request.user.department_id or request.user.department_id != "1" %}
+                      {{ counters.activated }}
+                    {% else %}
+                      {{ active_agents|default:0 }}
+                    {% endif %}
                   {% else %}
-                    {{ active_agents|default:0 }}
+                      {{ active_agents|default:0 }}
                   {% endif %}
 
                 </h5>

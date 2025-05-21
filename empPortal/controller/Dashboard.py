@@ -8,6 +8,7 @@ from ..models import Roles,Users, Department,PolicyDocument,BulkPolicyLog, Polic
 from django.contrib.auth import authenticate, login ,logout
 from empPortal.model import Quotation
 from empPortal.model import Partner
+from ..utils import get_team_user_ids
 
 from django.core.files.storage import FileSystemStorage
 import re, logging
@@ -363,7 +364,13 @@ def dashboard(request):
     
     users = Users.objects.filter(id__in=partner_ids, activation_status=1)
 
-    if role_id == 5:  # Manager
+    if role_id == 3:  # Branch Manager
+        user_ids = get_team_user_ids(user_id)
+        
+        users = users.filter(senior_id__in=user_ids)
+        total_partners = users.count()
+    
+    elif role_id == 5:  # Manager
         team_leaders = Users.objects.filter(role_id=6, senior_id=user_id)
         relationship_managers = Users.objects.filter(role_id=7, senior_id__in=team_leaders.values_list('id', flat=True))
 

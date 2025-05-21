@@ -36,6 +36,7 @@ from django.template.loader import render_to_string
 from pprint import pprint 
 from django.db.models import Q
 from django.core.paginator import Paginator
+from ..utils import get_team_user_ids
 
 from django.db.models.functions import Concat
 from django.db.models import Q, Value
@@ -203,7 +204,7 @@ def members(request):
     
     user = request.user
 
-    if user.role_id == 1 or str(user.department_id) in ["1","2"]:    #admin and sales dept view only
+    if user.role_id in [1,3] or str(user.department_id) in ["1","2"]:    #admin and sales dept view only
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -324,7 +325,7 @@ def members_requested(request):
 
     user = request.user
 
-    if user.role_id == 1 or str(user.department_id) in ["1","2"]:
+    if user.role_id in [1,3] or str(user.department_id) in ["1","2"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -443,7 +444,7 @@ def members_document_pending_upload(request):
 
     user = request.user
 
-    if user.role_id == 1 or str(user.department_id) in ["1","2"]:
+    if user.role_id in [1,3] or str(user.department_id) in ["1","2"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -662,7 +663,7 @@ def members_inprocess(request):
 
     user = request.user
 
-    if user.role_id == 1 or str(user.department_id) in ["1","2"]:
+    if user.role_id in [1,3] or str(user.department_id) in ["1","2"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -768,7 +769,7 @@ def members_document_upload(request):
     
     user = request.user
 
-    if user.role_id == 1 or str(user.department_id) in ["1","2"]:
+    if user.role_id in [1,3] or str(user.department_id) in ["1","2"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -874,7 +875,7 @@ def members_document_inpending(request):
     
     user = request.user
 
-    if user.role_id == 1 or str(user.department_id) in ["1","2"]:
+    if user.role_id in [1,3] or str(user.department_id) in ["1","2"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -1004,7 +1005,7 @@ def members_intraining(request):
     
     user = request.user
 
-    if user.role_id == 1 or str(user.department_id) in ["1","2"]:
+    if user.role_id in [1,3] or str(user.department_id) in ["1","2"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -1127,7 +1128,7 @@ def members_inexam(request):
     
     user = request.user
 
-    if user.role_id == 1 or str(user.department_id) in ["1","2"]:  # Admin role ID
+    if user.role_id in [1,3] or str(user.department_id) in ["1","2"]:  # Admin role ID
         # Define role IDs for the user filter
         role_ids = [4]
         
@@ -1250,7 +1251,7 @@ def members_activated(request):
     
     user = request.user
 
-    if user.role_id == 1 or str(user.department_id) in ["1","2"]:
+    if user.role_id in [1,3] or str(user.department_id) in ["1","2"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -1279,13 +1280,8 @@ def members_activated(request):
             users = users
 
         elif role_id == 3:  # Branch Manager
-            managers = Users.objects.filter(role_id=5, senior_id=user_id)
-            team_leaders = Users.objects.filter(role_id=6, senior_id__in=managers.values_list('id', flat=True))
-            relationship_managers = Users.objects.filter(role_id=7, senior_id__in=team_leaders.values_list('id', flat=True))
-
-            user_ids = list(managers.values_list('id', flat=True)) + \
-                    list(team_leaders.values_list('id', flat=True)) + \
-                    list(relationship_managers.values_list('id', flat=True))
+            user_ids = get_team_user_ids(user_id)
+            
             users = users.filter(senior_id__in=user_ids)
 
         elif role_id == 4:  # Agent
@@ -1392,7 +1388,7 @@ def members_rejected(request):
     
     user = request.user
 
-    if user.role_id == 1 or str(user.department_id) in ["1","2"]:
+    if user.role_id in [1,3] or str(user.department_id) in ["1","2"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
@@ -1497,7 +1493,7 @@ def members_inactive(request):
     
     user = request.user
 
-    if user.role_id == 1 or str(user.department_id) in ["1","2"]:
+    if user.role_id in [1,3] or str(user.department_id) in ["1","2"]:
         role_ids = [4]  # Filter for specific roles
 
         per_page = request.GET.get('per_page', 10)
