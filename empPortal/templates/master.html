@@ -260,6 +260,164 @@
         });
         
     </script>
+    <script>
+        $(document).ready(function () {
+            $("#motor-previous-policy-lead-save").validate({
+                rules: {
+                    registration_number: {
+                        maxlength: 50
+                    },
+                    registration_date: {
+                        date: true
+                    },
+                    vehicle_type: {
+                        required: true
+                    },
+                    make: {
+                        maxlength: 100
+                    },
+                    model: {
+                        maxlength: 100
+                    },
+                    variant: {
+                        maxlength: 100
+                    },
+                    year_of_manufacture: {
+                        digits: true
+                    },
+                    registration_state: {
+                        maxlength: 50
+                    },
+                    registration_city: {
+                        maxlength: 100
+                    },
+                    chassis_number: {
+                        maxlength: 100
+                    },
+                    engine_number: {
+                        maxlength: 100
+                    },
+                    ncb_percentage: {
+                        number: true,
+                        max: 100
+                    },
+                    idv_value: {
+                        number: true
+                    },
+                    policy_duration: {
+                        maxlength: 50
+                    },
+                    addons: {
+                        maxlength: 1000
+                    },
+                    owner_name: {
+                        maxlength: 100
+                    },
+                    father_name: {
+                        maxlength: 100
+                    },
+                    state_code: {
+                        maxlength: 10
+                    },
+                    location: {
+                        maxlength: 100
+                    },
+                    vehicle_category: {
+                        maxlength: 100
+                    },
+                    vehicle_class_description: {
+                        maxlength: 100
+                    },
+                    body_type_description: {
+                        maxlength: 100
+                    },
+                    vehicle_color: {
+                        maxlength: 50
+                    },
+                    vehicle_cubic_capacity: {
+                        number: true
+                    },
+                    vehicle_gross_weight: {
+                        number: true
+                    },
+                    vehicle_seating_capacity: {
+                        digits: true
+                    },
+                    vehicle_fuel_description: {
+                        maxlength: 50
+                    },
+                    vehicle_owner_number: {
+                        digits: true
+                    },
+                    rc_expiry_date: {
+                        date: true
+                    },
+                    rc_pucc_expiry_date: {
+                        date: true
+                    },
+                    insurance_expiry_date: {
+                        date: true
+                    },
+                    insurance_policy_number: {
+                        maxlength: 100
+                    }
+                },
+                messages: {
+                    registration_number: {
+                        required: "Please enter Registration Number",
+                        maxlength: "Maximum 50 characters allowed"
+                    },
+                    registration_date: {
+                        required: "Please enter Registration Date",
+                        date: "Please enter a valid date"
+                    },
+                    vehicle_type: {
+                        required: "Please select Vehicle Type"
+                    },
+                    make: {
+                        required: "Please enter Make",
+                        maxlength: "Maximum 100 characters allowed"
+                    },
+                    model: {
+                        required: "Please enter Model",
+                        maxlength: "Maximum 100 characters allowed"
+                    },
+                    claim_history: {
+                        required: "Please select Claim History"
+                    },
+                    ncb: {
+                        required: "Please select NCB"
+                    },
+                    ncb_percentage: {
+                        number: "Enter a valid percentage",
+                        max: "Percentage can't exceed 100"
+                    },
+                    idv_value: {
+                        number: "Enter a valid IDV amount"
+                    },
+                    policy_type: {
+                        required: "Please select Policy Type"
+                    },
+                    insurance_company: {
+                        required: "Please select Insurance Company"
+                    },
+                    insurance_expiry_date: {
+                        date: "Enter a valid expiry date"
+                    }
+                },
+                errorElement: "div",
+                errorPlacement: function (error, element) {
+                    error.addClass("text-danger");
+                    error.insertAfter(element);
+                },
+                submitHandler: function (form) {
+                    form.submit();
+                }
+            });
+        });
+
+        
+    </script>
     
     <script>
         $(document).ready(function () {

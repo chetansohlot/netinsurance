@@ -5,7 +5,7 @@
         <div class="col-sm-12 col-md-12">  
             <div class="card box-shadow-none">
               <div class="card-body px-0 pb-0">
-                <form autocomplete="off" action="{% url 'save-lead-motor-previous-policy-info' %}" method="POST">
+                <form autocomplete="off" id="motor-previous-policy-lead-save" action="{% url 'save-lead-motor-previous-policy-info' %}" method="POST">
                     {% csrf_token %}
                     <input type="hidden" id="lead_ref_id" name="lead_ref_id" value="{{lead_data.lead_id}}">
 
