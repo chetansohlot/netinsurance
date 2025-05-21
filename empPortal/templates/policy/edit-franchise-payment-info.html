@@ -122,6 +122,20 @@
                               <div class="form-padding">
                                 <div class="row">
                             
+                                  <div class="col-sm-6 col-md-4 col-lg-3">
+                                    <div class="form-group">
+                                      <label class="form-lbl">Franchise Name</label>
+                                      <select id="franchise_id" name="franchise_id" class="form-field">
+                                          <option value="">Select Franchise</option>
+                                          {% for franchise in franchises_drp %}
+                                          <option value="{{ franchise.id }}" {% if franchise.id|stringformat:"s" == franchise_payment.franchise_id|stringformat:"s" %}selected{% endif %}>
+                                              {{ franchise.name }}
+                                          </option>
+                                          {% endfor %}
+                                      </select>
+                                    </div>
+                                  </div>
+
                                   <div class="col-sm-6">
                                     <div class="form-group">
                                       <label class="form-lbl">Franchise OD Comm</label>

@@ -10,6 +10,7 @@ from ..model import Insurance
 from empPortal.model import Referral
 from datetime import datetime, timedelta
 from django.db.models import OuterRef, Subquery, Count
+from ..models import Franchise, Franchises
 
 from empPortal.model import BankDetails
 from ..forms import DocumentUploadForm
@@ -535,6 +536,7 @@ def edit_franchise_payment_info(request, policy_id):
 
 
     franchise_payment = FranchisePayment.objects.filter(policy_id=policy_id,policy_number=policy_data.policy_number).last()
+    franchises_drp = Franchise.objects.all()
     
     if request.method == 'POST':
         policy_id = request.POST.get('policy_id')
@@ -543,6 +545,7 @@ def edit_franchise_payment_info(request, policy_id):
             franchise_payment = FranchisePayment(policy_number=policy_data.policy_number, policy_id=policy_id)
 
         # Update fields from POST data
+        franchise_payment.franchise_id = request.POST.get('franchise_id', None)
         franchise_payment.franchise_od_comm = request.POST.get('franchise_od_comm', None)
         franchise_payment.franchise_net_comm = request.POST.get('franchise_net_comm', None)
         franchise_payment.franchise_tp_comm = request.POST.get('franchise_tp_comm', None)
@@ -573,6 +576,7 @@ def edit_franchise_payment_info(request, policy_id):
         'policy': policy,
         'policy_data': policy_data,
         'pdf_path': pdf_path,
+        'franchises_drp': franchises_drp,
         'franchise_payment': franchise_payment
     })
     

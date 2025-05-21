@@ -617,6 +617,7 @@ class FranchisePayment(models.Model):
     franchise_tp_comm = models.CharField(max_length=50, blank=True, null=True)
     franchise_incentive_amount = models.CharField(max_length=50, blank=True, null=True)
     franchise_tds = models.CharField(max_length=50, blank=True, null=True)
+    franchise_id = models.IntegerField(null=True)
     franchise_od_amount = models.CharField(max_length=50, blank=True, null=True)
     franchise_net_amount = models.CharField(max_length=50, blank=True, null=True)
     franchise_tp_amount = models.CharField(max_length=50, blank=True, null=True)
