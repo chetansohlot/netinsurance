@@ -364,6 +364,8 @@ def dashboard(request):
     
     users = Users.objects.filter(id__in=partner_ids, activation_status=1)
 
+    partners_count = Partner.objects.filter(partner_status='4').exclude(active=0).count()
+
     if role_id == 3:  # Branch Manager
         user_ids = get_team_user_ids(user_id)
         
@@ -437,6 +439,8 @@ def dashboard(request):
         'shared_quotes': shared_quotes,
         'pending_quotes': pending_quotes,
         'total_partners': total_partners,
+        'partners_count': partners_count,
+        
         'active_partners': active_partners,
         'inactive_partners': inactive_partners
     })
@@ -454,12 +458,18 @@ def getMonthlyTargetAmountSum(request):
     return total_target
 
 def getReferralCounts(request):
+    user = request.user
 
-    team_user_ids = get_team_user_ids(request.user.id)
+    # If user is admin (role_id == 1), get all referrals
+    if str(user.role_id) == "1":
+        count = Referral.objects.filter(referral_is_delete=False).count()
+        return count
+
+    # Otherwise, get referral counts based on the team
+    team_user_ids = get_team_user_ids(user.id)
     if not team_user_ids:
         return 0
 
-    # Count referrals where 'sales' or 'supervisor' matches any of the team user IDs
     count = Referral.objects.filter(
         Q(sales__in=[str(uid) for uid in team_user_ids]) |
         Q(supervisor__in=[str(uid) for uid in team_user_ids]),
