@@ -194,7 +194,7 @@
                       </div>
                     </div>
                   </div>
-                  
+
                   <div class="col-sm-12 col-md-6">
                     <div class="card">
                       <div class="card-body">
@@ -254,6 +254,64 @@
                     </div>
                   </div>
 
+                  <div class="col-sm-12 col-md-6">
+                    <div class="card">
+                      <div class="card-body">
+                          <h4 class="card-hding mb-0 pb-2">Business Target</h4>
+                          <div class="row mt-2">
+                            <div class="col-sm-6 col-md-4 mb-2">
+                              <div class="incall-report">
+                                <div class="row">
+                                  <div class="col-auto">
+                                    <div class="incall-report-icon tcinc-bg">
+                                        <i class="fa-solid fa-calendar-days"></i>
+                                    </div>
+                                  </div>
+                                  <div class="col">
+                                    <h3 class="inout-call-title">Monthly Target  </h3>
+                                    <h1 class="call-countnum">
+                                      10
+                                    </h1>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>   
+                            <div class="col-sm-6 col-md-4 mb-2">
+                              <div class="incall-report">
+                                <div class="row">
+                                  <div class="col-auto">
+                                    <div class="incall-report-icon missedcal-bg ">
+                                        <i class="fa-solid fa-calendar-check"></i>
+                                    </div>
+                                  </div>
+                                  <div class="col">
+                                    <h3 class="inout-call-title">Achieved </h3>
+                                    <h1 class="call-countnum">3</h1>
+                                  </div>
+                                </div>
+                              </div>  
+                            </div>
+                            <div class="col-sm-6 col-md-4 mb-2">
+                              <div class="incall-report">
+                                <div class="row">
+                                  <div class="col-auto">
+                                    <div class="incall-report-icon incal-bg">
+                                        <i class="fa-solid fa-calendar-week"></i>
+                                    </div>
+                                  </div>
+                                  <div class="col">
+                                    <h3 class="inout-call-title">Short  </h3>
+                                    <h1 class="call-countnum">
+                                      2
+                                    </h1>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                      </div>
+                    </div>
+                  </div>
 
                 <!-- -->
                   {% if request.user.role_id|stringformat:"s" not in "1,4" and request.user.department_id|stringformat:"s" == "5" %}
