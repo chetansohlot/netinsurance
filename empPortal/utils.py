@@ -466,3 +466,36 @@ def get_team_user_ids(user_id):
         return [user_id]
 
     return []
+
+from empPortal.model.customer import Customer
+
+def create_or_update_customer_by_mobile(data):
+    mobile_number = data.get('mobile_number')
+    if not mobile_number:
+        raise ValueError("Mobile number is required to create or update customer.")
+
+    # Check if customer already exists
+    try:
+        customer = Customer.objects.get(mobile_number=mobile_number)
+        created = False
+    except Customer.DoesNotExist:
+        customer = Customer(mobile_number=mobile_number)
+        created = True
+
+    # Set/Update fields
+    customer.email_address = data.get('email_address')
+    customer.name_as_per_pan = data.get('name_as_per_pan')
+    customer.pan_card_number = data.get('pan_card_number')
+    customer.identity_no = data.get('identity_no')
+    customer.date_of_birth = data.get('date_of_birth')
+    customer.state = data.get('state')
+    customer.city = data.get('city')
+    customer.pincode = data.get('pincode')
+    customer.address = data.get('address')
+
+    # Only set created_from if new record
+    if created:
+        customer.created_from = data.get('created_from')
+
+    customer.save()
+    return customer

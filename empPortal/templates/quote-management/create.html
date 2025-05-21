@@ -131,15 +131,27 @@
                                 <div class="col-sm-6 col-md-3">
                                     <div class="form-group">
                                         <label class="form-lbl">State</label>
-                                        <input class="form-field" type="text" name="state" placeholder="Enter State" 
-                                               value="{{ quotation.state|default_if_none:'' }}">
+                                        <select name="state" id="state" class="form-field" required>
+                                            <option value="">Select State</option>
+                                            {% for state in states %}
+                                            <option value="{{ state.id }}" {% if state.id|stringformat:"s" == quotation.state|stringformat:"s" %}selected{% endif %}>
+                                                {{ state.name }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="col-sm-6 col-md-3">
                                     <div class="form-group">
                                         <label class="form-lbl">City</label>
-                                        <input class="form-field" type="text" name="city" placeholder="Enter City" 
-                                               value="{{ quotation.city|default_if_none:'' }}">
+                                        <select name="city" id="city" class="form-field" required>
+                                            <option value="">Select City</option>
+                                            {% for city in cities %}
+                                            <option value="{{ city.id }}" {% if city.id|stringformat:"s" == quotation.city|stringformat:"s" %}selected{% endif %}>
+                                                {{ city.city }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="col-sm-6 col-md-3">
@@ -155,21 +167,12 @@
                                         <textarea rows="3" class="form-field" name="address" placeholder="Address">{{ quotation.address|default_if_none:'' }}</textarea>
                                     </div>
                                 </div>
-                                <div class="col-sm-6 col-md-3">
-                                    <div class="form-group">
-                                        <label class="form-lbl">Status</label>
-                                        <select class="form-field" name="active">
-                                            <option value="1" {% if quotation.active %}selected{% endif %}>Active</option>
-                                            <option value="0" {% if quotation and not quotation.active %}selected{% endif %}>Inactive</option>
-                                        </select>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
                 
                     <div class="form-group d-flex justify-content-end">
-                        <button type="button" id="quote-customer-btn" class="wrap-btn">
+                        <button type="submit" id="quote-customer-btn" class="wrap-btn">
                             {% if quotation %} Update & Continue {% else %} Save & Continue {% endif %}
                         </button>
                     </div>
@@ -185,36 +188,100 @@
 </div>   
 
 <script>
-    document.getElementById("quote-customer-btn").addEventListener("click", function () {
-        document.getElementById("create-customer").submit();
+document.getElementById('fetch-customer-btn').addEventListener('click', function () {
+    const mobile = document.getElementById('mobile_number').value.trim();
+
+    if (!mobile) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Missing Mobile Number',
+            text: 'Please enter a mobile number.'
+        });
+        return;
+    }
+
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    fetch("{% url 'get-customer-by-mobile' %}", {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": csrfToken,
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: new URLSearchParams({
+            "mobile_number": mobile
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === "success") {
+            const customer = data.data;
+            document.querySelector('[name=email_address]').value = customer.email_address || '';
+            document.querySelector('[name=name_as_per_pan]').value = customer.name_as_per_pan || '';
+            document.querySelector('[name=pan_card_number]').value = customer.pan_card_number || '';
+            document.querySelector('[name=date_of_birth]').value = customer.date_of_birth || '';
+            document.querySelector('[name=state]').value = customer.state || '';
+            document.querySelector('[name=city]').value = customer.city || '';
+            document.querySelector('[name=pincode]').value = customer.pincode || '';
+            document.querySelector('[name=address]').value = customer.address || '';
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Customer Found',
+                text: 'Customer details have been pre-filled.'
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Not Found',
+                text: data.message
+            });
+        }
+    })
+    .catch(error => {
+        console.error("Fetch error:", error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Request Failed',
+            text: 'Failed to fetch customer details. Please try again.'
+        });
     });
+});
+</script>
 
-    document.getElementById("fetch-customer-btn").addEventListener("click", function () {
-        let mobileNumber = document.getElementById("mobile_number").value;
-        let csrfToken = document.querySelector("input[name='csrfmiddlewaretoken']").value;
 
-        // Create a form programmatically
-        let form = document.createElement("form");
-        form.method = "post";
-        form.action = "{% url 'fetch-customer' %}";
+<script>
+$(document).ready(function() {
+    // On change of state (for permanent and correspondence)
+    $('#state').change(function() {
+        var stateId = $(this).val();
+        var citySelect = $(this).attr('id') == 'state' ? '#city' : '#city';
 
-        // Add CSRF token
-        let csrfInput = document.createElement("input");
-        csrfInput.type = "hidden";
-        csrfInput.name = "csrfmiddlewaretoken";
-        csrfInput.value = csrfToken;
-        form.appendChild(csrfInput);
+        if (stateId) {
+            // Send AJAX request to fetch cities based on state
+            $.ajax({
+                url: "{% url 'get_cities' %}",  // URL to handle AJAX request
+                method: 'GET',
+                data: { state_id: stateId },
+                success: function(response) {
+                    // Clear the city dropdown and append new cities
+                    $(citySelect).empty().append('<option value="">Select City</option>');
 
-        // Add Mobile Number field
-        let mobileInput = document.createElement("input");
-        mobileInput.type = "hidden";
-        mobileInput.name = "mobile_number";
-        mobileInput.value = mobileNumber;
-        form.appendChild(mobileInput);
-
-        // Append form to body and submit
-        document.body.appendChild(form);
-        form.submit();
+                    if (response.cities && response.cities.length > 0) {
+                        $.each(response.cities, function(index, city) {
+                            $(citySelect).append('<option value="' + city.id + '">' + city.city + '</option>');
+                        });
+                    }
+                },
+                error: function() {
+                    // Handle any error that occurs during the AJAX request
+                    Swal.fire('Error', 'Unable to fetch cities. Please try again later.', 'error');
+                }
+            });
+        } else {
+            $(citySelect).empty().append('<option value="">Select City</option>');
+        }
     });
+});
 </script>
 {% endblock %}

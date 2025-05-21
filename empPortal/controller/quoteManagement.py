@@ -2,6 +2,8 @@ from django.shortcuts import render,redirect, get_object_or_404
 from ..models import Commission, Users, QuotationCustomer, VehicleInfo, QuotationVehicleDetail, QuotationFormData
 
 from empPortal.model import Quotation
+from empPortal.model.customer import Customer
+from ..model import State, City
 
 from django.db.models import OuterRef, Subquery
 from django.contrib import messages
@@ -21,6 +23,7 @@ import json
 from datetime import date
 import requests
 from ..utils import store_log, create_or_update_lead
+from ..utils import create_or_update_customer_by_mobile
 from django.core.mail import EmailMessage
 import logging
 
@@ -214,6 +217,30 @@ def fetch_customer(request):
     return redirect("quote-management-create")
 
 
+def get_customer_by_mobile(request):
+    if request.method == "POST":
+        mobile_number = request.POST.get("mobile_number")
+        if not mobile_number:
+            return JsonResponse({"status": "error", "message": "Mobile number is required"})
+
+        try:
+            customer = Customer.objects.get(mobile_number=mobile_number)
+            data = {
+                "email_address": customer.email_address,
+                "name_as_per_pan": customer.name_as_per_pan,
+                "pan_card_number": customer.pan_card_number,
+                "date_of_birth": customer.date_of_birth.strftime('%Y-%m-%d') if customer.date_of_birth else '',
+                "state": customer.state,
+                "city": customer.city,
+                "pincode": customer.pincode,
+                "address": customer.address,
+            }
+            return JsonResponse({"status": "success", "data": data})
+        except Customer.DoesNotExist:
+            return JsonResponse({"status": "error", "message": "Customer not found"})
+
+    return JsonResponse({"status": "error", "message": "Invalid request method"})
+
 def create_or_edit(request, customer_id=None):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -235,10 +262,16 @@ def create_or_edit(request, customer_id=None):
         else:
             members = Users.objects.none()
         today = date.today()
+
+        states = State.objects.all()
+        cities = City.objects.filter(state_id=quotation.state) if quotation else []
+
         return render(request, 'quote-management/create.html', {
             'products': products,
             'members': members,
             'today': today,
+            'states': states,
+            'cities': cities,
             'quotation': quotation  # Pass existing data if editing
         })
     
@@ -307,7 +340,21 @@ def create_or_edit(request, customer_id=None):
                 active=True,
             )
             create_quotation(request, new_customer_id)
+            customer_data = {
+                    'mobile_number': mobile_number,
+                    'email_address': email_address,
+                    'name_as_per_pan': name_as_per_pan,
+                    'pan_card_number': pan_card_number,
+                    'identity_no': None,
+                    'date_of_birth': date_of_birth,
+                    'state': state,
+                    'city': city,
+                    'pincode': pincode,
+                    'address': address,
+                    'created_from': "quotation",
+                }
 
+            create_or_update_customer_by_mobile(customer_data)
             messages.success(request, f"Quotation created successfully! Customer ID: {new_customer_id}")
 
             # Redirect to create-vehicle-info page

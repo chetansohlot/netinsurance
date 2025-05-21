@@ -326,6 +326,7 @@ urlpatterns = [
 
     path('customers/', customers.customers, name='customers'),
     path('store-customer/', customers.store, name='store-customer'),
+    path('get-customer-by-mobile/', quoteManagement.get_customer_by_mobile, name='get-customer-by-mobile'),
     path('customers/create', customers.create_or_edit, name='quotation-customer-create'),
     path('customers/<str:customer_id>/', customers.create_or_edit, name='quotation-customer-edit'),
     path('toggle-customer-status/<int:customer_id>/', customers.toggle_customer_status, name='customer-toggle-status'),  #Anjali
