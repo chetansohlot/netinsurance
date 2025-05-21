@@ -96,11 +96,13 @@
 
                             <div class="form-group col-md-4">
                               <label class="form-lbl">Policy Type</label>
-                              <select class="form-field" name="policy_type" id="policy_type">
-                                  <option value="">Select</option>
-                                  <option value="1" {% if lead_data.policy_type == "1" %}selected{% endif %}>Comprehensive</option>
-                                  <option value="2" {% if lead_data.policy_type == "2" %}selected{% endif %}>Third Party</option>                                
-                                  <option value="3" {% if lead_data.policy_type == "3" %}selected{% endif %}>OD Only</option>                                
+                              <select name="policy_type" id="policy_type" class="form-field">
+                                <option value="">Select Policy Type</option>
+                                {% if policy_type_list %}
+                                  {% for policy_types in policy_type_list %}
+                                    <option value="{{policy_types.id}}" {% if policy_types.id|stringformat:"s" == lead_previous_policy.policy_type|stringformat:"s" %} selected {% endif %}>{{policy_types.name}}</option>
+                                  {% endfor %}
+                                {% endif %}
                               </select>
                             </div>
                             <div class="form-group col-md-4">
@@ -133,11 +135,11 @@
                             </div>
                             <div class="form-group col-md-4">
                               <label class="form-lbl">Previous IDV (for Motor)</label>
-                              <input type="text" class="form-field number" name="previous_idv_amount" id="previous_idv_amount" placeholder="Enter IDV Amount" value="{{lead_data.previous_idv_amount|default:''}}">
+                              <input type="text" class="form-field number" name="previous_idv_amount" id="previous_idv_amount" maxlength="8" placeholder="Enter IDV Amount" value="{{lead_data.previous_idv_amount|default:''}}">
                             </div>
                             <div class="form-group col-md-4">
                               <label class="form-lbl">Previous Sum Insured (for Health)</label>
-                              <input type="text" class="form-field number" name="previous_sum_insured" id="previous_sum_insured" placeholder="Enter Amount" value="{{lead_data.previous_sum_insured|default:''}}">
+                              <input type="text" class="form-field number" name="previous_sum_insured" id="previous_sum_insured" maxlength="8" placeholder="Enter Amount" value="{{lead_data.previous_sum_insured|default:''}}">
                             </div>
 
                             <div class="form-group col-md-4">
@@ -150,7 +152,7 @@
                             </div>
                             <div class="form-group col-md-4">
                               <label class="form-lbl">Claim Amount (optional)</label>
-                              <input type="text" class="form-field number" name="claim_amount" id="claim_amount" placeholder="Enter Amount" value="{{lead_data.claim_amount|default:''}}">
+                              <input type="text" class="form-field number" name="claim_amount" id="claim_amount" maxlength="8" placeholder="Enter Amount" value="{{lead_data.claim_amount|default:''}}">
                             </div>
 
                             <div class="form-group col-md-4">
@@ -166,11 +168,13 @@
                             </div>
                             <div class="form-group col-md-4">
                               <label class="form-lbl">Vehicle Type</label>
-                              <select class="form-field" name="vehicle_type" id="vehicle_type">
-                                  <option value="">Select</option>
-                                  <option value="1" {% if lead_data.vehicle_type == "1" %}selected{% endif %}>Private</option>
-                                  <option value="2" {% if lead_data.vehicle_type == "2" %}selected{% endif %}>Commercial</option>
-                                  <option value="3" {% if lead_data.vehicle_type == "3" %}selected{% endif %}>Other</option>
+                              <select class="form-field" name="vehicle_type">
+                                  <option value="">Select Vehicle Type</option>
+                                  {% if vehicle_type_list %}
+                                    {% for vehicle_types in vehicle_type_list %}
+                                      <option value="{{vehicle_types.id}}" {% if vehicle_types.id|stringformat:"s" == lead_data.vehicle_type|stringformat:"s" %} selected {% endif %}> {{vehicle_types.name}} </option>
+                                    {% endfor %}
+                                  {% endif %}
                               </select>
                             </div> 
                             <div class="form-group col-md-4">
@@ -219,11 +223,11 @@
                             </div>
                             <div class="form-group col-md-4">
                               <label class="form-lbl">Year</label>
-                              <input type="text" class="form-field" name="mgf_year" id="mgf_year" placeholder="Year" value="{{lead_data.mgf_year|default:''}}">
+                              <input type="text" class="form-field" name="mgf_year" id="mgf_year" maxlength="4" placeholder="Year" value="{{lead_data.mgf_year|default:''}}">
                             </div>
                             <div class="form-group col-md-4">
                               <label class="form-lbl">Sum Insured (if Health/Life)</label>
-                              <input type="text" class="form-field number" name="sum_insured" id="sum_insured" placeholder="Amount" value="{{lead_data.sum_insured|default:''}}">
+                              <input type="text" class="form-field number" name="sum_insured" id="sum_insured" maxlength="8" placeholder="Amount" value="{{lead_data.sum_insured|default:''}}">
                             </div>
                           <script>
                               
