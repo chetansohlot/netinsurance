@@ -2824,6 +2824,20 @@ a:hover .dr-pdficon {
 }
 .left-card-remark {min-height: 40px; max-height: 100px; overflow-y: auto; }
 
+.incall-report {position: relative; display: flex; align-items: center; height: 100%; }
+.incall-report-icon {width: 34px; height: 34px; background: #fff; box-shadow: 0px 4px 8px -4px rgba(58, 53, 65, 0.42); display: flex; justify-content: center; align-items: center; border-radius: 5px; }
+.incall-report-icon2 {width: 36px; height: 36px; background: #fff; box-shadow: 0px 4px 8px -4px rgba(58, 53, 65, 0.42); display: flex; justify-content: center; align-items: center; border-radius: 5px; }
+.tcinc-bg {background-color: #9155FD; color: #fff; }
+.incal-bg {background-color: #56ca00; color: #fff; }
+.missedcal-bg {background-color: #e60c0c; color: #fff; }
+.notcontcall-bg {background-color: #ffb400; color: #fff; }
+.incall-report .inout-call-title {color: rgba(58, 53, 65, 0.68); font-size: 12px; padding-top: 3px; margin: 0; font-weight: 400; }
+.incall-report .call-countnum {font-size: 17px; line-height: 1; font-weight: 500; margin: 0; }
+.incall-report .call-countnum2 {font-size: 16px !important; line-height: 1; font-weight: 500; margin: 0; }
+.incall-report2 {padding: 10px; }
+.incbox {box-shadow: 0px 2px 10px 0px rgba(58, 53, 65, 0.1); background: #fff; padding: 10px; }
+
+
 @media (max-width:767px) {
     .banner-hding {font-size: 30px;}
     .banner-subhding {font-size:20px;}
