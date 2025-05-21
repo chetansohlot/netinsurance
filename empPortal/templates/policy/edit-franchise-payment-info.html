@@ -129,7 +129,7 @@
                                           <option value="">Select Franchise</option>
                                           {% for franchise in franchises_drp %}
                                           <option value="{{ franchise.id }}" {% if franchise.id|stringformat:"s" == franchise_payment.franchise_id|stringformat:"s" %}selected{% endif %}>
-                                              {{ franchise.name }}
+                                              {{ franchise.franchise_name }}
                                           </option>
                                           {% endfor %}
                                       </select>
