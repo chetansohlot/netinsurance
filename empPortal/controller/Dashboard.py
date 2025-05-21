@@ -395,10 +395,12 @@ def dashboard(request):
     # PARTNER COUNTS 
     
     referralCount = getReferralCounts(request)
+    monthlyTargetAmount = getMonthlyTargetAmountSum(request)
 
     return render(request, 'dashboard.html', {
         'user': user,
         'referralCount': referralCount,
+        'monthlyTargetAmount': monthlyTargetAmount,
         'provider_summary': provider_summary,
         'branch_summary': branch_summary,
         'formatted_pos_summary': formatted_pos_summary,
@@ -438,6 +440,18 @@ def dashboard(request):
         'active_partners': active_partners,
         'inactive_partners': inactive_partners
     })
+
+def getMonthlyTargetAmountSum(request):
+    team_user_ids = get_team_user_ids(request.user.id)
+    if not team_user_ids:
+        return 0
+
+    # Sum monthly_target_amt of all users whose id is in team_user_ids
+    total_target = Users.objects.filter(id__in=team_user_ids).aggregate(
+        total=Sum('monthly_target_amt')
+    )['total'] or 0
+
+    return total_target
 
 def getReferralCounts(request):
 
