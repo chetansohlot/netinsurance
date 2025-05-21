@@ -394,8 +394,11 @@ def dashboard(request):
     inactive_partners = 0
     # PARTNER COUNTS 
     
+    referralCount = getReferralCounts(request)
+
     return render(request, 'dashboard.html', {
         'user': user,
+        'referralCount': referralCount,
         'provider_summary': provider_summary,
         'branch_summary': branch_summary,
         'formatted_pos_summary': formatted_pos_summary,
@@ -435,6 +438,21 @@ def dashboard(request):
         'active_partners': active_partners,
         'inactive_partners': inactive_partners
     })
+
+def getReferralCounts(request):
+
+    team_user_ids = get_team_user_ids(request.user.id)
+    if not team_user_ids:
+        return 0
+
+    # Count referrals where 'sales' or 'supervisor' matches any of the team user IDs
+    count = Referral.objects.filter(
+        Q(sales__in=[str(uid) for uid in team_user_ids]) |
+        Q(supervisor__in=[str(uid) for uid in team_user_ids]),
+        referral_is_delete=False
+    ).count()
+
+    return count
 
 def insurer_wise_date(request):
     

@@ -12,6 +12,9 @@ from django.urls import reverse
 import pprint  # Import pprint for better formatting
 from django.http import JsonResponse
 import pdfkit
+from ..utils import get_team_user_ids
+from django.db.models import Q
+
 import os
 from django.conf import settings
 import os
@@ -80,12 +83,11 @@ def index(request):
         referrals = referrals.filter(supervisor=user_id)  # Agent can only see themselves
 
     elif role_id == 5:  # Manager
-        team_leaders = Users.objects.filter(role_id=6, senior_id=user_id)
-        relationship_managers = Users.objects.filter(role_id=7, senior_id__in=team_leaders.values_list('id', flat=True))
+        team_user_ids = get_team_user_ids(request.user.id)
 
-        user_ids = list(team_leaders.values_list('id', flat=True)) + \
-                   list(relationship_managers.values_list('id', flat=True)) 
-        referrals = referrals.filter(supervisor__in=user_ids)
+        referrals = referrals.filter(
+            Q(sales__in=team_user_ids) | Q(supervisor__in=team_user_ids)
+        )
 
     elif role_id == 6:  # Team Leader
         relationship_managers = Users.objects.filter(role_id=7, senior_id=user_id)
