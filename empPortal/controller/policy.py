@@ -545,7 +545,13 @@ def edit_franchise_payment_info(request, policy_id):
             franchise_payment = FranchisePayment(policy_number=policy_data.policy_number, policy_id=policy_id)
 
         # Update fields from POST data
-        franchise_payment.franchise_id = request.POST.get('franchise_id', None)
+        franchise_id = request.POST.get('franchise_id')
+        if franchise_id == '':
+            franchise_id = None
+        else:
+            franchise_id = int(franchise_id)
+
+        franchise_payment.franchise_id = franchise_id
         franchise_payment.franchise_od_comm = request.POST.get('franchise_od_comm', None)
         franchise_payment.franchise_net_comm = request.POST.get('franchise_net_comm', None)
         franchise_payment.franchise_tp_comm = request.POST.get('franchise_tp_comm', None)

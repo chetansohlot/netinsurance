@@ -153,7 +153,7 @@
                                     </div>
                                   </div>
                                   <!-- Fuel Type -->
-                                  <div class="col-sm-6 col-md-4 col-lg-3">
+                                  {% comment %} <div class="col-sm-6 col-md-4 col-lg-3">
                                     <div class="form-group">
                                       <label class="form-lbl" for="fuel_type">Fuel Type</label>
                                       {% with vehicle.fuel_type|default:extracted_data.vehicle_details.fuel_type|title as selected_fuel %}
@@ -169,7 +169,7 @@
 
 
                                     </div>
-                                  </div>
+                                  </div> {% endcomment %}
                             
                                   <!-- GVW -->
                                   <div class="col-sm-6 col-md-4 col-lg-3">
