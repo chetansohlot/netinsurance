@@ -154,10 +154,10 @@
                                   <div class="col">
                                     <h3 class="inout-call-title">Total Partners </h3>
                                     <h1 class="call-countnum" id="policies_sold">
-                                      {% if role_id == 1 %}
-                                        {{ partners_count }}
-                                      {% else %}
+                                      {% if request.user.role_id|stringformat:"s" in "1" %}
                                         {{ total_partners }}
+                                      {% else %}
+                                        {{ partners_count }}
                                       {% endif %}
                                     </h1>
 
