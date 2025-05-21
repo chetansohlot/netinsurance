@@ -533,12 +533,17 @@
   </aside>
 
   {% endif %}     
+
+{% if request.user.role_id|stringformat:"s" == '3' %}
+  {% include "sidebar-branch-manager.html" %}
+{% else %}
   {% include "sidebar-sales.html" %}
   {% include "sidebar-operations.html" %}
   {% include "sidebar-accounts.html" %}
   {% include "sidebar-quality.html" %}
-  {% include "sidebar-branch-manager.html" %}
   {% include "sidebar-renewal.html" %}
+
+{% endif %}     
 
 
   <symbol style="display:none;">
