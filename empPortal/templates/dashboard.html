@@ -136,7 +136,7 @@
                     </div>
                   </div>
 
-                {% if request.user.role_id|stringformat:"s" not in "1,4" and request.user.department_id|stringformat:"s" == "1" %}
+                {% if request.user.role_id|stringformat:"s" in "1" or request.user.department_id|stringformat:"s" == "1" %}
 
                   <div class="col-sm-12 col-md-6">
                     <div class="card">
@@ -197,7 +197,7 @@
                     </div>
                   </div>
                 {% endif %}
-                {% if request.user.role_id|stringformat:"s" not in "1,4" and request.user.department_id|stringformat:"s" == "1" %}
+                {% if request.user.role_id|stringformat:"s" in "1" or request.user.department_id|stringformat:"s" == "1" %}
 
                   <div class="col-sm-12 col-md-6">
                     <div class="card">
