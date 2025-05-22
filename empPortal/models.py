@@ -1367,6 +1367,7 @@ class ExtractedFile(models.Model):
     # zip_ref = models.ForeignKey(UploadedZip, on_delete=models.CASCADE)
     file_path = models.FileField(upload_to='pdf_files/')
     filename = models.CharField(max_length=255)
+    chat_pdf_key = models.CharField(max_length=255, null=True)
     content = models.TextField(blank=True, null=True)
     source_id = models.CharField(max_length=255, null=True, blank=True)
     is_uploaded = models.BooleanField(default=False)

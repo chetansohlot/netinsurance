@@ -59,9 +59,9 @@ Policy Data
                       <table class="table table-design">
                         <thead class="table-thead-bg-light table-header-fix">
                           <tr>
-                            <!-- <th>
+                            <th>
                               <input type="checkbox" id="select-all">
-                            </th> -->
+                            </th>
                             <th>File Name</th>
                             <th>Campaign Name</th>
                             <th>Date of Upload</th>
@@ -72,7 +72,7 @@ Policy Data
                         <tbody>
                           {% for data in files %}
                             <tr>
-                              <!-- <td>
+                              <td>
                                 <input type="checkbox"
                                   name="reupload[]"
                                   class="reprocess"
@@ -81,7 +81,7 @@ Policy Data
                                   data-status="{{ data.status }}"
                                   data-created-at="{{ data.created_at|date:'U' }}"
                                   id="checkbox-{{ data.id }}">
-                              </td> -->
+                              </td>
                               <td>{{ data.filename }} <span class="tooltip-sec text-info" data-title="{{ data.file_url }}"><i class="fa-solid fa-circle-info"></i></span></td>
                               <td>{{ data.bulk_log_ref.camp_name }}</td>
                               <td>{{ data.created_at }}</td>

@@ -453,6 +453,7 @@ class GettingSourceId(CronJobBase):
                         if response.status_code == 200:
                             source_id = response.json().get('sourceId')
                             file.source_id = source_id
+                            file.chat_pdf_key = settings.CHATPDF_API_KEY
                             file.status = 2
                             file.retry_source_count += 1
                             file.is_uploaded = True
@@ -492,22 +493,29 @@ class GettingPdfExtractedData(CronJobBase):
                 policy_id__isnull=True,
                 retry_chat_response_count__lte=2
             )[:10]
+            
+            logger.info(f"Extracted File Bulk Chat Response Api Cron Hit")
             for file in files:
                 if not file.source_id:
                     logger.error(f"No source_id found for file_id {file.id}")
                     continue
                 try:
-                    file.status = 3
-                    file.retry_chat_response_count += 1
-                    if(file.retry_chat_response_count == 3):
-                        file.is_failed = True
-                        file.bulk_log_ref.count_error_pdf_files += 1
-                    file.save()
+                    if file.chat_pdf_key != settings.CHATPDF_API_KEY:
+                        logger.info(f"File key {file.chat_pdf_key} not matches with Env key {settings.CHATPDF_API_KEY}")
+
+                        file.source_id = None
+                        file.retry_source_count = 0
+                        file.retry_chat_response_count = 0
+                        file.retry_creating_policy_count = 0
+                        file.is_failed = False  
+                        file.save()
+                        continue
+
                     headers = {
                         'x-api-key': settings.CHATPDF_API_KEY,
                         "Content-Type": "application/json",
                     }
-                    
+                        
                     message = chatPdfMessage()
                     data = {
                         'sourceId': file.source_id,
@@ -524,7 +532,17 @@ class GettingPdfExtractedData(CronJobBase):
                         headers=headers,
                         json=data
                     )
-                    
+                    if response.status_code == 429 or response.status_code == 500:
+                        logger.error(f"ChatPDF API failed for Campaign {file.bulk_log_ref.camp_name} file_id {file.id}. Status: {response.status_code}, Error: {response.text}")
+                        continue
+
+                    file.status = 3
+                    file.retry_chat_response_count += 1
+                    if(file.retry_chat_response_count == 3):
+                        file.is_failed = True
+                        file.bulk_log_ref.count_error_pdf_files += 1
+                    file.save()
+
                     logger.info(f"Status Code for Extracting Data for extracted_file_id:{file.id} is {response.status_code}")
                     
                     if response.status_code == 200:
