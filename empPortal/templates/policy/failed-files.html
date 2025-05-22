@@ -72,6 +72,7 @@ Policy Data
                               <input type="checkbox" id="select-all">
                             </th>
                             <th>File Name</th>
+                            <th>Source ID</th>
                             <th>Campaign Name</th>
                             <th>Date of Upload</th>
                             <th>File</th>
@@ -92,6 +93,7 @@ Policy Data
                                   id="checkbox-{{ data.id }}">
                               </td>
                               <td>{{ data.filename }} <span class="tooltip-sec text-info" data-title="{{ data.file_url }}"><i class="fa-solid fa-circle-info"></i></span></td>
+                              <td>{{ data.source_id }}({{data.id}})</td>
                               <td>{{ data.bulk_log_ref.camp_name }}</td>
                               <td>{{ data.created_at }}</td>
                               <td><a href="{{ data.file_url }}" target="_blank" class="btn btn-success btn-xs" download><i class="fa-solid fa-download"></i></a></td>
