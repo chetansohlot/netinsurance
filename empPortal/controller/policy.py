@@ -1027,7 +1027,7 @@ def failedBulkPoliciesReprocess(request):
             except Exception as e:
                 messages.error(request, f"Error updating file {file_id}: {str(e)}")
 
-        return redirect('bulk-upload-logs')
+        return redirect('failed-policies-list')
     else:
         messages.error(request, 'Invalid URL')
         return redirect(request.META.get('HTTP_REFERER', '/'))
