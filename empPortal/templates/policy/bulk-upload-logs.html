@@ -151,6 +151,8 @@ Policy Data
                               Duplicate : {{ log.count_duplicate_files }}<br>
                               Failed : {{ log.count_error_pdf_files }}
                             </td>
+                            <td>{{ log.created_date }}</td>
+                            
                             <td>
                               {% if log.created_by %}
                                 {{ log.created_by.first_name }} {{ log.created_by.last_name }}
@@ -158,7 +160,6 @@ Policy Data
                                 -
                               {% endif %}
                             </td>
-                            <td>{{ log.created_date }}</td>
                             <td>
                               {% if log.status == 1 %}
                                 <span class="badge badge-info">Zip Uploaded</span>
