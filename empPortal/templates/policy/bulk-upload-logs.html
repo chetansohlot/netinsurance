@@ -98,19 +98,21 @@ Policy Data
                       </div>
                     </div>   
                     <div class="col-sm-6 col-md-2 mb-2 pr-0">
-                      <div class="incall-report">
-                        <div class="row">
-                          <div class="col-auto">
-                            <div class="incall-report-icon missedcal-bg ">
-                                <i class="fa-solid fa-indian-rupee-sign"></i>
+                      <a href="{% url 'failed-policies-list' %}">
+                        <div class="incall-report">
+                          <div class="row">
+                            <div class="col-auto">
+                              <div class="incall-report-icon missedcal-bg ">
+                                  <i class="fa-solid fa-indian-rupee-sign"></i>
+                              </div>
+                            </div>
+                            <div class="col">
+                              <h3 class="inout-call-title">Failed </h3>
+                              <h1 class="call-countnum">{{ failed_count|default:"0" }}</h1>
                             </div>
                           </div>
-                          <div class="col">
-                            <h3 class="inout-call-title">Failed </h3>
-                            <h1 class="call-countnum">{{ failed_count|default:"0" }}</h1>
-                          </div>
-                        </div>
-                      </div>  
+                        </div>  
+                      </a>
                     </div>
                     
                   </div>
