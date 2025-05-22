@@ -718,11 +718,17 @@ class CreateNewPolicy(CronJobBase):
                                             file.status = 6
                                             file.save()
                                         except Exception as e:
+                                            file.error_message = "Error in Creating Policy for Extracted File"
+                                            file.save()
                                             logger.error(f"Error in Creating Policy for extracted_file_id {file.id}, Error:{str(e)}")
                                 except Exception as e:
+                                    file.error_message = "Error in fetching policy data for Extracted File"
+                                    file.save()
                                     logger.error(f"Error in fetching policy data for extracted_file_id {file.id}, Error :{str(e)}")
                                     continue
                             else:
+                                file.error_message = "Policy Number or Insurance Company is not found"
+                                file.save()
                                 logger.error(f"Policy Number or Insurance Company is not found for file_id :{file.id}")
                                 continue
                         except json.JSONDecodeError:

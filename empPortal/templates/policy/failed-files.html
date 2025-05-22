@@ -97,7 +97,7 @@ Policy Data
                               <td><a href="{{ data.file_url }}" target="_blank" class="btn btn-success btn-xs" download><i class="fa-solid fa-download"></i></a></td>
                               <td>
                                 {% if data.is_failed == True %}
-                                  <span class="badge badge-danger">Failed</span>
+                                  <span onclick="showErrorMessage('{{ data.error_message|default_if_none:'' }}')" class="badge badge-danger">Failed</span>
                                 {% else %}
                                   {% if data.status == 0 %}
                                     <span class="badge badge-info">File Created</span>
@@ -218,5 +218,15 @@ Policy Data
 </body>
 
 
+<script>
+  function showErrorMessage(remark) {
+    Swal.fire({
+      title: "Failed Error Message",
+      text: remark || 'No remark provided.',
+      icon: 'info',
+      confirmButtonText: 'Close'
+    });
+  }
+</script>
     
 {% endblock %}

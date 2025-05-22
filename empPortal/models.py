@@ -1374,6 +1374,7 @@ class ExtractedFile(models.Model):
     is_extracted = models.BooleanField(default=False)
     is_failed = models.BooleanField(default=False)
     chat_response = models.TextField(null=True, blank=True)
+    error_message = models.TextField(null=True, blank=True)
     extracted_at = models.DateTimeField(auto_now_add=True)
     policy = models.ForeignKey(PolicyDocument, on_delete=models.CASCADE)
     file_url = models.URLField(blank=True, null=True)
