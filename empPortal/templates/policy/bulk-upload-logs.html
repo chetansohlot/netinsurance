@@ -59,12 +59,14 @@ Policy Data
           </div>
         
           <div class="col-xs-6 col-sm-4 col-md-3">
-            <div class="card counter-img-card">
-              <div class="card-body">
-                <p class="card-text success-color">File Uploaded</p>
-                <h5 class="card-title card-number success-color">{{ status_counts.2|default:"0" }}</h5>
+            <a href="{% url 'status-file-uploaded-list' %}" class="text-decoration-none">
+              <div class="card counter-img-card">
+                <div class="card-body">
+                  <p class="card-text success-color">File Uploaded</p>
+                  <h5 class="card-title card-number success-color">{{ status_counts.2|default:"0" }}</h5>
+                </div>
               </div>
-            </div>
+            </a>
           </div>
         
           <div class="col-xs-6 col-sm-4 col-md-3">
