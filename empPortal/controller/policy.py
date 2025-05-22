@@ -978,6 +978,18 @@ def bulkPolicyView(request, id):
         'status_counts': status_counts
     })
 
+       
+def failed_policies_list(request):
+    if not request.user.is_authenticated or request.user.is_active != 1:
+        return redirect('login')
+
+    # Fetch policy documents based on bulk_log_id
+    policy_files = ExtractedFile.objects.filter(is_failed=True)
+
+    return render(request, 'policy/failed-files.html', {
+        'files': policy_files,
+    })
+
 def bulkUploadLogs(request):
     if not request.user.is_authenticated or request.user.is_active != 1:
         messages.error(request,'Please Login First')

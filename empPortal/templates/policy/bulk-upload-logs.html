@@ -113,13 +113,16 @@ Policy Data
           </div>
           
           <div class="col-xs-6 col-sm-4 col-md-3">
-            <div class="card counter-img-card">
-              <div class="card-body">
-                <p class="card-text danger-color">Failed File</p>
-                <h5 class="card-title card-number danger-color">{{ failed_count|default:"0" }}</h5>
+            <a href="{% url 'failed-policies-list' %}" class="text-decoration-none">
+              <div class="card counter-img-card">
+                <div class="card-body">
+                  <p class="card-text danger-color">Failed File</p>
+                  <h5 class="card-title card-number danger-color">{{ failed_count|default:"0" }}</h5>
+                </div>
               </div>
-            </div>
+            </a>
           </div>
+
         </div>
       </div>
     </div>
