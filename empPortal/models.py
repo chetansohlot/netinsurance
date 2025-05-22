@@ -1309,6 +1309,22 @@ class BulkPolicyLog(models.Model):
             self.file_name = self.file.name
             self.file_url = self.file.url  # Make sure MEDIA_URL is properly set
         super().save(*args, **kwargs)   
+    
+
+    @property
+    def failed_extracted_counts(self):
+        return ExtractedFile.objects.filter(bulk_log_ref_id=self.id, is_failed=True).count()
+    
+    @property
+    def success_extracted_counts(self):
+        return ExtractedFile.objects.filter(bulk_log_ref_id=self.id, is_failed=False, status=6).count()
+    
+    @property
+    def extractedFiles(self):
+        try:
+            return ExtractedFile.objects.get(bulk_log_ref_id=self.id)
+        except ExtractedFile.DoesNotExist:
+            return None   
         
     def __str__(self):
         return self.file_name or f"Uploaded Zip #{self.pk}"

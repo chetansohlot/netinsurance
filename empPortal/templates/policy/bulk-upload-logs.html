@@ -156,9 +156,9 @@ Policy Data
                               Non PDF : {{ log.count_not_pdf }}
                             </td>
                             <td>
-                              Success : {{ log.count_uploaded_files }} <br>
+                              Success : {{ log.success_extracted_counts }} <br>
                               Duplicate : {{ log.count_duplicate_files }}<br>
-                              Failed : {{ log.count_error_pdf_files }}
+                              Failed : {{ log.failed_extracted_counts }}
                             </td>
                             <td>{{ log.created_date }}</td>
                             
