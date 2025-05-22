@@ -494,7 +494,18 @@ class GettingPdfExtractedData(CronJobBase):
                 retry_chat_response_count__lte=2
             )[:10]
             
+            # Get total matching count without limiting
+            total_count = ExtractedFile.objects.filter(
+                source_id__isnull=False,
+                is_uploaded=True,
+                extracted_at__gte=cutoff_time,
+                policy_id__isnull=True,
+                retry_chat_response_count__lte=2
+            ).count()
+            
             logger.info(f"Extracted File Bulk Chat Response Api Cron Hit")
+            logger.info(f"Chat Cron: {files.count()}/{total_count} files to process")
+
             for file in files:
                 if not file.source_id:
                     logger.error(f"No source_id found for file_id {file.id}")
