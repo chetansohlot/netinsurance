@@ -170,16 +170,21 @@ Policy Data
                               {% endif %}
                             </td>
                             <td>
-                              {% if log.status == 1 %}
-                                <span class="badge badge-info">Zip Uploaded</span>
-                              {% elif log.status == 2 %}
-                                <span class="badge badge-dark">In Progress</span>
-                              {% elif log.status == 3 %}
+                              {% if log.count_total_files <= log.success_extracted_counts|add:log.count_duplicate_files|add:log.failed_extracted_counts %} 
                                 <span class="badge badge-success">Complete</span>
                               {% else %}
-                                <span class="badge badge-warning">Pending</span>
+                                {% if log.status == 1 %}
+                                  <span class="badge badge-info">Zip Uploaded</span>
+                                {% elif log.status == 2 %}
+                                  <span class="badge badge-dark">In Progress</span>
+                                {% elif log.status == 3 %}
+                                  <span class="badge badge-success">Complete</span>
+                                {% else %}
+                                  <span class="badge badge-warning">Pending</span>
+                                {% endif %}
                               {% endif %}
                             </td>
+
                             <td>
                               <div class="action-btns">
                                 <a href="{% url 'bulk-policies'  id=log.id %}" class="btn btn-primary btn-xs"><i class="fas fa-eye"></i></a>
