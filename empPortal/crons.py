@@ -149,7 +149,7 @@ class GettingSourceIdForSinglePolicies(CronJobBase):
                 is_failed__isnull=False,
                 retry_source_count__lte=2
             )[:10]
-            logger.info(f"Check Complete. Query two: {files.query}")
+            # logger.info(f"Check Complete. Query two: {files.query}")
             
             if len(files) > 0:
                 for file in files:
@@ -209,7 +209,7 @@ class GettingPdfExtractedDataSinglePolicies(CronJobBase):
                 retry_chat_response_count__lte=2,
                 is_failed__isnull=False
             )[:10]
-            logger.info(f"Check Complete. Query one: {files.query}")
+            # logger.info(f"Check Complete. Query one: {files.query}")
 
 
             if len(files) > 0:
