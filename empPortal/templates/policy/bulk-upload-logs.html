@@ -132,6 +132,7 @@ Policy Data
                           <th>Files Data</th>
                           <th>Result</th>
                           <th>Date of Upload</th>
+                          <th>Uploaded By</th>
                           <th>Status</th>
                           <th>Action</th>
                         </tr>
@@ -149,6 +150,13 @@ Policy Data
                               Success : {{ log.count_uploaded_files }} <br>
                               Duplicate : {{ log.count_duplicate_files }}<br>
                               Failed : {{ log.count_error_pdf_files }}
+                            </td>
+                            <td>
+                              {% if log.created_by %}
+                                {{ log.created_by.first_name }} {{ log.created_by.last_name }}
+                              {% else %}
+                                -
+                              {% endif %}
                             </td>
                             <td>{{ log.created_date }}</td>
                             <td>
