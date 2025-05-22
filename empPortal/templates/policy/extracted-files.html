@@ -32,7 +32,12 @@ Policy Data
                     <li>Policy Files View</li>
                   </ul>
                 </div>
-                
+                   
+                <div class="col-sm-6">
+                    <div class="d-flex justify-content-end">
+                        <a href="{% url 'bulk-upload-logs' %}" class="breadcrump-addbtn mx-1">View Bulk Logs</a>
+                    </div>
+                </div>
                 <div>
                     <form id="myForm" action="{% url 'continue-bulk-policies' %}" method="post">
                             {% csrf_token %}
