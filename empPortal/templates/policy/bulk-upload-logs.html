@@ -40,89 +40,177 @@ Policy Data
           </div>
         </div>
         <div class="row">
-          <div class="col-xs-6 col-sm-4 col-md-3">
-              <div class="card counter-img-card active">
-                  <div class="card-body">
-                      <p class="card-text">Total Files</p>
-                      <h5 class="card-title card-number">{{ total_files }}</h5>
+                   
+          <div class="col-sm-12 col-md-12">
+            <div class="card">
+              <div class="card-body">
+                  <h4 class="card-hding mb-0 pb-2">Processed</h4>
+                  <div class="row mt-2">
+                    <div class="col-sm-6 col-md-2 mb-2 pr-0">
+                      <div class="incall-report incbox">
+                        <div class="row">
+                          <div class="col-auto">
+                            <div class="incall-report-icon notcontcall-bg">
+                                <i class="fa-solid fa-indian-rupee-sign"></i>
+                            </div>
+                          </div>
+                          <div class="col">
+                            <h3 class="inout-call-title">Total Files </h3>
+                            <h1 class="call-countnum">
+                              {{ total_files }}
+                            </h1>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-sm-6 col-md-2 mb-2 pr-0">
+                      <div class="incall-report">
+                        <div class="row">
+                          <div class="col-auto">
+                            <div class="incall-report-icon incal-bg">
+                                <i class="fa-solid fa-indian-rupee-sign"></i>
+                            </div>
+                          </div>
+                          <div class="col">
+                            <h3 class="inout-call-title">Complete </h3>
+                            <h1 class="call-countnum">
+                              {{ status_counts.6|default:"0" }}
+                            </h1>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-sm-6 col-md-2 mb-2 pr-0">
+                      <div class="incall-report">
+                        <div class="row">
+                          <div class="col-auto">
+                            <div class="incall-report-icon tcinc-bg">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                          </div>
+                          <div class="col">
+                            <h3 class="inout-call-title">Duplicate </h3>
+                            <h1 class="call-countnum">
+                              {{ status_counts.7|default:"0" }}
+                            </h1>
+                          </div>
+                        </div>
+                      </div>
+                    </div>   
+                    <div class="col-sm-6 col-md-2 mb-2 pr-0">
+                      <div class="incall-report">
+                        <div class="row">
+                          <div class="col-auto">
+                            <div class="incall-report-icon missedcal-bg ">
+                                <i class="fa-solid fa-indian-rupee-sign"></i>
+                            </div>
+                          </div>
+                          <div class="col">
+                            <h3 class="inout-call-title">Failed </h3>
+                            <h1 class="call-countnum">{{ failed_count|default:"0" }}</h1>
+                          </div>
+                        </div>
+                      </div>  
+                    </div>
+                    
                   </div>
               </div>
-          </div>
-        
-          <div class="col-xs-6 col-sm-4 col-md-3">
-            <div class="card counter-img-card">
-              <div class="card-body">
-                <p class="card-text text-info">File Uploading</p>
-                <h5 class="card-title card-number text-info">{{ status_counts.1|default:"0" }}</h5>
-              </div>
             </div>
-          </div>
-        
-          <div class="col-xs-6 col-sm-4 col-md-3">
-            <div class="card counter-img-card">
-              <div class="card-body">
-                <p class="card-text success-color">File Uploaded</p>
-                <h5 class="card-title card-number success-color">{{ status_counts.2|default:"0" }}</h5>
-              </div>
-            </div>
-          </div>
-        
-          <div class="col-xs-6 col-sm-4 col-md-3">
-            <div class="card counter-img-card">
-              <div class="card-body">
-                <p class="card-text warning-color">File Analysing</p>
-                <h5 class="card-title card-number warning-color">{{ status_counts.3|default:"0" }}</h5>
-              </div>
-            </div>
-          </div>
-        
-          <div class="col-xs-6 col-sm-4 col-md-3">
-            <div class="card counter-img-card">
-              <div class="card-body">
-                <p class="card-text text-primary">File Analysed</p>
-                <h5 class="card-title card-number text-primary">{{ status_counts.4|default:"0" }}</h5>
-              </div>
-            </div>
-          </div>
-        
-          <div class="col-xs-6 col-sm-4 col-md-3">
-            <div class="card counter-img-card">
-              <div class="card-body">
-                <p class="card-text text-dark">Policy Creating</p>
-                <h5 class="card-title card-number text-dark">{{ status_counts.5|default:"0" }}</h5>
-              </div>
-            </div>
-          </div>
-        
-          <div class="col-xs-6 col-sm-4 col-md-3">
-            <div class="card counter-img-card">
-              <div class="card-body">
-                <p class="card-text success-color">Complete</p>
-                <h5 class="card-title card-number success-color">{{ status_counts.6|default:"0" }}</h5>
-              </div>
-            </div>
-          </div>
-          
-          <div class="col-xs-6 col-sm-4 col-md-3">
-            <div class="card counter-img-card">
-              <div class="card-body">
-                <p class="card-text danger-color">Duplicate File</p>
-                <h5 class="card-title card-number danger-color">{{ status_counts.7|default:"0" }}</h5>
-              </div>
-            </div>
-          </div>
-          
-          <div class="col-xs-6 col-sm-4 col-md-3">
-            <a href="{% url 'failed-policies-list' %}" class="text-decoration-none">
-              <div class="card counter-img-card">
-                <div class="card-body">
-                  <p class="card-text danger-color">Failed File</p>
-                  <h5 class="card-title card-number danger-color">{{ failed_count|default:"0" }}</h5>
-                </div>
-              </div>
-            </a>
           </div>
 
+          <div class="col-sm-12 col-md-12">
+            <div class="card">
+              <div class="card-body">
+                  <h4 class="card-hding mb-0 pb-2">Inprocess</h4>
+                  <div class="row mt-2">
+                    <div class="col-sm-6 col-md-2 mb-2 pr-0">
+                      <div class="incall-report">
+                        <div class="row">
+                          <div class="col-auto">
+                            <div class="incall-report-icon notcontcall-bg">
+                                <i class="fa-solid fa-indian-rupee-sign"></i>
+                            </div>
+                          </div>
+                          <div class="col">
+                            <h3 class="inout-call-title">File Analysed </h3>
+                            <h1 class="call-countnum">
+                              {{ status_counts.4|default:"0" }}
+                            </h1>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-sm-6 col-md-2 mb-2 pr-0">
+                      <div class="incall-report">
+                        <div class="row">
+                          <div class="col-auto">
+                            <div class="incall-report-icon incal-bg">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                          </div>
+                          <div class="col">
+                            <h3 class="inout-call-title">File Uploading </h3>
+                            <h1 class="call-countnum">
+                              {{ status_counts.1|default:"0" }}
+                            </h1>
+                          </div>
+                        </div>
+                      </div>
+                    </div>   
+                    <div class="col-sm-6 col-md-2 mb-2 pr-0">
+                      <div class="incall-report">
+                        <div class="row">
+                          <div class="col-auto">
+                            <div class="incall-report-icon tcinc-bg ">
+                                <i class="fa-solid fa-indian-rupee-sign"></i>
+                            </div>
+                          </div>
+                          <div class="col">
+                            <h3 class="inout-call-title">File Uploaded </h3>
+                            <h1 class="call-countnum">{{ status_counts.2|default:"0" }}</h1>
+                          </div>
+                        </div>
+                      </div>  
+                    </div>
+                    <div class="col-sm-6 col-md-2 mb-2 pr-0">
+                      <div class="incall-report">
+                        <div class="row">
+                          <div class="col-auto">
+                            <div class="incall-report-icon missedcal-bg">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                          </div>
+                          <div class="col">
+                            <h3 class="inout-call-title">File Analysing </h3>
+                            <h1 class="call-countnum">
+                              {{ status_counts.3|default:"0" }}
+                            </h1>
+                          </div>
+                        </div>
+                      </div>
+                    </div>   
+                    <div class="col-sm-6 col-md-2 mb-2 pr-0">
+                      <div class="incall-report">
+                        <div class="row">
+                          <div class="col-auto">
+                            <div class="incall-report-icon tcinc-bg ">
+                                <i class="fa-solid fa-indian-rupee-sign"></i>
+                            </div>
+                          </div>
+                          <div class="col">
+                            <h3 class="inout-call-title">Policy Creating </h3>
+                            <h1 class="call-countnum">{{ status_counts.5|default:"0" }}</h1>
+                          </div>
+                        </div>
+                      </div>  
+                    </div>
+                  </div>
+              </div>
+            </div>
+          </div>
+
+          
+          
         </div>
       </div>
     </div>

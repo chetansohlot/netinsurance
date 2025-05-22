@@ -2835,7 +2835,7 @@ a:hover .dr-pdficon {
 .incall-report .call-countnum {font-size: 17px; line-height: 1; font-weight: 500; margin: 0; }
 .incall-report .call-countnum2 {font-size: 16px !important; line-height: 1; font-weight: 500; margin: 0; }
 .incall-report2 {padding: 10px; }
-.incbox {box-shadow: 0px 2px 10px 0px rgba(58, 53, 65, 0.1); background: #fff; padding: 10px; }
+.incbox {box-shadow: 0px 2px 10px 0px rgba(58, 53, 65, 0.1); background: #f6e1db; padding: 10px; border-radius: 5px; }
 
 
 @media (max-width:767px) {
