@@ -956,6 +956,7 @@ def bulkPolicyView(request, id):
     policy_files = ExtractedFile.objects.filter(bulk_log_ref_id=id)
     status_files = ExtractedFile.objects.filter(bulk_log_ref_id=id,is_failed = False)
     statuses = Counter(file.status for file in status_files)
+    bulk_log_file = BulkPolicyLog.objects.filter(id=id).first()
 
     failed_files = ExtractedFile.objects.filter(bulk_log_ref_id=id,is_failed=True).count()
     # Ensure all statuses are included in the count, even if they're 0
@@ -974,6 +975,7 @@ def bulkPolicyView(request, id):
         'files': policy_files,
         'total_files': len(policy_files),
         'log_id': id,
+        'bulk_log_file': bulk_log_file,
         'failed_files_count': failed_files,
         'status_counts': status_counts
     })
@@ -987,6 +989,17 @@ def failed_policies_list(request):
     policy_files = ExtractedFile.objects.filter(is_failed=True)
 
     return render(request, 'policy/failed-files.html', {
+        'files': policy_files,
+    })
+
+def status_file_uploaded_list(request):
+    if not request.user.is_authenticated or request.user.is_active != 1:
+        return redirect('login')
+
+    # Fetch policy documents based on bulk_log_id
+    policy_files = ExtractedFile.objects.filter(status=2)
+
+    return render(request, 'policy/status-file-uploaded-list.html', {
         'files': policy_files,
     })
 
