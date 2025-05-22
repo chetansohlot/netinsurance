@@ -263,7 +263,7 @@ Policy Data
                               {% endif %}
                             </td>
                             <td>
-                              {% if log.count_total_files <= log.success_extracted_counts|add:log.count_duplicate_files|add:log.failed_extracted_counts %} 
+                              {% if log.failed_extracted_counts != 0 and log.success_extracted_counts != 0 and log.count_total_files <= log.success_extracted_counts|add:log.count_duplicate_files|add:log.failed_extracted_counts %} 
                                 <span class="badge badge-success">Complete</span>
                               {% else %}
                                 {% if log.status == 1 %}

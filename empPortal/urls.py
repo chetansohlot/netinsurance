@@ -386,6 +386,7 @@ urlpatterns = [
     
     path('reprocess-bulk-policies',views.reprocessBulkPolicies,name="reprocess-bulk-policies"),
     path('continue-bulk-policies',views.continueBulkPolicies,name="continue-bulk-policies"),
+    path('failed-bulk-policies-reprocess',policy.failedBulkPoliciesReprocess,name="failed-bulk-policies-reprocess"),
     path('bulk-upload-logs/',policy.bulkUploadLogs,name='bulk-upload-logs'),
     
     path('change-password/',views.changePassword,name='change-password'),

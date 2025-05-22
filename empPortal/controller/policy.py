@@ -992,6 +992,46 @@ def failed_policies_list(request):
         'files': policy_files,
     })
 
+
+def failedBulkPoliciesReprocess(request):
+    if not request.user.is_authenticated or request.user.is_active != 1:
+        return redirect('login')
+    
+    if request.method == "POST":
+        log_id = request.POST.get('log_id', None)
+        if log_id is None:
+            return redirect('bulk-upload-logs')
+        
+        reprocessFiles = request.POST.get('failed_bulk_policies', '')
+        if not reprocessFiles:
+            messages.error(request, 'Select Atleast One Policy')
+            return redirect(request.META.get('HTTP_REFERER', '/'))
+        
+        reprocessFilesList = reprocessFiles.split(",") if reprocessFiles else []
+
+        # Update each ExtractedFile by id before reprocessing
+        for file_id in reprocessFilesList:
+            try:
+                file = ExtractedFile.objects.get(id=file_id)
+                
+                # Reset the columns as requested
+                file.source_id = None
+                file.retry_source_count = 0
+                file.retry_chat_response_count = 0
+                file.retry_creating_policy_count = 0
+                file.is_failed = False
+                file.save()
+
+            except ExtractedFile.DoesNotExist:
+                messages.error(request, f"File with ID {file_id} does not exist.")
+            except Exception as e:
+                messages.error(request, f"Error updating file {file_id}: {str(e)}")
+
+        return redirect('bulk-upload-logs', log_id)
+    else:
+        messages.error(request, 'Invalid URL')
+        return redirect(request.META.get('HTTP_REFERER', '/'))
+
 def status_file_uploaded_list(request):
     if not request.user.is_authenticated or request.user.is_active != 1:
         return redirect('login')

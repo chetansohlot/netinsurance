@@ -37,6 +37,15 @@ Policy Data
                         <a href="{% url 'bulk-upload-logs' %}" class="breadcrump-addbtn mx-1">View Bulk Logs</a>
                     </div>
                 </div>
+                
+                <div>
+                    <form id="myForm" action="{% url 'failed-bulk-policies-reprocess' %}" method="post">
+                            {% csrf_token %}
+                        <input type="hidden" id="continue-bulk-policies" name="failed_bulk_policies">
+                        <input type="hidden" id="log_id" name="log_id" value="{{log_id}}">
+                        <button type="submit" class="breadcrump-addbtn mx-1" id="">Re Process</button>
+                    </form>
+                </div>
             </div>
           </div>
           
