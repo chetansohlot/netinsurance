@@ -992,7 +992,9 @@ def bulkUploadLogs(request):
       logs = BulkPolicyLog.objects.all().order_by('-id')
     
     policy_files = ExtractedFile.objects.all()
-    statuses = Counter(file.status for file in policy_files)
+    policy_files_counter = ExtractedFile.objects.filter(is_failed=False)
+    statuses = Counter(file.status for file in policy_files_counter)
+    failed_count = ExtractedFile.objects.filter(is_failed=True).count()
 
     # Ensure all statuses are included in the count, even if they're 0
     status_counts = {
@@ -1009,6 +1011,7 @@ def bulkUploadLogs(request):
     return render(request,'policy/bulk-upload-logs.html',{
         'logs': logs,
         'status_counts': status_counts,
+        'failed_count': failed_count,
         'total_files': len(policy_files)
     })
 
