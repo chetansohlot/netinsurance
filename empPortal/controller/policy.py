@@ -1017,7 +1017,7 @@ def failedBulkPoliciesReprocess(request):
                 # Reset the columns as requested
                 file.source_id = None
                 file.retry_source_count = 0
-                is_uploaded=False
+                file.is_uploaded=0
                 file.retry_chat_response_count = 0
                 file.retry_creating_policy_count = 0
                 file.is_failed = False
