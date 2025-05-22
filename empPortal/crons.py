@@ -339,11 +339,12 @@ class CreateNewPolicySinglePolicy(CronJobBase):
                                                     insurer_tp_percentage = 0.0
                                                     
                                                 coverage = extracted_data.get('coverage_details', {})
+                                                policy_net_premium = extracted_data.get('net_premium', 0)
 
                                                 policy_od_premium = coverage.get('own_damage', {}).get('premium', 0)
                                                 policy_tp_premium = coverage.get('third_party', {}).get('premium', 0)
 
-                                                policy_net_premium = policy_od_premium + policy_tp_premium
+                                                # policy_net_premium = policy_od_premium + policy_tp_premium
                                                 policy_gross_premium = extracted_data.get('gross_premium', 0)
                                                     
                                                 policy = PolicyDocument.objects.create(
@@ -665,8 +666,9 @@ class CreateNewPolicy(CronJobBase):
 
                                             logger.error(f"policy_od_premium Value Of extracted_file_id {file.id}, Error:{policy_od_premium}")
                                             logger.error(f"policy_tp_premium Value Of extracted_file_id {file.id}, Error:{policy_tp_premium}")
+                                            policy_net_premium = extracted_data.get('net_premium', 0)
 
-                                            policy_net_premium = policy_od_premium + policy_tp_premium
+                                            # policy_net_premium = policy_od_premium + policy_tp_premium
                                             policy_gross_premium = safe_int(extracted_data.get('gross_premium'))
 
                                                 
