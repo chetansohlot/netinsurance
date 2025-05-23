@@ -152,7 +152,8 @@ Policy Data
           <embed src="{{ data.file_url }}" type="application/pdf" width="100%" height="500px">
         </div>
         <div class="col-md-6">
-          <form method="POST" action="{% url 'update_pdf_info' data.id %}">
+          {% comment %} <form method="POST" action="{% url 'update_pdf_info' data.id %}"> {% endcomment %}
+          <form method="POST" action="#">
             {% csrf_token %}
             <div class="form-group">
               <label for="policyNumber{{ data.id }}">Policy Number</label>
