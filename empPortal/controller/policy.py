@@ -1264,6 +1264,33 @@ def bulkUploadLogs(request):
         'total_files': len(policy_files)
     })
 
+
+def bulkUploadStatsAjax(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+
+    policy_files = ExtractedFile.objects.all()
+    policy_files_counter = ExtractedFile.objects.filter(is_failed=False)
+    statuses = Counter(file.status for file in policy_files_counter)
+    failed_count = ExtractedFile.objects.filter(is_failed=True).count()
+
+    status_counts = {
+        0: statuses.get(0, 0),
+        1: statuses.get(1, 0),
+        2: statuses.get(2, 0),
+        3: statuses.get(3, 0),
+        4: statuses.get(4, 0),
+        5: statuses.get(5, 0),
+        6: statuses.get(6, 0),
+        7: statuses.get(7, 0),
+    }
+
+    return JsonResponse({
+        'status_counts': status_counts,
+        'failed_count': failed_count,
+        'total_files': len(policy_files)
+    })
+
 def policyData(request):
     if not request.user.is_authenticated:
         return redirect('login')

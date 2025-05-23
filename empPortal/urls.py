@@ -391,7 +391,8 @@ urlpatterns = [
     path('continue-bulk-policies',views.continueBulkPolicies,name="continue-bulk-policies"),
     path('failed-bulk-policies-reprocess',policy.failedBulkPoliciesReprocess,name="failed-bulk-policies-reprocess"),
     path('bulk-upload-logs/',policy.bulkUploadLogs,name='bulk-upload-logs'),
-    
+    path('ajax/bulk-upload-stats/', policy.bulkUploadStatsAjax, name='bulk-upload-stats-ajax'),
+
     path('change-password/',views.changePassword,name='change-password'),
     path('update-password',views.updatePassword,name='update-password'),
     path("logout/", views.userLogout, name="logout"),

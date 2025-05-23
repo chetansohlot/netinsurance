@@ -56,7 +56,7 @@ Policy Data
                           </div>
                           <div class="col">
                             <h3 class="inout-call-title">Total Files </h3>
-                            <h1 class="call-countnum">
+                            <h1 data-status="total" class="call-countnum">
                               {{ total_files }}
                             </h1>
                           </div>
@@ -73,7 +73,7 @@ Policy Data
                           </div>
                           <div class="col">
                             <h3 class="inout-call-title">Complete </h3>
-                            <h1 class="call-countnum">
+                            <h1 data-status="6" class="call-countnum">
                               {{ status_counts.6|default:"0" }}
                             </h1>
                           </div>
@@ -91,7 +91,7 @@ Policy Data
                             </div>
                             <div class="col">
                               <h3 class="inout-call-title">Duplicate </h3>
-                              <h1 class="call-countnum">
+                              <h1 data-status="7" class="call-countnum">
                                 {{ status_counts.7|default:"0" }}
                               </h1>
                             </div>
@@ -111,7 +111,7 @@ Policy Data
                             </div>
                             <div class="col">
                               <h3 class="inout-call-title">Failed </h3>
-                              <h1 class="call-countnum">{{ failed_count|default:"0" }}</h1>
+                              <h1 data-status="failed" class="call-countnum">{{ failed_count|default:"0" }}</h1>
                             </div>
                           </div>
                         </div>  
@@ -138,7 +138,7 @@ Policy Data
                           </div>
                           <div class="col">
                             <h3 class="inout-call-title">File Analysed </h3>
-                            <h1 class="call-countnum">
+                            <h1 data-status="4" class="call-countnum">
                               {{ status_counts.4|default:"0" }}
                             </h1>
                           </div>
@@ -155,7 +155,7 @@ Policy Data
                           </div>
                           <div class="col">
                             <h3 class="inout-call-title">File Uploading </h3>
-                            <h1 class="call-countnum">
+                            <h1 data-status="1" class="call-countnum">
                               {{ status_counts.1|default:"0" }}
                             </h1>
                           </div>
@@ -173,7 +173,7 @@ Policy Data
                             </div>
                             <div class="col">
                               <h3 class="inout-call-title">File Uploaded </h3>
-                              <h1 class="call-countnum">{{ status_counts.2|default:"0" }}</h1>
+                              <h1 data-status="2" class="call-countnum">{{ status_counts.2|default:"0" }}</h1>
                             </div>
                           </div>
                         </div>  
@@ -190,7 +190,7 @@ Policy Data
                           </div>
                           <div class="col">
                             <h3 class="inout-call-title">File Analysing </h3>
-                            <h1 class="call-countnum">
+                            <h1 data-status="3" class="call-countnum">
                               {{ status_counts.3|default:"0" }}
                             </h1>
                           </div>
@@ -207,7 +207,7 @@ Policy Data
                           </div>
                           <div class="col">
                             <h3 class="inout-call-title">Policy Creating </h3>
-                            <h1 class="call-countnum">{{ status_counts.5|default:"0" }}</h1>
+                            <h1 data-status="5" class="call-countnum">{{ status_counts.5|default:"0" }}</h1>
                           </div>
                         </div>
                       </div>  
@@ -314,5 +314,29 @@ Policy Data
 
 {% include 'footer-script.html' %}
 </body>
+
+<script>
+  function updateBulkUploadStats() {
+    fetch("{% url 'bulk-upload-stats-ajax' %}")
+      .then(response => response.json())
+      .then(data => {
+        if (data.error) return;
+
+        document.querySelector('.call-countnum[data-status="total"]').innerText = data.total_files;
+        document.querySelector('.call-countnum[data-status="6"]').innerText = data.status_counts["6"];
+        document.querySelector('.call-countnum[data-status="7"]').innerText = data.status_counts["7"];
+        document.querySelector('.call-countnum[data-status="4"]').innerText = data.status_counts["4"];
+        document.querySelector('.call-countnum[data-status="1"]').innerText = data.status_counts["1"];
+        document.querySelector('.call-countnum[data-status="2"]').innerText = data.status_counts["2"];
+        document.querySelector('.call-countnum[data-status="3"]').innerText = data.status_counts["3"];
+        document.querySelector('.call-countnum[data-status="5"]').innerText = data.status_counts["5"];
+        document.querySelector('.call-countnum[data-status="failed"]').innerText = data.failed_count;
+      })
+      .catch(error => console.error('Error fetching bulk upload stats:', error));
+  }
+
+  setInterval(updateBulkUploadStats, 10000); // every 10 seconds
+  document.addEventListener("DOMContentLoaded", updateBulkUploadStats); // initial call
+</script>
 
 {% endblock %}
