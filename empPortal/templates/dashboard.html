@@ -81,8 +81,8 @@
                     <div class="card">
                       <div class="card-body">
                           <h4 class="card-hding mb-0 pb-2">Business Summary</h4>
-                          <div class="row mt-2">
-                            <div class="col-sm-6 col-md-2 mb-2 pr-0">
+                          <div class="row row-cols-5 mt-2">
+                            <div class="col-sm-6 col-md mb-2 pr-0">
                               <div class="incall-report">
                                 <div class="row">
                                   <div class="col-auto">
@@ -99,22 +99,7 @@
                                 </div>
                               </div>
                             </div>   
-                            <div class="col-sm-6 col-md-2 mb-2 pr-0">
-                              <div class="incall-report">
-                                <div class="row">
-                                  <div class="col-auto">
-                                    <div class="incall-report-icon missedcal-bg ">
-                                        <i class="fa-solid fa-indian-rupee-sign"></i>
-                                    </div>
-                                  </div>
-                                  <div class="col">
-                                    <h3 class="inout-call-title">Gross Premium </h3>
-                                    <h1 class="call-countnum" id="total_gross_premium">{{ total_gross_premium|indian_currency }}</h1>
-                                  </div>
-                                </div>
-                              </div>  
-                            </div>
-                            <div class="col-sm-6 col-md-2 mb-2 pr-0">
+                            <div class="col-sm-6 col-md mb-2 pr-0">
                               <div class="incall-report">
                                 <div class="row">
                                   <div class="col-auto">
@@ -131,8 +116,7 @@
                                 </div>
                               </div>
                             </div>
-
-                            <div class="col-sm-6 col-md-2 mb-2 pr-0">
+                            <div class="col-sm-6 col-md mb-2 pr-0">
                               <div class="incall-report">
                                 <div class="row">
                                   <div class="col-auto">
@@ -141,15 +125,15 @@
                                     </div>
                                   </div>
                                   <div class="col">
-                                    <h3 class="inout-call-title">GST</h3>
+                                    <h3 class="inout-call-title">GST 18%</h3>
                                     <h1 class="call-countnum" id="policies_sold">
                                       18
                                     </h1>
                                   </div>
                                 </div>
                               </div>
-                            </div>   
-                            <div class="col-sm-6 col-md-2 mb-2 pr-0">
+                            </div> 
+                            <div class="col-sm-6 col-md mb-2 pr-0">
                               <div class="incall-report">
                                 <div class="row">
                                   <div class="col-auto">
@@ -158,13 +142,63 @@
                                     </div>
                                   </div>
                                   <div class="col">
-                                    <h3 class="inout-call-title">Insurance Payout Received</h3>
+                                    <h3 class="inout-call-title">Gross Premium </h3>
+                                    <h1 class="call-countnum" id="total_gross_premium">{{ total_gross_premium|indian_currency }}</h1>
+                                  </div>
+                                </div>
+                              </div>  
+                            </div>
+                            
+
+                              
+                            <div class="col-sm-6 col-md mb-2 pr-0">
+                              <div class="incall-report">
+                                <div class="row">
+                                  <div class="col-auto">
+                                    <div class="incall-report-icon incal-bg ">
+                                        <i class="fa-solid fa-indian-rupee-sign"></i>
+                                    </div>
+                                  </div>
+                                  <div class="col">
+                                    <h3 class="inout-call-title">Insurance Payout Received (20%)</h3>
                                     <h1 class="call-countnum" id="total_gross_premium">78525</h1>
                                   </div>
                                 </div>
                               </div>  
                             </div>
-                            <div class="col-sm-6 col-md-2 mb-2 pr-0">
+                            <div class="col-sm-6 col-md mb-2 pr-0">
+                              <div class="incall-report">
+                                <div class="row">
+                                  <div class="col-auto">
+                                    <div class="incall-report-icon tcinc-bg">
+                                        <i class="fa-solid fa-indian-rupee-sign"></i>
+                                    </div>
+                                  </div>
+                                  <div class="col">
+                                    <h3 class="inout-call-title">TDS Deducteded On Payout (5%)</h3>
+                                    <h1 class="call-countnum">
+                                      2500
+                                    </h1>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>   
+                            <div class="col-sm-6 col-md mb-2 pr-0">
+                              <div class="incall-report">
+                                <div class="row">
+                                  <div class="col-auto">
+                                    <div class="incall-report-icon missedcal-bg ">
+                                        <i class="fa-solid fa-indian-rupee-sign"></i>
+                                    </div>
+                                  </div>
+                                  <div class="col">
+                                    <h3 class="inout-call-title">Paid to Agent</h3>
+                                    <h1 class="call-countnum">78525</h1>
+                                  </div>
+                                </div>
+                              </div>  
+                            </div>
+                            <div class="col-sm-6 col-md mb-2 pr-0">
                               <div class="incall-report">
                                 <div class="row">
                                   <div class="col-auto">
@@ -182,43 +216,13 @@
                               </div>
                             </div>
 
-                            <div class="col-sm-6 col-md-2 mb-2 pr-0">
+                            
+                            
+                            <div class="col-sm-6 col-md mb-2 pr-0">
                               <div class="incall-report">
                                 <div class="row">
                                   <div class="col-auto">
                                     <div class="incall-report-icon tcinc-bg">
-                                        <i class="fa-solid fa-indian-rupee-sign"></i>
-                                    </div>
-                                  </div>
-                                  <div class="col">
-                                    <h3 class="inout-call-title">TDS Deducted</h3>
-                                    <h1 class="call-countnum">
-                                      2500
-                                    </h1>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>   
-                            <div class="col-sm-6 col-md-2 mb-2 pr-0">
-                              <div class="incall-report">
-                                <div class="row">
-                                  <div class="col-auto">
-                                    <div class="incall-report-icon missedcal-bg ">
-                                        <i class="fa-solid fa-indian-rupee-sign"></i>
-                                    </div>
-                                  </div>
-                                  <div class="col">
-                                    <h3 class="inout-call-title">Paid to Agent</h3>
-                                    <h1 class="call-countnum">78525</h1>
-                                  </div>
-                                </div>
-                              </div>  
-                            </div>
-                            <div class="col-sm-6 col-md-2 mb-2 pr-0">
-                              <div class="incall-report">
-                                <div class="row">
-                                  <div class="col-auto">
-                                    <div class="incall-report-icon incal-bg">
                                         <i class="fa-solid fa-indian-rupee-sign"></i>
                                     </div>
                                   </div>
@@ -1032,6 +1036,41 @@
                 </div>  
                 <hr class="my-2">
                 <canvas id="partner_bar_chart" style="width:100%; height: 140px;"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-12">  
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-hding mb-0">Business Summary</h5>
+                <div class="table-responsive">
+                  <table id="insurer-wise-table" class="table table-design table-trlink">
+                    <thead class="table-thead-bg-light table-header-fix">
+                      <tr>
+                        <th>Total Policies Sold</th>
+                        <th>Net Premium</th>
+                        <th>GST 18%</th>
+                        <th>Gross Premium</th>
+                        <th>Insurance Payout Received (20%)</th>
+                        <th>TDS Deducteded On Payout (5%)</th>
+                        <th>Paid to Agent</th>
+                        <th>Revenue Total Received 5%</th>
+                        <th class="align-top">Profit</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <td>{{ policy_count }}</td>
+                      <td>{{ total_net_premium|indian_currency }}</td>
+                      <td>360</td>
+                      <td>{{ total_gross_premium|indian_currency }}</td>
+                      <td>78525</td>
+                      <td>2500</td>
+                      <td>78525</td>
+                      <td>12345</td>
+                      <td>12345</td>
+                    </tbody>
+                  </table>  
+                </div>
               </div>
             </div>
           </div>
