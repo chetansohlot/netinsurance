@@ -303,7 +303,10 @@ class CreateNewPolicySinglePolicy(CronJobBase):
                                     vehicle_number = extracted_data.get('vehicle_number', '')
                                     
                                     try:
-                                        policy_exist = PolicyDocument.objects.filter(policy_number=policy_number).exists()
+                                        if policy_number:
+                                            policy_exist = PolicyDocument.objects.filter(policy_number=policy_number).exists()
+                                        else:
+                                            policy_exist = False
                                         if policy_exist:
                                             try:
                                                 file.status = 7
