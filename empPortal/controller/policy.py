@@ -991,6 +991,17 @@ def failed_policies_list(request):
     return render(request, 'policy/failed-files.html', {
         'files': policy_files,
     })
+       
+def add_manual_policy(request):
+    if not request.user.is_authenticated or request.user.is_active != 1:
+        return redirect('login')
+
+    # Fetch policy documents based on bulk_log_id
+    policy_files = ExtractedFile.objects.filter(is_failed=True)
+
+    return render(request, 'policy/add-manual-policy.html', {
+        'files': policy_files,
+    })
 
 
 def failedBulkPoliciesReprocess(request):

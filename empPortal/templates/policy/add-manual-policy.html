@@ -29,12 +29,14 @@ Policy Data
                     <li> <a href="#">Dashboard</a> <i class="fas fa-chevron-right"></i></li>
                     <li><a href="{% url 'policy-data' %}">Policy Mgt.</a> <i class="fas fa-chevron-right"></i></li>
                     <li><a href="{% url 'bulk-upload-logs' %}">Bulk Logs</a> <i class="fas fa-chevron-right"></i></li>
-                    <li>Failed Files</li>
+                    <li><a href="{% url 'failed-policies-list' %}">Failed Files</a> <i class="fas fa-chevron-right"></i></li>
+                    <li>Add Manual Policy</li>
                   </ul>
                 </div>
                 <div class="col-sm-6">
                     <div class="d-flex justify-content-end">
                         <a href="{% url 'bulk-upload-logs' %}" class="breadcrump-addbtn mx-1">View Bulk Logs</a>
+                        <a href="{% url 'failed-policies-list' %}" class="breadcrump-addbtn mx-1">Failed Files</a>
                     </div>
                 </div>
                 
@@ -128,11 +130,9 @@ Policy Data
                                 
                               </td>
                               <td>
-                                <a href="{% url 'add-manual-policy' %}">
                                 <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#pdfModal{{ data.id }}">
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </button>
-                                </a>
                               </td>
 
                             </tr>
