@@ -160,19 +160,22 @@ Policy Data
                       </div>
                     </div>   
                     <div class="col-sm-6 col-md-2 mb-2 pr-0">
-                      <div class="incall-report">
-                        <div class="row">
-                          <div class="col-auto">
-                            <div class="incall-report-icon tcinc-bg ">
-                                <i class="fa-solid fa-file-arrow-up"></i>
+                      <a href="{% url 'status-file-uploaded-list' %}">
+                        <div class="incall-report">
+                          <div class="row">
+                            <div class="col-auto">
+                              <div class="incall-report-icon tcinc-bg ">
+                                  <i class="fa-solid fa-file-arrow-up"></i>
+                              </div>
+                            </div>
+                            <div class="col">
+                              <h3 class="inout-call-title">File Uploaded </h3>
+                              <h1 class="call-countnum">{{ status_counts.2|default:"0" }}</h1>
                             </div>
                           </div>
-                          <div class="col">
-                            <h3 class="inout-call-title">File Uploaded </h3>
-                            <h1 class="call-countnum">{{ status_counts.2|default:"0" }}</h1>
-                          </div>
-                        </div>
-                      </div>  
+                        </div>  
+                      </a>
+
                     </div>
                     <div class="col-sm-6 col-md-2 mb-2 pr-0">
                       <div class="incall-report">
