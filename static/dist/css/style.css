@@ -1192,32 +1192,34 @@ input[type="file"] {padding:0px !important; height: 31.6px;}
 
 .tooltip-sec:hover:before {
     content: attr(data-title);
-    white-space: nowrap;
+    /* white-space: nowrap; */
     position: absolute;
-    top: -40px;
+    top: -55px;
     left: 50%;
     padding: 6px 10px;
     display: flex;
     justify-content: center;
-    background: #000;
-    color: #fff;
-    font-size: 12px;
+    background: #fde2db;
+    color: #000;
+    font-size: 11px;
     z-index: 9999;
     font-weight: 500;
     letter-spacing: 0.5px;
     transform: translateX(-50%) scale(1);
     box-shadow: 0px 3px 10px rgb(204 204 204 / 80%);
     animation: filteratr-anim 0.2s;
+    max-width: 300px;
+    border-radius: 5px;
 }
 
 .tooltip-sec:hover:after {
     content: '';
     position: absolute;
     transform: scale(1);
-    top: -11px;
+    bottom: 18px;
     border-left: 6px solid transparent;
     border-right: 6px solid transparent;
-    border-top: 6px solid #000;
+    border-top: 6px solid #fde2db;
     margin: auto;
     display: block;
     transform: translateX(-50%) scale(1);
