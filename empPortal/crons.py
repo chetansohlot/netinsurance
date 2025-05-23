@@ -516,7 +516,7 @@ class GettingPdfExtractedData(CronJobBase):
                         logger.info(f"File key {file.chat_pdf_key} not matches with Env key {settings.CHATPDF_API_KEY}")
 
                         file.source_id = None
-                        file.is_uploaded=0,
+                        file.is_uploaded = False
                         file.retry_source_count = 0
                         file.retry_chat_response_count = 0
                         file.retry_creating_policy_count = 0
