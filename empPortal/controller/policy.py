@@ -992,16 +992,132 @@ def failed_policies_list(request):
         'files': policy_files,
     })
        
-def add_manual_policy(request):
+def add_manual_policy(request, id):
     if not request.user.is_authenticated or request.user.is_active != 1:
         return redirect('login')
 
     # Fetch policy documents based on bulk_log_id
-    policy_files = ExtractedFile.objects.filter(is_failed=True)
+    file = ExtractedFile.objects.filter(id=id).first()
+    insurers = Insurance.objects.all().order_by('-created_at')
+    branches = Branch.objects.filter(status='Active').order_by('-created_at')
 
     return render(request, 'policy/add-manual-policy.html', {
-        'files': policy_files,
+        'file': file,
+        'branches': branches,
+        'insurers':insurers,
+
     })
+
+def none_if_blank(value):
+    return value.strip() if value and value.strip() else None
+
+
+
+def create_manual_policy(request, id):
+    if not request.user.is_authenticated or request.user.is_active != 1:
+        return redirect('login')
+
+    extracted_file = get_object_or_404(ExtractedFile, id=id)
+
+    if request.method == 'POST':
+        try:
+            policy = PolicyDocument()
+            policy.policy_number = none_if_blank(request.POST.get('policy_number'))
+            policy.policy_issue_date = none_if_blank(request.POST.get('policy_issue_date'))
+            policy.policy_start_date = none_if_blank(request.POST.get('policy_start_date'))
+            policy.policy_expiry_date = none_if_blank(request.POST.get('policy_expiry_date'))
+            policy.holder_name = none_if_blank(request.POST.get('holder_name'))
+            policy.vehicle_number = ''
+            policy.extracted_text = {
+                "policy_number": "",
+                "vehicle_number": "",
+                "insured_name": "",
+                "issue_date": "",
+                "start_date": "",
+                "expiry_date": "",
+                "gross_premium": None,
+                "net_premium": None,
+                "gst_premium": None,
+                "sum_insured": None,
+                "policy_period": "",
+                "insurance_company": "",
+                "coverage_details": {
+                    "own_damage": {
+                        "premium": None,
+                        "additional_premiums": None,
+                        "addons": {"addons": [], "discounts": []}
+                    },
+                    "third_party": {
+                        "premium": None,
+                        "additional_premiums": None,
+                        "addons": {"addons": [], "discounts": []}
+                    }
+                },
+                "vehicle_details": {
+                    "make": "", "model": "", "variant": "",
+                    "registration_year": None, "manufacture_year": None,
+                    "engine_number": "", "chassis_number": "", "fuel_type": "",
+                    "cubic_capacity": None, "seating_capacity": None,
+                    "vehicle_gross_weight": None, "vehicle_type": "", "commercial_vehicle_detail": ""
+                },
+                "additional_details": {
+                    "policy_type": "", "ncb": None,
+                    "addons": [], "previous_insurer": "", "previous_policy_number": ""
+                },
+                "contact_information": {
+                    "address": "", "phone_number": "", "email": "", "pan_no": "", "aadhar_no": ""
+                }
+            }
+            policy.coverage_details = {}
+            policy.insurance_provider = "ABC"
+            policy.rm_name = request.user.first_name
+            policy.rm_id = request.user.id
+            policy.status = 6
+            policy.insurance_company_id = none_if_blank(request.POST.get('insurance_company'))
+            policy.policy_type = none_if_blank(request.POST.get('policy_type'))
+            policy.policy_period = ''
+            policy.filepath = extracted_file.file_path
+            policy.filename = extracted_file.filename
+            policy.save()
+
+            extracted_file.status = 6
+            extracted_file.is_failed = False
+            extracted_file.policy_id = policy.id
+            extracted_file.save()
+
+            info = PolicyInfo()
+            info.policy_id = policy.id
+            info.policy_number = policy.policy_number
+            info.policy_issue_date = policy.policy_issue_date
+            info.policy_start_date = policy.policy_start_date
+            info.policy_expiry_date = policy.policy_expiry_date
+            info.insured_name = policy.holder_name
+            info.insurer_name = policy.insurance_provider
+            info.policy_type = policy.policy_type
+            info.insurance_company = request.POST.get('insurance_company')
+            info.branch_id = request.POST.get('registration_city')
+            info.branch_name = request.POST.get('registration_city')
+            info.sum_insured = request.POST.get('idv_value')
+            info.od_premium = request.POST.get('od_premium')
+            info.tp_premium = request.POST.get('tp_premium')
+            info.gross_premium = request.POST.get('gross_premium')
+            info.net_premium = request.POST.get('net_premium')
+            info.gst_premium = request.POST.get('gst_premium')
+            info.save()
+
+            messages.success(request, 'Manual policy created successfully.')
+            return redirect('failed-policies-list')
+
+        except Exception as e:
+            messages.error(request, f'Error while creating policy: {str(e)}')
+
+    insurers = Insurance.objects.all().order_by('-created_at')
+
+    return render(request, 'policy/add-manual-policy.html', {
+        'file': extracted_file,
+        'insurers': insurers,
+    })
+
 
 
 def failedBulkPoliciesReprocess(request):

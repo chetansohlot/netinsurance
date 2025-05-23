@@ -965,35 +965,47 @@ def policyData(request):
         'filters': {k: request.GET.get(k,'') for k in filters}
     })
 
-def editPolicy(request, id):
-    if request.user.is_authenticated:
-        policy_data = PolicyDocument.objects.filter(id=id).first()
-        policy_number = policy_data.policy_number
-        policy = PolicyInfo.objects.filter(policy_number=policy_number).first()
-        pdf_path = get_pdf_path(request, policy_data.filepath)
-        branches = Branch.objects.filter(status='Active').order_by('-created_at')
-        referrals = Referral.objects.all()
 
-        extracted_data = {}
-        if policy_data and policy_data.extracted_text:
-            if isinstance(policy_data.extracted_text, str):
-                try:
-                    extracted_data = json.loads(policy_data.extracted_text)
-                except json.JSONDecodeError:
-                    extracted_data = {}
-            elif isinstance(policy_data.extracted_text, dict):
-                extracted_data = policy_data.extracted_text  # already a dict
-        return render(request, 'policy/edit-policy.html', {
-            'policy_data': policy_data,
-            'policy': policy,
-            'referrals': referrals,
-            'branches': branches,
-            'pdf_path': pdf_path,
-            'extracted_data': extracted_data,
-            'file_path': policy_data.filepath,
-        })
-    else:
+
+def editPolicy(request, id):
+    if not request.user.is_authenticated:
         return redirect('login')
+
+    policy_data = PolicyDocument.objects.filter(id=id).first()
+    if not policy_data:
+        return redirect('policy-data')
+
+    policy_number = policy_data.policy_number
+    policy = PolicyInfo.objects.filter(policy_number=policy_number).first()
+    pdf_path = get_pdf_path(request, policy_data.filepath)
+    branches = Branch.objects.filter(status='Active').order_by('-created_at')
+    referrals = Referral.objects.all()
+
+    # Safe loading of extracted_data
+    extracted_data = {}
+    if policy_data and policy_data.extracted_text:
+        if isinstance(policy_data.extracted_text, str):
+            try:
+                extracted_data = json.loads(policy_data.extracted_text)
+            except json.JSONDecodeError:
+                extracted_data = {}
+        elif isinstance(policy_data.extracted_text, dict):
+            extracted_data = policy_data.extracted_text
+
+    # Ensure vehicle_details key is present
+    if 'vehicle_details' not in extracted_data or not isinstance(extracted_data.get('vehicle_details'), dict):
+        extracted_data['vehicle_details'] = {}
+
+    return render(request, 'policy/edit-policy.html', {
+        'policy_data': policy_data,
+        'policy': policy,
+        'referrals': referrals,
+        'branches': branches,
+        'pdf_path': pdf_path,
+        'extracted_data': extracted_data,
+        'file_path': policy_data.filepath,
+    })
+
    
 def get_pdf_path(request, filepath):
     """

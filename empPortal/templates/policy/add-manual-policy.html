@@ -52,9 +52,9 @@ Policy Data
             <div class="card box-shadow-none p-3">
               <div class="card-body px-0 pb-0 pt-0">
 
-                <form autocomplete="off" id="myPolicyForm" name="updatePolicy" action="/edit-policy/448/" method="post" novalidate="novalidate">
-                    <input type="hidden" name="csrfmiddlewaretoken" value="tEORmqM4NpFnJHnHO3CvP9C9bxeCEwxoUbqM0luzHMqORSjPhLtJUaTipq59UZvI">
-                  
+                <form autocomplete="off" id="myPolicyManualForm" name="updatePolicy" action="{% url 'create-manual-policy' id=file.id %}" method="post" novalidate="novalidate">
+                                                {% csrf_token %}
+
                     <input type="hidden" class="form-field" name="policy_id" id="policy_id" value="448">
                     
                     <div class="form-box-shadow">
@@ -64,28 +64,28 @@ Policy Data
                           <div class="col-sm-6 col-md-4 col-lg-3">
                             <div class="form-group">
                               <label class="form-lbl" for="policy_number">Policy Number</label>
-                              <input type="text" class="form-field" name="policy_number" id="policy_number" placeholder="Policy Number" value="202504110058803" readonly="">
+                              <input type="text" class="form-field" name="policy_number" id="policy_number" placeholder="Policy Number">
                             </div>
                           </div>
                     
                           <div class="col-sm-6 col-md-4 col-lg-3">
                             <div class="form-group">
                               <label class="form-lbl" for="policy_issue_date">Policy Issue Date</label>
-                              <input type="text" class="form-field" name="policy_issue_date" id="policy_issue_date" placeholder="Policy Issue Date" value="2025-04-11 16:06:00">
+                              <input type="date" class="form-field" name="policy_issue_date" id="policy_issue_date" placeholder="Policy Issue Date" >
                             </div>
                           </div>
                     
                           <div class="col-sm-6 col-md-4 col-lg-3">
                             <div class="form-group">
                               <label class="form-lbl" for="policy_start_date">Policy Start Date</label>
-                              <input type="text" class="form-field" name="policy_start_date" id="policy_start_date" placeholder="Policy Start Date" value="2025-04-14 00:00:00">
+                              <input type="date" class="form-field" name="policy_start_date" id="policy_start_date" placeholder="Policy Start Date">
                             </div>
                           </div>
                     
                           <div class="col-sm-6 col-md-4 col-lg-3">
                             <div class="form-group">
                               <label class="form-lbl" for="policy_expiry_date">Policy Expiry Date</label>
-                              <input type="text" class="form-field" name="policy_expiry_date" id="policy_expiry_date" placeholder="Policy Expiry Date" value="2026-04-13 00:00:00">
+                              <input type="date" class="form-field" name="policy_expiry_date" id="policy_expiry_date" placeholder="Policy Expiry Date">
                             </div>
                           </div>
                     
@@ -115,7 +115,7 @@ Policy Data
                               <div class="col-sm-6 col-md-4 col-lg-3">
                                 <div class="form-group">
                                   <label class="form-lbl" for="holder_name">Insured Name</label>
-                                  <input type="text" class="form-field" name="holder_name" id="holder_name" placeholder="Insured Name" value="Mr. Manish Verma">
+                                  <input type="text" class="form-field" name="holder_name" id="holder_name" placeholder="Insured Name">
                                 </div>
                               </div>
                         
@@ -166,33 +166,28 @@ Policy Data
                               <div class="col-sm-6 col-md-4 col-lg-3">
                                 <div class="form-group">
                                   <label class="form-lbl">Insurance Company</label>
-                                  <input type="text" class="form-field" name="insurance_company" placeholder="Insurance Company" value="Kotak Mahindra General Insurance Co. Ltd." readonly="">
+                                  <select name="insurance_company" id="insurance_company" class="form-field">
+                                    <option value="">Select Insurance Company</option>
+                                    {% for insurer in insurers %}
+                                        <option value="{{ insurer.id }}" {% if insurer.id == request.insurer.id %}selected{% endif %}>
+                                            {{ insurer.insurance_company }}
+                                        </option>
+                                    {% endfor %}
+                                  </select>
                                 </div>
                               </div>
                         
                               <div class="col-sm-6 col-md-4 col-lg-3">
                                 <div class="form-group">
                                   <label class="form-lbl">Branch Name</label>
-                                  <select id="branch" name="registration_city" class="form-field">
-                                      <option value="">Select Branch</option>
-                                      
-                                      <option value="9">
-                                          AGROHA
-                                      </option>
-                                      
-                                      <option value="8">
-                                          DELHI
-                                      </option>
-                                      
-                                      <option value="7">
-                                          Chandigarh
-                                      </option>
-                                      
-                                      <option value="2">
-                                          Hisar
-                                      </option>
-                                      
-                                  </select>
+                                      <select id="branch" name="registration_city" class="form-field">
+                                          <option value="">Select Branch</option>
+                                          {% for branch in branches %}
+                                          <option value="{{ branch.id }}" {% if branch.id|stringformat:"s" == policy.branch_name|stringformat:"s" %}selected{% endif %}>
+                                              {{ branch.branch_name }}
+                                          </option>
+                                          {% endfor %}
+                                      </select>
                                 </div>
                               </div>
                               
@@ -203,7 +198,7 @@ Policy Data
                               <div class="col-sm-6 col-md-4 col-lg-3">
                                 <div class="form-group">
                                   <label class="form-lbl">Policy Type</label>
-                                  <input type="text" class="form-field" name="policy_type" placeholder="Policy Type" value="Comprehensive Policy">
+                                  <input type="text" class="form-field" name="policy_type" placeholder="Policy Type">
                                 </div>
                               </div>
 
@@ -239,14 +234,14 @@ Policy Data
                               <div class="col-sm-6 col-md-4 col-lg-3">
                                 <div class="form-group">
                                   <label class="form-lbl">Sum Insured</label>
-                                  <input type="text" class="form-field" name="idv_value" placeholder="Sum Insured" value="1039000">
+                                  <input type="text" class="form-field" name="idv_value" placeholder="Sum Insured">
                                 </div>
                               </div>
                         
                               <div class="col-sm-6 col-md-4 col-lg-3">
                                 <div class="form-group">
                                   <label class="form-lbl">OD Premium</label>
-                                  <input type="text" class="form-field" id="od_premium" name="od_premium" placeholder="OD Premium" value="None">
+                                  <input type="text" class="form-field" id="od_premium" name="od_premium" placeholder="OD Premium">
                                 </div>
                               </div>
                               <div class="col-sm-6 col-md-4 col-lg-3">
@@ -258,7 +253,7 @@ Policy Data
                                       <i class="fas fa-info-circle"></i> <!-- FontAwesome info icon -->
                                     </span>
                                   </label>
-                                  <input type="text" class="form-field" id="tp_premium" name="tp_premium" placeholder="TP Premium" value="None">
+                                  <input type="text" class="form-field" id="tp_premium" name="tp_premium" placeholder="TP Premium" value="0">
                                 </div>
                               </div>
                         
@@ -294,7 +289,7 @@ Policy Data
                               <div class="col-sm-6 col-md-4 col-lg-3">
                                 <div class="form-group">
                                   <label class="form-lbl">Gross Premium</label>
-                                  <input type="text" class="form-field" name="gross_premium" placeholder="Gross Premium" value="20409">
+                                  <input type="text" class="form-field" name="gross_premium" placeholder="Gross Premium" value="0">
                                 </div>
                               </div>
                               
@@ -319,7 +314,7 @@ Policy Data
                         
 
                         <div class="d-flex justify-content-end mt-4">
-                          <button type="button" id="save-policy-from" class="dashboard-addbtn">Save and Continue</button>
+                          <button type="submit" id="save-policy-from" class="dashboard-addbtn">Save and Continue</button>
                         </div>  
                       </div>
                     </div>

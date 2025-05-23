@@ -16,6 +16,13 @@ def blank_if_none_or_text_none(value):
         return ''
     return value
 
+
+@register.filter
+def safe_get(d, key):
+    if isinstance(d, dict):
+        return d.get(key, '')
+    return ''
+
 @register.filter
 def indian_currency(value):
     try:
