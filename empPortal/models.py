@@ -1320,6 +1320,10 @@ class BulkPolicyLog(models.Model):
         return ExtractedFile.objects.filter(bulk_log_ref_id=self.id, is_failed=False, status=6).count()
     
     @property
+    def duplicate_extracted_counts(self):
+        return ExtractedFile.objects.filter(bulk_log_ref_id=self.id, is_failed=False, status=7).count()
+    
+    @property
     def extractedFiles(self):
         try:
             return ExtractedFile.objects.get(bulk_log_ref_id=self.id)

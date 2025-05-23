@@ -256,7 +256,7 @@ Policy Data
                             </td>
                             <td>
                               Success : {{ log.success_extracted_counts }} <br>
-                              Duplicate : {{ log.count_duplicate_files }}<br>
+                              Duplicate : {{ log.duplicate_extracted_counts }}<br>
                               Failed : {{ log.failed_extracted_counts }}
                             </td>
                             <td>{{ log.created_date }}</td>
@@ -269,7 +269,7 @@ Policy Data
                               {% endif %}
                             </td>
                             <td>
-                              {% if log.failed_extracted_counts != 0 and log.success_extracted_counts != 0 and log.count_total_files <= log.success_extracted_counts|add:log.count_duplicate_files|add:log.failed_extracted_counts %} 
+                              {% if log.failed_extracted_counts != 0 and log.success_extracted_counts != 0 and log.count_total_files <= log.success_extracted_counts|add:log.duplicate_extracted_counts|add:log.failed_extracted_counts %} 
                                 <span class="badge badge-success">Complete</span>
                               {% else %}
                                 {% if log.status == 1 %}
