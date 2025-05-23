@@ -78,6 +78,7 @@ Policy Data
                             <th>Date of Upload</th>
                             <th>File</th>
                             <th>Status</th>
+                            <th>Action</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -126,10 +127,55 @@ Policy Data
                                 {% endif %}
                                 
                               </td>
+                              <td>
+                                <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#pdfModal{{ data.id }}">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                              </td>
+
                             </tr>
                           {% endfor %}
                         </tbody>
                       </table>
+{% for data in files %}
+<div class="modal fade" id="pdfModal{{ data.id }}" tabindex="-1" role="dialog" aria-labelledby="pdfModalLabel{{ data.id }}" aria-hidden="true">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="pdfModalLabel{{ data.id }}">Edit PDF Info: {{ data.filename }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body d-flex gap-3">
+        <div class="col-md-6">
+          <embed src="{{ data.file_url }}" type="application/pdf" width="100%" height="500px">
+        </div>
+        <div class="col-md-6">
+          <form method="POST" action="{% url 'update_pdf_info' data.id %}">
+            {% csrf_token %}
+            <div class="form-group">
+              <label for="policyNumber{{ data.id }}">Policy Number</label>
+              <input type="text" name="policy_number" class="form-control" id="policyNumber{{ data.id }}" value="{{ data.chat_response.policy_number }}">
+            </div>
+            <div class="form-group">
+              <label for="insuredName{{ data.id }}">Insured Name</label>
+              <input type="text" name="insured_name" class="form-control" id="insuredName{{ data.id }}" value="{{ data.chat_response.insured_name }}">
+            </div>
+            <div class="form-group">
+              <label for="vehicleNumber{{ data.id }}">Vehicle Number</label>
+              <input type="text" name="vehicle_number" class="form-control" id="vehicleNumber{{ data.id }}" value="{{ data.chat_response.vehicle_number }}">
+            </div>
+            <!-- Add more fields as needed -->
+            <button type="submit" class="btn btn-success mt-3">Update</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+
                     </div>
                     <div id="loader" class="form-loader" style="display: none;">
                         <div>
