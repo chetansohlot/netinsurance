@@ -1001,9 +1001,12 @@ def add_manual_policy(request, id):
     insurers = Insurance.objects.all().order_by('-created_at')
     branches = Branch.objects.filter(status='Active').order_by('-created_at')
 
+    pdf_path = get_pdf_path(request, file.file_path)
+
     return render(request, 'policy/add-manual-policy.html', {
         'file': file,
         'branches': branches,
+        'pdf_path': pdf_path,
         'insurers':insurers,
 
     })
@@ -1012,6 +1015,34 @@ def none_if_blank(value):
     return value.strip() if value and value.strip() else None
 
 
+
+def get_pdf_path(request, filepath):
+    """
+    Returns the absolute URI to the PDF file if it exists, otherwise an empty string.
+    """
+    if not filepath:
+        return ""
+
+    filepath_str = str(filepath).replace('\\', '/')
+    rel_path = ""
+    
+    if 'media/' in filepath_str:
+        rel_path = filepath_str.split('media/')[-1]
+        absolute_file_path = os.path.join(settings.MEDIA_ROOT, rel_path)
+
+        if not os.path.exists(absolute_file_path):
+            # Try fallback inside empPortal/media
+            fallback_path = os.path.join(settings.BASE_DIR, 'empPortal', 'media', rel_path)
+            if os.path.exists(fallback_path):
+                absolute_file_path = fallback_path
+            else:
+                rel_path = ""  # File not found in either location
+
+        if rel_path:
+            media_url_path = urljoin(settings.MEDIA_URL, rel_path.replace('\\', '/'))
+            return request.build_absolute_uri(media_url_path)
+
+    return ""
 
 def create_manual_policy(request, id):
     if not request.user.is_authenticated or request.user.is_active != 1:
