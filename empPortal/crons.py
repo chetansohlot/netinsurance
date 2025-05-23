@@ -612,7 +612,10 @@ class CreateNewPolicy(CronJobBase):
                                 bulk_policy_log = file.bulk_log_ref
                                 
                                 try:
-                                    policy_exist = PolicyDocument.objects.filter(policy_number=policy_number).exists()
+                                    if policy_number:
+                                        policy_exist = PolicyDocument.objects.filter(policy_number=policy_number).exists()
+                                    else:
+                                        policy_exist = False
                                     if policy_exist:
                                         try:
                                             bulk_policy_log.count_uploaded_files += 1
