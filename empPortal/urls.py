@@ -358,6 +358,7 @@ urlpatterns = [
     path('browser-policy/', policy.browsePolicy, name='browser-policy'),
     path('failed-policy-upload-view/<str:id>', views.failedPolicyUploadView, name='failed-policy-upload-view'),
     path('failed-policies-list/', policy.failed_policies_list, name='failed-policies-list'),
+    path('duplicate-policies-list/', policy.duplicate_policies_list, name='duplicate-policies-list'),
     path('add-manual-policy/<str:id>', policy.add_manual_policy, name='add-manual-policy'),
     path('create-manual-policy/<str:id>', policy.create_manual_policy, name='create-manual-policy'),
     path('status-file-uploaded-list/', policy.status_file_uploaded_list, name='status-file-uploaded-list'),

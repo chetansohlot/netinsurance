@@ -991,6 +991,31 @@ def failed_policies_list(request):
     return render(request, 'policy/failed-files.html', {
         'files': policy_files,
     })
+
+import ast
+
+def duplicate_policies_list(request):
+    if not request.user.is_authenticated or request.user.is_active != 1:
+        return redirect('login')
+
+    policy_files = ExtractedFile.objects.filter(status=7)
+
+    for file in policy_files:
+        try:
+            extracted_data = file.chat_response
+            if extracted_data:
+                if isinstance(extracted_data, str):
+                    extracted_data = ast.literal_eval(extracted_data)
+                file.extracted_policy_number = extracted_data.get('policy_number', '')
+            else:
+                file.extracted_policy_number = ''
+        except Exception as e:
+            file.extracted_policy_number = ''
+
+    return render(request, 'policy/duplicate-files.html', {
+        'files': policy_files,
+    })
+
        
 def add_manual_policy(request, id):
     if not request.user.is_authenticated or request.user.is_active != 1:
