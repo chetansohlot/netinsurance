@@ -238,11 +238,12 @@ Policy Data
                         <tr>
                           <th>Campaign Name</th>
                           <th>Files Data</th>
-                          <th>Result</th>
                           <th>Date of Upload</th>
                           <th>Uploaded By</th>
                           <th>Status</th>
                           <th>Action</th>
+                          <th>Result</th>
+
                         </tr>
                       </thead>
                       <tbody>
@@ -253,11 +254,6 @@ Policy Data
                               Total : {{ log.count_total_files }} <br>
                               PDF : {{ log.count_pdf_files }} <br>
                               Non PDF : {{ log.count_not_pdf }}
-                            </td>
-                            <td>
-                              Success : {{ log.success_extracted_counts }} <br>
-                              Duplicate : {{ log.duplicate_extracted_counts }}<br>
-                              Failed : {{ log.failed_extracted_counts }}
                             </td>
                             <td>{{ log.created_date }}</td>
                             
@@ -286,6 +282,12 @@ Policy Data
                                 <a href="{% url 'bulk-policies'  id=log.id %}" class="btn btn-primary btn-xs"><i class="fas fa-eye"></i></a>
                                 <a href="{{ log.file_url }}" target="_blank" class="btn btn-success btn-xs"><i class="fa-solid fa-download"></i> </a>
                               </div>  
+                            </td>
+                            
+                            <td>
+                              Success : {{ log.success_extracted_counts }} <br>
+                              Duplicate : {{ log.duplicate_extracted_counts }}<br>
+                              Failed : {{ log.failed_extracted_counts }}
                             </td>
                           </tr>
                         {% endfor %}
