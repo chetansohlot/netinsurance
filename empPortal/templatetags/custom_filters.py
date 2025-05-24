@@ -197,3 +197,26 @@ def add_days_str(value, days):
         return aware_dt + timedelta(days=int(days))
     except Exception:
         return value
+    
+    
+@register.filter
+def policy_date_format(value):
+    if not value:
+        return "-"
+    if isinstance(value, str):
+        try:
+            # Try full datetime first
+            dt = datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
+        except ValueError:
+            try:
+                # Try date only
+                dt = datetime.strptime(value, "%Y-%m-%d")
+                dt = dt.replace(hour=0, minute=0)
+            except ValueError:
+                return value  # fallback: return original
+    elif isinstance(value, datetime):
+        dt = value
+    else:
+        return value
+
+    return dt.strftime("%d-%b-%Y %I:%M %p").replace("AM", "A.M.").replace("PM", "P.M.")
