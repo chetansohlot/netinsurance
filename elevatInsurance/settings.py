@@ -45,6 +45,7 @@ X_FRAME_OPTIONS = 'ALLOWALL'
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
+    'mathfilters',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',

@@ -3,6 +3,7 @@
 {% block title %}
 Policy Data
 {% endblock %}
+{% load mathfilters %}
 
 {% block content %}
 {% load static %}
@@ -338,45 +339,49 @@ Policy Data
                                 <span class="circle-icon"><i class="far fa-circle"></i></span><strong>Start:</strong> {{ data.policy_infos.start_date|default_if_none:data.start_date|default:"-" }}<br>
                                 <span class="circle-icon"><i class="far fa-circle"></i></span><strong>Expiry:</strong> {{ data.policy_infos.end_date|default_if_none:data.expiry_date|default:"-" }}
                               </td>
-                              <td>
-                                <span class="circle-icon"><i class="far fa-circle"></i></span>
-                                <strong>OD:</strong>
-                                <i class="fa-solid fa-indian-rupee-sign"></i>
-                                {% if data.policyinfos.od_premium and data.policyinfos.od_premium != 0 %}
-                                  {{ data.policyinfos.od_premium|floatformat:2 }}
-                                {% else %}
-                                  {{data.od_premium|default:0|floatformat:2}}
-                                {% endif %}
-                                <br>
+<td>
+    <span class="circle-icon"><i class="far fa-circle"></i></span>
+    <strong>OD:</strong>
+    <i class="fa-solid fa-indian-rupee-sign"></i>
+    {% if data.policyinfos.od_premium and data.policyinfos.od_premium != 0 %}
+        {{ data.policyinfos.od_premium|floatformat:2 }}
+    {% else %}
+        {{ data.od_premium|default:0|floatformat:2 }}
+    {% endif %}
+    <br>
 
-                                <span class="circle-icon"><i class="far fa-circle"></i></span>
-                                <strong>TP:</strong>
-                                <i class="fa-solid fa-indian-rupee-sign"></i>
-                                {% if data.policyinfos.tp_premium and data.policyinfos.tp_premium != 0 %}
-                                  {{ data.policyinfos.tp_premium|floatformat:2 }}
-                                {% else %}
-                                  {{data.tp_premium|default:0|floatformat:2}}
-                                {% endif %}
-                                <br>
+    <span class="circle-icon"><i class="far fa-circle"></i></span>
+    <strong>TP:</strong>
+    <i class="fa-solid fa-indian-rupee-sign"></i>
+    {% if data.policyinfos.tp_premium and data.policyinfos.tp_premium != 0 %}
+        {{ data.policyinfos.tp_premium|floatformat:2 }}
+    {% else %}
+        {{ data.tp_premium|default:0|floatformat:2 }}
+    {% endif %}
+    <br>
 
-                                <span class="circle-icon"><i class="far fa-circle"></i></span>
-                                <strong>Net:</strong>
-                                <i class="fa-solid fa-indian-rupee-sign"></i>
-                                {% if data.policyinfos.net_premium and data.policyinfos.net_premium != 0 %}
-                                  {{ data.policyinfos.net_premium|floatformat:2 }}
-                                {% else %}
-                                  {{data.policy_premium|default:0|floatformat:2}}
-                                {% endif %}
-                                <br>
-                                <span class="circle-icon"><i class="far fa-circle"></i></span>
-                                <strong>Gross:</strong>
-                                <i class="fa-solid fa-indian-rupee-sign"></i>
-                                {% if data.policyinfos.gross_premium and data.policyinfos.gross_premium != 0 %}
-                                  {{ data.policyinfos.gross_premium|floatformat:2 }}
-                                {% else %}
-                                  {{data.policy_total_premium|default:0|floatformat:2}}
-                                {% endif %}
-                              </td>
+    {% with data.policyinfos.od_premium|default:data.od_premium|default:0 as od %}
+    {% with data.policyinfos.tp_premium|default:data.tp_premium|default:0 as tp %}
+      {% with od|add:tp as net %}
+        <span class="circle-icon"><i class="far fa-circle"></i></span>
+        <strong>Net:</strong>
+        <i class="fa-solid fa-indian-rupee-sign"></i>
+        {{ net|floatformat:2 }}
+        <br>
+
+        {% with net|mul:"0.18" as gst %}
+          <span class="circle-icon"><i class="far fa-circle"></i></span>
+          <strong>Gross:</strong>
+          <i class="fa-solid fa-indian-rupee-sign"></i>
+          {{ net|add:gst|floatformat:2 }}
+        {% endwith %}
+      {% endwith %}
+    {% endwith %}
+  {% endwith %}
+</td>
+
+
+
                               <td>
                                 {% if data.policyinfos.gst_premium and data.policyinfos.gst_premium != 0 %}
                                   {{ data.policyinfos.gst_premium|floatformat:2 }}
