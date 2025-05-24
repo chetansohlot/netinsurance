@@ -5,6 +5,7 @@
 {% endblock %}
 {% load custom_filters %}
 
+{% load mathfilters %}
 
 <body class="hold-transition sidebar-mini">
 {% load static %}
@@ -127,7 +128,11 @@
                                   <div class="col">
                                     <h3 class="inout-call-title">GST 18%</h3>
                                     <h1 class="call-countnum" id="policies_sold">
-                                      18
+                                      {% with total_net_premium|mul:"0.18" as gst %}
+                                        {{ gst|floatformat:2|indian_currency }}
+                                      {% endwith %}
+
+
                                     </h1>
                                   </div>
                                 </div>
