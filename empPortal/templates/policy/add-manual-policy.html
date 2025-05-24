@@ -253,7 +253,7 @@ Policy Data
                                       <i class="fas fa-info-circle"></i> <!-- FontAwesome info icon -->
                                     </span>
                                   </label>
-                                  <input type="text" class="form-field" id="tp_premium" name="tp_premium" placeholder="TP Premium" value="0">
+                                  <input type="text" class="form-field" id="tp_premium" name="tp_premium" placeholder="TP Premium">
                                 </div>
                               </div>
                         
@@ -289,14 +289,14 @@ Policy Data
                               <div class="col-sm-6 col-md-4 col-lg-3">
                                 <div class="form-group">
                                   <label class="form-lbl">Gross Premium</label>
-                                  <input type="text" class="form-field" name="gross_premium" placeholder="Gross Premium" value="0">
+                                  <input type="text" class="form-field" name="gross_premium" placeholder="Gross Premium">
                                 </div>
                               </div>
                               
                               <div class="col-sm-6 col-md-4 col-lg-3">
                                 <div class="form-group">
                                   <label class="form-lbl">Net Premium</label>
-                                  <input type="text" class="form-field" id="net_premium" name="net_premium" placeholder="Net Premium" value="0.0" readonly="">
+                                  <input type="text" class="form-field" id="net_premium" name="net_premium" placeholder="Net Premium" readonly="">
                                 </div>
                               </div>
 
@@ -347,18 +347,43 @@ Policy Data
 {% include 'footer-script.html' %}
 
 
-<script>
-  // Show loader on form submit
-  document.getElementById("myForm").addEventListener("submit", function () {
-    document.getElementById("loader").style.display = "flex";
-  });
-</script>
 </body>
+<!-- Load jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+<!-- Load jQuery Validate plugin -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+
+<!-- Your custom validation logic -->
 <script>
+  // Add custom method once only
+  $.validator.addMethod("decimal2", function (value, element) {
+    return this.optional(element) || /^\d+(\.\d{1,2})?$/.test(value);
+  }, "Please enter a valid amount with up to 2 decimal places.");
+
   $(document).ready(function () {
     $("#myPolicyManualForm").validate({
       rules: {
+        tp_premium: {
+          required: true,
+          number: true,
+          decimal2: true
+        },
+        od_premium: {
+          required: true,
+          number: true,
+          decimal2: true
+        },
+        gross_premium: {
+          required: true,
+          number: true,
+          decimal2: true
+        },
+        net_premium: {
+          required: true,
+          number: true,
+          decimal2: true
+        },
         policy_number: {
           required: true,
           minlength: 5,
@@ -370,7 +395,9 @@ Policy Data
               policy_number: function () {
                 return $("#policy_number").val();
               },
-              csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val()
+              csrfmiddlewaretoken: function () {
+                return $('input[name="csrfmiddlewaretoken"]').val();
+              }
             },
             dataFilter: function (response) {
               var data = JSON.parse(response);
@@ -378,38 +405,42 @@ Policy Data
             }
           }
         },
-        policy_issue_date: {
-          required: true
-        },
-        policy_start_date: {
-          required: true
-        },
-        policy_expiry_date: {
-          required: true
-        },
-        insurance_company: {
-          required: true
-        }
+        policy_issue_date: { required: true },
+        policy_start_date: { required: true },
+        policy_expiry_date: { required: true },
+        insurance_company: { required: true }
       },
       messages: {
+        tp_premium: {
+          required: "TP Premium is required",
+          number: "Enter a valid number",
+          decimal2: "Only 2 decimal places allowed"
+        },
+        od_premium: {
+          required: "OD Premium is required",
+          number: "Enter a valid number",
+          decimal2: "Only 2 decimal places allowed"
+        },
+        gross_premium: {
+          required: "Gross Premium is required",
+          number: "Enter a valid number",
+          decimal2: "Only 2 decimal places allowed"
+        },
+        net_premium: {
+          required: "Net Premium is required",
+          number: "Enter a valid number",
+          decimal2: "Only 2 decimal places allowed"
+        },
         policy_number: {
           required: "Please enter the policy number",
           minlength: "Policy number must be at least 5 characters",
           maxlength: "Policy number must not exceed 40 characters",
           remote: "This policy number is already registered."
         },
-        policy_issue_date: {
-          required: "Please select the policy issue date"
-        },
-        policy_start_date: {
-          required: "Please select the policy start date"
-        },
-        policy_expiry_date: {
-          required: "Please select the policy expiry date"
-        },
-        insurance_company: {
-          required: "Please select an insurance company"
-        }
+        policy_issue_date: { required: "Please select the policy issue date" },
+        policy_start_date: { required: "Please select the policy start date" },
+        policy_expiry_date: { required: "Please select the policy expiry date" },
+        insurance_company: { required: "Please select an insurance company" }
       },
       errorElement: "div",
       errorPlacement: function (error, element) {
@@ -417,6 +448,7 @@ Policy Data
         error.insertAfter(element);
       },
       submitHandler: function (form) {
+        document.getElementById("loader").style.display = "flex";
         form.submit();
       }
     });
