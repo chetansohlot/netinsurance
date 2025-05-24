@@ -2849,6 +2849,9 @@ a:hover .dr-pdficon {
 }
 .break-all {word-break: break-all;}
 
+.dashboard-table-scrollbar {height:380px; overflow: auto;}
+.table-list-scrollbar {height: 480px; overflow: auto;}
+
 @media (max-width:767px) {
     .banner-hding {font-size: 30px;}
     .banner-subhding {font-size:20px;}

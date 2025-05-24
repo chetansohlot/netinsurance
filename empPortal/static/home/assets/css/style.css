@@ -1483,6 +1483,8 @@ footer {background: #f7d134; padding: 45px 0 20px; }
 
 .increment-decreament {display: none;}
 
+
+
 @media (max-width:767px) {
   .banner-hding {font-size: 30px;}
   .banner-subhding {font-size:20px;}

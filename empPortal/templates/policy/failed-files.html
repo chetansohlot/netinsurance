@@ -64,17 +64,17 @@ Policy Data
             <div class="card box-shadow-none">
               <div class="card-body px-0 pb-0 pt-0">
                 <div class="tab-content" id="nav-tabContent">
-                    <div class="table-responsive table-ht">
+                    <div class="table-responsive table-list-scrollbar">
                       <table class="table table-design">
                         <thead class="table-thead-bg-light table-header-fix">
                           <tr>
                             <th>
                               <input type="checkbox" id="select-all">
                             </th>
-                            <th>File Name</th>
-                            <th>Source ID</th>
+                            <th width="220">File Name</th>
+                            <th width="220">Source ID</th>
                             <th>Reason</th>
-                            <th>Campaign Name</th>
+                            <th width="140">Campaign Name</th>
                             <th>Date of Upload</th>
                             <th>File</th>
                             <th>Status</th>
@@ -94,8 +94,8 @@ Policy Data
                                   data-created-at="{{ data.created_at|date:'U' }}"
                                   id="checkbox-{{ data.id }}">
                               </td>
-                              <td>{{ data.filename }} <span class="tooltip-sec text-info" data-title="{{ data.file_url }}"><i class="fa-solid fa-circle-info"></i></span></td>
-                              <td>{{ data.source_id }}({{data.id}})</td>
+                              <td class="break-all">{{ data.filename }} <span class="tooltip-sec text-info" data-title="{{ data.file_url }}"><i class="fa-solid fa-circle-info"></i></span></td>
+                              <td class="break-all">{{ data.source_id }}({{data.id}})</td>
                               <td>{{ data.error_message }}</td>
                               <td>{{ data.bulk_log_ref.camp_name }}</td>
                               <td>{{ data.created_at }}</td>
