@@ -379,16 +379,18 @@ Policy Data
                                   {% endwith %}
                                 {% endwith %}
                               </td>
-
-
-
                               <td>
-                                {% if data.policyinfos.gst_premium and data.policyinfos.gst_premium != 0 %}
-                                  {{ data.policyinfos.gst_premium|floatformat:2 }}
-                                {% else %}
-                                  {{data.gst|default:0|floatformat:2}}
-                                {% endif %}
+                                {% with data.policyinfos.od_premium|default:data.od_premium|default:0 as od %}
+                                {% with data.policyinfos.tp_premium|default:data.tp_premium|default:0 as tp %}
+                                  {% with od|add:tp as net %}
+                                    {% with net|mul:"0.18" as gst %}
+                                      {{ gst|floatformat:2 }}
+                                    {% endwith %}
+                                  {% endwith %}
+                                {% endwith %}
+                                {% endwith %}
                               </td>
+
                               <td>{{ data.rm_name }}</td>
                               <td>{{ data.payment_status|default:"Not Paid" }}</td>
                               <td>
