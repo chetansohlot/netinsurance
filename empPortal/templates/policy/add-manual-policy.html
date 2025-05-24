@@ -355,8 +355,6 @@ Policy Data
 </script>
 </body>
 
-
-    
 <script>
   $(document).ready(function () {
     $("#myPolicyManualForm").validate({
@@ -366,7 +364,7 @@ Policy Data
           minlength: 5,
           maxlength: 40,
           remote: {
-            url: "/check-policy-number/", // Django view to check policy number
+            url: "/check-policy-number/",
             type: "POST",
             data: {
               policy_number: function () {
@@ -376,9 +374,18 @@ Policy Data
             },
             dataFilter: function (response) {
               var data = JSON.parse(response);
-              return data.exists ? "false" : "true"; // 'false' means already exists
+              return data.exists ? "false" : "true";
             }
           }
+        },
+        policy_issue_date: {
+          required: true
+        },
+        policy_start_date: {
+          required: true
+        },
+        policy_expiry_date: {
+          required: true
         },
         insurance_company: {
           required: true
@@ -388,7 +395,17 @@ Policy Data
         policy_number: {
           required: "Please enter the policy number",
           minlength: "Policy number must be at least 5 characters",
+          maxlength: "Policy number must not exceed 40 characters",
           remote: "This policy number is already registered."
+        },
+        policy_issue_date: {
+          required: "Please select the policy issue date"
+        },
+        policy_start_date: {
+          required: "Please select the policy start date"
+        },
+        policy_expiry_date: {
+          required: "Please select the policy expiry date"
         },
         insurance_company: {
           required: "Please select an insurance company"
@@ -405,5 +422,6 @@ Policy Data
     });
   });
 </script>
+
 
 {% endblock %}
