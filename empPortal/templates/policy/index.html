@@ -335,9 +335,9 @@ Policy Data
                                 </div>  
                                 <td>{{data.policy_infos.policy_type|default_if_none:data.policy_type|default:"-" }}</td>
                               <td>
-                                <span class="circle-icon"><i class="far fa-circle"></i></span><strong>Issue:</strong> {{ data.policy_infos.issue_date|default_if_none:data.issue_date|default:"-" }} <br>
-                                <span class="circle-icon"><i class="far fa-circle"></i></span><strong>Start:</strong> {{ data.policy_infos.start_date|default_if_none:data.start_date|default:"-" }}<br>
-                                <span class="circle-icon"><i class="far fa-circle"></i></span><strong>Expiry:</strong> {{ data.policy_infos.end_date|default_if_none:data.expiry_date|default:"-" }}
+                                <span class="circle-icon"><i class="far fa-circle"></i></span><strong>Issue:</strong> {{ data.policy_infos.policy_issue_date|default_if_none:data.policy_issue_date|default:"-" }} <br>
+                                <span class="circle-icon"><i class="far fa-circle"></i></span><strong>Start:</strong> {{ data.policy_infos.policy_start_date|default_if_none:data.policy_start_date|default:"-" }}<br>
+                                <span class="circle-icon"><i class="far fa-circle"></i></span><strong>Expiry:</strong> {{ data.policy_infos.policy_expiry_date|default_if_none:data.policy_expiry_date|default:"-" }}
                               </td>
                               <td>
                                   <span class="circle-icon"><i class="far fa-circle"></i></span>

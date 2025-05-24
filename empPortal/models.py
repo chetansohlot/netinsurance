@@ -454,6 +454,13 @@ class PolicyDocument(models.Model):
             return FranchisePayment.objects.get(policy_id=self.id)
         except FranchisePayment.DoesNotExist:
             return None
+        
+    @property
+    def policy_infos(self):
+        try:
+            return PolicyInfo.objects.get(policy_id=self.id)
+        except PolicyInfo.DoesNotExist:
+            return None
 
     class Meta:
         db_table = 'policydocument'
