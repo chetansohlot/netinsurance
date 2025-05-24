@@ -1668,7 +1668,12 @@ def save_leads_assignment_info(request):
         
         lead_ref_id = lead_data.lead_id
         
-        message = f'Lead is allocated to {lead_data.assigned_to.full_name} in branch {lead_data.branch.branch_name}'
+        if getattr(lead_data, 'assigned_to', None) and getattr(lead_data.assigned_to, 'full_name', None):
+            full_name = lead_data.assigned_to.full_name
+            branch_name = getattr(getattr(lead_data, 'branch', None), 'branch_name', 'Unknown')
+            message = f'Lead is allocated to {full_name} in branch {branch_name}'
+        else:
+            message = "Lead is not yet allocated."
         LeadActivity.objects.create(
             lead_id = lead_data.id,
             lead_ref_id = lead_data.lead_id,

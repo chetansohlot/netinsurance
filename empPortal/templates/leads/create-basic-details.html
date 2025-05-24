@@ -84,7 +84,14 @@
 
                           <div class="form-group col-md-4">
                               <label class="form-lbl" for="email_address">Email ID</label>
-                              <input type="email" class="form-field email" name="email_address" id="email_address"  placeholder="Enter Email" value="{{ lead_data.email_address|default:customer_data.email_address }}">
+                              <input 
+                                      type="email" 
+                                      class="form-field email" 
+                                      name="email_address" 
+                                      id="email_address"
+                                      placeholder="Enter Email"
+                                      value="{{ lead_data.email_address|default:customer_data.email_address|default_if_none:'' }}">
+
                           </div>
 
                           <div class="form-group col-md-4">
@@ -98,8 +105,10 @@
 
                           <div class="form-group col-md-4">
                             <label class="form-lbl" for="date_of_birth">Date of Birth</label>
-                           <input type="text" class="form-field dob_datepicker" name="date_of_birth" id="date_of_birth" value="{{ lead_data.date_of_birth|default:customer_data.date_of_birth|date:'Y-m-d' }}" readonly>
+                            <input type="text" class="form-field dob_datepicker" placeholder="YYYY-MM-DD" name="date_of_birth" id="date_of_birth"
+                                  value="{% if lead_data.date_of_birth %}{{ lead_data.date_of_birth|date:'Y-m-d' }}{% elif customer_data.date_of_birth %}{{ customer_data.date_of_birth|date:'Y-m-d' }}{% else %}{% endif %}" readonly>
                           </div>
+
                           <div class="form-group col-md-4">
                             <label class="form-lbl" for="identity_no">PAN/Aadhaar (Optional)</label>
                             <input type="text" class="form-field" maxlength="12" name="identity_no" id="identity_no" value="{{lead_data.lead_customer_identity_no|default:customer_data.identity_no|default:'' }}" placeholder="Enter Indentity No.">
