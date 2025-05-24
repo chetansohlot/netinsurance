@@ -1264,6 +1264,12 @@ def bulkUploadLogs(request):
         'total_files': len(policy_files)
     })
 
+def check_policy_number(request):
+    if request.method == "POST":
+        policy_number = request.POST.get("policy_number", "").strip()
+        exists = PolicyDocument.objects.filter(policy_number=policy_number).exists()
+        return JsonResponse({"exists": exists})
+    return JsonResponse({"error": "Invalid request"}, status=400)
 
 def bulkUploadStatsAjax(request):
     if not request.user.is_authenticated:

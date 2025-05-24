@@ -392,6 +392,7 @@ urlpatterns = [
     path('failed-bulk-policies-reprocess',policy.failedBulkPoliciesReprocess,name="failed-bulk-policies-reprocess"),
     path('bulk-upload-logs/',policy.bulkUploadLogs,name='bulk-upload-logs'),
     path('ajax/bulk-upload-stats/', policy.bulkUploadStatsAjax, name='bulk-upload-stats-ajax'),
+    path('check-policy-number/', policy.check_policy_number, name='check-policy-number'),
 
     path('change-password/',views.changePassword,name='change-password'),
     path('update-password',views.updatePassword,name='update-password'),

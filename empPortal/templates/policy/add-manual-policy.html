@@ -346,63 +346,6 @@ Policy Data
 
 {% include 'footer-script.html' %}
 
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const checkboxes = document.querySelectorAll(".reprocess");
-    const hiddenInput = document.getElementById("continue-bulk-policies");
-    const selectAllCheckbox = document.getElementById("select-all");
-
-    // Update hidden input value with selected checkbox IDs
-    function updateHiddenField() {
-      let selectedIds = [];
-      checkboxes.forEach((checkbox) => {
-        if (checkbox.checked) {
-          selectedIds.push(checkbox.value);
-        }
-      });
-      hiddenInput.value = selectedIds.join(",");
-      console.log(hiddenInput.value);
-    }
-
-    // Add event listener to each checkbox for change event
-    checkboxes.forEach((checkbox) => {
-      checkbox.addEventListener("change", updateHiddenField);
-    });
-
-    // Enable checkboxes after 2 minutes if not status 6 or 7
-    checkboxes.forEach(function (checkbox) {
-      const createdAt = parseInt(checkbox.getAttribute("data-created-at")) * 1000;
-      const status = parseInt(checkbox.getAttribute("data-status"));
-      const now = Date.now();
-      const timeDiff = now - createdAt;
-
-      const maybeEnable = () => {
-        if (status !== 6 && status !== 7) {
-          checkbox.removeAttribute("disabled");
-        }
-      };
-
-      if (timeDiff >= 2 * 60 * 1000) {
-        maybeEnable();
-      } else {
-        const delay = (2 * 60 * 1000) - timeDiff;
-        setTimeout(maybeEnable, delay);
-      }
-    });
-
-    // Select All functionality
-    if (selectAllCheckbox) {
-      selectAllCheckbox.addEventListener("change", function () {
-        checkboxes.forEach((checkbox) => {
-          if (!checkbox.disabled) {
-            checkbox.checked = selectAllCheckbox.checked;
-          }
-        });
-        updateHiddenField();
-      });
-    }
-  });
-</script>
 
 <script>
   // Show loader on form submit
@@ -413,15 +356,54 @@ Policy Data
 </body>
 
 
-<script>
-  function showErrorMessage(remark) {
-    Swal.fire({
-      title: "Failed Error Message",
-      text: remark || 'No remark provided.',
-      icon: 'info',
-      confirmButtonText: 'Close'
-    });
-  }
-</script>
     
+<script>
+  $(document).ready(function () {
+    $("#myPolicyManualForm").validate({
+      rules: {
+        policy_number: {
+          required: true,
+          minlength: 5,
+          maxlength: 40,
+          remote: {
+            url: "/check-policy-number/", // Django view to check policy number
+            type: "POST",
+            data: {
+              policy_number: function () {
+                return $("#policy_number").val();
+              },
+              csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val()
+            },
+            dataFilter: function (response) {
+              var data = JSON.parse(response);
+              return data.exists ? "false" : "true"; // 'false' means already exists
+            }
+          }
+        },
+        insurance_company: {
+          required: true
+        }
+      },
+      messages: {
+        policy_number: {
+          required: "Please enter the policy number",
+          minlength: "Policy number must be at least 5 characters",
+          remote: "This policy number is already registered."
+        },
+        insurance_company: {
+          required: "Please select an insurance company"
+        }
+      },
+      errorElement: "div",
+      errorPlacement: function (error, element) {
+        error.addClass("text-danger");
+        error.insertAfter(element);
+      },
+      submitHandler: function (form) {
+        form.submit();
+      }
+    });
+  });
+</script>
+
 {% endblock %}
