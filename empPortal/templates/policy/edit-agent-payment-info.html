@@ -31,17 +31,6 @@
                 </ul>
               </div>
               
-              <div class="col-sm-6">
-                  <div class="d-flex justify-content-end">
-                    {% if request.user.department_id == "2" %}
-                      <a href="{% url 'edit-policy' id=policy_data.id %}" class="breadcrump-addbtn mx-1">Back</a>
-                    {% else %}
-                      <a href="{% url 'edit-policy-docs' policy_data.id %}" class="breadcrump-addbtn mx-1">Back</a>
-                    {% endif %}
-                    <a href="{% url 'policy-data' %}" class="breadcrump-addbtn mx-1">Exit</a>
-
-                  </div>
-              </div>
             </div>
           </div>
         </div>
@@ -304,9 +293,29 @@
                                 </div>
                               </div>
                             {% endif %}
-                              <div class="d-flex justify-content-end mt-4">
-                                <button type="button" id="save-agent-payment-form" class="dashboard-addbtn">Save and Continue</button>
+
+                              <div class="row mt-4">
+                                <div class="col-md-4">
+                                  <div class="d-flex justify-content-start">
+                                    {% if request.user.department_id == "2" %}
+                                      <a href="{% url 'edit-policy' id=policy_data.id %}" class="breadcrump-addbtn mx-1 bg-dark">Back</a>
+                                    {% else %}
+                                      <a href="{% url 'edit-policy-docs' policy_data.id %}" class="breadcrump-addbtn mx-1 bg-dark">Back</a>
+                                    {% endif %}
+                                  </div>  
+                                </div>
+                                <div class="col-md-4">
+                                  <div class="d-flex justify-content-center">
+                                    <a href="{% url 'policy-data' %}" class="breadcrump-addbtn bg-primary mx-1">Exit</a>
+                                  </div>  
+                                </div>
+                                <div class="col-md-4">
+                                  <div class="d-flex justify-content-end">
+                                    <button type="button" id="save-agent-payment-form" class="dashboard-addbtn">Save and Continue</button>
+                                  </div>  
+                                </div>
                               </div>
+
                             </div>
                           </div>
                       </form>

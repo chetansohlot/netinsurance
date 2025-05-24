@@ -2847,6 +2847,7 @@ a:hover .dr-pdficon {
     flex: 0 0 auto;
     width: 20%;
 }
+.break-all {word-break: break-all;}
 
 @media (max-width:767px) {
     .banner-hding {font-size: 30px;}

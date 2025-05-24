@@ -31,13 +31,7 @@
                 </ul>
               </div>
               
-              <div class="col-sm-6">
-                  <div class="d-flex justify-content-end">
-                    <a href="{% url 'edit-policy-vehicle-details' policy_data.id %}" class="breadcrump-addbtn mx-1">Back</a>
-                    <a href="{% url 'policy-data' %}" class="breadcrump-addbtn mx-1">Exit</a>
-
-                  </div>
-              </div>
+             
             </div>
           </div>
         </div>
@@ -212,15 +206,26 @@
                               </div>
                             </div>
                             
-
+                            <div class="row mt-4">
+                              <div class="col-md-4">
+                                <div class="d-flex justify-content-start">
+                                  <a href="{% url 'edit-policy-vehicle-details' policy_data.id %}" class="breadcrump-addbtn bg-dark">Back</a>
+                                </div>  
+                              </div>
+                              <div class="col-md-4">
+                                <div class="d-flex justify-content-center">
+                                  <a href="{% url 'policy-data' %}" class="breadcrump-addbtn bg-primary mx-1">Exit</a>
+                                </div>  
+                              </div>
+                              <div class="col-md-4">
+                                <div class="d-flex justify-content-end">
+                                  <a href="{% url 'edit-agent-payment-info' policy_id=policy_data.id|urlencode %}" class="dashboard-addbtn">
+                                    Save and Continue
+                                  </a>
+                                </div>  
+                              </div>
+                            </div>
                             
-
-                            <div class="d-flex justify-content-end mt-4">
-        
-                              <a href="{% url 'edit-agent-payment-info' policy_id=policy_data.id|urlencode %}" class="dashboard-addbtn">
-                                Save and Continue
-                              </a>
-                            </div>  
                           </div>
                         </div>
                         
