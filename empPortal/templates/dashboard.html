@@ -148,7 +148,11 @@
                                   </div>
                                   <div class="col">
                                     <h3 class="inout-call-title">Gross Premium </h3>
-                                    <h1 class="call-countnum" id="total_gross_premium">{{ total_gross_premium|indian_currency }}</h1>
+                                    <h1 class="call-countnum" id="total_gross_premium">
+                                      {% with total_net_premium|mul:"0.18" as gst %}
+                                        {{ total_net_premium|add:gst|floatformat:2|indian_currency }}
+                                      {% endwith %}
+                                    </h1>
                                   </div>
                                 </div>
                               </div>  
