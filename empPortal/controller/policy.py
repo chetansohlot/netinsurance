@@ -1083,6 +1083,10 @@ def create_manual_policy(request, id):
             policy.policy_start_date = none_if_blank(request.POST.get('policy_start_date'))
             policy.policy_expiry_date = none_if_blank(request.POST.get('policy_expiry_date'))
             policy.holder_name = none_if_blank(request.POST.get('holder_name'))
+            policy.od_premium = request.POST.get('od_premium')
+            policy.tp_premium = request.POST.get('tp_premium')
+            # policy.gross_premium = request.POST.get('gross_premium')
+            # policy.net_premium = request.POST.get('net_premium')
             policy.vehicle_number = ''
             policy.extracted_text = {
                 "policy_number": "",
