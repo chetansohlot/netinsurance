@@ -84,6 +84,8 @@ def edit_policy(request, policy_id):
         policy_id = request.POST.get('policy_id')
         policy_number = request.POST.get('policy_number')
 
+        policyDocument = PolicyDocument.objects.filter(id=policy_id).first()
+
         # Try to find another policy with the same number
         policy = PolicyInfo.objects.filter(
             policy_number=policy_number,policy_id=policy_id
@@ -137,7 +139,11 @@ def edit_policy(request, policy_id):
 
         policy.save()
         messages.success(request, "Policy Updated successfully!")
-        
+    
+        policyDocument.od_premium = request.POST.get('od_premium')
+        policyDocument.tp_premium = request.POST.get('tp_premium')
+        policyDocument.save()
+
         if request.user.department_id and request.user.department_id == "2":
             return redirect('edit-agent-payment-info',policy_id=quote(policy_id, safe=''))
         else:
