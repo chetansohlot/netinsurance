@@ -1329,7 +1329,26 @@ class BulkPolicyLog(models.Model):
             return ExtractedFile.objects.get(bulk_log_ref_id=self.id)
         except ExtractedFile.DoesNotExist:
             return None   
-        
+
+    @property
+    def calculated_status(self):
+        success = self.success_extracted_counts
+        duplicate = self.duplicate_extracted_counts
+        failed = self.failed_extracted_counts
+        total = self.count_total_files
+
+        if success is not None and failed is not None and duplicate is not None:
+            if (success + duplicate + failed) >= total and success > 0 and failed >= 0:
+                return 'complete'
+        if self.status == 1:
+            return 'zip_uploaded'
+        elif self.status == 2:
+            return 'in_progress'
+        elif self.status == 3:
+            return 'complete'
+        return 'pending'
+
+
     def __str__(self):
         return self.file_name or f"Uploaded Zip #{self.pk}"
        

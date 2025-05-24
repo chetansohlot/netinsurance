@@ -269,19 +269,16 @@ Policy Data
                               {% endif %}
                             </td>
                             <td>
-                              {% if log.failed_extracted_counts != 0 and log.success_extracted_counts != 0 and log.count_total_files <= log.success_extracted_counts|add:log.duplicate_extracted_counts|add:log.failed_extracted_counts %} 
+                              {% if log.calculated_status == 'complete' %}
                                 <span class="badge badge-success">Complete</span>
+                              {% elif log.calculated_status == 'zip_uploaded' %}
+                                <span class="badge badge-info">Zip Uploaded</span>
+                              {% elif log.calculated_status == 'in_progress' %}
+                                <span class="badge badge-dark">In Progress</span>
                               {% else %}
-                                {% if log.status == 1 %}
-                                  <span class="badge badge-info">Zip Uploaded</span>
-                                {% elif log.status == 2 %}
-                                  <span class="badge badge-dark">In Progress</span>
-                                {% elif log.status == 3 %}
-                                  <span class="badge badge-success">Complete</span>
-                                {% else %}
-                                  <span class="badge badge-warning">Pending</span>
-                                {% endif %}
+                                <span class="badge badge-warning">Pending</span>
                               {% endif %}
+
                             </td>
 
                             <td>
