@@ -143,8 +143,10 @@ Update Allocation
                         </div>
 
                         <div class="d-flex justify-content-between mt-4">
-
-                      <a href="{% url 'employee-management-update-refrences' employee_id=employee_data.employee_id %}" class="btn btn-secondary"> Back</a>
+                            <div>
+                                <a href="{% url 'employee-management-update-refrences' employee_id=employee_data.employee_id %}" class="btn btn-secondary me-2">Back</a>
+                                <a href="{% url 'employee-management' %}" class="btn btn-secondary">Exit</a>
+                            </div>
                             <button type="submit" class="form-submit-btn">
                                 {% if employee %}Update Employee{% else %}Save Employee{% endif %}
                             </button>
